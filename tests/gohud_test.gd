@@ -102,6 +102,7 @@ func _initialize() -> void:
 	await _section("app components", _app_components)
 	await _section("flutter widgets", _flutter_widgets)
 	await _section("rtl", _rtl)
+	await _section("reparent keeps the look", _rewatch)
 	await _section("standalone", _standalone)
 	# 🛑 Leaving a lambda in a static variable can crash during shutdown — clear them before finishing.
 	GoFeedback.sound_handler = Callable()
@@ -158,6 +159,66 @@ func _tokens() -> void:
 	settings.min_touch_size = 44
 	check(GoUi.metric(GoTheme.TOUCH) == 44, "min_touch_size becomes the touch token")
 	settings.min_touch_size = 48
+	# A look carries its own floor in its `touch` token (arcade_light: the game's 44); a size the project chose wins.
+	settings.follow_look_touch_size()
+	check(not settings.touch_size_chosen() and settings.min_touch_size == 48, "follow_look_touch_size: nothing chosen, the field reads its default")
+	var finger := GoUi.DEFAULT_THEME.duplicate() as Theme
+	finger.set_constant(GoTheme.TOUCH, GoTheme.TYPE, 44)
+	settings.theme = finger
+	check(GoUi.metric(GoTheme.TOUCH) == 44, "nothing chosen: the look's own touch token is the floor")
+	check(GoUi.touch_size() == 44.0, "GoUi.touch_size() reads the same floor")
+	settings.min_touch_size = 56
+	check(settings.touch_size_chosen() and GoUi.metric(GoTheme.TOUCH) == 56, "a min_touch_size the project chose wins over the look")
+	settings.follow_look_touch_size()
+	settings.theme = null
+	check(GoUi.metric(GoTheme.TOUCH) == 48, "every other look keeps 48")
+
+	# duplicate() and a saved file keep whether the project chose the floor, exactly as it is.
+	var fresh := GoConfig.new()
+	check(not fresh.duplicate().touch_size_chosen(), "duplicate(): an unchosen config stays unchosen")
+	fresh.min_touch_size = 56
+	var dup56 := fresh.duplicate() as GoConfig
+	check(dup56.touch_size_chosen() and dup56.min_touch_size == 56, "duplicate(): a chosen 56 stays chosen at 56")
+	fresh.min_touch_size = 48
+	var dup48 := fresh.duplicate() as GoConfig
+	check(dup48.touch_size_chosen() and dup48.min_touch_size == 48, "duplicate(): an explicit 48 stays chosen")
+	dup48.follow_look_touch_size()
+	check(not dup48.touch_size_chosen() and not dup48.duplicate().touch_size_chosen(), "follow_look_touch_size still hands the floor back, also through duplicate()")
+	var tres := "user://gohud_touch_roundtrip.tres"
+	var saved := GoConfig.new()
+	check(ResourceSaver.save(saved, tres) == OK, "save an unchosen config")
+	check(not (load(tres) as GoConfig).touch_size_chosen(), "save/load: an unchosen config stays unchosen")
+	saved.min_touch_size = 56
+	ResourceSaver.save(saved, tres)
+	var loaded := ResourceLoader.load(tres, "", ResourceLoader.CACHE_MODE_IGNORE) as GoConfig
+	check(loaded.touch_size_chosen() and loaded.min_touch_size == 56, "save/load: a chosen 56 stays chosen at 56")
+	saved.min_touch_size = 48
+	ResourceSaver.save(saved, tres)
+	loaded = ResourceLoader.load(tres, "", ResourceLoader.CACHE_MODE_IGNORE) as GoConfig
+	check(loaded.touch_size_chosen() and loaded.min_touch_size == 48, "save/load: an explicit 48 stays chosen")
+	DirAccess.remove_absolute(tres)
+
+	# 🎨 The role colours: every built-in look carries them, and one that names none carries the colour the role was
+	#    drawn in before (heading = accent, alert = danger, muted_fill = muted) — so nothing it draws changed.
+	for file: String in DirAccess.get_files_at("res://addons/gohud/themes"):
+		if not file.ends_with(".tres"): continue
+		var look := load("res://addons/gohud/themes/" + file) as Theme
+		for key: StringName in GoTheme.STAND_INS:
+			check(look.has_color(key, GoTheme.TYPE), "%s carries the %s token" % [file, key])
+			if file != "gohud_arcade_light.tres":
+				check(look.get_color(key, GoTheme.TYPE) == look.get_color(GoTheme.STAND_INS[key], GoTheme.TYPE),
+					"%s: %s is its %s" % [file, key, GoTheme.STAND_INS[key]])
+	check(GoUi.skin().task_title_ink() == GoUi.color(GoTheme.ACCENT) and GoUi.skin().task_hint_ink() == GoUi.color(GoTheme.DANGER)
+		and GoUi.skin().hud_alert_ink() == GoUi.color(GoTheme.DANGER), "the default skin's inks are still accent and danger")
+	# A theme that never heard of them answers the stand-in, not magenta.
+	var older := GoUi.DEFAULT_THEME.duplicate() as Theme
+	for key: StringName in GoTheme.STAND_INS: older.clear_color(key, GoTheme.TYPE)
+	settings.theme = older
+	settings.token_fallback = false
+	for key: StringName in GoTheme.STAND_INS:
+		check(GoUi.color(key) == GoUi.color(GoTheme.STAND_INS[key]), "a theme without %s: GoUi.color gives its %s" % [key, GoTheme.STAND_INS[key]])
+	settings.token_fallback = true
+	settings.theme = null
 
 	# A plain Theme with no tokens does not break anything.
 	settings.theme = Theme.new()
@@ -707,6 +768,11 @@ func _theme_fallbacks() -> void:
 			var chain := _theme_chain(theme, type)
 			if chain.is_empty() or not natives.has(chain[chain.size() - 1]): continue
 			var native: StringName = chain[chain.size() - 1]
+			# arcade_light is Magnet Mayhem's theme item for item, and the game leaves every Button colour it does not
+			# paint to the engine: a plain Button (and MenuButton) is the engine's flat dark key with light ink, and
+			# the painted keys keep the engine's white icons. Copying those values in would only hide that parity, which
+			# gohud_arcade_painted_theme_test checks; the light-theme white-on-white bug cannot happen on those faces.
+			if preset.id == &"arcade_light" and (native == &"Button" or native == &"MenuButton"): continue
 			var names := {}
 			var engine_chain: Array[StringName] = [native]
 			if native != &"Button" and ClassDB.is_parent_class(native, &"Button"): engine_chain.append(&"Button")
@@ -2202,6 +2268,40 @@ func _anchor() -> void:
 	outside.queue_free()
 	await frames(2)
 
+	# 🛑 **Under arcade_light the close button is out of the focus order** (FOCUS_NONE, as the game's). Grabbing it anyway
+	#    failed with an engine error and returned before anything else was tried — focus stayed on the opener behind the
+	#    window, and Enter pressed it again. Nothing focusable inside: the opener lets go. Something inside: it takes it.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var pointer_was := GoSurface._pointer_navigation
+	GoSurface._pointer_navigation = false   # opened from the keyboard: the window looks for something to focus
+	var opener := Button.new()   # the project's own button: FOCUS_ALL whatever the look
+	opener.text = "opener"
+	root.add_child(opener)
+	await frames(1)
+	opener.grab_focus()
+	await frames(1)
+	var bare := GoSurface.new()
+	bare.corner = GoSurface.HeadCorner.CLOSE   # the close button shows (a centred arcade_light window wears art instead)
+	root.add_child(bare)
+	await frames(3)
+	check(bare.close_button.is_visible_in_tree() and bare.close_button.focus_mode == Control.FOCUS_NONE,
+		"arcade_light: the close button shows, out of the focus order")
+	check(root.gui_get_focus_owner() == null, "arcade_light: a window with nothing focusable leaves no focus behind it (%s)"
+		% (root.gui_get_focus_owner().name if root.gui_get_focus_owner() != null else "none"))
+	var reachable := Button.new()
+	reachable.text = "inside"
+	bare.body.add_child(reachable)
+	opener.grab_focus()   # focus leaking out is brought back inside
+	await frames(3)
+	check(root.gui_get_focus_owner() == reachable, "arcade_light: a focusable control inside takes focus (%s)"
+		% (root.gui_get_focus_owner().name if root.gui_get_focus_owner() != null else "none"))
+	bare.queue_free()
+	opener.queue_free()
+	GoSurface._pointer_navigation = pointer_was
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(2)
+
 	# ── Tooltip ─────────────────────────────────────────────────────────
 	# 🛑 **For an icon button the tooltip is the only description there is.** The engine's default tooltip leaves wrapping on
 	#    and computes a maximum width of 1dp, which split `settings` **one character per line** (measured 2026-09-13: width 1 · height 186).
@@ -3517,7 +3617,9 @@ func _app_components() -> void:
 		await frames(2)
 		check(near(fab.size.x, 56.0) and near(fab.size.y, 56.0), "%s: a FAB is a 56dp square (%s)" % [preset, fab.size])
 		check(near(wide.size.y, 56.0) and wide.size.x > 100.0, "%s: an extended FAB is 56dp tall and holds its label" % preset)
-		check(tiny._has_point(Vector2(-3.0, 20.0)), "%s: a 40dp FAB takes presses 48dp wide" % preset)
+		# 🔑 The reach is the look's touch floor (48; arcade_light's is the game's 44), half of the extra on each side.
+		var fab_reach := (GoUi.touch_size() - 40.0) * 0.5
+		check(tiny._has_point(Vector2(1.0 - fab_reach, 20.0)), "%s: a 40dp FAB takes presses %sdp wide" % [preset, GoUi.touch_size()])
 		var fab_back := GoSkin.blend(GoSkin.box_background(skin.fab_box(56.0, &"normal")), page)
 		check(GoSkin.contrast_ratio(skin.fab_ink(), fab_back) >= 4.5,
 			"%s: the FAB's label reads on its face (%.2f)" % [preset, GoSkin.contrast_ratio(skin.fab_ink(), fab_back)])
@@ -3578,7 +3680,7 @@ func _app_components() -> void:
 		var first_tool := tools.get_child(0).get_child(0) as GoIconButton
 		first_tool.pressed.emit()
 		var second_tool := tools.get_child(0).get_child(1) as GoIconButton
-		var reach := (float(GoUi.config.min_touch_size) - first_tool.size.y) * 0.5
+		var reach := (GoUi.touch_size() - first_tool.size.y) * 0.5
 		check(used[0] == 1 and first_tool._has_point(Vector2(-reach + 1.0, first_tool.size.y * 0.5))
 			and first_tool.touch_peers.size() == 2
 			and second_tool.position.x - first_tool.position.x - first_tool.size.x >= reach * 2.0 - 0.5,
@@ -4232,6 +4334,18 @@ func _flutter_pickers() -> void:
 	check(dates.get_range().is_empty() and ranges.size() == 1, "date range: a third tap starts a new range")
 	dates.queue_free()
 
+	# Date cell width — a parent that nudges the width a few pixels each rebuild (a fit-content surface) must not
+	# flip the cell between n and n + 1 forever; it shrinks at once and grows only with room to spare.
+	var sizing := GoDatePicker.make({"year": 2026, "month": 10, "day": 2})
+	root.add_child(sizing)
+	var cells: Array = []
+	for wide in [297.0, 293.0, 297.0, 293.0, 297.0, 350.0]:
+		sizing.size = Vector2(wide, sizing.size.y)
+		sizing.notification(Container.NOTIFICATION_SORT_CHILDREN)
+		cells.append(sizing._cell)
+	check(cells == [42.0, 41.0, 41.0, 41.0, 41.0, 48.0], "date picker: the cell settles instead of flipping (%s)" % str(cells))
+	sizing.queue_free()
+
 	# Wheel — select, keys and a drag settle on an item; `changed` once per new item.
 	var settled: Array = []
 	var digits: Array = []
@@ -4748,3 +4862,64 @@ func _files(dir: String, extensions: Array) -> PackedStringArray:
 		if SKIP_DIRS.has(path.trim_prefix(ADDON + "/")): continue
 		found.append_array(_files(path, extensions))
 	return found
+
+
+# ── Reparent keeps the look ──────────────────────────────────────────
+
+## 🛑 A widget that watched the look only in `_ready` lost it for good on its first `_exit_tree`: `remove_child` +
+##    `add_child` runs no second `_ready`, so after a reparent it never followed `GoUi.use_preset()` again.
+func _rewatch() -> void:
+	# [class, the callback it registers with GoUi.watch]
+	var specs := [
+		[GoAppBar, &"_on_ui_changed"], [GoBanner, &"_restyle"], [GoBadge, &"_on_ui_changed"],
+		[GoBar, &"_on_ui_changed"], [GoCarousel, &"_on_ui_changed"], [GoCodeInput, &"_on_ui_changed"],
+		[GoCoachMark, &"_on_ui_changed"], [GoChoiceColumn, &"_on_ui_changed"], [GoCombobox, &"_on_ui_changed"],
+		[GoConsole, &"_on_ui_changed"], [GoDrawer, &"_on_ui_changed"], [GoDonut, &"_on_ui_changed"],
+		[GoDatePicker, &"_rebuild"], [GoFab, &"_on_ui_changed"], [GoForm, &"_relayout"],
+		[GoField, &"_on_ui_changed"], [GoHudAnchor, &"_relayout"], [GoIconButton, &"_on_ui_changed"],
+		[GoHudCard, &"_on_ui_changed"], [GoInputGroup, &"_on_ui_changed"], [GoJoystick, &"_on_ui_changed"],
+		[GoNotice, &"_on_ui_changed"], [GoNavBar, &"_on_ui_changed"], [GoPagination, &"_on_ui_changed"],
+		[GoRadar, &"_on_ui_changed"], [GoPromptCard, &"_on_ui_changed"], [GoProgress, &"queue_redraw"],
+		[GoRangeSlider, &"_on_ui_changed"], [GoRewardCalendar, &"_on_ui_changed"], [GoReorderList, &"_on_ui_changed"],
+		[GoScaffold, &"_restyle"], [GoRefresh, &"_restyle"], [GoSlider, &"_on_ui_changed"],
+		[GoSearchBar, &"_on_ui_changed"], [GoSplitButton, &"_on_ui_changed"], [GoSlotGrid, &"_restyle"],
+		[GoStepper, &"_rebuild"], [GoSlot, &"_on_ui_changed"], [GoTimePicker, &"_rebuild"],
+		[GoSurface, &"_on_ui_changed"], [GoTable, &"_on_ui_changed"], [GoSwitch, &"_on_ui_changed"],
+		[GoWheelPicker, &"_on_ui_changed"],
+	]
+	# These two set `theme` once in `_init` and restyle their parts instead — only the watch is checked for them.
+	var own_theme_fixed := [GoCoachMark, GoSurface]
+	# Three different looks, so no check passes because a widget kept the look it was built with.
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var first := Control.new()
+	var second := Control.new()
+	root.add_child(first)
+	root.add_child(second)
+	var nodes: Array[Node] = []
+	for spec in specs:
+		var node: Node = spec[0].new()
+		first.add_child(node)
+		nodes.append(node)
+	await frames(2)
+	for node in nodes: first.remove_child(node)
+	# The look changes while they are out of the tree — they have to catch up when they come back.
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	for node in nodes: second.add_child(node)
+	await frames(2)
+	for i in nodes.size():
+		var node := nodes[i]
+		var follows_theme: bool = node is Control and (node as Control).theme != null and not own_theme_fixed.has(specs[i][0])
+		var label := "%s (%s)" % [node.get_class() if node.get_script() == null else node.get_script().get_global_name(), specs[i][1]]
+		check(GoUi._watchers.has(Callable(node, specs[i][1])), "reparent: %s still watches the look" % label)
+		if follows_theme:
+			check((node as Control).theme == GoUi.theme(), "reparent: %s caught up with a look changed while it was out" % label)
+	GoUi.use_preset(GoThemePresets.SCIFI_DARK)
+	await frames(2)
+	for i in nodes.size():
+		var node := nodes[i]
+		if node is Control and (node as Control).theme != null and not own_theme_fixed.has(specs[i][0]):
+			check((node as Control).theme == GoUi.theme(), "reparent: %s follows a look switch after the reparent" % node.get_script().get_global_name())
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	first.queue_free()
+	second.queue_free()
+	await frames(2)

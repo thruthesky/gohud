@@ -43,12 +43,44 @@ step "①-j unit tests — the jelly look (GoStyleBoxJelly, the kids looks, the 
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_jelly_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-q unit tests — the arcade_light painted art (sprites and glyphs imported as the game does, the glyph icon set)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_assets_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-k unit tests — the comic look (GoStyleBoxComic, the comic looks, the outline and shadow dials)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_comic_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
 step "①-m unit tests — the arcade look (GoStyleBoxArcade, the arcade looks, the title outline and the per-widget paint)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
+step "①-s unit tests — the painted 9-slice box (GoStyleBoxSprite: the slices, frame_margin, a .tres round trip)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_stylebox_sprite_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
+step "①-u unit tests — the painted icon (GoTextureSprite: the drawn size, regions, tiles, tint, pixels, get_image, a .tres round trip)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_texture_sprite_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
+step "①-p unit tests — the painted arcade skin (GoSkinArcadePainted: the sprites, the notice pill, the scrim, the ticks)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_skin_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
+step "①-r unit tests — the painted arcade_light theme (the game's variations, sprites, item sets, tokens; the map)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_arcade_painted_theme_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-w unit tests — the painted widgets (fit_font_size, GoCoverImage, GoKeyCluster, GoLevelCard, GoGlyphButton, GoKbd done, GoSurface extras)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_widgets_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-d unit tests — the game's dialog (GoSurface under arcade_light measures PaintedDialog and RibbonHeader)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_dialog_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-c unit tests — the painted controls (GoSlider, GoSwitch, GoMapPreview: drawn as Magnet Mayhem draws them)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_controls_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-h unit tests — the match-HUD widgets (GoBar's painted frame, …)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_game_hud_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,

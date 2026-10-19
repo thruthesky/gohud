@@ -31,6 +31,14 @@ signal back_requested
 signal height_changed(ratio: float)
 
 enum Placement { CENTER, BOTTOM, ANCHOR }
+## What the head's corner holds: what the look says (`GoSkin.window_corner()` — the close button, or under arcade_light
+## the game's magnet), the close button, a picture (`corner_art`, or the look's), or nothing. Without a close button
+## Escape and Back still close the window.
+enum HeadCorner { LOOK, CLOSE, ART, NONE }
+## Which edge of its anchor an `ANCHOR` card lines up with (`anchor_align`).
+enum AnchorAlign { AUTO, START, END }
+## How a card too big for the screen stays on it (`fit_mode`): its body scrolls, or the whole card shrinks.
+enum FitMode { SCROLL, SCALE }
 
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
@@ -95,16 +103,80 @@ var dismiss_on_scrim := false
 ## Make the scrim transparent — for a dropdown over the game screen, where what is behind must stay visible.
 var scrim_transparent := false
 ## 🎨 Paints the plate behind the title its own colour — the red ribbon of a GAME OVER window, the gold one of a win.
-## Transparent: the look's plate as it is. Under the arcade looks (a `GoStyleBoxArcade` plate) the paint is moved until
-## the white, ink-outlined title reads on it (`GoStyleBoxArcade.fit`); a look without a painted plate ignores it.
+## Transparent: the look's plate as it is. Only a code-drawn plate takes a paint — arcade and arcade_dark's
+## `GoStyleBoxArcade`, moved until the white, ink-outlined title reads on it (`GoStyleBoxArcade.fit`). 🛑 arcade_light's
+## ribbon is a painted sprite and ignores it, as does a look without a plate: there, pick the plate with
+## `title_variation`.
 ##
 ## ```gdscript
-## surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)   # a red ribbon: you were knocked out
+## surface.title_paint = GoUi.color(GoTheme.DANGER_FILL)   # a red ribbon: you were knocked out (arcade, arcade_dark)
 ## ```
 var title_paint := Color.TRANSPARENT:
 	set(value):
 		title_paint = value
 		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## 🎀 The theme variation the title plate wears instead of the look's (`GoSkin.title_plate_box()`) — arcade_light's
+## `&"GoRibbonRed"`, the game's red GAME OVER ribbon (`RibbonRed`), with the gold one's height, rise, bleed and
+## corner art. Empty, or a variation the theme does not define: the look's plate.
+##
+## ```gdscript
+## surface.title_variation = &"GoRibbonRed"                 # arcade_light: the game's red ribbon…
+## surface.title_glyph = GoUi.icons().texture(GoIconSet.SKULL)   # …with the skull on it
+## ```
+var title_variation: StringName = &"":
+	set(value):
+		if title_variation == value: return
+		title_variation = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## 🏷 A glyph left of the title (a trophy, the pause bars) — glyph and title stand centred together on the plate.
+## Drawn in the title's colour (white glyphs read as drawn on the arcade ribbon). Null: the title alone.
+var title_glyph: Texture2D:
+	set(value):
+		title_glyph = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## The glyph's side (dp). 0: in step with the title — 26/34 of its font size, as on the game's ribbon.
+var corner := HeadCorner.LOOK:
+	set(value):
+		corner = value
+		if is_inside_tree(): _dress_corner()
+## The picture an `ART` corner shows — null: the look's (`GoSkin.window_corner_art()`).
+var corner_art: Texture2D:
+	set(value):
+		corner_art = value
+		if is_inside_tree(): _dress_corner()
+## Which end of the head the corner art sits on — mirrored on the right, like the game's `RibbonHeader`.
+var corner_on_left := true:
+	set(value):
+		corner_on_left = value
+		if is_inside_tree(): _place_corner()
+## ✖ **A close key beside the corner art** (off by default: a window is what it always was). On, a round close key
+## stands in the head's **other** corner while the art stays — on the right while `corner_on_left` (the default), on
+## the left when the art is on the right; like the art, it does not mirror for a right-to-left language. It hangs past
+## the card's corner the way the art does (`GoSkin.window_close_key_rect()`), drawn with the plate, so the title and
+## the layout do not move for it, and it scales with the card under a `SCALE` fit (`fit_overhang()` keeps it on the
+## screen). A press calls `request_close()` (`close_requested`); `close_enabled` off disables it. It shows only while
+## the corner holds art (`corner_now()` is `ART`) — a `CLOSE` corner has its close button already, `NONE` nothing.
+## The look dresses it as it dresses `close_button` (`GoSkin.dress_close_button`: a red key in arcade_light).
+## ```gdscript
+## dialog.show_close_key = true   # the magnet on the left, a close key on the right
+## ```
+var show_close_key := false:
+	set(value):
+		if show_close_key == value: return
+		show_close_key = value
+		if is_inside_tree(): _dress_corner()
+var title_glyph_size := 0:
+	set(value):
+		title_glyph_size = value
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## The space between the glyph and the title (dp).
+const TITLE_GLYPH_GAP := 10.0
+## 🌤 An **opaque** window: a solid colour (`GoSkin.opaque_backdrop_color` — the game's sky in arcade_light) under it
+## instead of the see-through veil — for a window opened where the world behind is not drawn (a menu at boot).
+var opaque := false:
+	set(value):
+		opaque = value
+		_dress_scrim()
 ## 🪟 **Opacity of the card background** (0.0~1.0) — for this one window only. Negative means the value the theme
 ## and config decide (`GoUi.surface_alpha(GoTheme.BOX_PANEL)` · 80% in the default theme).
 ##
@@ -151,6 +223,70 @@ var anchor_max_height := 520.0:
 		if anchor_max_height == value: return
 		anchor_max_height = value
 		_layout_dirty = true
+## Which edge of the anchor the card lines up with: `AUTO` (today's: its start edge when the card fits beside it,
+## else the roomier side), `START` (start edges together) or `END` (end edges together — the game's top-bar cards,
+## their right edge on the key's). Mirrored in a right-to-left layout. Under `SCALE`, `AUTO` takes the end on the side
+## of the screen the anchor is on.
+var anchor_align := AnchorAlign.AUTO:
+	set(value):
+		if anchor_align == value: return
+		anchor_align = value
+		_layout_dirty = true
+## Between the anchor and the card (dp) — the game's top-bar cards hang 10 under their key (`Cfg.Menu.GAP`).
+var anchor_gap := 7.0:
+	set(value):
+		if anchor_gap == value: return
+		anchor_gap = value
+		_layout_dirty = true
+## How far an anchored card keeps off the safe area's edge (dp) — the game's cards keep none.
+var anchor_edge := 8.0:
+	set(value):
+		if anchor_edge == value: return
+		anchor_edge = value
+		_layout_dirty = true
+## 👆 Taps on the anchor go **through** the outside-tap layer to the anchor, so the key that opened the card closes it
+## when pressed again (the game's top bar: its card's layer sits under the bar). Off: the layer covers the anchor too,
+## and a tap there closes the card as any outside tap does.
+var pass_anchor_taps := false
+## More controls whose taps go through the outside-tap layer (the rest of a top bar: the next key opens its own card).
+var tap_through: Array[Control] = []
+
+## How a card too big for the screen is kept on it. `SCROLL` (the default): the card is cut to the screen and its body
+## scrolls. `SCALE`: Magnet Mayhem's `FitBox` — the whole card shrinks by `scale` (never above 1) until it and what it
+## draws past its edges (the ribbon, the corner art: `GoRibbonHeader.card_overhang()`) fit the safe area less
+## `GoSkin.window_fit_pad()`; below the fit floor (`GoConfig.fit_min_scale`) the body's scroll (or `fit_flex`) gives up
+## height first, down to `GoSkin.window_flex_min_height()`. A centred window keeps the look's width (`max_width`)
+## whatever the screen. An `ANCHOR` card under `SCALE` is the game's top-bar card: its natural size, shrunk to the
+## safe area but no lower than the fit floor, never opening upward — moved up when it would run past the bottom.
+## 🛑 A `BOTTOM` sheet ignores it.
+var fit_mode := FitMode.SCROLL:
+	set(value):
+		if fit_mode == value: return
+		fit_mode = value
+		_layout_dirty = true
+		if title_label != null: _fit_title.call_deferred()
+## `SCALE`: the list that scrolls rather than shrink the card below the fit floor — a ScrollContainer in the body
+## (`GoFitBox.new_flex()`), its one child the content. Null: the body's own scroll, so the whole body scrolls.
+var fit_flex: ScrollContainer:
+	set(value):
+		if fit_flex == value: return
+		_watch_flex(false)
+		fit_flex = value
+		_watch_flex(true)
+		_layout_dirty = true
+## 📏 `SCALE`, centred: the least share of the safe area (0–1) the window covers. Smaller, the whole card grows past its
+## own size (a scale above 1) until it and its overhang reach the share across or down, whichever comes first, as far
+## as the screen holds it. 0: it never grows (the game's `FitBox`).
+## ```gdscript
+## lobby.fit_screen_share = 0.7   # the room window takes at least 70% of the screen
+## ```
+var fit_screen_share := 0.0:
+	set(value):
+		if is_equal_approx(fit_screen_share, value): return
+		fit_screen_share = value
+		_layout_dirty = true
+## The scale the card got from a `SCALE` fit (1: its own size).
+var fit_scale := 1.0
 
 # ── Children ───────────────────────────────────────────────────────────
 
@@ -158,6 +294,8 @@ var card: PanelContainer
 var header: HBoxContainer
 var title_label: Label
 var close_button: GoIconButton
+## The close key `show_close_key` shows — null until it is first shown. Built by `_make_close_button()` too.
+var close_key: GoIconButton
 var back_button: Button
 var scroll: GoScroll
 ## The scrolling body. Most content goes in here.
@@ -176,6 +314,14 @@ var status: VBoxContainer
 var status_label: Label
 
 var _scrim: ColorRect
+## A `SCALE` fit put a scale on the card — taken off again when the fit stops.
+var _scaled := false
+## The `fit_flex` content whose minimum size asks for a new fit.
+var _flex_watched: Control
+var _title_glyph_rect: TextureRect
+var _corner_rect: TextureRect
+## How far the title plate rises above the card now (0: it sits inside the card) — `GoSkin.title_plate_overhang`.
+var _overhang := Vector2.ZERO
 var _column: VBoxContainer
 var _margin: MarginContainer
 var _content_padding := 0
@@ -228,7 +374,9 @@ func _build() -> void:
 	mouse_force_pass_scroll_events = false
 	add_to_group(&"go_surfaces")
 
-	_scrim = ColorRect.new()
+	var veil := Scrim.new()
+	veil.surface = self
+	_scrim = veil
 	_scrim.name = "Scrim"
 	_scrim.color = GoUi.color(GoTheme.SCRIM)
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -252,6 +400,7 @@ func _build() -> void:
 
 	header = GoStyle.row()
 	header.name = "Header"
+	header.sort_children.connect(_seat_head_buttons)
 	_column.add_child(header)
 
 	back_button = GoStyle.button_key(GoUi.text_key(&"back"), func() -> void: back_requested.emit(), GoStyle.Tone.COMPACT)
@@ -327,6 +476,15 @@ func _make_scroll() -> GoScroll:
 	return GoScroll.new()
 
 
+## Clips the body's scroll only while its content overflows it (a scrollbar shows, or would with the bars hidden).
+func _sync_body_clip() -> void:
+	if scroll == null: return
+	var need := body.get_combined_minimum_size()
+	var clip := need.y > scroll.size.y + 0.5 or need.x > scroll.size.x + 0.5 \
+			or scroll.get_v_scroll_bar().visible or scroll.get_h_scroll_bar().visible
+	if scroll.clip_contents != clip: scroll.clip_contents = clip
+
+
 func _ready() -> void:
 	# Options that may have changed **between** `new()` and `add_child()` are applied here.
 	_dress_scrim()
@@ -341,6 +499,10 @@ func _ready() -> void:
 		_column.move_child(scroll, slot)
 		body.reparent(scroll)
 		scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+		# 🔑 The body clips only while it scrolls. A body that fits has nothing to clip, and the clip would cut a
+		#    part's antialiased rim on a half pixel (the painted inset's top edge at 1.5x) the game's column never cuts.
+		scroll.sort_children.connect(_sync_body_clip)
+		_sync_body_clip()
 	elif not scroll_body:
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
@@ -348,12 +510,11 @@ func _ready() -> void:
 	if _runtime != null:
 		if _runtime.has_signal(&"keyboard_changed"): _runtime.keyboard_changed.connect(_on_keyboard)
 		if _runtime.has_signal(&"breakpoint_changed"): _runtime.breakpoint_changed.connect(func(_bp) -> void: relayout())
+		# A 180° turn moves the safe area with no resize; the window re-centres in what is usable now.
+		if _runtime.has_signal(&"safe_area_changed"): _runtime.safe_area_changed.connect(func(_m) -> void: relayout())
 	get_viewport().size_changed.connect(relayout)
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
-	# 🛑 Register `_on_ui_changed`, not the layout pass — when the config changes, **the panel opacity** has to be
-	#    reapplied too. Relaying out alone leaves a window whose theme was swapped still wearing the old panel.
-	GoUi.watch(_on_ui_changed)
 	_restyle()
 	relayout()
 	_sync_active()
@@ -364,6 +525,13 @@ func _ready() -> void:
 ##    costs more than a layout pass, and only needs doing on change — a config change, an `alpha` assignment, opening.
 func _restyle() -> void:
 	if card == null or not is_inside_tree(): return
+	# The card the look frames a window with (`GoSkin.window_card_variation`: the painted card under arcade_light).
+	var wear := GoUi.skin().window_card_variation()
+	# How the look's sprites are sampled across the whole window (mipmapped under arcade_light, like the game's dialog).
+	texture_filter = GoUi.skin().window_texture_filter()
+	if card.theme_type_variation != wear:
+		GoStyle.forget_face(card)
+		card.theme_type_variation = wear
 	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
 	_fit_scroll_frame()
 	_dress_chrome()
@@ -375,7 +543,10 @@ func _fit_scroll_frame() -> void:
 	if scroll == null or card == null: return
 	var box := card.get_theme_stylebox(&"panel")
 	var frame := Vector4.ZERO
-	if box != null:
+	# 🔑 A look that pads the window with its card face (`GoSkin.window_padding` ≥ 0, the painted card) puts the content
+	#    where the face's padding ends, as the game does — a painted 9-slice's edge is the slice, not the drawn rim, and
+	#    clipping there pushed the body 14 dp down off the game's row.
+	if box != null and GoUi.skin().window_padding() < 0:
 		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
 			frame[side] = maxf(0.0, GoSkin.frame_margin(box, side) - box.get_margin(side))
 	scroll.set_panel_frame(frame)
@@ -386,7 +557,8 @@ func _fit_scroll_frame() -> void:
 ## has neither gets the plain head back. Only what this surface put on is taken off: a host's own title alignment stays.
 func _dress_chrome() -> void:
 	var skin := GoUi.skin()
-	var plate := skin.title_plate_box()
+	var plate := _variation_plate()
+	if plate == null: plate = skin.title_plate_box()
 	if plate is GoStyleBoxArcade and title_paint.a > 0.0:
 		var painted := plate as GoStyleBoxArcade
 		painted.paint(GoStyleBoxArcade.fit(Color(title_paint, 1.0), painted.edge()))
@@ -406,38 +578,103 @@ func _dress_chrome() -> void:
 	title_label.remove_theme_color_override(&"font_outline_color")
 	title_label.remove_theme_constant_override(&"outline_size")
 	skin.dress_title(title_label)
+	_dress_title_extras(plate)
+	_dress_corner()
 	_fit_title()
-	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
-		close_button.remove_theme_stylebox_override(state)
-	close_button.icon_tint = Color.TRANSPARENT
+	GoSkin.undress_close_button(close_button)
 	skin.dress_close_button(close_button)
+	_dress_close_key()
+
+
+## The plate `title_variation` names, a copy of the theme's (a paint may go on it) — null when unset or undefined.
+func _variation_plate() -> StyleBox:
+	if title_variation.is_empty() or not has_theme_stylebox(&"panel", title_variation): return null
+	var face := get_theme_stylebox(&"panel", title_variation)
+	return face.duplicate() as StyleBox if face != null else null
 
 
 ## On a title plate the title stays on one line: past the plate's room it shrinks, down to
-## `GoSkin.title_plate_min_size()`, and only then folds. Without a plate the title keeps the size its role gives it.
+## `GoSkin.title_plate_min_size()`, and only then folds — or, under a `SCALE` fit, widens the card instead (the game's
+## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate the title keeps the
+## size its role gives it.
 func _fit_title() -> void:
 	if title_label == null: return
+	_fit_title_size()
+	_place_title_glyph()
+	_place_corner()
+
+
+func _fit_title_size() -> void:
 	var plate := title_label.get_theme_stylebox(&"normal") if title_label.has_meta(&"go_plate_align") else null
+	var role_size := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
 		if title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
+		_widen_title(0.0)
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
+	var over := plate as OverhangPlate
+	if over != null and over.base != null:
+		# Its left margin follows the words (see `_place_title_glyph`); the room is the plate's as drawn — past the
+		# card's sides by its bleed — less its ends and the glyph's room, the game's ribbon row.
+		room = title_label.size.x - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
 	var font := title_label.get_theme_font(&"font")
-	var natural := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
 	var fitted := natural
 	while fitted > GoUi.skin().title_plate_min_size() \
 			and font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x > room:
 		fitted -= 1
-	if fitted == natural:
+	if fitted == role_size:
 		if title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
-	elif title_label.get_theme_font_size(&"font_size") != fitted:
+	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != fitted:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
+	if over != null: _sink_plate(over, font, fitted)
+	var wide := 0.0
+	if fit_mode == FitMode.SCALE:
+		wide = ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room)
+	_widen_title(wide)
+
+
+## The title's least width under a `SCALE` fit: its words at the size they shrank to, plus the plate's ends — the card
+## grows to it (0: no floor). 🔑 At or under the label's width while the words fit, so it only ever widens a card whose
+##    title is still too long at the smallest size.
+func _widen_title(wide: float) -> void:
+	if is_equal_approx(title_label.custom_minimum_size.x, wide): return
+	title_label.custom_minimum_size.x = wide
+	_mark_layout_dirty()
+
+
+## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.
+func _title_natural_size() -> int:
+	var on_plate := title_label.has_meta(&"go_plate_align")
+	var look := GoUi.skin().title_plate_font_size() if on_plate else 0
+	return look if look > 0 else GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+
+
+## How far in from the label's [param side] the plate's end ends: its base margin, less the bleed drawn on that side.
+func _plate_end(plate: OverhangPlate, side: Side) -> float:
+	var margin := plate.base.get_margin(side) if plate.base != null else 0.0
+	var bleed := plate.bleed_left if side == SIDE_LEFT else plate.bleed_right
+	return maxf(0.0, margin - bleed)
+
+
+## A plate of a fixed height (`GoSkin.title_plate_height`) holds a taller title by growing down over the gap below:
+## the words keep the plate's top margin and the plate is drawn down to fit them, while the head keeps its height.
+func _sink_plate(plate: OverhangPlate, font: Font, size: int) -> void:
+	var tall := GoUi.skin().title_plate_height()
+	var sink := 0.0
+	if tall > 0.0 and plate.base != null and font != null:
+		sink = maxf(0.0, plate.base.get_margin(SIDE_TOP) + plate.base.get_margin(SIDE_BOTTOM) + font.get_height(size) - tall)
+	if not is_equal_approx(plate.sink, sink):
+		plate.sink = sink
+		plate.content_margin_bottom = (plate.base.get_margin(SIDE_BOTTOM) if plate.base != null else 0.0) - sink
+		title_label.update_minimum_size()
+		title_label.queue_redraw()
 
 
 ## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
@@ -453,8 +690,382 @@ func _on_ui_changed() -> void:
 ## blur under the arcade looks with `arcade_scrim_blur` on (`GoSkin.scrim_material`). A clear scrim stays plain.
 func _dress_scrim() -> void:
 	if not is_instance_valid(_scrim): return
+	if opaque:
+		# 🛑 Opaque wins over a blur: there is nothing behind worth frosting.
+		_scrim.color = GoUi.skin().opaque_backdrop_color()
+		_scrim.material = null
+		return
 	_scrim.color = Color(0, 0, 0, 0) if scrim_transparent else GoUi.color(GoTheme.SCRIM)
-	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material()
+	_scrim.material = null if scrim_transparent else GoUi.skin().scrim_material_now()
+
+
+# ── The parts a window is built of (Magnet Mayhem's PaintedDialog) ─────
+
+## A pale inset with a column inside, its rows 4 dp apart; returns the column. It goes in the body, or in [param parent].
+## The look picks its face (`GoSkin.window_inset_variation()`: the game's `GoInsetPanel` in `arcade_light`).
+func add_inset(parent: Control = null) -> VBoxContainer:
+	var panel := PanelContainer.new()
+	panel.theme_type_variation = GoUi.skin().window_inset_variation()
+	(parent if parent != null else body).add_child(panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override(&"separation", 4)
+	panel.add_child(column)
+	return column
+
+
+## A centred line of [param text] at [param font_size] (0: the theme's). [param wrap] is for sentences (SMART, so
+## ja/zh wrap in an export too); a short one-line stat must not wrap — a wrapping label keeps the tall minimum of its
+## first, narrow layout.
+func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) -> Label:
+	var line := Label.new()
+	line.text = text
+	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if wrap: line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	if font_size > 0: line.add_theme_font_size_override(&"font_size", font_size)
+	(parent if parent != null else body).add_child(line)
+	return line
+
+
+## A row for buttons side by side, their gap the look's (`GoSkin.window_button_gap()`: 10 in `arcade_light`).
+func add_row(parent: Control = null) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	var gap := GoUi.skin().window_button_gap()
+	row.add_theme_constant_override(&"separation", gap if gap >= 0 else GoUi.metric(GoTheme.GAP))
+	(parent if parent != null else body).add_child(row)
+	return row
+
+
+## A glyph button — [param variation], the icon set's [param icon], [param text] — at the look's window button height
+## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width.
+func add_gloss(variation: StringName, icon: StringName, text := "", parent: Control = null,
+		texture: Texture2D = null) -> GoGlyphButton:
+	var button := GoGlyphButton.make(text, icon, variation, texture)
+	var high := GoUi.skin().window_button_height()
+	if high > 0.0: button.custom_minimum_size.y = high
+	var to := parent if parent != null else body
+	if to is HBoxContainer: button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	to.add_child(button)
+	return button
+
+
+# ── Title glyph and the overhanging plate ─────────────────────────────
+
+## A plate that draws its base grown sideways by `bleed` — the ribbon reaching past the card's sides.
+class OverhangPlate:
+	extends StyleBox
+
+	var base: StyleBox
+	var bleed := 0.0
+	## The bleed drawn on each side now — 0 where a back or close button sits beside the plate.
+	var bleed_left := 0.0
+	var bleed_right := 0.0
+	## The room kept for the title glyph and its gap (dp).
+	var glyph_room := 0.0
+	## How far the plate is drawn below the label (dp) — a title taller than a fixed-height plate.
+	var sink := 0.0
+
+	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
+		base = from
+		bleed = side
+		bleed_left = side
+		bleed_right = side
+		glyph_room = extra_left
+		if from == null: return
+		content_margin_left = from.get_margin(SIDE_LEFT) + extra_left
+		content_margin_right = from.get_margin(SIDE_RIGHT)
+		content_margin_top = from.get_margin(SIDE_TOP)
+		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
+
+	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
+		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, sink))
+
+
+## The side of the title glyph (dp): `title_glyph_size`, or the game's 26 dp beside a 34 dp title scaled to the title's
+## role size. 🛑 Taken from the role size, never the size now — a long title shrinks to fit (`_fit_title_size`) after
+##    the room for the glyph was reserved, and a glyph read from the shrunk size left too wide a gap beside it.
+func title_glyph_side() -> float:
+	if title_glyph_size > 0: return float(title_glyph_size)
+	return roundf(float(_title_natural_size()) * 26.0 / 34.0)
+
+
+## Room for the glyph on the title's face, and the plate hanging over the card's top edge when the look says so.
+## 🔑 Only what this surface put on is taken off again — a look without either gets the plain head back.
+func _dress_title_extras(plate: StyleBox) -> void:
+	var on_plate := plate != null and title_label.has_meta(&"go_plate_align")
+	_overhang = GoUi.skin().title_plate_overhang() if on_plate and show_header else Vector2.ZERO
+	var extra := title_glyph_side() + TITLE_GLYPH_GAP if title_glyph != null else 0.0
+	# The plate's height the look fixes (`GoSkin.title_plate_height`, the game's 57 dp ribbon) — the head's height.
+	var tall := GoUi.skin().title_plate_height() if on_plate else 0.0
+	if tall > 0.0:
+		title_label.custom_minimum_size.y = tall
+		title_label.set_meta(&"go_plate_height", true)
+	elif title_label.has_meta(&"go_plate_height"):
+		title_label.remove_meta(&"go_plate_height")
+		title_label.custom_minimum_size.y = 0.0
+	if on_plate and (extra > 0.0 or _overhang.x > 0.0 or tall > 0.0):
+		title_label.add_theme_stylebox_override(&"normal", OverhangPlate.new(plate, _overhang.x, extra))
+	elif not on_plate:
+		if extra > 0.0:
+			var room := StyleBoxEmpty.new()
+			room.content_margin_left = extra
+			title_label.add_theme_stylebox_override(&"normal", room)
+			title_label.set_meta(&"go_glyph_room", true)
+		elif title_label.has_meta(&"go_glyph_room"):
+			title_label.remove_theme_stylebox_override(&"normal")
+			title_label.remove_meta(&"go_glyph_room")
+	if title_glyph == null:
+		if is_instance_valid(_title_glyph_rect): _title_glyph_rect.queue_free()
+		_title_glyph_rect = null
+	else:
+		if not is_instance_valid(_title_glyph_rect):
+			_title_glyph_rect = TextureRect.new()
+			_title_glyph_rect.name = "TitleGlyph"
+			_title_glyph_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			_title_glyph_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			_title_glyph_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			title_label.add_child(_title_glyph_rect, false, Node.INTERNAL_MODE_FRONT)
+		_title_glyph_rect.texture = title_glyph
+	# A new plate bleeds on both sides; the row's next pass trims it beside the buttons (`_seat_head_buttons`).
+	header.queue_sort()
+	_apply_overhang()
+
+
+## Lifts the head so the plate rises `_overhang.y` above the card's top edge (the padding's top margin goes negative)
+## and lets it show past the padding's clip. 🛑 The body keeps its own clip (`GoScroll`); only the head reaches out.
+func _apply_overhang() -> void:
+	if _margin == null: return
+	if _overhang.y > 0.0:
+		_margin.clip_contents = false
+		_margin.add_theme_constant_override(&"margin_top", -roundi(_card_top() + _overhang.y))
+		_margin.set_meta(&"go_overhang", true)
+	elif _margin.has_meta(&"go_overhang"):
+		_margin.remove_meta(&"go_overhang")
+		_margin.clip_contents = true
+		_margin.add_theme_constant_override(&"margin_top", _content_padding)
+	else:
+		return
+	_mark_layout_dirty()
+
+
+## Under an overhanging plate only the plate rises (the game's ribbon): the head row is lifted, so after it lays its
+## children out the back and close buttons are put back where the card's padding starts, and the plate bleeds sideways
+## only where no button sits beside it. 🔑 `sort_children` is emitted after the row placed its children.
+func _seat_head_buttons() -> void:
+	var lift := float(_content_padding) + _card_top() + _overhang.y if _overhang.y > 0.0 else 0.0
+	var need := 0.0
+	var beside_left := false
+	var beside_right := false
+	for button: Control in [back_button, close_button]:
+		if not button.visible: continue
+		if button.position.x + button.size.x * 0.5 < title_label.position.x + title_label.size.x * 0.5:
+			beside_left = true
+		else:
+			beside_right = true
+		if lift <= 0.0: continue
+		var tall := button.get_combined_minimum_size().y
+		button.position.y = lift
+		button.size.y = tall
+		need = maxf(need, lift + tall)
+	if not is_equal_approx(header.custom_minimum_size.y, need): header.custom_minimum_size.y = need
+	# A button taller than the plate below the lift makes the row taller: the plate stays at its top, rising as far.
+	if lift > 0.0: title_label.position.y = 0.0
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	if plate == null: return
+	_place_corner.call_deferred()
+	var left := 0.0 if beside_left else plate.bleed
+	var right := 0.0 if beside_right else plate.bleed
+	if not is_equal_approx(plate.bleed_left, left) or not is_equal_approx(plate.bleed_right, right):
+		plate.bleed_left = left
+		plate.bleed_right = right
+		title_label.queue_redraw()
+		# The plate's ends moved: the words' room and their centre with them.
+		_fit_title.call_deferred()
+
+
+## The card face's top padding (dp) — where the head would start without an overhang.
+func _card_top() -> float:
+	var face := card.get_theme_stylebox(&"panel") if card != null else null
+	return face.get_margin(SIDE_TOP) if face != null else 0.0
+
+
+## How far the title plate rises above the card's top edge now (0 when it sits inside).
+func title_overhang() -> float:
+	return _overhang.y
+
+
+## The title's words at their size now (dp).
+func _title_words_width() -> float:
+	var font := title_label.get_theme_font(&"font")
+	if font == null: return 0.0
+	return font.get_string_size(title_label.atr(title_label.text), HORIZONTAL_ALIGNMENT_LEFT, -1,
+			title_label.get_theme_font_size(&"font_size")).x
+
+
+## Puts the glyph just before the title's words, on the start side (the right in a right-to-left layout) — centred
+## with them on a plate, at the start otherwise. 🔑 A Label's LEFT alignment lays the words from the right edge in RTL,
+## and a stylebox's margins do not mirror, so the room for the glyph is moved to the start side here.
+func _place_title_glyph() -> void:
+	if not is_instance_valid(_title_glyph_rect) or title_label == null: return
+	var side := title_glyph_side()
+	var rtl := title_label.is_inside_tree() and title_label.is_layout_rtl()
+	var face := title_label.get_theme_stylebox(&"normal")
+	if title_label.has_meta(&"go_glyph_room") and face is StyleBoxEmpty:
+		var room := face as StyleBoxEmpty
+		var reserve := side + TITLE_GLYPH_GAP
+		room.content_margin_left = 0.0 if rtl else reserve
+		room.content_margin_right = reserve if rtl else 0.0
+	var left := face.get_margin(SIDE_LEFT) if face != null else 0.0
+	var right := face.get_margin(SIDE_RIGHT) if face != null else 0.0
+	var top := face.get_margin(SIDE_TOP) if face != null else 0.0
+	var bottom := face.get_margin(SIDE_BOTTOM) if face != null else 0.0
+	var width := title_label.size.x
+	var x := (width - right + TITLE_GLYPH_GAP) if rtl else (left - TITLE_GLYPH_GAP - side)
+	if face is OverhangPlate and title_label.has_meta(&"go_plate_align"):
+		# 🛑 A centred Label centres its words over its whole width and ignores the face's side margins, so the room
+		#    made for the glyph would not move them and the glyph would sit on the first letter. On a plate the words
+		#    are laid from the start side instead, where glyph + gap + words sit centred together (the game's ribbon row).
+		var plate := face as OverhangPlate
+		# The plate's ends as drawn — past the card's sides by the bleed — so the row centres on the plate one sees.
+		var base_left := _plate_end(plate, SIDE_LEFT)
+		var base_right := _plate_end(plate, SIDE_RIGHT)
+		var group := side + TITLE_GLYPH_GAP + _title_words_width()
+		var start := floorf((base_right if rtl else base_left) \
+				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)
+		var want_left := base_left if rtl else start
+		var want_right := start if rtl else base_right
+		if not is_equal_approx(plate.content_margin_left, want_left): plate.content_margin_left = want_left
+		if not is_equal_approx(plate.content_margin_right, want_right): plate.content_margin_right = want_right
+		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		x = (width - start + TITLE_GLYPH_GAP) if rtl else (start - TITLE_GLYPH_GAP - side)
+	elif title_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+		var wide := minf(_title_words_width(), maxf(0.0, width - left - right))
+		var middle := (left + width - right) * 0.5
+		x = (middle + wide * 0.5 + TITLE_GLYPH_GAP) if rtl else (middle - wide * 0.5 - TITLE_GLYPH_GAP - side)
+	# On a plate the glyph's cell is `side` wide and as tall as the title's line, the art kept to its aspect — the
+	# game's ribbon row, where a tall glyph (the lock) fills the line rather than a side x side square.
+	var row := title_label.size.y - top - bottom
+	var high := side
+	if face is OverhangPlate:
+		var font := title_label.get_theme_font(&"font")
+		if font != null:
+			high = maxf(side, minf(row, font.get_height(title_label.get_theme_font_size(&"font_size"))))
+	var y := top + (row - high) * 0.5
+	_title_glyph_rect.position = Vector2(roundf(x), roundf(y))
+	_title_glyph_rect.size = Vector2(side, high)
+	var ink := title_label.get_theme_color(&"font_color") if title_label.is_inside_tree() \
+			else GoUi.skin().title_plate_ink()
+	_title_glyph_rect.self_modulate = ink if ink.a > 0.0 else Color.WHITE
+
+
+# ── The corner ─────────────────────────────────────────────────────────
+
+## What the corner holds now — `corner`, or for `LOOK` the look's choice on a centred window (a sheet or a popover
+## keeps its close button).
+func corner_now() -> HeadCorner:
+	if corner != HeadCorner.LOOK: return corner
+	if placement != Placement.CENTER: return HeadCorner.CLOSE
+	match GoUi.skin().window_corner():
+		&"art": return HeadCorner.ART if _corner_texture() != null else HeadCorner.CLOSE
+		&"none": return HeadCorner.NONE
+	return HeadCorner.CLOSE
+
+
+func _corner_texture() -> Texture2D:
+	return corner_art if corner_art != null else GoUi.skin().window_corner_art()
+
+
+## Shows the close button or the corner art. 🔑 Only a close button this surface hid is shown again — one the host
+## hid itself stays hidden.
+func _dress_corner() -> void:
+	if close_button == null: return
+	var now := corner_now()
+	if now == HeadCorner.CLOSE:
+		if close_button.has_meta(&"go_corner_hid"):
+			close_button.remove_meta(&"go_corner_hid")
+			close_button.visible = true
+	elif close_button.visible:
+		close_button.set_meta(&"go_corner_hid", true)
+		close_button.visible = false
+	var art := _corner_texture() if now == HeadCorner.ART and show_header else null
+	_show_close_key(show_close_key and art != null)
+	if art == null:
+		if is_instance_valid(_corner_rect): _corner_rect.visible = false
+		return
+	if not is_instance_valid(_corner_rect):
+		_corner_rect = TextureRect.new()
+		_corner_rect.name = "CornerArt"
+		_corner_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_corner_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		_corner_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		title_label.add_child(_corner_rect, false, Node.INTERNAL_MODE_BACK)
+	_corner_rect.texture = art
+	_corner_rect.visible = true
+	_place_corner()
+
+
+## Puts the corner art on the plate's corner as drawn (past its bleed), mirrored on the right.
+func _place_corner() -> void:
+	_place_close_key()
+	if not is_instance_valid(_corner_rect) or not _corner_rect.visible: return
+	var spot := GoUi.skin().window_corner_rect()
+	if spot.size == Vector2.ZERO and _corner_rect.texture != null: spot.size = _corner_rect.texture.get_size()
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	var left := plate.bleed_left if plate != null else 0.0
+	var right := plate.bleed_right if plate != null else 0.0
+	var x := -left + spot.position.x if corner_on_left \
+			else title_label.size.x + right - spot.position.x - spot.size.x
+	_corner_rect.flip_h = not corner_on_left
+	_corner_rect.position = Vector2(x, spot.position.y)
+	_corner_rect.size = spot.size
+
+
+## Shows or hides the close key — built (and dressed) the first time it shows.
+func _show_close_key(on: bool) -> void:
+	if not on:
+		if is_instance_valid(close_key): close_key.visible = false
+		return
+	if not is_instance_valid(close_key):
+		close_key = _make_close_button()
+		close_key.name = "CloseKey"
+		close_key.icon_name = GoIconSet.CLOSE
+		close_key.tooltip_text_name = &"close"
+		close_key.pressed.connect(request_close)
+		# On the plate, as the art is: drawn and scaled with the head, outside the head row's layout.
+		title_label.add_child(close_key, false, Node.INTERNAL_MODE_FRONT)
+		_dress_close_key()
+	close_key.disabled = not close_enabled
+	close_key.visible = true
+	_place_close_key()
+
+
+## The look's dress on the close key — the close button's (`GoSkin.dress_close_button`), at the key's size.
+func _dress_close_key() -> void:
+	if not is_instance_valid(close_key): return
+	GoSkin.undress_close_button(close_key)
+	close_key.visual_size = roundi(_close_key_spot().size.x)
+	GoUi.skin().dress_close_button(close_key)
+	_place_close_key()
+
+
+## The close key's spot from the plate's other end (`GoSkin.window_close_key_rect()`); an empty one is a
+## `close_button_visual` key on the corner.
+func _close_key_spot() -> Rect2:
+	var spot := GoUi.skin().window_close_key_rect()
+	if spot.size == Vector2.ZERO: spot.size = Vector2.ONE * GoUi.config.close_button_visual
+	return spot
+
+
+## Puts the close key on the plate's end opposite the art (past its bleed), as `_place_corner` puts the art.
+func _place_close_key() -> void:
+	if not is_instance_valid(close_key) or not close_key.visible: return
+	var spot := _close_key_spot()
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	var left := plate.bleed_left if plate != null else 0.0
+	var right := plate.bleed_right if plate != null else 0.0
+	var x := title_label.size.x + right - spot.position.x - spot.size.x if corner_on_left \
+			else -left + spot.position.x
+	close_key.position = Vector2(x, spot.position.y)
+	close_key.size = spot.size
 
 
 # ── Title ──────────────────────────────────────────────────────────────
@@ -602,15 +1213,29 @@ func _focus_default() -> void:
 		var outside := get_viewport().gui_get_focus_owner()
 		if outside != null and not is_ancestor_of(outside): outside.release_focus()
 		return
-	if close_button.visible and not close_button.disabled:
+	# 🔑 Under arcade_light the close button is out of the focus order (`GoSkin.control_focus_mode`): grabbing it would
+	#    only fail with an engine warning and leave focus where it was.
+	if close_button.visible and not close_button.disabled and close_button.focus_mode != Control.FOCUS_NONE:
 		close_button.grab_focus()
 		return
+	if is_instance_valid(close_key) and close_key.visible and not close_key.disabled \
+			and close_key.focus_mode != Control.FOCUS_NONE:
+		close_key.grab_focus()
+		return
 	var target := find_next_valid_focus()
-	if target != null and is_ancestor_of(target): target.grab_focus()
+	if target != null and is_ancestor_of(target):
+		target.grab_focus()
+		return
+	# Nothing inside can take focus — the screen behind lets go of it, or Enter presses the opener again behind the window.
+	var outside := get_viewport().gui_get_focus_owner()
+	if outside != null and not is_ancestor_of(outside): get_viewport().gui_release_focus()
 
 
 func _focus_changed(target: Control) -> void:
 	if not (_active and is_top() and target != null and not is_ancestor_of(target)): return
+	# 🛑 A control a tap goes through to keeps the focus that tap gave it — taken away mid-press, a Button drops the
+	#    press and the key that opened the card never closes it.
+	if _taps_through(target): return
 	# Never leave focus outside the window — Enter must not press a button on the screen behind.
 	if GoUi.config.suppress_pointer_focus_ring and _pointer_navigation and not is_instance_valid(initial_focus):
 		target.release_focus.call_deferred()
@@ -624,6 +1249,15 @@ func _restore_focus() -> void:
 	_previous_focus = null
 	if is_instance_valid(previous) and previous.is_inside_tree() and previous.is_visible_in_tree():
 		previous.grab_focus.call_deferred()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
+	# 🛑 Register `_on_ui_changed`, not the layout pass — when the config changes, **the panel opacity** has to be
+	#    reapplied too. Relaying out alone leaves a window whose theme was swapped still wearing the old panel.
+	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -653,17 +1287,25 @@ func relayout() -> void:
 	_resize_pending = false
 	if card == null or not is_inside_tree(): return
 	var settings := GoUi.config
-	var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
+	var area := GoSafeArea.usable_rect_with_keyboard(get_viewport(), _keyboard_px)
 	if placement == Placement.ANCHOR and is_instance_valid(anchor_control) and anchor_control.is_inside_tree():
 		_update_density()
 		_relayout_anchor(area)
 		return
+	if fit_mode == FitMode.SCALE and placement == Placement.CENTER:
+		_relayout_scale(area)
+		return
+	_unscale()
 	# Keeps at least this much off the screen edge — on very narrow screens it shrinks proportionally.
-	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN))
+	var look_width := GoUi.skin().window_width() if placement == Placement.CENTER else 0.0
+	var look_margin := GoUi.skin().window_screen_margin() if placement == Placement.CENTER else -1.0
+	var edge := float(GoUi.metric(GoTheme.SCREEN_MARGIN)) if look_margin < 0.0 else look_margin
 	area = area.grow(-minf(edge, minf(area.size.x, area.size.y) * 0.1))
 	var landscape := area.size.x > area.size.y
 	var width_ratio := settings.surface_width_ratio_landscape if landscape else settings.surface_width_ratio_portrait
-	var cap_width := max_width if max_width > 0.0 else settings.surface_max_width
+	# A look's fixed width with no screen margin is the game's CenterContainer: the width, or the whole screen.
+	if look_margin >= 0.0 and look_width > 0.0 and max_width <= 0.0: width_ratio = 1.0
+	var cap_width := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else settings.surface_max_width)
 	var cap_height := max_height if max_height > 0.0 else settings.surface_max_height
 	var ratio := height_ratio if height_ratio > 0.0 else settings.surface_height_ratio
 	var ratio_cap := height_ratio_cap()
@@ -687,8 +1329,11 @@ func relayout() -> void:
 	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
 	#    confirmation (measured 2026-09-15 on a Laryen phone in portrait · does not reproduce at headless logical sizes).
 	card.size = Vector2(width, height).round()
+	# Centred the way a `CenterContainer` centres (rounded down), so a window sits on the pixel the game's dialog does.
 	var y := area.position.y + (area.size.y - card.size.y) * (1.0 if placement == Placement.BOTTOM else 0.5)
-	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).round()
+	# A plate hanging over the card's top edge must stay on screen too: the card comes down only when it would not.
+	if _overhang.y > 0.0: y = maxf(y, area.position.y + _overhang.y)
+	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).floor()
 
 
 ## Drops padding and title size one step when space runs short — making room for content on small screens.
@@ -713,13 +1358,29 @@ func _update_density(room := 0.0, width := 0.0) -> void:
 
 func _apply_density(small: bool, width: float) -> void:
 	_dense = small
-	var token := GoTheme.PADDING_COMPACT if small else GoTheme.PADDING
-	var next := GoUi.metric(token)
-	if _content_padding != next:
+	# The look may frame the window itself (`GoSkin.window_padding` / `window_gap`): the game's card pads with its
+	# own face and keeps its rows 8 apart on every screen.
+	var skin := GoUi.skin()
+	var next := skin.window_padding()
+	if next < 0: next = GoUi.metric(GoTheme.PADDING_COMPACT if small else GoTheme.PADDING)
+	var rows := skin.window_gap()
+	var spacing := rows if rows >= 0 else GoUi.metric(GoTheme.GAP_SMALL if small else GoTheme.GAP)
+	# 🛑 Compared with what is applied, not remembered — a look that pads 0 would match the first value and never dress.
+	if _content_padding != next or _margin.get_theme_constant(&"margin_left") != next:
 		_content_padding = next
 		GoStyle.insets(_margin, next)
-		GoStyle.gap(_column, GoTheme.GAP_SMALL if small else GoTheme.GAP)
+		if _overhang.y > 0.0: _apply_overhang()
 		if scroll != null: scroll.set_panel_padding(next)
+	if _column.get_theme_constant(&"separation") != spacing:
+		_column.add_theme_constant_override(&"separation", spacing)
+	# The body's rows take the look's gap too — and only what this surface set is put back: a host's own gap stays.
+	if rows >= 0:
+		if not body.has_meta(&"go_look_gap") or body.get_theme_constant(&"separation") != rows:
+			body.set_meta(&"go_look_gap", true)
+			body.add_theme_constant_override(&"separation", rows)
+	elif body.has_meta(&"go_look_gap"):
+		body.remove_meta(&"go_look_gap")
+		body.add_theme_constant_override(&"separation", GoUi.metric(GoTheme.GAP))
 	var role := GoTheme.ROLE_BODY if small else GoTheme.ROLE_SUBTITLE
 	if title_label.get_meta(&"go_text_role", &"") != role:
 		GoStyle.typography(title_label, role)
@@ -738,6 +1399,8 @@ func _sort_now(width: float) -> void:
 
 func _sort_subtree(node: Node) -> void:
 	if node is Container: node.notification(Container.NOTIFICATION_SORT_CHILDREN)
+	# 🛑 A direct sort emits no `sort_children`, so the head's buttons are seated here too.
+	if node == header: _seat_head_buttons()
 	for child in node.get_children():
 		if child is Control and child.visible: _sort_subtree(child)
 
@@ -757,7 +1420,12 @@ func section_gap() -> int:
 ## 🛑 Section gaps are counted from the **value actually applied** — hard-coding the `gap` token grew the card by that difference
 ##    at every section on narrow screens (where the gap is `gap_small`), opening a hole between body and buttons in short confirmations.
 func _desired_height() -> float:
+	# The card face's own padding (a painted card pads with its face) and the padding inside it.
+	var face := card.get_theme_stylebox(&"panel")
 	var desired := float(_content_padding * 2)
+	if face != null: desired += face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM)
+	# The head starts above the card's top edge: the padding's top margin is negative by the card's top and the rise.
+	if _overhang.y > 0.0: desired -= float(_content_padding) + _card_top() + _overhang.y
 	var gap := float(section_gap())
 	if header.visible: desired += header.get_combined_minimum_size().y + gap
 	if toolbar.visible: desired += toolbar.get_combined_minimum_size().y + gap
@@ -768,22 +1436,31 @@ func _desired_height() -> float:
 
 
 ## Attaches beside the given control — to the right if the minimum width fits there, otherwise to the wider side, and if
-## neither fits, pulled inside the screen. Opens upward when there is less room below than above.
+## neither fits, pulled inside the screen (`anchor_align` `AUTO`; `START` / `END` line an edge up with the anchor's).
+## Opens upward when there is less room below than above.
 func _relayout_anchor(area: Rect2) -> void:
 	var anchor := anchor_control.get_global_rect()
-	var edge := 8.0
-	var gap := 7.0
+	if fit_mode == FitMode.SCALE:
+		_relayout_anchor_scale(area, anchor)
+		return
+	_unscale()
+	var edge := anchor_edge
+	var gap := anchor_gap
 	var space_right := area.end.x - anchor.position.x - edge
 	var space_left := anchor.end.x - area.position.x - edge
-	var width := anchor_width
+	var wide := anchor_width_now()
+	var width := wide
 	var x := anchor.position.x
-	if space_right < anchor_min_width and space_left < anchor_min_width:
-		width = clampf(area.size.x - edge * 2, 1, anchor_width)
+	if anchor_align != AnchorAlign.AUTO:
+		width = clampf(wide, 1.0, maxf(1.0, area.size.x - edge * 2.0))
+		if _aligns_end(anchor, area): x = anchor.end.x - width
+	elif space_right < anchor_min_width and space_left < anchor_min_width:
+		width = clampf(area.size.x - edge * 2, 1, wide)
 		x = area.position.x + edge
 	elif space_right >= anchor_min_width or space_right >= space_left:
-		width = clampf(space_right, anchor_min_width, anchor_width)
+		width = clampf(space_right, anchor_min_width, wide)
 	else:
-		width = clampf(space_left, anchor_min_width, anchor_width)
+		width = clampf(space_left, anchor_min_width, wide)
 		x = anchor.end.x - width
 	var below := area.end.y - anchor.end.y - gap - edge
 	var above := anchor.position.y - area.position.y - gap - edge
@@ -800,11 +1477,163 @@ func _relayout_anchor(area: Rect2) -> void:
 	card.position = Vector2(x, y).round()
 
 
+## The width an anchored card asks for (dp): `anchor_width`, or at 0 its content's — the card's minimum width, no
+## narrower than `anchor_min_width` (the game's top-bar cards).
+func anchor_width_now() -> float:
+	if anchor_width > 0.0: return anchor_width
+	return maxf(anchor_min_width, card.get_combined_minimum_size().x)
+
+
+## Does the card line up with the anchor's right edge? `END` (the left one in a right-to-left layout), `START` the
+## other; `AUTO` (under `SCALE`) the end whose side of the screen the anchor is on.
+func _aligns_end(anchor: Rect2, area: Rect2) -> bool:
+	if anchor_align == AnchorAlign.AUTO: return anchor.get_center().x > area.get_center().x
+	var rtl := is_inside_tree() and is_layout_rtl()
+	return (anchor_align == AnchorAlign.END) != rtl
+
+
+## 🔑 The game's top-bar card (`MainMenu._place_card`): its natural size — `anchor_width_now()` wide, its content tall —
+## shrunk to the safe area less `anchor_edge` (never above 1, never below the fit floor), an edge lined up with the
+## anchor's (`anchor_align`), `anchor_gap` under it, moved up when it would run past the bottom. It never opens upward
+## and keeps no height cap: it shrinks instead.
+func _relayout_anchor_scale(area: Rect2, anchor: Rect2) -> void:
+	var safe := area.grow(-anchor_edge)
+	var wide := anchor_width_now()
+	_update_density(0.0, wide)
+	var least := card.get_combined_minimum_size()
+	var natural := Vector2(maxf(wide, least.x), maxf(_desired_height(), least.y))
+	var factor := clampf(minf(safe.size.x / natural.x, safe.size.y / natural.y), GoUi.config.fit_min_scale, 1.0)
+	var drawn := natural * factor
+	var x := anchor.end.x - drawn.x if _aligns_end(anchor, safe) else anchor.position.x
+	x = clampf(x, safe.position.x, safe.end.x - drawn.x)
+	var y := maxf(safe.position.y, minf(anchor.end.y + anchor_gap, safe.end.y - drawn.y))
+	# Scaled from the top-left, so `position` is where the scaled card starts.
+	card.pivot_offset = Vector2.ZERO
+	card.scale = Vector2(factor, factor)
+	card.size = natural
+	card.position = Vector2(x, y)
+	fit_scale = factor
+	_scaled = true
+
+
+## 📐 Magnet Mayhem's `FitBox` for a centred window: the look's width, its content's height, the whole card shrunk
+## with its overhang into the safe area less the look's pad (`GoFitBox.place`). A card that would go below the fit
+## floor first lets its list (`fit_flex`, or the body's scroll) give up height.
+func _relayout_scale(area: Rect2) -> void:
+	var look_width := GoUi.skin().window_width()
+	var width := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	var margin := GoFitBox.look_pad()
+	var room := area.size - Vector2(margin, margin) * 2.0
+	if room.x <= 0.0 or room.y <= 0.0: return # not laid out yet
+	_update_density(0.0, width)
+	var reach := fit_overhang()
+	var height := _fit_height(room.y / GoUi.config.fit_min_scale - (reach.y + reach.w))
+	var least := card.get_combined_minimum_size()
+	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
+	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
+	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
+	#    body scrolled by one (see `relayout`).
+	card.position = card.position.round()
+	_scaled = true
+
+
+## The card's height under a `SCALE` fit: its content's, less what its list gives up so the card stays under
+## [param most] (`GoFitBox.flex_height`).
+func _fit_height(most: float) -> float:
+	if is_instance_valid(fit_flex) and fit_flex.is_visible_in_tree() and fit_flex.get_child_count() > 0:
+		var content := fit_flex.get_child(0) as Control
+		if content != null:
+			var others := _desired_height() - fit_flex.get_combined_minimum_size().y
+			# 🔑 Whole dp: the card's padding (a MarginContainer) lays its column out on whole units, so a fractional list
+			#    left the body a fraction short of its rows and it clipped. Within a unit of the game's.
+			var tall := floorf(GoFitBox.flex_height(content.get_combined_minimum_size().y, others, most))
+			if not is_equal_approx(fit_flex.custom_minimum_size.y, tall): fit_flex.custom_minimum_size.y = tall
+		return _desired_height()
+	var desired := _desired_height()
+	if scroll == null: return desired
+	var full := body.get_combined_minimum_size().y
+	return desired - full + GoFitBox.flex_height(full, desired - full, most)
+
+
+## How far the window draws past its card under a `SCALE` fit (left, top, right, bottom, dp at scale 1): the title
+## plate hanging over the card and the corner art on it (`GoRibbonHeader.card_overhang`), nothing when the title sits
+## inside the card.
+func fit_overhang() -> Vector4:
+	if _overhang.y <= 0.0 and _overhang.x <= 0.0: return Vector4.ZERO
+	var art := show_header and corner_now() == HeadCorner.ART
+	return GoRibbonHeader.card_overhang(card, art, art and show_close_key)
+
+
+## Takes a `SCALE` fit's scale off the card (and the height it gave `fit_flex`) once the fit stops.
+func _unscale() -> void:
+	if not _scaled: return
+	_scaled = false
+	fit_scale = 1.0
+	card.scale = Vector2.ONE
+	if is_instance_valid(fit_flex): fit_flex.custom_minimum_size.y = 0.0
+
+
+## 🛑 Under a `SCALE` fit the flex's height is fixed by the fit, so its content's own growth would go unseen: the
+##    content's minimum size marks the layout dirty instead.
+func _watch_flex(on: bool) -> void:
+	if not on:
+		if is_instance_valid(_flex_watched) and _flex_watched.minimum_size_changed.is_connected(_mark_layout_dirty):
+			_flex_watched.minimum_size_changed.disconnect(_mark_layout_dirty)
+		_flex_watched = null
+		return
+	if fit_flex == null or fit_flex.get_child_count() == 0: return
+	_flex_watched = fit_flex.get_child(0) as Control
+	if _flex_watched != null: _flex_watched.minimum_size_changed.connect(_mark_layout_dirty)
+
+
+# ── Taps through the outside-tap layer ───────────────────────────────
+
+## The veil behind the card. 🔑 Where `pass_anchor_taps` / `tap_through` say, it is not there for a tap (`_has_point`),
+## so the tap reaches what is under it — on a lower CanvasLayer too.
+class Scrim:
+	extends ColorRect
+
+	var surface: GoSurface
+
+	func _has_point(point: Vector2) -> bool:
+		if surface != null and surface.passes_tap(get_global_transform() * point): return false
+		return Rect2(Vector2.ZERO, size).has_point(point)
+
+
+## Does a tap at [param at] (canvas coordinates) go through to the anchor or a `tap_through` control?
+func passes_tap(at: Vector2) -> bool:
+	if pass_anchor_taps and is_instance_valid(anchor_control) and anchor_control.is_visible_in_tree() \
+			and anchor_control.get_global_rect().has_point(at):
+		return true
+	for control in tap_through:
+		if is_instance_valid(control) and control.is_visible_in_tree() and control.get_global_rect().has_point(at):
+			return true
+	return false
+
+
+## Is [param target] a control taps go through to (`pass_anchor_taps`' anchor, `tap_through`), or inside one?
+func _taps_through(target: Control) -> bool:
+	if pass_anchor_taps and is_instance_valid(anchor_control) \
+			and (target == anchor_control or anchor_control.is_ancestor_of(target)):
+		return true
+	for control in tap_through:
+		if is_instance_valid(control) and (target == control or control.is_ancestor_of(target)): return true
+	return false
+
+
+## The window takes no tap where its veil lets one through (it would stop it behind the veil otherwise).
+func _has_point(point: Vector2) -> bool:
+	if (pass_anchor_taps or not tap_through.is_empty()) and passes_tap(get_global_transform() * point): return false
+	return Rect2(Vector2.ZERO, size).has_point(point)
+
+
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint(): return
 	_sync_active()
 	if not _active: return
 	close_button.disabled = not close_enabled
+	if is_instance_valid(close_key): close_key.disabled = not close_enabled
 	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
@@ -891,7 +1720,7 @@ func _input(event: InputEvent) -> void:
 		_dragging = false
 		_touch_index = -1
 	if not is_zero_approx(dy):
-		var area := GoSafeArea.usable_rect(get_window())
+		var area := GoSafeArea.usable_rect(get_viewport())
 		var current := height_ratio if height_ratio > 0.0 else GoUi.config.surface_height_ratio
 		# 🛑 The same ceiling the layout uses — clamped to 0.95 here while the layout stopped at 0.72, a drag past the
 		#    ceiling moved nothing, `height_changed` reported a height that was never drawn, and dragging back down did
@@ -914,8 +1743,10 @@ func _track_device(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_TRANSLATION_CHANGED and title_label != null:
+	if (what == NOTIFICATION_TRANSLATION_CHANGED or what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED) \
+			and title_label != null:
 		_fit_title.call_deferred()
-	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and is_top():
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and GoUi.config.close_on_os_back \
+			and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
 		request_close.call_deferred()

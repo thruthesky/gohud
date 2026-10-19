@@ -13,6 +13,31 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   chrome is a `GoSurface` filling the safe area, so back-gesture ownership, Escape / Android back closing only the
   topmost window and focus restore are the surface's own; the ground behind is opaque by default (`opaque`), so a host
   can stop drawing what a page covers. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+- **`GoSurface.fit_screen_share`** (0): under a centred `FitMode.SCALE` fit, the least share of the safe area (0–1)
+  the window covers. A smaller card grows past its own size (a scale above 1) until it and its overhang reach the
+  share across or down, whichever comes first, as far as the screen holds it — a room window that takes 70% of a
+  big screen. `GoFitBox.place()` takes the same `share`.
+- **`GoSkin.dress_search_clear(button)`**: a look dresses `GoSearchBar`'s clear button whenever the bar takes it.
+  The arcade looks make it their round red close key with the white cross (it was a pale tile with a navy cross);
+  every other look keeps its plain icon button. `GoSkin.undress_close_button(button)` (it was `GoSurface`'s own)
+  lifts a dressed close key off again.
+- **`GoIconButton.mirror`** (off): draws the picture (`art`) or the icon flipped left to right, so one PLAY picture
+  is both a "next" and a "previous" key. `GoIconButton.mirrored(texture)` makes the flipped copy once and shares it.
+- **`GoSurface.show_close_key`** (off): a close key in the head's other corner while the corner art stays — on the
+  right beside `arcade_light`'s magnet, on the left when `corner_on_left` is off (it mirrors the art, not the
+  language). It hangs past the card's corner as the art does (`GoSkin.window_close_key_rect()`), so the title and the
+  layout do not move, scales with the card under `FitMode.SCALE` (`fit_overhang()` reserves it) and calls
+  `request_close()`; `close_enabled` off disables it. `arcade_light` paints it (and a window's close button) as the
+  red disc `close_key.png` (btn_red's red and lip with no white glare, `tools/paint_arcade_close_key.gd`), round and
+  48 dp, with the white cross; `GoRibbonHeader.card_overhang()` takes a `close_key` flag.
+- **`arcade_light` paints `plus`, `minus` and `close`.** The glyph set had none of the three, so a - / + stepper or a
+  close key drew the default set's thin line icon on a painted pill. They are painted in the set's own style — a
+  white face, a navy outline and a pale lip under every lower edge — by `tools/paint_arcade_glyphs.gd`.
+- **`GoRibbonWideTitle`** (`arcade_light`): the title on a `GoRibbonWide` ribbon — `GoTitle` with the stage ribbons'
+  8 px outline (Magnet Mayhem's stage select and room list set it on the label by hand).
+- **`GoConfig.close_on_os_back`** (on): off leaves the Android back gesture to the game while Escape / `ui_cancel`
+  still close the top window. A game with its own Back handler closed two windows with one Back — its own and the
+  one under it, which the deferred `request_close()` then found on top.
 
 ### Fixed
 
@@ -24,6 +49,154 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   again did nothing (a character-name form on Android, 2026-10-15). `GoScroll._resolve` now replays the held events
   and then the settling one in order, and marks the original handled. Test: "each finger tap on a focused field
   reaches it with its release" (real screen touches, emulated mouse first as on a phone).
+- **A long title on a `SCALE` window's ribbon widens the card instead of folding.** The game's ribbon title never
+  wraps: past its smallest size (`GoSkin.title_plate_min_size()`) the card grows to the words and the fit shrinks the
+  whole window. `GoSurface` folded it to two lines inside the 400 dp card ("ENTRENAMIENTO COMPLETADO"). Under
+  `FitMode.SCROLL` the title still folds as before.
+- **`arcade_light`'s text fields tell a hint from typed text.** The hint (`font_placeholder_color`) was the ink of
+  typed text; it is now a grey (#666b87, 5.2:1 on the white field — the game's own engine grey reads at 1.2:1). A shut
+  field's text (`font_uneditable_color` / `font_readonly_color`) is the engine's pale grey, as the game's.
+
+- **The docs no longer say `title_paint` turns `arcade_light`'s ribbon red.** It only paints a code-drawn plate
+  (`arcade`, `arcade_dark`); `arcade_light`'s ribbon is a painted sprite. `theming.md` and `surfaces.md` now point at
+  `title_variation`.
+- **A `GoBar` takes no input.** Its fill (a `ProgressBar`, `MOUSE_FILTER_STOP` by default) swallowed a touch or a
+  click meant for what is under the HUD; every other part of the bar already ignored it.
+- **An open window re-centres when the safe area moves without a resize** (a phone turned 180° in landscape):
+  `GoSurface` now relayouts on `GoRuntime.safe_area_changed`, as `GoHudAnchor` and `GoSafeArea` did.
+- **A 180° turn moves the safe area.** In landscape a phone turned round keeps its window size, so no resize arrived
+  and `GoHudAnchor` and the `GoSafeArea` node stayed clear of a notch that was now on the other side. `GoRuntime` now
+  reads the safe area again every `GoConfig.safe_area_poll_seconds` (0.5 s, on a phone only; 0 never) and says
+  `safe_area_changed`. A run with no window also stops re-applying the scale every frame (the fallback size it
+  compared with was never the one it had stored).
+
+- **Widgets keep following the look after a reparent.** 43 widgets (`GoAppBar`, `GoBar`, `GoSurface`, `GoSlider`,
+  `GoSwitch`, `GoIconButton`, `GoJoystick`, …) called `GoUi.watch` only in `_ready` but `GoUi.unwatch` in
+  `_exit_tree`, so a widget taken out and put back (`remove_child` + `add_child`, no second `_ready`) never followed
+  `GoUi.use_preset()` again. They now watch in `_enter_tree` and, on a re-entry, restyle at once to catch a look that
+  changed while they were out. The first restyle still runs where it did, so nothing draws differently.
+- **`GoSlider` and `GoSwitch` follow the look's touch size.** Their height floor was set once, in `_init`, so after
+  a look change (`arcade_light`'s 44 against 48) they kept the old one, and a switch's width floor only ever grew.
+  The floor is now re-applied when the look changes, unless the caller set a `custom_minimum_size` of their own.
+- **`GoSwitch` puts its caption on the free side of a mirrored pill in RTL.** The side came from `button_pressed`
+  alone, but in RTL `pill_texture()` picks the `*_mirrored` pill, whose knob is on the other side, so the caption
+  landed under the knob (`arcade_dark`, the engine's default theme). `pill_is_mirrored()` tells a pill with real
+  mirrored art from one that shares the plain art (`arcade_light`), which draws as before.
+- **A touch button follows `GoUi.use_preset(...)`.** It set `theme` only in `_ready` and its look watcher never
+  re-assigned it, so after a look switch it kept the old theme (the label font and size). The watcher now takes
+  `GoUi.theme()` first, and the watch starts in `_enter_tree` (as `GoRibbonHeader`'s), so a button that was out of
+  the tree during a switch, or re-added after leaving, is on the current look and watching.
+- **A touch button's label-size cache holds one entry.** `label_font_size()` cached a size per text and only cleared
+  on a theme, language or size change, so `skill.text = "%.1f" % seconds_left` every frame added an entry each time.
+  It now keeps only the last text and its size.
+- **A touch button or stick that is hidden or removed under a finger lets go.** `GoTouchButton` kept `_held` and never
+  emitted `released` when it was hidden (or a parent was, as a pause menu hides the touch HUD) or left the tree with
+  a finger down, so the game saw ATTRACT held for ever. It now runs `cancel()` then: `released(true)` once, the
+  finger id cleared. `GoJoystick` had the same gap and now ends the drag the same way (`released`, then a zero
+  `moved`), so the character stops.
+- **Changing `scale_profile` at run time applies at once.** The property had no setter, so switching between `DP` and
+  `PER_INCH` did nothing until the window was next resized. It now re-applies through the `GoRuntime` autoload
+  (`GoRuntime.reapply()`, which anyone can also call after changing `scale_enabled`), and a value that is the same does
+  nothing.
+- **A bar's `ink` and `ink_end` setters no longer rebuild the bar.** Each one ran the whole restyle: a new `Gradient`
+  and `GradientTexture2D` on every call plus the label typography and the gap, so a HUD tinting HP each frame
+  allocated a texture and relaid the bar out every frame. A setter now returns when the value is the same, and
+  otherwise only repaints the fill: the gradient and its texture are built once and just get new colours. The labels
+  and the gap are left to a look change. The pixels are the same.
+- **`GoPerfReadout` stops restyling its label every sample.** `_rewrite` set the `font_color` override on each reading
+  even when the level was the same, and every override sends a theme change (reshape, minimum size, parent relayout)
+  four times a second. The ink is now set only when the level or the look changes (the text already was written only
+  when it changed). The readout also takes `GoUi.theme()` at the start of its restyle, so a look switch reaches it, and
+  watches `GoUi` from `_enter_tree` rather than `_ready`, so a readout moved in the tree keeps listening.
+- **The HUD widgets keep following the look after a reparent.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
+  `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` watched `GoUi` in `_ready` and stopped in `_exit_tree`, so a node
+  moved with `remove_child` + `add_child` (no second `_ready`) no longer followed look changes. They now watch in
+  `_enter_tree`, like `GoRibbonHeader`, and restyle on re-entry in case the look changed while they were out of the tree.
+- **The HUD widgets take the new look's theme when the look changes.** `GoTaskCard`, `GoCountdown`, `GoHudButton`,
+  `GoNameplate`, `GoNoticeFeed` and `GoSpotlight` set `theme = GoUi.theme()` only in `_ready`, so after
+  `GoUi.use_preset(...)` a live widget repainted its skin parts but kept the old theme's boxes, font and inks. Their
+  `_restyle` now re-assigns the theme first, as `GoHudCard`, `GoIconButton`, `GoNotice` and `GoAppBar` do. A fixed look
+  draws as before.
+- **`GoIconButton.keyboard_focus` reads what the button is.** Left unset, the button takes the look's focus mode
+  (`FOCUS_NONE` under `arcade_light`), but the property still read its default `true`. It now reads
+  `focus_mode == FOCUS_ALL`: the look's mode until the project sets it, then that choice, which still pins the mode
+  through every look change. An unset value is no longer saved in a scene, so a button saved under `arcade_light` does
+  not load pinned out of the focus order.
+- **A window with nothing focusable no longer leaves focus on its opener.** Under `arcade_light` a sheet's close
+  button is `FOCUS_NONE`, yet `GoSurface` still called `grab_focus()` on it: the engine warned "This control can't grab
+  focus" and the early return skipped the search inside the window, so focus stayed on the control behind it and Enter
+  pressed the opener again. The close button is grabbed only when it can take focus; otherwise the first focusable
+  control inside takes it, and when there is none the focus owner outside the window is released.
+- **`GoStyle`'s plain controls follow a look change.** `GoStyle.skin_focus()` set the look's focus mode once, when
+  `button` / `style_button` / `toggle` / `checkbox` / `slider` / `picker` styled the control, and only the gohud widgets
+  re-applied it from a watcher of their own. A form built under `arcade_light` kept `FOCUS_NONE` after
+  `GoUi.use_preset()` to another look, so the keyboard and a gamepad reached none of its buttons, and the reverse kept
+  `FOCUS_ALL` and its focus rings in `arcade_light`. A styled control now joins a group that one `GoUi` watcher walks on
+  every change, and catches up when it enters the tree again; styling it twice hooks it once, and a freed one simply
+  leaves the group. A focus mode the project set itself is still left alone, and a fixed look is unchanged.
+- **`per_inch_factor` never drops below 1 when the base is shorter than `per_inch_min_height`.** The clamp's bounds
+  crossed (min above max) and returned `min_height`, so a 640x360 base gave a factor under 1 (0.818 at 2400x1080,
+  400 dpi) and `GoRuntime` drew the game smaller. The floor is now capped at the canvas height.
+- **`duplicate()` and a saved config keep whether the project chose `min_touch_size`.** The setter always marked the
+  size as chosen and `Resource.duplicate()` runs every stored property through its setter, so a duplicated, untouched
+  `GoConfig` lost the look's touch floor (`arcade_light`'s 44 became 48). The flag is now a stored property declared
+  after `min_touch_size`, so an unchosen config stays unchosen and a chosen one (even an explicit 48) stays chosen.
+- **A HUD card that changes nothing rebuilds nothing.** Every `GoHudCard` setter re-applied the card even for the
+  value it already had, and `set_clock` set its text every call, so a match clock driven from `_process` copied up to
+  two padded StyleBoxes, swapped the panel override and relaid the card out every frame. Setters now return when the
+  value is the same, `set_clock` repaints only when the `MM:SS` text or the warning changes, and the padded boards
+  are reused while their theme box and pad are the same (remade after a theme change), so the card draws as before.
+- **`arcade_light`'s fonts are Magnet Mayhem's current ones.** Nunito Bold and the four Noto Sans CJK Bold subsets
+  were copied again from the game, after its last re-subset of 2026-10-15 (the copy before predated four of them, so
+  the newest translated characters drew as empty boxes); the files are byte for byte the game's, so a label measures
+  what the game measures.
+- **A window's body clips only while it scrolls.** The body's `ScrollContainer` always clipped, which cut a part's
+  antialiased rim on a half pixel — the painted inset's top edge at 1.5x — where the game's plain column draws it.
+  `GoSurface` now clips the body only while its content overflows.
+
+- **A painted window samples its sprites like the game's dialog.** `PaintedDialog` draws with
+  `TEXTURE_FILTER_LINEAR_WITH_MIPMAPS`, so its 3x sprites stay smooth at about one unit per pixel; `GoSurface` used its
+  parent's filter, and every rim and button edge came out a shade sharper. New `GoSkin.window_texture_filter()`
+  (default `TEXTURE_FILTER_PARENT_NODE`, as before); `arcade_light` returns `LINEAR_WITH_MIPMAPS`.
+
+- **A painted window on a phone is the game's 400 wide.** `GoSurface` kept `SCREEN_MARGIN` and the portrait width
+  ratio off a centred window, so on the game's phone (407 units) the `arcade_light` card came out 353 wide where
+  `PaintedDialog` is 400. New `GoSkin.window_screen_margin()` (-1: the theme's margin, as before); `arcade_light`
+  returns 0, and a look's fixed `window_width()` with no margin is sized like a `CenterContainer`: that width, or the
+  whole screen when narrower.
+
+- **Shrink-to-fit under `arcade_light` is pinned to the game's measure.** A test now holds that
+  `GoStyle.fit_font_size()` with no font measures with the look's FontVariation and its four CJK fallbacks (KR, JP, SC,
+  TC), not a plain Nunito `FontFile`. Before a preset is applied the fit font is `ThemeDB.fallback_font`, which has no
+  fallbacks, so CJK widths measured then differ; under the preset nothing was lost.
+- **A done `GoTaskCard` chip's ✓ draws in the look's symbol font.** New skin hook `GoSkin.symbol_font()` (default
+  null: the theme's font alone); a chip's word gets the theme's text font with it as the first fallback. Under
+  `arcade_light` it is Noto Sans KR Bold (`assets/fonts/noto_sans_cjk/`, the file the theme's font falls back to), as Magnet Mayhem's
+  Nunito falls back to it — before, the ✓ came from whatever system font had it, and the chips after it shifted.
+
+- **GoSlot follows the look's touch floor.** Its box, fit and widened hit area read `GoUi.touch_size()` instead of
+  `GoConfig.min_touch_size`, so a look with its own `touch` metric (or a `metric_overrides` entry) sizes slots like
+  every other control; a floor the project sets still wins.
+
+- **A window, and every widget that fits the safe area, reads the viewport it is drawn in.** `GoSurface` measured its
+  room with `GoSafeArea.usable_rect(get_window())`, and `GoAppBar`, `GoCoachMark`, `GoConsole`, `GoDrawer`,
+  `GoEdgeBar`, `GoForm`, `GoFab`, `GoHudAnchor`, `GoNavBar` and `GoStyle`'s bottom bar passed `get_window()` too — which
+  inside a `SubViewport` (a preview, a render-to-texture, a parity harness) is the main window, so the card was sized
+  and centred for the wrong screen and the others laid out for the main window round it (a console 390 wide in a 600
+  viewport, a drawer 844 tall in a 400 one). `GoSafeArea.usable_rect`, `usable_rect_with_keyboard` and `px_to_units`
+  now take any `Viewport` (a `Window` still works): a `SubViewport` is its own whole rect with no safe area. `GoSurface`
+  and all of those widgets pass `get_viewport()`.
+
+- **`GoLevelCard` lays out its locked state and thumbnail as Magnet Mayhem's `StageCard`.** The padlock and LOCKED
+  sat 4 px apart only under the engine's default theme; under a gohud theme the column took its VBox gap (12) and both
+  sat lower. The gap is now the card's own (`lock_gap`, 4). The thumbnail slot clips, as the game's map preview does,
+  so on a scaled canvas (iPad, desktop) the well's last half row no longer shows under it.
+
+- **`GoGlyphButton` sizes and places its label exactly as Magnet Mayhem's `GlossButton`.** On the painted pills the
+  label's shift now moves padding from the far side to the near one (the far side never under 0), so a glyph-only
+  56 × 56 pill stays 56 wide (it grew to 67) and a pill at its minimum width is as wide as the game's. Only the
+  glyph's own side is clamped to `MIN_EDGE`. A face thinner than `MIN_EDGE` keeps the old centred layout.
+
 - **A scrolled list slides under a window's frame, not over it.** A window's body scroll borrows the card padding so
   glows are not clipped (`GoScroll.use_panel_edge`), and on a card with no content margin of its own — a jelly window
   with a 4dp outline, an inner line and a 6dp lip — it borrowed all of it: the clip landed on the card's outer edge and
@@ -35,7 +208,105 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
     `GoStyleBoxMedieval` border + bevel line), a `StyleBoxFlat`'s border, a `StyleBoxTexture`'s nine-slice margin, or
     a `border_width` field.
   - `GoScroll.set_panel_frame(frame)` — the frame per side; `GoSurface` passes its card's whenever the panel is restyled.
+- **A title glyph on a ribbon is drawn as large as the game's.** On a plate (the painted ribbon in `arcade_light`) the
+  glyph's cell is its side wide and as tall as the title's line, the art kept to its aspect — the game's `RibbonHeader`
+  row — so a tall glyph such as a lock fills the line instead of a side × side square; the glyph and words start on the
+  whole pixel an `HBoxContainer` picks (rounded down).
+
 ### Changed
+
+- **Under `arcade_light` a window's title is the game's ribbon title: 34 dp on a 57 dp ribbon.** It shrinks to fit
+  the ribbon as drawn — past the card's sides, less its ends and the glyph, the game's `RibbonHeader` room — down to
+  24 dp (`fit_min_scale` of 34), and its glyph is 26 dp. The head is 57 dp whatever the font: a taller title grows the
+  ribbon down over the gap below (`OverhangPlate.sink`) instead of pushing the rows, as the game's ribbon does. The
+  glyph and the words centre on the ribbon as drawn. New `GoSkin` hooks: `title_plate_font_size()` (0: the role
+  size) and `title_plate_height()` (0: as tall as the title); `GoSkinArcadePainted.title_plate_min_size()` is 24.
+
+- **Under `arcade_light` a centred window is framed like Magnet Mayhem’s `PaintedDialog`.** A `GoSurface` wears the
+  painted card (`GoCard`, padded by its own face 24 / 20 / 22 with nothing added inside), is 400 dp wide and keeps its
+  head, its body’s rows and its footer 8 dp apart on every screen; it is centred the way a `CenterContainer` centres
+  (rounded down), so it lands on the game dialog’s pixel, and a ribbon over its top edge no longer pushes it down unless
+  the screen is too short. Other looks keep the window they had. New `GoSkin` hooks decide it:
+  `window_card_variation()`, `window_padding()`, `window_gap()` and `window_width()`. A window’s fitted height now also
+  counts the card face’s own padding, and a card padded by its face no longer pushes the body in by its 9-slice edge.
+- **`arcade_light`'s touch floor is the game's 44.** Its `touch` token was gohud's 48; it is now Magnet Mayhem's
+  `Cfg.Touch.MIN_TARGET` (44), the floor a look declares for its hit areas. Every other look keeps 48;
+  `GoConfig.min_touch_size` still sets the project's floor.
+
+- **`arcade_light` leaves tooltips, container gaps and scroll bars to the engine, as Magnet Mayhem does.** The game's
+  theme sets none of them and draws them all: its tooltips are the engine's dark box with light text, every box,
+  grid and flow container it does not override keeps the engine's 4 px gap (arcade_light had 12), and the controls
+  card and room list show the engine's scroll bar with no gap beside it. `TooltipPanel`, `TooltipLabel`, the six
+  container types, `ScrollContainer` and both scroll bars carry no item now.
+
+- **`arcade_light`'s dropdown keeps the engine's arrow, and its list the engine's radio marks and row padding, as
+  Magnet Mayhem's do.** The game paints only the dropdown's box, ink and 17 px label and the list's panel, hover row,
+  ink, size and 10 px rows; an `OptionButton`'s items are radio items, so the marks are drawn. The arcade's 16 px
+  arrow (16 from the edge), check and radio icons and 8 px row padding are gone. The disabled and right-to-left
+  faces stay painted: the game never draws them, and the engine's would be a dark box on a light theme.
+
+- **`arcade_light` leaves a plain `Button` to the engine, as Magnet Mayhem does.** The game's theme sets no `Button`
+  item; arcade_light's blue pill there painted plain buttons the game draws flat and leaked its outline (the chip's
+  label outlined in navy), its 10 dp gap and its disabled face into every `Button` variation that leaves those items
+  unset. Every painted key is a variation (`GoButton`, `GoPrimaryButton`, …) and keeps its look.
+
+- **`arcade_light` carries Magnet Mayhem’s flat parts too, so no game variation stays game-only.** `GoPanelFlat`
+  (`HudPanel`), `GoCardFlat` (`Card`), `GoChoiceButton` (`Diff`), `GoBigButton` (`Big`), `GoBigSecondaryButton`
+  (`BigSecondary`), `GoSmallLabel` (`SmallLabel`) and `GoBarLabel` (`BarLabel`) hold the game’s `UiTheme.box()` and
+  `_button_boxes()` values item for item; `tools/arcade_painted_map.json` maps them and its `game_only` list is empty.
+
+- **`arcade_light`’s switch label stays ink when it is on.** `CheckButton` no longer takes `Button`’s blue pressed
+  colours: its label is the ink in every state, its painted pill is untinted (white icon colours, the engine default
+  the game leaves) and it sits 4 dp from its label, as Magnet Mayhem’s does.
+
+- **`arcade_light`’s primary key is the green pill.** Magnet Mayhem’s main actions (PLAY, CONFIRM, SAVE) are green
+  (`GlossGreen`), so `GoPrimaryButton` — and every `GoStyle` primary button — now draws `btn_green.png`; the blue pill
+  (`GlossBlue`) moves to the new `GoInfoButton`. The map (`tools/arcade_painted_map.json`) names `GlossGreen →
+  GoPrimaryButton` and `GlossBlue → GoInfoButton`. `GoSuccessButton` stays green.
+
+- **`arcade_light` sets its text in Magnet Mayhem’s font.** Its `default_font` is the game’s `UiTheme.get_font()`: a
+  `FontVariation` of Nunito Bold with Noto Sans KR, JP, SC and TC Bold as fallbacks, in that order — the game’s own
+  files, now in `assets/fonts/nunito/` and `assets/fonts/noto_sans_cjk/` (SIL OFL 1.1, see `THIRD_PARTY_NOTICES.md`).
+  Labels set exactly as in the game. Through `GoUi.theme()` the font gives way to the project’s own when the project
+  sets one (`go_body_font_baked` metadata), as every preset’s body font does.
+- **GoIconButton takes the look's focus mode.** It calls `GoStyle.skin_focus()` on creation and on a look change, so
+  under arcade_light an icon button stays out of the focus order (`FOCUS_NONE`) like the game's; other looks keep
+  `FOCUS_ALL`. Setting `keyboard_focus` in the project pins that choice through every look change.
+
+- **arcade_light's controls stay out of the focus order, as Magnet Mayhem's do.** A new skin hook,
+  `GoSkin.control_focus_mode()`, sets the focus mode of `GoGlyphButton`, `GoSlider`, `GoSwitch`, `GoLevelCard` and
+  `GoStyle.button` / `toggle` / `checkbox` / `slider` / `picker` (through `GoStyle.skin_focus()`, again on a look change).
+  `GoSkinArcadePainted` answers `FOCUS_NONE`, like the game's `GlossButton`, `PaintedSlider`, `PaintedSwitch` and
+  `StageCard`. Every other look keeps `FOCUS_ALL`: `GoSlider` and `GoSwitch` were `FOCUS_NONE` in every look and the
+  keyboard and a gamepad reach them again. A `focus_mode` the project sets itself is left alone.
+
+- **The touch floor is the look's own until the project chooses one.** `GoUi.metric(GoTheme.TOUCH)` returned
+  `GoConfig.min_touch_size` (48) in every look and ignored each theme's `touch` token. Left unset, the floor is now that
+  token, so `arcade_light` can keep Magnet Mayhem's 44 while every other look stays at 48; a `min_touch_size` the
+  project sets still wins. New `GoUi.touch_size()`, `GoConfig.touch_size_chosen()` and
+  `GoConfig.follow_look_touch_size()`. The widgets that read `min_touch_size` directly (icon button, FAB, app bar,
+  coach mark, prompt card, level card, `GoStyle`) now read the token.
+
+- **`arcade_light` carries the rest of Magnet Mayhem’s painted variations.** New type variations, each with the game’s
+  exact values: `GoWindowBlue` (StageWindow), `GoRibbonWide` (StageRibbon), `GoLevelCard` / `GoLevelCardCurrent` /
+  `GoLevelCardLocked` (StageCard / StageCardNext / StageCardLocked), `GoSliderGreen` / `GoSliderCyan` (the slider with a green or cyan fill), `GoWell` (the map-preview well), `GoHudPanel`
+  (ArcadePanel), `GoBannerGold` (HudBanner), `GoNoticeGold` (NotifPlayer), `GoChipDark` (LangChip) and `GoIconOnly`
+  (PauseRound). Sizes the game takes from `Cfg` are written at their desktop value (`tools/arcade_painted_map.json`
+  `_cfg_sizes`). The game’s stage-select art is in `assets/arcade_light/stage/` (window, ribbon, three level cards,
+  well, and the check / lock / person / play-tag marks for a level card), and the skull and magnet glyphs join
+  `icons/arcade_light`. The artwork is distributed under this package’s MIT license.
+
+- **Under `arcade_light` a floating HUD board is the game’s HUD panel.** `floating_box(BOX_HUD)` — so
+  `GoStyle.floating()`, `GoStyle.hud_panel()` and `GoPromptCard` — draws white at 90 % with a blue rim and an 8 px
+  bottom edge instead of the painted card (which `GoStyle.floating()` could not use and replaced with a plain white
+  rectangle). `GoConfig.container_alpha` and `container_alpha_overrides` multiply that white, as they do the notice
+  pill.
+
+- **`arcade_light` now uses Magnet Mayhem’s painted artwork.** Its keys, cards, insets, ribbons, keycaps and badges
+  use nine-slice PNGs (`GoStyleBoxSprite`, `GoSkinArcadePainted`), with blue primary, green success, grey neutral and
+  red danger keys. The preset includes the game’s white glyphs with default-icon fallback, a frosted modal scrim
+  and six-chunk gauges; other controls retain arcade shapes. Existing `arcade_light` users will see the new look.
+  `arcade_dark` and all other presets are unchanged. The artwork is distributed under this package’s MIT license.
 
 - **The README is a tour in pictures.** It opens with what gohud is, a contents list, the fourteen looks side by side
   (`www/img/themes/` — one 1920×1080 page of the YouTube reel per preset, each showing different widgets), the same
@@ -55,6 +326,226 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   hint is a **keycap** on a deep lip. Sizes are unchanged everywhere; every label still clears its contrast bar.
 
 ### Added
+
+- **`GoSurface.title_variation` — another plate for a window's title.** The theme variation the title plate wears
+  instead of the look's; `&"GoRibbonRed"` under `arcade_light` is the game's red GAME OVER ribbon (`RibbonRed`, with the
+  gold one's height, rise, bleed and magnet), so `set_ribbon(&"RibbonRed", skull)` is
+  `title_variation = &"GoRibbonRed"` + `title_glyph`. Empty, or a variation the theme lacks: the look's plate.
+- **`GoFitBox` — the whole card on the screen.** Magnet Mayhem's `FitBox`: a card centred in the safe area and, when it
+  is too big, shrunk as one piece (`scale`, never above 1) with what it draws past its edges (`overhang`, by default the
+  look's for the `GoRibbonHeader` it holds); below `GoConfig.fit_min_scale` its `flex` list (`new_flex()`) gives up
+  height first, so a long list scrolls on a landscape phone. `pad`, `safe_area`, `fit_scale`, and the fit itself as
+  `place()` / `flex_height()`.
+- **`GoSurface.fit_mode = SCALE`.** A window fits the same way (default `SCROLL`, as before): the look's width, its
+  content's height, the whole card shrunk with its ribbon and magnet (`fit_overhang()`); `fit_flex` names the list that
+  scrolls (else the body's scroll). Under `arcade_light` it places a card where the game's `PaintedDialog` in its
+  `FitBox` sits, at the game's scale.
+- **`GoRibbonHeader.card_overhang(card, corner)`.** How far a card headed by the look's ribbon draws past its rect, from
+  `title_plate_overhang()` and `window_corner_rect()` — `(20, 41, 20, 0)` on `arcade_light`'s painted card, the game's.
+- **Skin hooks `window_fit_pad()` and `window_flex_min_height()`.** The fit's free room off the safe area (-1: the
+  `SCREEN_MARGIN` token) and its list's floor (96); `arcade_light` gives the game's 8 and 96.
+- **Anchored cards like the main menu's top-bar cards.** `GoSurface.anchor_width = 0` (its content's width, no narrower
+  than `anchor_min_width`), `anchor_align` (`AUTO` as before, `START`, `END`), `anchor_gap` (7), `anchor_edge` (8),
+  `fit_mode = SCALE` (shrunk to the safe area, no lower than the fit floor, moved up instead of opening upward),
+  `pass_anchor_taps` (a tap on the anchor reaches it, so its second tap closes the card) and `tap_through` (more
+  controls taps reach). `GoPopover.open()` takes them as `width` 0, `min_width`, `align`, `gap`, `edge`, `fit`,
+  `pass_anchor_taps`, `tap_through`. Every default keeps today's card.
+- **Three role colours: `GoTheme.HEADING`, `ALERT` and `MUTED_FILL`.** Magnet Mayhem draws three colours gohud had
+  no token for — its gold section titles (HUD_NAME `#B8860B`), its warning red (READY_RED `#E8332F`: the clock's last
+  seconds, a training hint) and its muted lavender grey (SECONDARY `#8A8FB3`: a room's subtitle, the grey big key).
+  `arcade_light` names them in its palette (`heading`, `alert`, `muted_fill`), so `GoUi.color(GoTheme.HEADING)` gives the
+  game's value. Every other look carries the colour each role was drawn in before — the accent, the danger ink, the
+  muted ink — written by `make_theme.py` when a palette leaves the key out, and a theme without them answers the same
+  through `GoUi.color` (`GoTheme.STAND_INS`), so nothing changes colour. `GoSkin.task_title_ink()`, `task_hint_ink()`
+  and `hud_alert_ink()` now read `heading`, `alert` and `alert` (the painted skin's own overrides went; it returns the
+  game's colours through the tokens). `check_contrast.py` holds `heading` and `alert` to the large-text bar and
+  `muted_fill` to the component bar (3:1).
+
+- **`arcade_light`: the `person` glyph.** Magnet Mayhem's white person glyph (its main menu's name key, the name
+  dialog's ribbon) joins `icons/arcade_light` as `&"person"`, imported as the other glyphs are (lossless, mipmaps), and
+  gohud's own `&"user"` points at it. Before, both names fell back to the default set's line icon.
+
+- **The current language's CJK font leads: `GoUi.set_locale(code)` and `GoUi.set_font_locale(code)`.** A Han
+  character shared by Chinese, Japanese and Korean takes the shape its reader expects only when that language's font
+  comes first among the fallbacks. `set_font_locale(code)` puts it first in the look's body font (`FontVariation`) and
+  the rest after it in the written order, and returns whether the order changed — it assigns `fallbacks` only then,
+  since every assignment re-shapes all the text on screen. `set_locale(code)` does that, then
+  `TranslationServer.set_locale(code)` when it differs, so the re-render finds the new order in place (Magnet Mayhem's
+  `Locale.apply`). `use_preset()` runs it for the current locale. The fonts come from the theme's `go_locale_fonts`
+  metadata (`GoUi.LOCALE_FONTS_META`); `arcade_light` writes the game's: `ko` → Noto Sans KR, `ja` → JP, `zh_CN` → SC,
+  `zh_TW` → TC (also `ko_KR`, `zh_HK`, `zh_Hant` …), any other language KR, JP, SC, TC — `UiTheme.set_locale_font()`
+  exactly. The painted skin's `symbol_font()` is the leading one. Looks without the metadata are untouched. The
+  `GoRuntime` autoload also follows a bare `TranslationServer.set_locale()` (`NOTIFICATION_TRANSLATION_CHANGED`).
+
+- **`arcade_light`: the scoreboard rows and the loading tiles.** Five more of Magnet Mayhem's variations, value for
+  value from its `UiTheme`, so the game drops its last own boxes: `GoScoreRow` (a round scoreboard row, white at 90 %
+  in a 3 px blue rim, 5 at the bottom, 14 px corners), `GoScoreRowGold` (the winner's: cream in gold), `GoScoreHead`
+  (the head row: draws nothing, keeps the rows' 12 px side margins so its labels sit over the columns) — all
+  `PanelContainer` — and `GoTile` / `GoTileLit` (the loading screen's floor block, navy in a dark rim, lit gold in
+  amber; `Panel`). `tools/arcade_painted_map.json` maps `ScoreRow`, `ScoreRowWin`, `ScoreHead`, `LoadTile` and
+  `LoadTileLit` to them. Every other look leaves them out (a node asking for one draws its base type), so nothing
+  else changes.
+- **Touch buttons and the stick can be driven from outside.** A game that routes every finger in one `_input` (a role
+  bound to each finger as it lands, events left unconsumed, the first touch counted while the controls are hidden —
+  Magnet Mayhem's `TouchControls`) turns `driven` on: `GoTouchButton` and `GoJoystick` then ignore input
+  (`mouse_filter` IGNORE) and the owner sets what they show — `drive_press(at)` / `drive_drag(at)` /
+  `drive_release(canceled)` and `drive_begin(at)` / `drive_drag(at)` / `drive_end()`, with `hits(at)`,
+  `button_center()`, `hit_radius()`, `center()` and `knob()` to hit-test and read back, all in the coordinates an
+  `_input` event carries. Hiding a driven widget keeps its state (the owner still sees the lift). What is drawn — the
+  art, the labels, the press look, the cooldown ring, the pulse, the aim ring — is the same code as before; `driven`
+  is off by default.
+- **`GoRuntime.simulate(device)` — a device stood in for tests and screenshots.** `{dpi, insets, handheld, size}`
+  (Magnet Mayhem's `DebugHooks.DEVICE_PROFILES` entries pass as they are: `mobile` reads as `handheld`): the
+  `PER_INCH` scale, the breakpoint and `GoSafeArea` read it, the window takes its `size` (not headless), and
+  `clear_simulation()` puts the real device back. `GoScale.simulate()` / `simulated()` hold it; `GoUi.reset()` clears it.
+- **The safe area as margins, and a signal when it moves.** `GoRuntime.safe_area_changed(margins: Vector4)` and
+  `safe_margins()`; `GoSafeArea.margins(view)`, `hud_rect(view, side_max)` and `inset_rect(area, insets_px,
+  window_px)`. `GoHudAnchor` and the `GoSafeArea` node relayout on the signal.
+- **`GoConfig.handheld_browsers`, `fallback_dpi` and `hud_side_inset_max`** (all off by default). Phone and tablet
+  browsers (`web_android`, `web_ios`) take the `PER_INCH` handheld profile (`GoScale.is_handheld_screen()`,
+  `handheld_from()`); a screen that reports no dpi uses `fallback_dpi` (`GoScale.screen_dpi()`, `dpi_from()`); and a
+  `GoHudAnchor`'s left and right safe insets are capped (Magnet Mayhem: 160 and 12). The numbers are checked against
+  Magnet Mayhem's `UiScale` on all 19 of its device profiles: the factor, the canvas, the safe and the HUD margins.
+- **`GoGlyphButton.fit_label`.** The label shrinks (`GoStyle.fit_font_size()`, never under the fit floor) to the
+  button's width less its normal face and `glyph_allowance()`, on every resize, text, glyph and look change — the sum
+  Magnet Mayhem's screens each did by hand. `fit_base_size` (0: the look's size), `fitted_font_size()`, `fit_now()`.
+- **`GoSpotlight.hold_dim`.** Keeps the dim at full for as long as it is on — a lesson about an area (where to look)
+  that must stay marked to the end, without stopping the clock with `auto_advance = false`.
+
+- **`GoRibbonHeader` — a screen's title ribbon.** The game's `RibbonHeader` for a screen built on a card (pause,
+  settings): put first in the card's column, it hangs the look's title plate over the card's top edge with a glyph and
+  the title (shrunk to fit) and the look's corner art. `make(text, icon, on_left)`, `title`, `glyph` / `glyph_icon`,
+  `ribbon_variation` (`GoRibbonRed`), `corner`, `corner_on_left`, `corner_art`. Under `arcade_light` it renders the
+  game's PAUSED and SETTINGS headers pixel for pixel.
+
+- **A window's parts, as the game's `PaintedDialog` builds them.** `GoSurface.add_inset()` (a pale inset holding a
+  column 4 dp apart), `add_line(text, font_size, parent, wrap)` (a centred, SMART-wrapping line; a stat passes
+  `wrap = false`), `add_row()` (buttons side by side) and `add_gloss(variation, icon, text)` (a `GoGlyphButton`), into
+  the body or a given parent. New `GoSkin` hooks size them: `window_inset_variation()`, `window_button_height()` and
+  `window_button_gap()` — `GoInsetPanel`, 46 dp and 10 dp under `arcade_light`.
+
+- **`GoConfig.scrim_blur` (true): the low quality tier's dim.** Off, a look that frosts its scrims (`arcade_light`'s
+  blur) draws the flat scrim colour instead — on every window, drawer and `GoStyle.scrim()` already open and every one
+  made after — as Magnet Mayhem's `UiTheme.set_blur(false)` does; under `arcade_light` that colour is the game's
+  OVERLAY. Widgets ask `GoSkin.scrim_material_now()`, which is `scrim_material()` while the switch is on.
+
+- **`GoSurface.corner` — the magnet in the corner instead of a close button.** `HeadCorner.LOOK` (the default) lets
+  the look decide (`GoSkin.window_corner()`), `CLOSE` shows the close button, `ART` a picture (`corner_art`, or the
+  look's `window_corner_art()`) placed by `window_corner_rect()` from the drawn plate's corner, and `NONE` nothing;
+  `corner_on_left` puts the art on either end, mirrored on the right. Without a close button Escape and Back still
+  ask to close. Under `arcade_light` a centred window carries the game's red magnet (58 × 56, 30 dp past the
+  ribbon's end and 24 above it) and no close button, as `RibbonHeader` does; sheets and popovers keep their close
+  button, and a close button the host hid stays hidden. `corner_now()` says what the corner holds.
+- **`arcade_light` carries the map thumbnail's box.** A `GoMapPreview` variation (base `Panel`) whose `panel` is
+  Magnet Mayhem's `MapPreview` box — `#18213a`, 6 px corners, a 1 px `#58627b` rim, no padding — so the look owns the
+  frame and a map-preview widget reads it from the theme. `arcade_painted_map.json` lists it under `_code_built`
+  (`MapPreview._init()`).
+- **`GoScale.Profile.PER_INCH` — a per-inch device profile.** With `GoConfig.scale_enabled` and
+  `scale_profile = PER_INCH`, `GoRuntime` keeps the project's base size and shrinks a handheld to about
+  `per_inch_units` (160) units per physical inch, never below `per_inch_min_height` (440) units tall and never below
+  factor 1 — a fixed-layout game HUD the same size in the hand on every phone. Pure helpers `per_inch_factor`,
+  `per_inch_canvas`, `web_dpi` and `cap_sides`. Matches Magnet Mayhem's `UiScale` figure for figure.
+- **`GoPerfReadout` — a performance band.** fps, frame time and the worst frame, triangles, draw calls, nodes, RAM
+  and VRAM in a small dark band; the ink turns from `GoSkin.perf_ink(0)` to `(1)` and `(2)` as fps drops. It samples
+  the engine itself (no allocation per frame, writes only when the text changed) or shows `show_stats()`; `one_line`
+  folds it to one slim line. Skin hooks `perf_box()`, `perf_ink(level)`, `perf_font()`. Under `arcade_light`
+  Magnet Mayhem's perf overlay matches pixel for pixel.
+- **`GoTaskCard` — a lesson's card.** A step line, a title shrunk to one line, what to do, one keycap chip per part that
+  ticks off (`set_parts`, `mark_part`; a done chip is `GoSkin.kbd_done_box` and reads "✓ word"), a hint when stuck
+  (`GoSkin.task_hint_ink`) and a footer; `compact` folds it to one row (`short_caption`, title, chips). Never takes
+  input. Under `arcade_light` Magnet Mayhem's training card and its phone strip match pixel for pixel.
+- **`GoSpotlight` — dim round one thing and ring it.** `light(rect)` or `follow(control)` (grown by `pad`), four dims
+  round the hole that fade after `dim_seconds`, and a ring that stays (`GoSkin.spotlight_dim`, `spotlight_ring_box`).
+  No card, no buttons, never takes input. Under `arcade_light` Magnet Mayhem's training spotlight matches pixel for pixel.
+- **`GoTouchButton` — a round thumb button.** A picture from the skin's art with its name under the icon (shrunk to
+  fit), a cooldown ring (`cooling`, `cooldown`), a pulse when ready, a press that shrinks and darkens, and `drag_aim`:
+  hold and drag to aim (`aimed(pull)`). `GoJoystick` draws the skin's painted dish and knob when it has them
+  (`GoSkin.joystick_art`, `draw_joystick_art`). Under `arcade_light` Magnet Mayhem's touch controls match pixel for pixel.
+- **`GoNoticeFeed` — a feed of one-line notices.** A kill feed: rows with an icon stack newest at the bottom, fade in
+  and go on their own; `push(text, own)` marks the player's own line. `max_items` rows are built up front and reused, so
+  a burst builds no controls. Rows use the theme's `GoNotice` / `GoNoticeGold` panels (else `GoSkin.notice_box()`);
+  under `arcade_light` Magnet Mayhem's elimination feed matches pixel for pixel.
+- **`GoNameplate` — a name plate over a character.** A small rounded tag in the character's colour (the player's own
+  in its own fill and ink) that widens to the whole name between `base_width` and `max_width`; `follow(camera, point)`
+  centres it on the projected point and hides it behind the camera. New skin hooks `nameplate_box(fill)`,
+  `nameplate_own_fill()`, `nameplate_ink(own)`, `nameplate_outline(own)` and `nameplate_outline_ink()`; under
+  `arcade_light` Magnet Mayhem's name plates match pixel for pixel.
+- **`GoHudButton` — a HUD corner button with its key.** A picture button (`GoIconButton.art`, never keeps focus) with
+  the key that does the same on a cap beside it; `show_hint = false` on a touch screen, `pressed` passes the press on.
+  New skin hooks `hud_key_hint_box()` and `hud_key_hint_ink()`; under `arcade_light` Magnet Mayhem's pause corner (the
+  slate "Esc" cap and the painted round pause button) matches pixel for pixel.
+- **`GoIconButton.art` — a picture that is the whole button.** It fills `visual_size`, draws no frame in any state,
+  shows the picture in its own colours and darkens it to the new skin hook `GoSkin.picture_press_tint()` while pressed
+  (arcade_light: the game's `PauseRound` tint). Under `arcade_light` the match HUD's painted pause button matches
+  Magnet Mayhem's pixel for pixel, at rest and pressed.
+- **`GoCountdown` — the match-start count.** 3 · 2 · 1 · GO! big on a disc (`show_step(text, final)`,
+  `hide_step()`), each step popping in (1.6× at 60 % settling over 0.35 s; none under `reduce_motion`). New skin hooks
+  `countdown_disc(final)` and `countdown_ink()`; under `arcade_light` it matches Magnet Mayhem's countdown pixel for
+  pixel (the gold digit on the blue badge, GO! on the green). Display only — the caller picks the step.
+- **`GoHudCard` — a match HUD's top-row board.** An icon, then a gold `GoBannerGold` name banner over HUD bars
+  (`add_bar`), a title beside a count (`Layout.INLINE`), a caption over a clock (`set_clock(seconds, warn)`,
+  `format_clock`), or a gauge (`gauge`, `set_lit`) whose rim lights when an ability is ready, dims while it cools and
+  pops when it lights. `padding` / `banner_padding` pack it tighter on a phone. New skin hooks `hud_gauge_box(lit)` and
+  `hud_alert_ink()`; under `arcade_light` the player card, opponents count, clock and repulse gauge match Magnet
+  Mayhem's HUD pixel for pixel. Display only — every value comes from the caller.
+- **`GoBar` draws the painted HUD's bar under `arcade_light`.** A new skin hook, `GoSkin.bar_frame_box()` (null by
+  default; `arcade_light`: Magnet Mayhem's `#d9deef` groove, corner 9, 3dp ink rim), turns the bar into a rounded frame
+  whose `ink` → `ink_end` gradient is clipped to it, with the six ink ticks over both — pixel-identical to the game's
+  stability and power bars. Other looks keep the `ProgressBar`. New members to lay a bar out like a HUD's:
+  `icon` / `icon_size` / `icon_gap` (an icon before the name), `label_size`, `label_ink`, `label_gap` (the room between
+  the name and the bar) and `lead` (room above the name); `frame_mode()` tells which way it draws.
+- **The match HUD's and the touch controls' painted art in `arcade_light`.** Magnet Mayhem's `assets/ui/hud` (the
+  player's head, the power bolt, the opponents badge, the stopwatch, the round pause key) is in
+  `assets/arcade_light/hud/`, and its `assets/ui/touch` (the ATTRACT, REPULSE and JUMP keys, the stick's base and knob)
+  in `assets/arcade_light/touch/`, imported as the game imports them (lossless, no mipmaps). `GoSkin.widget_art(name)`
+  answers them by their bare names (`stopwatch`, `btn_jump`, …) after the stage art; other looks still answer `null`.
+  The artwork is distributed under this package’s MIT license (`THIRD_PARTY_NOTICES.md`).
+- **`GoSlider`** (`HSlider`) — a slider drawn as Magnet Mayhem's `PaintedSlider`: the fill runs `FILL_PAST` past the
+  handle's centre (at least a track's height long) and a held handle is drawn `HELD_SCALE` larger. It draws the theme's
+  own HSlider parts, so `GoSliderGreen` / `GoSliderCyan` pick the fill. `make()`, `part()`, `handle_size()`,
+  `handle_center_x()`, `bar_rect()`, `fill_rect()`, `handle_rect()`. Test `gohud_painted_controls_test`, in `check_all`.
+- **`GoSwitch`** (`CheckButton`) — an on/off switch drawn as Magnet Mayhem's `PaintedSwitch`: the theme's pill centred
+  in its box and an ON / OFF caption beside the knob (`on_text`, `off_text`, `set_texts()`, shrunk with
+  `GoStyle.fit_font_size`). `make()`, `part()`, `pill_texture()`, `switch_rect()`, `caption_position()`.
+- **`GoMapPreview`** (`Control`) — a small map of a level drawn as Magnet Mayhem's `MapPreview`: areas (`add_rect`,
+  `add_circle`, `add_polygon`) filled and outlined, links (`add_link`) under them, start dots (`set_starts`), fitted and
+  centred in the flat dark box or the theme's well (`set_well()`); `locked` turns it a grey silhouette with no starts.
+  It clips to its box. The game passes only data.
+
+- **Painted widgets for `arcade_light`** (Magnet Mayhem's own screens, so it can drop its hand-made ones):
+  - **`GoStyleBoxSprite`** — a painted PNG drawn in nine slices (`texture`, `edge` in texture pixels, `pixels_per_unit`,
+    `tint`, `draw_center`, `face_color` for contrast checks, `frame_margin(side)`), line for line the game's `SpriteBox`.
+  - **`GoTextureSprite`** — a draw-only `Texture2D` for theme icons: it reports `draw_size` and draws the art, made at 3×,
+    scaled into it, so a slider handle or a switch pill is crisp at any canvas scale. It has no RID, so it is not for
+    `StyleBoxTexture`, `NinePatchRect` or shaders.
+  - **`GoSkinArcadePainted`** — the skin of `arcade_light`; `tools/theme_arcade_painted.py` writes its theme from
+    `tools/arcade_painted_map.json`.
+  - **A painted slider and switch** (`HSlider`, `CheckButton`) and the game's flat **`LineEdit` / `TextEdit` field**;
+    the `OptionButton` dropdown wears the painted box in RTL too. Tabs and the `VSlider` keep the arcade shapes.
+  - **`GoSliderGreen` / `GoSliderCyan`** — the slider with a green or cyan fill. `GoRangeSlider` now reads its own
+    `theme_type_variation` (falling back to `HSlider`), so it can wear them.
+  - **`GoLevelCard`** (`Button`) — the stage-select tile: `title`, `subtitle`, `state` (`OPEN`, `CLEARED`, `CURRENT`,
+    `LOCKED`), `selected`, `thumbnail` / `thumbnail_focus`, `locked_text`, `play_text` and art overrides; `GoLevelCard.make()`.
+  - **`GoKeyCluster`** (`Control`) — four keys in an inverted T (`WASD`, `ARROWS`), `picked` signal, `make()`,
+    `key_rects()`, `arrow_direction()`.
+  - **`GoCoverImage`** (`Control`) — a picture that covers its box (`object-fit: cover`) with a `focus` point;
+    `make()`, `cover_rect()`.
+  - **`GoGlyphButton`** (`Button`) — a glyph beside the label (`glyph` / `glyph_icon`), `make()`, `glyph_rect()`,
+    `glyph_allowance()`.
+  - **`GoKbd.done`** — a key already pressed: the caps turn green (`GoSkin.kbd_done_box()` · `kbd_done_ink()`).
+  - **`GoSurface.title_glyph`** / **`title_glyph_size`** (a glyph left of the title), **`opaque`** (a solid sky under the
+    window instead of the veil, for a menu opened before the world is drawn) and an **overhanging title plate**
+    (`title_overhang()`, `title_glyph_side()`).
+  - **`GoStyle.fit_font_size(texts, base, room)`** · `fit_floor(base)` · `row_width(font, texts, size)` — shrink text to
+    fit fixed art, never below `GoConfig.fit_min_scale` (0.7). `GoStyle.face_clearance(control, sideways)` can read
+    only the left and right of a frame.
+  - **Skin hooks** `GoSkin.widget_art(name)` (`check`, `lock`, `person`, `play_tag`, `pointer`) · `selection_ring_box()` ·
+    `key_cluster_box()` · `kbd_done_box()` · `kbd_done_ink()` · `title_plate_overhang()` · `opaque_backdrop_color()`.
+    `GoSkin.box_background()` answers a sprite's `face_color`.
+  - The new type variations are listed under *Changed* above (`GoSliderGreen`, `GoSliderCyan`, `GoWindowBlue`,
+    `GoRibbonWide`, `GoLevelCard*`, `GoWell`, `GoHudPanel`, `GoBannerGold`, `GoNoticeGold`, `GoChipDark`, `GoIconOnly`).
+  - Tests `gohud_stylebox_sprite_test`, `gohud_arcade_painted_assets_test`, `gohud_arcade_painted_theme_test`,
+    `gohud_arcade_painted_skin_test` and `gohud_painted_widgets_test`, all in `check_all`.
 
 - **`GoStyleBoxArcade.gloss`** (`enum Gloss { CANDY, STROKE }` — `STROKE` keeps 1.3.0's single stroke for one face),
   **`tails`** / **`tail_drop`** / **`ribbon_tails(rect)`** (a ribbon: swallow-tailed ends folded behind a body that

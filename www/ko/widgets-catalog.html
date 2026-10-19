@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>창과 오버레이 <small>(10)</small></h2>
+  <h2>창과 오버레이 <small>(12)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -329,6 +329,20 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
 add_child(<wbr>console)
 console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goribbonheader"><code>GoRibbonHeader</code></h3>
+      <p>카드 위쪽 가장자리에 걸치는 화면 제목 리본 — 글리프와 룩의 모서리 그림이 함께한다.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
+card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>카드를 통째로 화면 안에 둔다 — 너무 크면 리본까지 함께 줄이고, 긴 목록은 대신 스크롤된다.</p>
+      <p class="catalog-base">바탕 <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>
@@ -555,7 +569,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
 </section>
 
 <section id="buttons" class="catalog">
-  <h2>버튼·칩·선택 <small>(9)</small></h2>
+  <h2>버튼·칩·선택 <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
@@ -581,6 +595,12 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
 var bell := GoIconButton.<wbr>new(<wbr>)
 bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goglyphbutton"><code>GoGlyphButton</code></h3>
+      <p>라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약.</p>
+      <p class="catalog-base">바탕 <code>Button</code></p>
+      <pre><code>row.<wbr>add_child(<wbr>GoGlyphButton.<wbr>make(<wbr>"Play",<wbr> GoIconSet.<wbr>PLAY,<wbr> GoTheme.<wbr>VAR_PRIMARY_BUTTON))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
@@ -631,7 +651,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>입력과 선택기 <small>(12)</small></h2>
+  <h2>입력과 선택기 <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -695,6 +715,20 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
       <p class="catalog-base">바탕 <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
 price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float) -&gt; void: refilter(<wbr>low,<wbr> high))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goslider"><code>GoSlider</code></h3>
+      <p>칠한 모양의 슬라이더 — 채움이 손잡이보다 조금 더 나가고, 누른 손잡이는 커진다.</p>
+      <p class="catalog-base">바탕 <code>HSlider</code></p>
+      <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
+music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goswitch"><code>GoSwitch</code></h3>
+      <p>칠한 모양의 켜기/끄기 스위치 — 손잡이 옆에 ON / OFF 글자가 들어간다.</p>
+      <p class="catalog-base">바탕 <code>CheckButton</code></p>
+      <pre><code>var vibration := GoSwitch.<wbr>make(<wbr>true)
+vibration.<wbr>set_texts(<wbr>tr(<wbr>"ON"),<wbr> tr(<wbr>"OFF"))</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
@@ -802,7 +836,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 와 게임 모양 <small>(11)</small></h2>
+  <h2>HUD 와 게임 모양 <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -857,6 +891,110 @@ animals.<wbr>set_selected(<wbr>2,<wbr> true)
 side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
+      <h3 id="golevelcard"><code>GoLevelCard</code></h3>
+      <p>스테이지 선택 카드 — 썸네일·제목·부제, 상태에 따라 체크·자물쇠·PLAY! 태그.</p>
+      <p class="catalog-base">바탕 <code>Button</code></p>
+      <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
+card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>
+      <p>역 T 모양의 이동 키 네 개 — WASD 또는 방향키 — 조작 안내 화면처럼.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var wasd := GoKeyCluster.<wbr>make(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"])
+var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocoverimage"><code>GoCoverImage</code></h3>
+      <p>상자를 가득 채우고 넘치는 부분은 잘라 내는 그림 — CSS object-fit: cover.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
+shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>경기 HUD 윗줄의 판 하나 — 아이콘과 배너·막대, 숫자, 시계, 또는 준비 게이지.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>경기 시작 카운트 — 3, 2, 1, GO! 를 원판 위에 크게, 단계마다 톡 튀어 나온다.</p>
+      <p class="catalog-base">바탕 <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>HUD 모서리 버튼 — 그림 버튼 옆에 같은 일을 하는 키를 키캡으로 보인다.</p>
+      <p class="catalog-base">바탕 <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>3D 세계의 캐릭터 위에 뜨는 이름표 — 거리와 상관없이 화면에서 같은 크기다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>킬 피드처럼 한 줄 알림이 쌓이고, 서서히 나타났다가 저절로 사라지는 피드.</p>
+      <p class="catalog-base">바탕 <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>쿨다운 고리, 준비 효과, 끌어서 조준을 갖춘 터치 화면용 둥근 엄지 버튼.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>컨트롤 하나 둘레의 화면을 어둡게 하고 테두리를 두른다. 어둠은 사라지고 테두리는 남는다.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>튜토리얼 과제 카드 — 단계, 제목, 할 일, 끝나면 체크되는 칩과 힌트. 한 줄로 접힌다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>항상 켜 두는 성능 띠 — fps, 프레임 시간, 삼각형, 드로 콜, 노드, 메모리. fps가 떨어지면 빨개진다.</p>
+      <p class="catalog-base">바탕 <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gomappreview"><code>GoMapPreview</code></h3>
+      <p>레벨의 작은 지도 — 구역·다리·시작 점을 그리고, 잠기면 회색 실루엣이 된다.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var map := GoMapPreview.<wbr>new(<wbr>)
+map.<wbr>add_rect(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>6,<wbr> 4),<wbr> Color(<wbr>"#f2b84b"))
+map.<wbr>add_circle(<wbr>Vector2(<wbr>18,<wbr> 0),<wbr> 5.0,<wbr> Color(<wbr>"#6fc3ff"))
+map.<wbr>add_link(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>18,<wbr> 0),<wbr> 2.0,<wbr> Color(<wbr>"#c9a26b"))
+map.<wbr>set_starts(<wbr>PackedVector2Array(<wbr>[<wbr>Vector2(<wbr>-3,<wbr> 0),<wbr> Vector2(<wbr>20,<wbr> 0)]))</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
       <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — 매일 출석 보상 — 오늘 칸만 누를 수 있다." loading="lazy"></figure>
       <p>매일 출석 보상 — 오늘 칸만 누를 수 있다.</p>
@@ -901,11 +1039,11 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
 </section>
 
 <section id="look" class="catalog">
-  <h2>모양과 시스템 <small>(8)</small></h2>
+  <h2>모양과 시스템 <small>(9)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
-      <figure class="shot"><img src="../img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — 프리셋(기본·SF·중세·Material·어린이·코믹·아케이드) 중 하나를 고르고, 색과 크기는 토큰에서 읽는다." loading="lazy"></figure>
+      <figure class="shot"><img src="../img/widgets/goui.webp" width="958" height="571" alt="GoUi · GoThemePresets — 프리셋(기본·SF·중세·Material·어린이·코믹·아케이드) 중 하나를 고르고, 색과 크기는 토큰에서 읽는다." loading="lazy"></figure>
       <p>프리셋(기본·SF·중세·Material·어린이·코믹·아케이드) 중 하나를 고르고, 색과 크기는 토큰에서 읽는다.</p>
       <p class="catalog-base">바탕 <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -949,10 +1087,19 @@ face.<wbr>cut = 8
 panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre>
     </div>
     <div class="card">
+      <h3 id="gostyleboxsprite-gotexturesprite"><code>GoStyleBoxSprite · GoTextureSprite</code></h3>
+      <p>PNG 를 9슬라이스로 그리는 페인티드 박스와, 슬라이더 손잡이·스위치용 아이콘 짝.</p>
+      <p class="catalog-base">바탕 <code>StyleBox</code></p>
+      <pre><code>var plate := GoStyleBoxSprite.<wbr>new(<wbr>)
+plate.<wbr>texture = preload(<wbr>"res://ui/painted/gloss_green.<wbr>png")
+plate.<wbr>pixels_per_unit = 3.0
+button.<wbr>add_theme_stylebox_override(<wbr>&amp;"normal",<wbr> plate)</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gosafearea-goscale"><code>GoSafeArea · GoScale</code></h3>
       <p>노치·제스처 바·키보드를 피한 영역, 그리고 dp 기준 구간.</p>
       <p class="catalog-base">바탕 <code>Control · RefCounted</code></p>
-      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_window(<wbr>))
+      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_viewport(<wbr>))
 var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>minf(<wbr>usable.<wbr>size.<wbr>x,<wbr> usable.<wbr>size.<wbr>y))   # by the short side</code></pre>
     </div>
     <div class="card">

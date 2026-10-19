@@ -1,5 +1,7 @@
 ## ↔️ **A slider with two handles** — a price range, an age range, a time window (Flutter's `RangeSlider`).
 ## Drawn with the theme's own slider track, active part and handle, so it matches `GoStyle.slider()` on every preset.
+## A `theme_type_variation` (a `GoSliderGreen` fill on arcade_light, say) is used for the parts it gives; every part
+## it does not give — or any variation that is no slider at all — comes from HSlider.
 ##
 ## ```gdscript
 ## var price := GoRangeSlider.make(0.0, 500.0, 40.0, 220.0, 10.0)
@@ -69,7 +71,13 @@ func _init() -> void:
 func _ready() -> void:
 	theme = GoUi.theme()
 	_name_it()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -102,7 +110,26 @@ func _get_minimum_size() -> Vector2:
 
 
 func _grabber(state := &"grabber") -> Texture2D:
-	return get_theme_icon(state, &"HSlider") if has_theme_icon(state, &"HSlider") else null
+	var type := _icon_type(state)
+	return get_theme_icon(state, type) if has_theme_icon(state, type) else null
+
+
+## The type an icon [param item] is read from: the `theme_type_variation` when it (or its base chain) has the item,
+## HSlider otherwise. A Control is no HSlider, so the engine itself never falls back to HSlider for it.
+func _icon_type(item: StringName) -> StringName:
+	var v := theme_type_variation
+	return v if v != &"" and has_theme_icon(item, v) else &"HSlider"
+
+
+## The type a stylebox [param item] is read from, like `_icon_type`.
+func _box_type(item: StringName) -> StringName:
+	var v := theme_type_variation
+	return v if v != &"" and has_theme_stylebox(item, v) else &"HSlider"
+
+
+## The stylebox [param item] it draws (`slider`, `grabber_area`, `grabber_area_highlight`).
+func _box(item: StringName) -> StyleBox:
+	return get_theme_stylebox(item, _box_type(item))
 
 
 func _snap(value: float) -> float:
@@ -148,8 +175,8 @@ func _value_at(x: float) -> float:
 
 
 func _draw() -> void:
-	var track := get_theme_stylebox(&"slider", &"HSlider")
-	var fill := get_theme_stylebox(&"grabber_area_highlight" if has_focus() else &"grabber_area", &"HSlider")
+	var track := _box(&"slider")
+	var fill := _box(&"grabber_area_highlight" if has_focus() else &"grabber_area")
 	var mid := size.y * 0.5
 	var height := track.get_minimum_size().y if track != null else 4.0
 	height = maxf(height, 2.0)

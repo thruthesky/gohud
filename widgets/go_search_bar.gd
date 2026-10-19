@@ -14,7 +14,8 @@
 ##
 ## ## 🔑 The look
 ## The skin draws the container (`GoSkin.search_bar_box`): each theme's own text field rounded into a pill by default,
-## Material's 56dp `surface-container-high` pill under Material. The field inside has no face of its own.
+## Material's 56dp `surface-container-high` pill under Material. The field inside has no face of its own. The clear
+## button is the look's to dress (`GoSkin.dress_search_clear`): the arcade looks make it their red close key.
 @tool
 class_name GoSearchBar
 extends PanelContainer
@@ -107,7 +108,13 @@ func _ready() -> void:
 	#    56dp (reported by the layouts session, 2026-10-02). A container lays the bar out again by itself; anywhere
 	#    else it goes back to its own height here.
 	if not (get_parent() is Container): size.y = get_combined_minimum_size().y
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -176,6 +183,8 @@ func _dress() -> void:
 	_glyph = GoUi.icons().node(GoIconSet.SEARCH, GoUi.metric(GoTheme.ICON_SIZE), GoUi.color(GoTheme.TEXT))
 	_glyph.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	lead.add_child(_glyph)
+	GoSkin.undress_close_button(_clear)
+	GoUi.skin().dress_search_clear(_clear)
 
 
 func _on_ui_changed() -> void:

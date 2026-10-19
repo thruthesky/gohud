@@ -43,11 +43,21 @@ static var _open_surface: GoSurface
 ## |---|---|---|
 ## | `title` | Header text. Empty means no header row | `""` |
 ## | `translate` | Treat the title as a translation key | `false` |
-## | `width` | Card width (dp) | 320 |
+## | `width` | Card width (dp). 0: its content's, no narrower than `min_width` | 320 |
+## | `min_width` | The narrowest it gets (dp) | 210 |
 ## | `max_height` | Maximum card height (dp) | 520 |
 ## | `dismissable` | An outside tap closes it | `true` |
 ## | `compact` | Tighter padding — for a one or two line description | `false` |
 ## | `alpha` | Opacity of the card ground (0.0~1.0). Negative uses the theme and settings value | `-1.0` |
+## | `align` | `&"auto"` (beside the anchor, on the roomier side), `&"start"` or `&"end"` (that edge on the anchor's) | `&"auto"` |
+## | `gap` | Between the anchor and the card (dp) | 7 |
+## | `edge` | Kept off the safe area's edge (dp) | 8 |
+## | `fit` | Shrink the whole card to the safe area (no lower than `GoConfig.fit_min_scale`) instead of cutting it; it never opens upward, it moves up | `false` |
+## | `pass_anchor_taps` | A tap on the anchor reaches it (the key that opened the card closes it) instead of the outside-tap layer | `false` |
+## | `tap_through` | More controls (`Array`) whose taps reach them through the layer — the rest of a top bar | `[]` |
+##
+## 🎮 Magnet Mayhem's top-bar cards (the language list, the volume card):
+## `{"width": 0, "min_width": 0, "align": &"end", "gap": 10, "edge": 0, "fit": true, "pass_anchor_taps": true}`.
 ##
 ## 🛑 **Only one is open at a time.** Press slots in succession and the previous closes as the new one opens —
 ##    let them stack and the screen fills with cards with no way to tell which belongs to which slot.
@@ -63,7 +73,17 @@ static func open(anchor: Control, content: Control, options := {}) -> GoSurface:
 	surface.placement = GoSurface.Placement.ANCHOR
 	surface.anchor_control = anchor
 	surface.anchor_width = float(options.get("width", surface.anchor_width))
+	surface.anchor_min_width = float(options.get("min_width", surface.anchor_min_width))
 	surface.anchor_max_height = float(options.get("max_height", surface.anchor_max_height))
+	match StringName(str(options.get("align", "auto"))):
+		&"start": surface.anchor_align = GoSurface.AnchorAlign.START
+		&"end": surface.anchor_align = GoSurface.AnchorAlign.END
+	surface.anchor_gap = float(options.get("gap", surface.anchor_gap))
+	surface.anchor_edge = float(options.get("edge", surface.anchor_edge))
+	if bool(options.get("fit", false)): surface.fit_mode = GoSurface.FitMode.SCALE
+	surface.pass_anchor_taps = bool(options.get("pass_anchor_taps", false))
+	for control: Variant in options.get("tap_through", []):
+		if control is Control: surface.tap_through.append(control)
 	surface.fit_content = true
 	surface.dismiss_on_scrim = bool(options.get("dismissable", true))
 	# 🔑 Keep the scrim **transparent** — if a card opened to read some information darkens the game screen,

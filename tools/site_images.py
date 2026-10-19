@@ -10,7 +10,7 @@
 |---|---|---|
 | `widgets/<name>.png` cropped to one widget | `www/img/widgets/<name>.webp` | as shot (twice the UI units, sharp on a retina screen) |
 | a whole phone screen (780×1688) anywhere | the same folder | 600 px wide — shown at most ~300 px wide on the site |
-| `popups/look-*.png` | also `www/img/widgets/goui.webp`, every look side by side | 5 columns |
+| `popups/look-*.png` | also `www/img/widgets/goui.webp`, every look side by side | 7 columns (two rows of the 14 looks) |
 | `widgets/skin-*.png` | also `www/img/widgets/goskin.webp`, the five skins stacked | as shot |
 | — | `www/img/shots.json` | `{"widgets/gobar.webp": [382, 135], …}` — the **display** size (half the pixels) |
 
@@ -97,7 +97,7 @@ def main():
         if os.path.isdir(os.path.join(shots, "popups")) else []
     if looks:
         tiles = [Image.open(os.path.join(shots, "popups", f)).resize((260, 563), Image.LANCZOS) for f in looks]
-        sheet = grid(tiles, 5)
+        sheet = grid(tiles, 7)
         save(sheet, os.path.join(IMG, "widgets", "goui.webp"))
         manifest["widgets/goui.webp"] = [sheet.width // 2, sheet.height // 2]
         written += 1

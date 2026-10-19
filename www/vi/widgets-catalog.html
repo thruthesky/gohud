@@ -239,7 +239,7 @@ var more := GoStyle.<wbr>foldable(<wbr>"Advanced",<wbr> true,<wbr> null,<wbr> fa
 </section>
 
 <section id="windows" class="catalog">
-  <h2>Cửa sổ và lớp phủ <small>(10)</small></h2>
+  <h2>Cửa sổ và lớp phủ <small>(12)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gosurface"><code>GoSurface</code></h3>
@@ -329,6 +329,20 @@ tour.<wbr>start(<wbr>[<wbr>{<wbr>"target": bag_button,<wbr> "title": "Bag",<wbr>
       <pre><code>var console := GoConsole.<wbr>new(<wbr>)
 add_child(<wbr>console)
 console.<wbr>register(<wbr>"give",<wbr> "Grant an item",<wbr> give_item)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goribbonheader"><code>GoRibbonHeader</code></h3>
+      <p>Dải ruy băng tiêu đề màn hình vắt qua mép trên thẻ, kèm ký hiệu và hình góc của giao diện.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var header := GoRibbonHeader.<wbr>make(<wbr>"PAUSED",<wbr> GoIconSet.<wbr>PAUSE)
+card_column.<wbr>add_child(<wbr>header)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofitbox"><code>GoFitBox</code></h3>
+      <p>Giữ trọn thẻ trong màn hình, thu nhỏ cả thẻ lẫn ruy băng khi quá lớn; danh sách dài sẽ cuộn.</p>
+      <p class="catalog-base">kế thừa <code>Container</code></p>
+      <pre><code>var fit := GoFitBox.<wbr>new(<wbr>)
+fit.<wbr>add_child(<wbr>card)</code></pre>
     </div>
   </div>
 </section>
@@ -555,7 +569,7 @@ banners.<wbr>set_pages(<wbr>[<wbr>promo,<wbr> event,<wbr> pack])</code></pre>
 </section>
 
 <section id="buttons" class="catalog">
-  <h2>Nút, chip và lựa chọn <small>(9)</small></h2>
+  <h2>Nút, chip và lựa chọn <small>(10)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-button"><code>GoStyle.button</code></h3>
@@ -581,6 +595,12 @@ row.<wbr>add_child(<wbr>GoStyle.<wbr>button(<wbr>"Skip",<wbr> skip,<wbr> GoStyle
       <pre><code>row.<wbr>add_child(<wbr>GoStyle.<wbr>icon_button(<wbr>GoIconSet.<wbr>CLOSE,<wbr> close,<wbr> -1,<wbr> &amp;"close"))
 var bell := GoIconButton.<wbr>new(<wbr>)
 bell.<wbr>icon_name = GoIconSet.<wbr>BELL</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goglyphbutton"><code>GoGlyphButton</code></h3>
+      <p>Nút có biểu tượng ngay cạnh nhãn — viên thuốc bóng của menu arcade.</p>
+      <p class="catalog-base">kế thừa <code>Button</code></p>
+      <pre><code>row.<wbr>add_child(<wbr>GoGlyphButton.<wbr>make(<wbr>"Play",<wbr> GoIconSet.<wbr>PLAY,<wbr> GoTheme.<wbr>VAR_PRIMARY_BUTTON))</code></pre>
     </div>
     <div class="card">
       <h3 id="gostyle-chip"><code>GoStyle.chip</code></h3>
@@ -631,7 +651,7 @@ var terms := GoStyle.<wbr>checkbox(<wbr>"I agree to the terms",<wbr> false)</cod
 </section>
 
 <section id="inputs" class="catalog">
-  <h2>Nhập liệu và bộ chọn <small>(12)</small></h2>
+  <h2>Nhập liệu và bộ chọn <small>(14)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gostyle-line-edit-textarea"><code>GoStyle.line_edit · textarea</code></h3>
@@ -695,6 +715,20 @@ volume.<wbr>value_changed.<wbr>connect(<wbr>set_volume)</code></pre>
       <p class="catalog-base">kế thừa <code>Control</code></p>
       <pre><code>var price := GoRangeSlider.<wbr>make(<wbr>0.0,<wbr> 500.0,<wbr> 40.0,<wbr> 220.0,<wbr> 10.0)
 price.<wbr>change_ended.<wbr>connect(<wbr>func(<wbr>low: float,<wbr> high: float) -&gt; void: refilter(<wbr>low,<wbr> high))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goslider"><code>GoSlider</code></h3>
+      <p>Thanh trượt kiểu vẽ tay: phần tô vượt quá núm một chút, núm phóng to khi đang giữ.</p>
+      <p class="catalog-base">kế thừa <code>HSlider</code></p>
+      <pre><code>var music := GoSlider.<wbr>make(<wbr>0.0,<wbr> 1.0,<wbr> 0.01)
+music.<wbr>theme_type_variation = &amp;"GoSliderGreen"</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goswitch"><code>GoSwitch</code></h3>
+      <p>Công tắc bật/tắt kiểu vẽ tay, có chữ ON / OFF cạnh núm.</p>
+      <p class="catalog-base">kế thừa <code>CheckButton</code></p>
+      <pre><code>var vibration := GoSwitch.<wbr>make(<wbr>true)
+vibration.<wbr>set_texts(<wbr>tr(<wbr>"ON"),<wbr> tr(<wbr>"OFF"))</code></pre>
     </div>
     <div class="card">
       <h3 id="godatepicker"><code>GoDatePicker</code></h3>
@@ -802,7 +836,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD và thành phần game <small>(11)</small></h2>
+  <h2>HUD và thành phần game <small>(24)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -857,6 +891,110 @@ animals.<wbr>set_selected(<wbr>2,<wbr> true)
 side_bar.<wbr>add_center(<wbr>animals)</code></pre>
     </div>
     <div class="card">
+      <h3 id="golevelcard"><code>GoLevelCard</code></h3>
+      <p>Thẻ chọn màn: ảnh thu nhỏ, tiêu đề, phụ đề, và tùy trạng thái là dấu tích, ổ khóa hay nhãn PLAY!.</p>
+      <p class="catalog-base">kế thừa <code>Button</code></p>
+      <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
+card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>
+      <p>Bốn phím di chuyển xếp hình chữ T ngược (WASD hoặc phím mũi tên), như trang hướng dẫn điều khiển.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var wasd := GoKeyCluster.<wbr>make(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"])
+var arrows := GoKeyCluster.<wbr>make(<wbr>GoKeyCluster.<wbr>ARROWS)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocoverimage"><code>GoCoverImage</code></h3>
+      <p>Ảnh lấp đầy khung và cắt phần thừa, giống object-fit: cover của CSS.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var shot := GoCoverImage.<wbr>make(<wbr>preload(<wbr>"res://art/level_3.<wbr>png"),<wbr> Vector2(<wbr>0.5,<wbr> 0.3))
+shot.<wbr>custom_minimum_size = Vector2(<wbr>74,<wbr> 74)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudcard"><code>GoHudCard</code></h3>
+      <p>Một bảng ở hàng trên của HUD trận đấu: biểu tượng kèm băng rôn và thanh, bộ đếm, đồng hồ hoặc thước sẵn sàng.</p>
+      <p class="catalog-base">kế thừa <code>PanelContainer</code></p>
+      <pre><code>var clock := GoHudCard.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"stopwatch"))
+clock.<wbr>title = "MATCH TIME"
+clock.<wbr>set_clock(<wbr>83.0)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gocountdown"><code>GoCountdown</code></h3>
+      <p>Đếm ngược đầu trận: 3, 2, 1, GO! thật to trên một đĩa, mỗi bước bật ra.</p>
+      <p class="catalog-base">kế thừa <code>Label</code></p>
+      <pre><code>var count := GoCountdown.<wbr>new(<wbr>)
+count.<wbr>show_step(<wbr>"3")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gohudbutton"><code>GoHudButton</code></h3>
+      <p>Nút góc HUD: một nút hình kèm phím bàn phím trên nắp phím bên cạnh.</p>
+      <p class="catalog-base">kế thừa <code>HBoxContainer</code></p>
+      <pre><code>var pause := GoHudButton.<wbr>make(<wbr>GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"pause_button"),<wbr> 52.0,<wbr> "Esc")
+pause.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: print(<wbr>"pause"))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonameplate"><code>GoNameplate</code></h3>
+      <p>Bảng tên nổi trên nhân vật trong thế giới 3D, cùng kích thước ở mọi khoảng cách.</p>
+      <p class="catalog-base">kế thừa <code>PanelContainer</code></p>
+      <pre><code>var plate := GoNameplate.<wbr>make(<wbr>"BOT RED",<wbr> Color(<wbr>0.86,<wbr> 0.24,<wbr> 0.24))
+plate.<wbr>follow(<wbr>camera,<wbr> anchor.<wbr>global_position)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gonoticefeed"><code>GoNoticeFeed</code></h3>
+      <p>Dòng thông báo một dòng, như bảng hạ gục, xếp chồng, hiện dần và tự biến mất.</p>
+      <p class="catalog-base">kế thừa <code>VBoxContainer</code></p>
+      <pre><code>var feed := GoNoticeFeed.<wbr>new(<wbr>)
+feed.<wbr>push(<wbr>"RED knocked out BLUE")
+feed.<wbr>push(<wbr>"YOU knocked out GREEN",<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotouchbutton"><code>GoTouchButton</code></h3>
+      <p>Nút tròn cho ngón cái trên màn hình cảm ứng, có vòng hồi chiêu, nhịp sẵn sàng và kéo để ngắm.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var jump := GoTouchButton.<wbr>make(<wbr>&amp;"btn_jump",<wbr> "JUMP",<wbr> 86.0)
+jump.<wbr>pressed_down.<wbr>connect(<wbr>send_jump)
+var skill := GoTouchButton.<wbr>make(<wbr>&amp;"btn_repulse",<wbr> "REPULSE",<wbr> 92.0)
+skill.<wbr>cooling = true
+skill.<wbr>cooldown = 0.4</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gospotlight"><code>GoSpotlight</code></h3>
+      <p>Làm tối màn hình quanh một điều khiển và viền nó lại; lớp tối mờ dần, viền vẫn còn.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>spot)
+spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gotaskcard"><code>GoTaskCard</code></h3>
+      <p>Thẻ bài học hướng dẫn: bước, tiêu đề, việc cần làm, các chip được đánh dấu và gợi ý; gập thành một dòng.</p>
+      <p class="catalog-base">kế thừa <code>PanelContainer</code></p>
+      <pre><code>var card := GoTaskCard.<wbr>new(<wbr>)
+card.<wbr>caption = "TRAINING · STEP 1/12"
+card.<wbr>title = "MOVE"
+card.<wbr>body = "Move with W A S D."
+card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>true])</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goperfreadout"><code>GoPerfReadout</code></h3>
+      <p>Dải hiệu năng luôn hiển thị: fps, thời gian khung hình, tam giác, lệnh vẽ, nút và bộ nhớ; chuyển đỏ khi fps giảm.</p>
+      <p class="catalog-base">kế thừa <code>PanelContainer</code></p>
+      <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
+perf.<wbr>tier_text = "LOW (<wbr>auto)"
+overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gomappreview"><code>GoMapPreview</code></h3>
+      <p>Bản đồ nhỏ của màn chơi: khu vực, lối nối và điểm xuất phát; một hình bóng xám khi bị khóa.</p>
+      <p class="catalog-base">kế thừa <code>Control</code></p>
+      <pre><code>var map := GoMapPreview.<wbr>new(<wbr>)
+map.<wbr>add_rect(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>6,<wbr> 4),<wbr> Color(<wbr>"#f2b84b"))
+map.<wbr>add_circle(<wbr>Vector2(<wbr>18,<wbr> 0),<wbr> 5.0,<wbr> Color(<wbr>"#6fc3ff"))
+map.<wbr>add_link(<wbr>Vector2(<wbr>0,<wbr> 0),<wbr> Vector2(<wbr>18,<wbr> 0),<wbr> 2.0,<wbr> Color(<wbr>"#c9a26b"))
+map.<wbr>set_starts(<wbr>PackedVector2Array(<wbr>[<wbr>Vector2(<wbr>-3,<wbr> 0),<wbr> Vector2(<wbr>20,<wbr> 0)]))</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gorewardcalendar"><code>GoRewardCalendar</code></h3>
       <figure class="shot"><img src="../img/widgets/gorewardcalendar.webp" width="382" height="190" alt="GoRewardCalendar — Phần thưởng điểm danh hằng ngày; chỉ nhấn được hôm nay." loading="lazy"></figure>
       <p>Phần thưởng điểm danh hằng ngày; chỉ nhấn được hôm nay.</p>
@@ -901,11 +1039,11 @@ var pill := GoStyle.<wbr>overlay_panel(<wbr>)</code></pre>
 </section>
 
 <section id="look" class="catalog">
-  <h2>Giao diện và hệ thống <small>(8)</small></h2>
+  <h2>Giao diện và hệ thống <small>(9)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="goui-gothemepresets"><code>GoUi · GoThemePresets</code></h3>
-      <figure class="shot"><img src="../img/widgets/goui.webp" width="682" height="571" alt="GoUi · GoThemePresets — Chọn một preset (mặc định, khoa học viễn tưởng, trung cổ, Material, trẻ em, truyện tranh hoặc arcade); đọc màu và kích thước từ token." loading="lazy"></figure>
+      <figure class="shot"><img src="../img/widgets/goui.webp" width="958" height="571" alt="GoUi · GoThemePresets — Chọn một preset (mặc định, khoa học viễn tưởng, trung cổ, Material, trẻ em, truyện tranh hoặc arcade); đọc màu và kích thước từ token." loading="lazy"></figure>
       <p>Chọn một preset (mặc định, khoa học viễn tưởng, trung cổ, Material, trẻ em, truyện tranh hoặc arcade); đọc màu và kích thước từ token.</p>
       <p class="catalog-base">kế thừa <code>RefCounted</code></p>
       <pre><code>GoUi.<wbr>use_preset(<wbr>GoThemePresets.<wbr>MATERIAL_LIGHT)
@@ -949,10 +1087,19 @@ face.<wbr>cut = 8
 panel.<wbr>add_theme_stylebox_override(<wbr>&amp;"panel",<wbr> face)</code></pre>
     </div>
     <div class="card">
+      <h3 id="gostyleboxsprite-gotexturesprite"><code>GoStyleBoxSprite · GoTextureSprite</code></h3>
+      <p>PNG tô vẽ được vẽ thành chín mảnh, và bản biểu tượng của nó cho núm thanh trượt hoặc công tắc.</p>
+      <p class="catalog-base">kế thừa <code>StyleBox</code></p>
+      <pre><code>var plate := GoStyleBoxSprite.<wbr>new(<wbr>)
+plate.<wbr>texture = preload(<wbr>"res://ui/painted/gloss_green.<wbr>png")
+plate.<wbr>pixels_per_unit = 3.0
+button.<wbr>add_theme_stylebox_override(<wbr>&amp;"normal",<wbr> plate)</code></pre>
+    </div>
+    <div class="card">
       <h3 id="gosafearea-goscale"><code>GoSafeArea · GoScale</code></h3>
       <p>Tai thỏ, thanh cử chỉ và bàn phím; điểm ngắt tính bằng dp.</p>
       <p class="catalog-base">kế thừa <code>Control · RefCounted</code></p>
-      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_window(<wbr>))
+      <pre><code>var usable := GoSafeArea.<wbr>usable_rect(<wbr>get_viewport(<wbr>))
 var size_class := GoScale.<wbr>breakpoint_for_dp(<wbr>minf(<wbr>usable.<wbr>size.<wbr>x,<wbr> usable.<wbr>size.<wbr>y))   # by the short side</code></pre>
     </div>
     <div class="card">

@@ -100,7 +100,13 @@ func _init() -> void:
 
 func _ready() -> void:
 	_rebuild()
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_rebuild)
+	if is_node_ready(): _rebuild()
 
 
 func _exit_tree() -> void:
@@ -264,7 +270,10 @@ func _get_minimum_size() -> Vector2:
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_SORT_CHILDREN or _column == null: return
 	var cell := clampf(floorf(size.x / 7.0), CELL_MIN, CELL)
-	if not is_equal_approx(cell, _cell):
+	# The cell shrinks at once but grows only when a whole extra pixel per column is free: a parent that fits its
+	# width to this picker's content (a fit-content GoSurface) would otherwise flip the cell between n and n + 1
+	# forever, each rebuild nudging the width the other way.
+	if cell < _cell or cell >= _cell + 2.0 or (cell > _cell and size.x >= 7.0 * cell + 7.0):
 		_cell = cell
 		_rebuild.call_deferred()
 	var wide := minf(size.x, maxf(7.0 * _cell, _column.get_combined_minimum_size().x))

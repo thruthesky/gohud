@@ -374,6 +374,7 @@ func dress_close_button(button: GoIconButton) -> void:
 ## The joystick: a faint pad with a ring of ink, and an inked knob that drops its shadow (when shadows are on).
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink_color: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	var line := ink()
 	var width := maxf(2.0, float(GoUi.config.comic_border_width))
 	var strength := 1.0 if active else 0.8

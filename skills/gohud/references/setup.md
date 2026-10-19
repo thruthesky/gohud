@@ -74,22 +74,26 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `shrink_type_on_mobile` (true) | One step smaller text on phones (needs `GoRuntime`); touch sizes unchanged |
 | | `button_glow` (false) | Raise every filled button (`PRIMARY`, `DANGER_SOLID`) with a soft shadow in its own colour (a glow on sci-fi). Read when a button is styled — set it before building the screen. One button: `GoStyle.glow(button)` |
 | Responsive | `scale_enabled` (false) | 1 unit = 1 dp via `content_scale_factor` — affects the whole project, opt in |
+| | `scale_profile` (`DP`) · `per_inch_units` (160) · `per_inch_min_height` (440) | `PER_INCH`: keep the project's base size and shrink a handheld to ~160 units per inch, never below 440 units tall (a fixed-layout game HUD) |
 | | `mobile_max_dp` (576) · `tablet_max_dp` (991) | Breakpoints by the screen's short side |
 | | `read_gain_mobile` (1.10) · `read_gain_tablet` (1.05) · `read_gain_desktop` (1.0) · `desktop_ui_gain` (1.0) | Scale gains when `scale_enabled` |
 | | `form_max_width_mobile` (0) · `_tablet` (440) · `_desktop` (480) | `GoForm` content width cap; 0 = none |
 | | `respect_safe_area` (true) | Avoid notches on Android/iOS |
+| | `handheld_browsers` (false) · `fallback_dpi` (0) | `PER_INCH`: phone and tablet browsers (`web_android`/`web_ios`) sized as handhelds; the dpi for a screen that reports none (0: unshrunk). Magnet Mayhem: on, 160 |
+| | `safe_area_poll_seconds` (0.5) | How often a phone re-reads the safe area — a 180° turn keeps the size, so no resize says the notch moved (`GoRuntime.safe_area_changed`); 0 never |
+| | `hud_side_inset_max` (-1) | The most a landscape notch pushes a `GoHudAnchor` in from the side (units); negative: the whole inset. Magnet Mayhem: 12 |
 | Surface | `surface_max_width` (480) · `surface_max_height` (700) | Card caps in dp |
 | | `surface_height_ratio` (0.68) · `surface_max_height_ratio` (0.72) | Share of usable height; the cap keeps windows reading as floating |
 | | `surface_fit_max_height_ratio` (0.94) | How tall a centred `fit_content` card may grow for long content |
 | | `surface_width_ratio_portrait` (0.94) · `surface_width_ratio_landscape` (0.72) | Share of width |
 | | `container_alpha` (**-1.0**) | Face opacity of **every** panel, as a **ratio** 0.0–1.0 (negative = theme value: 80%, popups and the Material presets 100%) |
 | | `container_alpha_overrides` `Dictionary[StringName, float]` | Per-kind opacity, same ratio; key = `GoTheme.BOX_PANEL`/`BOX_CARD`/`BOX_HUD`/`BOX_NOTICE`/`BOX_POPUP`. Beats `container_alpha`; negative = not set. theming.md §4 |
-| | `dismiss_on_scrim` (false) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
+| | `dismiss_on_scrim` (false) · `scrim_blur` (true; off, every scrim — open ones too — is the flat scrim colour instead of the look's blur: a low quality tier) · `surface_fade_in` (false) · `fade_seconds` (0.14) | Defaults for new surfaces |
 | | `close_button_visual` (36) · `suppress_pointer_focus_ring` (true) · `close_on_back` (true) | Header close button, focus ring policy, Escape/Back |
 | Feedback | `haptics_enabled` (true) · `haptic_tap_ms` (10) · `haptic_light_ms` (20) · `haptic_medium_ms` (40) · `haptic_tap_amplitude` (0.35) · `haptic_light_amplitude` (0.5) · `haptic_medium_amplitude` (0.8) | Vibration on handhelds only; amplitude 0–1 where the device supports it |
 | | `sound_cues` | `opened→ui_open`, `closed→ui_close`, `tapped→ui_click`, `confirmed→ui_confirm`, `canceled→ui_cancel`, `failed→ui_error`, `fanfare→ui_fanfare` |
 | Localization | `text_keys` · `text_overrides` · `number_formatter` (Callable) · `load_builtin_translations` (true) | See platform.md §2 |
-| Accessibility | `min_touch_size` (48) · `reduce_motion` (false) · `autowrap_text` (true) | Touch floor, fades/pulses off, label wrapping |
+| Accessibility | `min_touch_size` (the look's: 48, `arcade_light` 44) · `reduce_motion` (false) · `autowrap_text` (true) | Touch floor, fades/pulses off, label wrapping |
 
 `cfg.copy()` deep-copies the dictionaries — use it instead of `duplicate()` for a per-screen variant.
 

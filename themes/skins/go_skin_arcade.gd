@@ -542,6 +542,11 @@ func dress_close_button(button: GoIconButton) -> void:
 	button.icon_tint = Color.WHITE
 
 
+## A search bar's clear button is the close key as well: one red ✕ means "away with it" everywhere in the look.
+func dress_search_clear(button: GoIconButton) -> void:
+	dress_close_button(button)
+
+
 ## A press pops the key in for a moment and springs it back. Only `scale` changes (round the centre), so the layout and
 ## the press area stay put; `reduce_motion` and headless runs skip it (a test that measures a part right after tapping
 ## it should read its real rectangle).
@@ -562,6 +567,7 @@ func press_feedback(control: Control) -> void:
 ## The joystick: a glossy pad in an ink ring with four arrows, and a knob that is a round key cap with a gloss.
 func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float,
 		knob_radius: float, ink_color: Color, base: Color, active: bool) -> void:
+	if draw_joystick_art(canvas, center, knob, radius, knob_radius, active): return
 	var line := ink()
 	var strength := 1.0 if active else 0.85
 	var pad := Color(ink_color, 1.0).lerp(Color.WHITE, 0.55)

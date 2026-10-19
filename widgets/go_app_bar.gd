@@ -121,7 +121,13 @@ func _ready() -> void:
 	_pad_safe_area()
 	if not Engine.is_editor_hint():
 		get_viewport().size_changed.connect(_pad_safe_area)
+
+
+func _enter_tree() -> void:
+	# 🔑 Watched on every entry, not once in `_ready` — a widget taken out and put back (`remove_child` + `add_child`)
+	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
+	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
@@ -240,7 +246,7 @@ func _restyle() -> void:
 ##    their touch areas meet instead of overlapping.
 func _layout_title() -> void:
 	if title_label == null: return
-	var slack := roundi(maxf(0.0, float(GoUi.config.min_touch_size) - 36.0) * 0.5)
+	var slack := roundi(maxf(0.0, GoUi.touch_size() - 36.0) * 0.5)
 	var edge := GoUi.metric(GoTheme.GAP_TINY) + slack
 	var lead := is_instance_valid(leading_button) and not leading_button.is_queued_for_deletion()
 	_pad.add_theme_constant_override(&"margin_left", edge if lead else GoUi.metric(GoTheme.GAP))
@@ -261,7 +267,7 @@ func _layout_title() -> void:
 func _pad_safe_area() -> void:
 	if _pad == null or not is_inside_tree(): return
 	var inset := 0
-	var window := get_window()
+	var window := get_viewport()
 	if safe_area and window != null and not Engine.is_editor_hint():
 		inset = roundi(maxf(0.0, GoSafeArea.usable_rect(window).position.y - window.get_visible_rect().position.y))
 	_pad.add_theme_constant_override(&"margin_top", inset)

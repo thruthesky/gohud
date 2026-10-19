@@ -148,6 +148,22 @@ signal changed_settings
 ##    coordinate space of the whole project — never switch it on silently in someone else's project. The one turning it on decides.
 @export var scale_enabled := false
 
+## How `scale_enabled` sizes the UI: `DP` (1 unit = 1 dp, the default) or `PER_INCH` (the project's base size kept,
+## a handheld shrunk to `per_inch_units` units per inch — see `GoScale.Profile`).
+##
+## Changing it at run time re-applies the scale at once (through the `GoRuntime` autoload, when it is on).
+@export var scale_profile := GoScale.Profile.DP:
+	set(value):
+		if scale_profile == value: return
+		scale_profile = value
+		_rescale()
+
+## `PER_INCH`: canvas units per physical inch on a handheld (160 ≈ one iOS point).
+@export_range(60, 400) var per_inch_units := 160.0
+
+## `PER_INCH`: the shortest the canvas gets (units), so a small phone still fits the layout.
+@export_range(200, 2000) var per_inch_min_height := 440.0
+
 ## A short side at or below this many dp is the mobile breakpoint.
 @export_range(240, 1200) var mobile_max_dp := 576.0
 
@@ -169,6 +185,22 @@ signal changed_settings
 
 ## Whether to keep clear of the device safe area (notch·rounded corners). It only takes real effect on mobile.
 @export var respect_safe_area := true
+
+## `PER_INCH`: phone and tablet browsers (the `web_android` / `web_ios` features) are sized as handhelds too, as
+## Magnet Mayhem's web build is. Off, only the Android and iOS apps are. A browser still has no safe area.
+@export var handheld_browsers := false
+
+## `PER_INCH`: the dpi used when the screen reports none (0 or less). 0 leaves such a screen unshrunk (factor 1);
+## Magnet Mayhem uses 160.
+@export_range(0.0, 1000.0) var fallback_dpi := 0.0
+
+## On a phone, how often (s) `GoRuntime` reads the safe area again — a 180° turn keeps the window size, so no resize
+## tells anyone the notch moved to the other side. 0 never polls.
+@export_range(0.0, 10.0, 0.05) var safe_area_poll_seconds := 0.5
+
+## 🔑 The most a landscape notch may push a `GoHudAnchor` in from the left or right (units); the top and bottom insets
+## stay whole. Negative: no cap (the whole inset). Magnet Mayhem's in-match HUD uses 12.
+@export_range(-1.0, 200.0) var hud_side_inset_max := -1.0
 
 
 # ── Surfaces (popups·sheets·dialogs) ───────────────────────────────────
@@ -238,6 +270,16 @@ signal changed_settings
 ## Default for whether pressing the background (scrim) closes it. Each surface can decide for itself.
 @export var dismiss_on_scrim := false
 
+## 🌫 Whether a look that frosts its scrims (`GoSkin.scrim_material`, `arcade_light`'s blur) may do so. Off — a quality
+## tier that cannot afford the screen copy — every scrim is the flat scrim colour instead, open ones included. Like
+## Magnet Mayhem's `UiTheme.set_blur(false)`.
+@export var scrim_blur := true:
+	set(value):
+		if scrim_blur == value: return
+		scrim_blur = value
+		emit_changed()
+		changed_settings.emit()
+
 ## Whether to fade the card in when a surface opens.
 @export var surface_fade_in := false
 
@@ -253,6 +295,12 @@ signal changed_settings
 
 ## Close the topmost surface on Escape / the Android back gesture.
 @export var close_on_back := true
+
+## Also close it on the Android back gesture (`NOTIFICATION_WM_GO_BACK_REQUEST`), not only on Escape / `ui_cancel`.
+## 🛑 Turn this off when the game routes Back itself (one handler that closes the top overlay, then goes back a
+##    screen). The OS sends the notification to every node, the game's first, so with both on one Back closes the
+##    window the game closed and then the one that is now on top.
+@export var close_on_os_back := true
 
 
 # ── Feedback (sound·haptics) ───────────────────────────────────────────
@@ -379,13 +427,38 @@ signal changed_settings
 ## Minimum side of a touch target (dp). Material 48 · Apple HIG 44 are the basis.
 ## 🛑 It is the floor for **hit testing**, not for visual size — a widget may look smaller than this,
 ##    but the area you can press keeps to this value.
-@export_range(24, 96) var min_touch_size := 48
+## 🔑 Left alone, the floor is **the look's own** — its `touch` token (48 in every look, 44 in `arcade_light`, the
+##    Magnet Mayhem floor). A size set here (in code or saved in the inspector) is the project's choice and wins over
+##    every look; [method follow_look_touch_size] hands it back. Read the floor in force with `GoUi.touch_size()`.
+@export_range(24, 96) var min_touch_size := 48:
+	set(value):
+		min_touch_size = value
+		_touch_chosen = true
+
+## Stored, declared after [member min_touch_size]: `duplicate()` and a saved file apply properties in this order, so
+## the stored flag is set after the setter above has run and the choice survives exactly as it was.
+@export_storage var _touch_chosen := false
+
+
+## Did the project choose [member min_touch_size]? False: the look's `touch` token is the floor.
+func touch_size_chosen() -> bool:
+	return _touch_chosen
+
+
+## Gives the touch floor back to the look (its `touch` token); [member min_touch_size] reads its default again.
+func follow_look_touch_size() -> void:
+	min_touch_size = 48
+	_touch_chosen = false
 
 ## Reduce motion — turns off fades and the coach-mark pulse.
 @export var reduce_motion := false
 
 ## Wrap long text. 🛑 Turned off, a line stretches out and the minimum width can run past the screen.
 @export var autowrap_text := true
+
+## The smallest share of its base size [method GoStyle.fit_font_size] shrinks a label to (0.7 = 70%).
+## 🛑 A label on fixed art that still does not fit at this floor runs over — raise the art, not this floor.
+@export_range(0.3, 1.0, 0.01) var fit_min_scale := 0.7
 
 
 func _init() -> void:
@@ -413,6 +486,15 @@ func _comic_changed() -> void:
 	if tree == null or tree.root == null: return
 	if Thread.is_main_thread(): tree.root.propagate_call(&"queue_redraw")
 	else: tree.root.propagate_call.call_deferred(&"queue_redraw")
+
+
+## The scale profile changed: the running `GoRuntime` applies it now rather than at the next resize.
+## 🛑 A config read on a loading thread runs this setter there; the tree is only touched from the main thread.
+func _rescale() -> void:
+	if Engine.is_editor_hint() or not Thread.is_main_thread(): return
+	if GoUi.config != self: return
+	var runtime := GoUi.runtime()
+	if runtime != null and runtime.has_method(&"reapply"): runtime.call(&"reapply")
 
 
 ## A copy of this config — for when one screen alone should differ at runtime.
