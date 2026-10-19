@@ -827,7 +827,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD e formas de jogo <small>(24)</small></h2>
+  <h2>HUD e formas de jogo <small>(25)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -887,6 +887,13 @@ side_bar.<wbr>add_center(<wbr>animals)</code></pre>
       <p class="catalog-base">estende <code>Button</code></p>
       <pre><code>var card := GoLevelCard.<wbr>make(<wbr>"STAGE 3",<wbr> "OPPONENTS: 3",<wbr> GoLevelCard.<wbr>State.<wbr>CURRENT)
 card.<wbr>pressed.<wbr>connect(<wbr>play_stage)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gostarrow"><code>GoStarRow</code></h3>
+      <p>Uma fileira de estrelas de avaliação: algumas acesas em dourado, o resto apagado — a melhor vitória de uma fase ou a nota de uma tela de resultado.</p>
+      <p class="catalog-base">estende <code>HBoxContainer</code></p>
+      <pre><code>var rating := GoStarRow.<wbr>make(<wbr>2)
+rating.<wbr>star_size = 40.0</code></pre>
     </div>
     <div class="card">
       <h3 id="gokeycluster"><code>GoKeyCluster</code></h3>

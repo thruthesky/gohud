@@ -32,6 +32,9 @@ const SPRITES := {
 const STAGE_SPRITES := {
 	"card_cleared": false, "card_current": false, "card_locked": false, "check": false, "lock": false, "person": false,
 	"play_tag": false, "pointer": false, "ribbon_title": false, "well": false, "window": false,
+	# Painted for gohud in the same style (tools/paint_arcade_stars.gd): GoStarRow's earned star and its empty slot,
+	# drawn small, so with mipmaps.
+	"star": true, "star_empty": true,
 }
 
 ## The match HUD's painted sprites (the game's `assets/ui/hud`): the player's head, the power bolt, the opponents
@@ -138,6 +141,9 @@ func _hud_sprites() -> void:
 		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [TOUCH, name]),
 			"arcade_light's widget_art('%s') is the touch sprite" % name)
 	check(GoUi.skin().widget_art(&"check") == load("%s/check.png" % STAGE), "widget_art still answers the stage art")
+	for name in ["star", "star_empty"]:
+		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [STAGE, name]),
+			"arcade_light's widget_art('%s') is the painted star" % name)
 	check(GoUi.skin().widget_art(&"no_such_art") == null, "widget_art answers null for art the theme does not ship")
 	GoUi.reset()
 	check(GoUi.skin().widget_art(&"stopwatch") == null, "the default look ships no HUD art")

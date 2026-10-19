@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -647,12 +647,14 @@ The complete, runnable version (status, stage, coins, menu, summon column, quick
 
 `class_name GoLevelCard extends Button`. The thumbnail on the left, the title and a subtitle row ("OPPONENTS: 3" with a
 person icon) beside it, and on the right the state: a check on a cleared level, a padlock and LOCKED on a locked one,
-a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile.
+a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile. `stars` adds a row of rating stars
+under the subtitle.
 
 ```gdscript
 var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
 card.thumbnail = preload("res://levels/3.png")      # or put your own node in card.thumbnail_slot
 card.selected = true
+card.stars = 2                                      # 2 of 3 lit — cleared on normal, say
 card.pressed.connect(_play.bind(3))
 ```
 
@@ -662,6 +664,7 @@ card.pressed.connect(_play.bind(3))
 | `title` · `subtitle` · `locked_text` ("LOCKED") · `play_text` ("PLAY!") | The texts come from the caller (language); each shrinks to fit with `GoStyle.fit_font_size`. An empty `subtitle` hides the row |
 | `thumbnail` · `thumbnail_focus` · `thumbnail_slot` | The picture is drawn through `GoCoverImage`; leave it empty to put your own node in the slot |
 | `selected` | The gold ring (`GoSkin.selection_ring_box()`) |
+| `stars` (0) · `max_stars` (3) · `star_size` (16) · `star_gap` (2) · `star_row` | A `GoStarRow` as a third line under the subtitle, lined up with the title: `stars` of `max_stars` lit. 0 shows no row (a card that never sets it is unchanged); a `LOCKED` tile shows none. The corners stay free for the check, the PLAY! tag and the pointer |
 | `check_texture` · `lock_texture` · `person_texture` · `play_tag_texture` · `pointer_texture` | Art overrides. Empty: the skin (`GoSkin.widget_art`), else the icon set, else a drawn plate — a look with no art still works |
 | `scale_factor` · `card_size` (300×98) | Sizes are multiplied by `scale_factor` |
 | `lock_gap` (4) | Pixels between the padlock and LOCKED — set on the column, so a theme's own VBox gap never reaches it |
@@ -670,6 +673,27 @@ card.pressed.connect(_play.bind(3))
   `GoLevelCardLocked`; a theme without them falls back to `GoButton` (`GoPrimaryButton` for the current level).
 - The thumbnail slot clips its contents, as the game's map preview does: on a scaled canvas no half row of the well
   or the picture shows past the slot.
+
+### GoStarRow — rating stars
+
+`class_name GoStarRow extends HBoxContainer`. `stars` of `max_stars` lit, the rest dim — a level's best clear, a result
+screen's grade. The same row `GoLevelCard.stars` shows, on its own for a dialog or a victory screen.
+
+```gdscript
+var rating := GoStarRow.make(2)           # two of three lit
+rating.star_size = 40.0                   # a victory screen's big row
+rating.stars = 3
+```
+
+| Member | Notes |
+|---|---|
+| `make(earned_stars := 0, total := 3, side := 18.0)` | |
+| `stars` (0) · `max_stars` (3) | More than `max_stars` lights them all; under 0 counts as 0. `earned()` is the clamped count, `is_earned(i)` one star |
+| `star_size` (18) · `gap` (2) · `scale_factor` (1) | `star_side()` and `row_size()` give the drawn sizes |
+| `earned_texture` · `empty_texture` · `star_nodes` | Art overrides. Empty: the skin (`GoSkin.widget_art` `star` / `star_empty` — arcade_light's painted gold star and grey slot), else the icon set's `GoIconSet.STAR` in `warning_fill`, faded `muted_fill` for an unearned one |
+
+- 🛑 It ignores the mouse and never flips with the language: the first lit star is the left one. A screen reader hears
+  "2/3" (`accessibility_name`).
 
 ## 21. GoKeyCluster — WASD or arrows in a T
 
