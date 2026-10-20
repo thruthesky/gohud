@@ -22,6 +22,11 @@
 ## repulse.title = "REPULSE"
 ## repulse.value = "READY"
 ## repulse.set_lit(true)                              # lit rim, full opacity, a pop — or dimmed while cooling
+##
+## var status := GoHudCard.new()                      # no board — the bars sit bare on the scene
+## status.show_panel = false
+## var stability := status.add_bar("", Color("#ff8a3d"), Color("#ffc24a"), GoUi.skin().widget_art(&"shield"))
+## stability.icon_beside = true                       # the shield left of the bar, not over it
 ## ```
 ##
 ## The board is the theme's `GoHudPanel` (arcade_light: the game's white board with the blue rim) and the banner its
@@ -66,6 +71,14 @@ const POP_DOWN := 0.21
 	set(next):
 		if icon_snap == next: return
 		icon_snap = next
+		_apply()
+
+## The picture's tint — a white icon from the icon set takes this colour (`GoIconSet.USERS` in `GoTheme.ACCENT`, so it
+## reads on the white board). Transparent: the picture's own colours.
+@export var icon_ink := Color.TRANSPARENT:
+	set(next):
+		if icon_ink == next: return
+		icon_ink = next
 		_apply()
 
 ## The room between the icon and what follows (dp).
@@ -151,6 +164,13 @@ const POP_DOWN := 0.21
 		gauge = next
 		_apply()
 
+## false: no board at all — the icon, banner, labels and bars sit bare on the scene (a gauge keeps its board).
+@export var show_panel := true:
+	set(next):
+		if show_panel == next: return
+		show_panel = next
+		_apply()
+
 ## The warning colour `set_clock` paints a clock in. Transparent: `GoSkin.hud_alert_ink()`.
 @export var warn_ink := Color.TRANSPARENT:
 	set(next):
@@ -169,6 +189,8 @@ var _bars: VBoxContainer
 var _title_label: Label
 var _value_label: Label
 var _pop: Tween
+## The box `show_panel` off puts on the card: draws nothing, keeps no room.
+var _bare_panel: StyleBoxEmpty
 ## The padded copies `_apply` made: slot -> [source box, pad, copy]. A copy is reused only while its source and pad
 ## are the same and the theme has not changed since, so it is what a fresh `_padded` would make.
 var _padded_cache := {}
@@ -379,10 +401,17 @@ func _apply() -> void:
 	_icon.visible = icon != null
 	_icon.custom_minimum_size = Vector2(icon_size, icon_size)
 	_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER if icon_snap else Control.SIZE_FILL
+	_icon.self_modulate = icon_ink if icon_ink.a > 0.0 else Color.WHITE
 
 	if gauge:
 		_set_panel(self, _padded(skin.hud_gauge_box(_lit), padding))
 		modulate.a = 1.0 if _lit else DIM_ALPHA
+	elif not show_panel:
+		modulate.a = 1.0
+		if _bare_panel == null:
+			_bare_panel = StyleBoxEmpty.new()
+			_bare_panel.set_content_margin_all(0.0)
+		_set_panel(self, _bare_panel)
 	else:
 		modulate.a = 1.0
 		_set_panel(self, _padded_panel(&"panel", self, VAR_PANEL, padding))

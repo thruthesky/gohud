@@ -96,6 +96,7 @@ Full rules: `theming.md` §4.
 | `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
 | `icon` · `icon_size` · `icon_gap` | `null` · `16` · `3` | An icon before the name (a HUD's bolt) |
+| `icon_beside` | `false` | The icon sits left of the bar instead, centred on it (`Track` › `Icon`, then the fill or the painted frame taking the rest of the width); the name row hides while it has no name and no readout |
 | `label_size` · `label_ink` | `-1` · transparent | The name's and readout's size (-1: the compact role's) and colour (transparent: `secondary`) |
 | `label_gap` · `lead` | `-1` · `0` | The room between the name row and the bar (-1: `gap_tiny`) · room left above the name |
 | `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`): a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
@@ -861,16 +862,29 @@ repulse.gauge = true
 repulse.title = "REPULSE"
 repulse.value = "2.4s"
 repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
+var status := GoHudCard.new()      # no board: two bars, each with its picture beside it
+status.show_panel = false
+for row in [[&"shield", Color("#ff8a3d"), Color("#ffc24a")], [&"bolt", Color("#1fb5f0"), Color("#6ff0ff")]]:
+	var bar := status.add_bar("", row[1], row[2], GoUi.skin().widget_art(row[0]))
+	bar.icon_beside = true
+	bar.icon_size = 28
+	bar.segments = 0
+var count := GoHudCard.make(GoUi.icons().texture(GoIconSet.USERS), 28.0)
+count.icon_ink = GoUi.color(GoTheme.ACCENT)  # a white icon in a token colour
+count.layout = GoHudCard.Layout.INLINE
+count.value = "7"
 ```
 
 | Member | Default | Notes |
 |---|---|---|
 | `icon` · `icon_size` · `icon_snap` | `null` · `36` · `true` | The picture at the start of the row. `icon_snap` false lets it fill the row's height (centred on a half pixel when the row is odd — the game's clock and badge) |
+| `icon_ink` | transparent | Tints the picture (`self_modulate`) — a white icon-set icon in a token colour, e.g. `GoUi.icons().texture(GoIconSet.USERS)` in `GoUi.color(GoTheme.ACCENT)`. Transparent: its own colours |
 | `gap` | `8` | Room between the icon and what follows |
 | `banner_text` · `banner_size` · `banner_padding` | `""` · `16` · `-1` | A gold banner (`GoBannerGold`) at the top of the column |
 | `title` · `value` · `layout` (`STACKED`, `INLINE`) | | Stacked: the caption (label ink at 75 %) over the value, centred; inline: both in the row |
 | `title_size` · `value_size` · `value_ink` | `-1` · `-1` · transparent | -1: 12 / 24 stacked, 19 / 19 inline |
 | `padding` | `-1` | Clear space inside the board's rim on every side (`-1`: the theme's). The margins become padding + border width |
+| `show_panel` | `true` | `false`: no board and no margins — the icon, banner, labels and bars sit bare on the scene. A `gauge` keeps its board |
 | `add_bar(label, ink, ink_end, icon) -> GoBar` · `bars()` | | A `GoBar` laid out as a HUD's (14 dp, 11 dp name, no readout, 2 dp lead) |
 | `set_clock(seconds, warn := false)` · `static format_clock(seconds)` · `is_warning()` · `warn_ink` | | `MM:SS`; `warn` paints it in `warn_ink` (transparent: `GoSkin.hud_alert_ink()`) |
 | `gauge` · `set_lit(lit, animate := true)` · `is_lit()` | `false` | The board becomes `GoSkin.hud_gauge_box(lit)`; unlit dims to `DIM_ALPHA` 0.55; lighting pops to 1.15 and back (none under `reduce_motion`) |

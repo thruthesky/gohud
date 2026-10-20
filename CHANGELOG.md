@@ -6,6 +6,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoHudCard.show_panel`** (on): off draws no board at all — no `GoHudPanel`, no margins — so the icon, banner,
+  labels and bars sit bare on the 3D scene (a match HUD's status corner). A `gauge` keeps its board.
+- **`GoHudCard.icon_ink`** (transparent): tints the card's picture (`self_modulate`), so a white icon from the icon set
+  reads on the white board in a token colour — `GoIconSet.USERS` in `GoTheme.ACCENT`. Transparent leaves the picture's
+  own colours.
+- **`GoBar.icon_beside`** (off): the icon sits left of the bar, centred on it, and the bar (the plain fill or the
+  painted frame, ticks and all) takes the rest of the width; `icon_size` and `icon_gap` still apply, and the name row
+  hides while it has no name and no readout. `GoHudCard.add_bar` bars take it too.
+- **arcade_light's HUD `shield`** (`assets/arcade_light/hud/shield.png`, `GoUi.skin().widget_art(&"shield")`): a
+  solid 64 px shield in the painted bolt's style — the navy rim, a gold-to-orange face (the stability bar's paint), a
+  darker lip and ridge, a gloss on the upper left — drawn by `tools/paint_arcade_shield.gd`.
 - **`GoSignalBars`** (`PanelContainer`): a phone-style signal meter — `max_bars` (4) bars rising left to right, the
   first `bars` lit in the reading's `tone` (`Tone.GOOD` / `FAIR` / `POOR` take `success_fill` / `warning_fill` /
   `danger_fill`; `NONE`, no reading yet, leaves every bar a faded `muted_fill`), an optional `text` readout ("48 ms") in

@@ -27,6 +27,7 @@ func _initialize() -> void:
 		await _bar_frame(look)
 		await _bar_ink(look)
 		await _hud_card(look)
+		await _bare_card(look)
 		await _countdown(look)
 		await _art_button(look)
 		await _hud_button(look)
@@ -297,6 +298,99 @@ func _hud_card(look: StringName) -> void:
 	GoUi.config.reduce_motion = true
 	gauge.set_lit(true)
 	check(gauge.scale == Vector2.ONE, "card: set_lit settles the scale")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── A bare card: no board, bars with their icon beside them, a tinted icon ─────────
+
+func _bare_card(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var shield := skin.widget_art(&"shield")
+	check((shield != null) == painted, "bare: %s %s the shield art" % [look, "ships" if painted else "has no"])
+	if painted: check(shield.get_size() == Vector2(64, 64), "bare: the shield is 64 px")
+	var status := GoHudCard.new()
+	status.custom_minimum_size.x = 220.0
+	# A look with no art: any picture will do for the layout.
+	var stability := status.add_bar("", Color("#ff8a3d"), Color("#ffc24a"),
+		shield if shield != null else GoUi.icons().texture(GoIconSet.STAR))
+	var power := status.add_bar("", Color("#1fb5f0"), Color("#6ff0ff"), skin.widget_art(&"bolt"))
+	for bar in [stability, power]:
+		bar.segments = 0
+		bar.icon_size = 28.0
+		bar.icon_gap = 5
+		bar.icon_beside = true
+	var holder := _host(status)
+	await frames(2)
+	stability.set_values(70.0, 100.0, false)
+	check(status.get_theme_stylebox(&"panel").get_minimum_size() != Vector2.ZERO or not painted,
+		"bare: the card starts on the theme's board")
+	status.show_panel = false
+	await frames(1)
+	var bare := status.get_theme_stylebox(&"panel")
+	check(bare is StyleBoxEmpty and bare.get_minimum_size() == Vector2.ZERO, "bare: show_panel off draws no board, no margins")
+	var row := status.find_child("Row", true, false) as Control
+	check(row != null and row.position == Vector2.ZERO, "bare: the content starts at the card's corner")
+	var track := stability.find_child("Track", true, false) as HBoxContainer
+	var icon := stability.find_child("Icon", true, false) as TextureRect
+	check(track != null and track.visible and icon != null and icon.get_parent() == track and track.get_child(0) == icon,
+		"bare: icon_beside puts the icon first in the bar's track")
+	check(track != null and track.get_theme_constant(&"separation") == 5, "bare: icon_gap spaces the icon from the bar")
+	var shown := (stability.find_child("Frame", true, false) if painted else stability.find_child("Fill", true, false)) as Control
+	check(shown != null and shown.get_parent() == track and shown.visible, "bare: the %s sits in the track" %
+		("frame" if painted else "fill"))
+	if shown != null and icon != null:
+		check(icon.size == Vector2(28, 28), "bare: the icon keeps icon_size (got %s)" % icon.size)
+		check(is_equal_approx(shown.size.y, 14.0), "bare: the bar keeps its thickness beside the icon (got %s)" % shown.size.y)
+		check(shown.position.x >= icon.size.x + 5.0 - 0.5, "bare: the bar starts right of the icon (%s, %s)" % [shown.position, icon.size])
+		check(absf(shown.get_global_rect().get_center().y - icon.get_global_rect().get_center().y) <= 0.5,
+			"bare: the icon is centred on the bar (%s, %s)" % [shown.get_global_rect(), icon.get_global_rect()])
+		check(shown.get_global_rect().end.x >= stability.get_global_rect().end.x - 0.5, "bare: the bar takes the rest of the width")
+	var head := stability.find_child("Head", true, false) as Control
+	check(head != null and not head.visible, "bare: an empty name row hides beside the icon")
+	stability.label_text = "STABILITY"
+	check(head != null and head.visible, "bare: a name brings the name row back")
+	stability.label_text = ""
+	stability.readout = GoBar.Readout.PERCENT
+	check(head != null and head.visible, "bare: a readout brings the name row back")
+	stability.readout = GoBar.Readout.NONE
+	check(stability.segment_count() == 0, "bare: segments 0 is one smooth bar")
+	stability.segments = 4
+	await frames(1)
+	check(stability.segment_count() == 4, "bare: segments still apply beside the icon")
+	stability.icon_beside = false
+	await frames(1)
+	var title := stability.find_child("Title", true, false) as HBoxContainer
+	check(icon != null and icon.get_parent() == title and title.get_child(0) == icon, "bare: icon_beside off puts the icon back before the name")
+	check(shown != null and shown.get_parent() == stability.find_child("Column", true, false) and track != null and not track.visible,
+		"bare: icon_beside off puts the bar back under the name row")
+	check(head != null and head.visible, "bare: icon_beside off shows the name row")
+	status.show_panel = true
+	await frames(1)
+	check(not (status.get_theme_stylebox(&"panel") is StyleBoxEmpty), "bare: show_panel on brings the board back")
+	status.padding = 4.0
+	status.show_panel = false
+	check(status.get_theme_stylebox(&"panel") is StyleBoxEmpty, "bare: show_panel off wins over padding")
+	status.show_panel = true
+	check(status.get_theme_stylebox(&"panel").get_content_margin(SIDE_LEFT) >= 4.0, "bare: padding pads the board again")
+	status.gauge = true
+	status.show_panel = false
+	check(not (status.get_theme_stylebox(&"panel") is StyleBoxEmpty), "bare: a gauge keeps its board")
+	holder.queue_free()
+
+	# A white icon from the icon set, tinted to read on the board.
+	var count := GoHudCard.make(GoUi.icons().texture(GoIconSet.USERS), 28.0)
+	count.layout = GoHudCard.Layout.INLINE
+	count.value = "7"
+	holder = _host(count)
+	await frames(1)
+	var picture := count.find_child("Icon", true, false) as TextureRect
+	check(picture != null and picture.self_modulate == Color.WHITE, "bare: icon_ink transparent leaves the picture untinted")
+	count.icon_ink = GoUi.color(GoTheme.ACCENT)
+	check(picture != null and picture.self_modulate.is_equal_approx(GoUi.color(GoTheme.ACCENT)), "bare: icon_ink tints the picture")
+	count.icon_ink = Color.TRANSPARENT
+	check(picture != null and picture.self_modulate == Color.WHITE, "bare: icon_ink back to transparent clears the tint")
 	holder.queue_free()
 	await frames(1)
 

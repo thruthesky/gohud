@@ -47,6 +47,7 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 		if is_instance_valid(_name_label):
 			_name_label.text = value
 			_name_label.visible = not value.is_empty()
+			_place_icon()
 
 ## The bar color. Transparent means the theme's `accent`.
 ##
@@ -73,6 +74,7 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 	set(value):
 		readout = value
 		_refresh_text()
+		_place_icon()
 
 ## Thickness of the bar (dp).
 @export_range(2, 48) var thickness := 8:
@@ -107,11 +109,21 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 		icon_size = value
 		if is_instance_valid(_icon): _icon.custom_minimum_size = Vector2(value, value)
 
-## The room between the icon and the name (dp).
+## The room between the icon and the name — or the bar, when `icon_beside` (dp).
 @export_range(0, 32) var icon_gap := 3:
 	set(value):
 		icon_gap = value
 		if is_instance_valid(_title): _title.add_theme_constant_override(&"separation", value)
+		if is_instance_valid(_track): _track.add_theme_constant_override(&"separation", value)
+
+## true: the icon sits left of the bar, centred on it, and the bar takes the rest of the width (a HUD's shield before
+## its stability bar); the name row above hides while it has nothing to show (no name, no readout). false: the icon
+## sits before the name, above the bar.
+@export var icon_beside := false:
+	set(value):
+		if icon_beside == value: return
+		icon_beside = value
+		_place_icon()
 
 ## The name's and the readout's font size. -1: the compact text role's.
 @export_range(-1, 64) var label_size := -1:
@@ -141,7 +153,9 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 
 var _column: VBoxContainer
 var _lead: Control
+var _head: HBoxContainer
 var _title: HBoxContainer
+var _track: HBoxContainer
 var _icon: TextureRect
 var _frame: Panel
 var _gradient: TextureRect
@@ -177,6 +191,7 @@ func _init() -> void:
 	head.name = "Head"
 	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(head)
+	_head = head
 
 	_title = HBoxContainer.new()
 	_title.name = "Title"
@@ -207,6 +222,14 @@ func _init() -> void:
 	# 🛑 Numbers always read **left to right** — even in Arabic the order of `320 / 500` stays as it is.
 	_value_label.text_direction = Control.TEXT_DIRECTION_LTR
 	head.add_child(_value_label)
+
+	# `icon_beside`'s row: the icon, then the bar (or its painted frame). Empty and hidden until then.
+	_track = HBoxContainer.new()
+	_track.name = "Track"
+	_track.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_track.add_theme_constant_override(&"separation", icon_gap)
+	_track.visible = false
+	column.add_child(_track)
 
 	_bar = GoStyle.progress()
 	_bar.name = "Fill"
@@ -250,6 +273,7 @@ func _init() -> void:
 	#    as taking only its own thickness (8dp), so in a vertical stack the name row and the bar below draw on top
 	#    of each other (measured on a 2026-09-12 screenshot: the HP/MP/XP rows overlapped).
 	GoStyle.fit_content_height(self, column)
+	_place_icon()
 
 
 func _ready() -> void:
@@ -363,6 +387,26 @@ func _draw_ticks() -> void:
 func _draw_frame_ticks() -> void:
 	var count := segment_count()
 	if count >= 2: GoUi.skin().draw_bar_ticks(_frame_ticks, Rect2(Vector2.ZERO, _frame_ticks.size), count)
+
+
+## Puts the icon in the name row or beside the bar (`icon_beside`), and hides an empty name row beside it.
+func _place_icon() -> void:
+	if not is_instance_valid(_track): return
+	var icon_home: Container = _track if icon_beside else _title
+	if _icon.get_parent() != icon_home:
+		_icon.get_parent().remove_child(_icon)
+		icon_home.add_child(_icon)
+		icon_home.move_child(_icon, 0)
+	var fill_home: Container = _track if icon_beside else _column
+	for part: Control in [_bar, _frame]:
+		if part.get_parent() != fill_home:
+			part.get_parent().remove_child(part)
+			fill_home.add_child(part)
+		part.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		part.size_flags_vertical = Control.SIZE_SHRINK_CENTER if icon_beside else Control.SIZE_FILL
+	_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER if icon_beside else Control.SIZE_FILL
+	_track.visible = icon_beside
+	_head.visible = not icon_beside or not label_text.is_empty() or readout != Readout.NONE
 
 
 func _apply_label_style() -> void:

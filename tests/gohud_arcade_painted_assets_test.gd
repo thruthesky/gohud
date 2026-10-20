@@ -38,9 +38,11 @@ const STAGE_SPRITES := {
 }
 
 ## The match HUD's painted sprites (the game's `assets/ui/hud`): the player's head, the power bolt, the opponents
-## badge, the stopwatch and the round pause key. None has mipmaps.
+## badge, the stopwatch and the round pause key — and the stability shield painted for gohud in the bolt's style
+## (tools/paint_arcade_shield.gd). None has mipmaps.
 const HUD_SPRITES := {
 	"avatar_head": false, "bolt": false, "opponents_badge": false, "pause_button": false, "stopwatch": false,
+	"shield": false,
 }
 
 ## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's

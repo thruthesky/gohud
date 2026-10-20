@@ -430,7 +430,7 @@ icons.canonical(&"gear")             # &"settings"
 `GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
 초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px), `GoScoreRow` · `GoScoreRowGold` · `GoScoreHead`(점수판 줄,
 우승자의 금색 줄, 머리줄), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
-플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
+플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키, 번개와 같은 화풍으로 gohud 가 그린 안정도 방패)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
 REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
 룩은 모두 `null` 을 돌려준다.
 
