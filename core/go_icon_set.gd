@@ -153,6 +153,8 @@ const SKULL := &"skull"
 # The kill feed's glyphs — painted for arcade_light only (`icons/arcade_light/`, tools/paint_arcade_killfeed.gd).
 const MAGNET_ARROW := &"magnet_arrow"
 const FALL := &"fall"
+# A main menu's multiplayer button: three people — painted for arcade_light only (tools/paint_arcade_multiplayer.gd).
+const MULTIPLAYER := &"multiplayer"
 const RUN := &"run"
 
 # ── What the set holds ─────────────────────────────────────────────────

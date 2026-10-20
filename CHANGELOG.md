@@ -16,6 +16,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **arcade_light's kill-feed glyphs** `GoIconSet.MAGNET_ARROW` (`&"magnet_arrow"`: the horseshoe magnet lying on its
   side, poles to the right, three yellow force waves leaving them) and `GoIconSet.FALL` (`&"fall"`: a down arrow beside
   the ledge it left), painted by `tools/paint_arcade_killfeed.gd`.
+- **arcade_light's `GoIconSet.MULTIPLAYER`** (`&"multiplayer"`): three white people, one in front of two, in the
+  painted glyph style (navy rim, pale lip) — a main menu's multiplayer button; painted by
+  `tools/paint_arcade_multiplayer.gd`. `GoIconSet.USERS` (the HUD's opponents count) is unchanged.
 - **`GoHudCard.show_panel`** (on): off draws no board at all — no `GoHudPanel`, no margins — so the icon, banner,
   labels and bars sit bare on the 3D scene (a match HUD's status corner). A `gauge` keeps its board.
 - **`GoHudCard.icon_ink`** (transparent): tints the card's picture (`self_modulate`), so a white icon from the icon set

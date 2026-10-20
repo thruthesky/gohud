@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=26 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/magnet.png" id="magnet"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/magnet_arrow.png" id="magnet_arrow"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/fall.png" id="fall"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/multiplayer.png" id="multiplayer"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/pause.png" id="pause"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/play.png" id="play"]
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/person.png" id="person"]
@@ -29,7 +30,7 @@
 [resource]
 script = ExtResource("script")
 set_name = "Arcade painted glyphs"
-attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd); star is the filled gold rating star (tools/paint_arcade_stars.gd); magnet_arrow and fall, the kill feed's glyphs, painted for gohud from magnet.png and in the same style (tools/paint_arcade_killfeed.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
+attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd); star is the filled gold rating star (tools/paint_arcade_stars.gd); magnet_arrow and fall, the kill feed's glyphs, painted for gohud from magnet.png and in the same style (tools/paint_arcade_killfeed.gd); multiplayer, three people for a menu's multiplayer button, painted for gohud in the same style (tools/paint_arcade_multiplayer.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
 fallback = ExtResource("fallback")
 textures = {
 &"back": ExtResource("back"),
@@ -41,6 +42,7 @@ textures = {
 &"magnet": ExtResource("magnet"),
 &"magnet_arrow": ExtResource("magnet_arrow"),
 &"fall": ExtResource("fall"),
+&"multiplayer": ExtResource("multiplayer"),
 &"pause": ExtResource("pause"),
 &"person": ExtResource("person"),
 &"play": ExtResource("play"),

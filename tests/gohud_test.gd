@@ -952,15 +952,15 @@ func _icons() -> void:
 	var script: Script = load(ADDON + "/core/go_icon_set.gd")
 	var constants := script.get_script_constant_map()
 	var missing: Array = []
-	# The kill feed's glyphs are arcade_light's own paintings (no plain-look drawing), so they are looked up there.
-	var arcade_only: Array[StringName] = [GoIconSet.MAGNET_ARROW, GoIconSet.FALL]
+	# The kill feed's and the multiplayer glyphs are arcade_light's own paintings (no plain-look drawing), so they are looked up there.
+	var arcade_only: Array[StringName] = [GoIconSet.MAGNET_ARROW, GoIconSet.FALL, GoIconSet.MULTIPLAYER]
 	var arcade := (load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset).icons
 	for key in constants:
 		var value: Variant = constants[key]
 		if not value is StringName: continue
 		var drawn := arcade.has_icon(value) if arcade_only.has(value) else icon_set.has_icon(value)
 		if not drawn: missing.append(value)
-	check(missing.is_empty(), "every GoIconSet name constant is in the built-in set (the kill-feed glyphs in arcade_light's) %s" % str(missing))
+	check(missing.is_empty(), "every GoIconSet name constant is in the built-in set (the kill-feed and multiplayer glyphs in arcade_light's) %s" % str(missing))
 
 	var close := icon_set.texture(GoIconSet.CLOSE)
 	check(close != null, "the close texture")
