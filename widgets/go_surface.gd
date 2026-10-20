@@ -118,6 +118,29 @@ static func close_requests() -> int:
 static var _close_requests := 0
 
 
+## Bumped by every surface the moment it opens (it becomes visible in the tree — the window's own open, not a frame
+## count). 🔑 A launcher handing the screen over (`GoPage.hand_over`, `GoDrawer.hand_over`) waits for it to move — for as
+## long as its wait allows — so a window that opens a few frames late (after a deferred call or a cached load) still
+## takes the screen in one transition.
+static func open_serial() -> int:
+	return _open_serial
+
+
+## The surface that opened last (`open_serial`), or null once it is gone — the window a launcher handed the screen to.
+static func last_opened() -> GoSurface:
+	return _last_opened.get_ref() as GoSurface if _last_opened != null else null
+
+
+static var _open_serial := 0
+static var _last_opened: WeakRef = null
+
+## How long a launcher's hand-over (`GoPage.hand_over`, `GoDrawer.hand_over`) waits, at most, for the window its action
+## opens (`open_serial` — caught in the frame that window opens). Half a second covers a window that opens after a
+## deferred call or a cached load; a window that waits on the network should open first and show its loading state —
+## past the wait a page simply stays and a drawer closes.
+const HAND_OVER_SECONDS := 0.5
+
+
 # ── Placement ──────────────────────────────────────────────────────────
 
 ## 🔑 Every layout input below is a setter that marks the layout dirty **only when the value really changes** — a
@@ -1279,6 +1302,8 @@ func _sync_active() -> void:
 		if not _holds_back:
 			GoBackPolicy.acquire(get_tree())
 			_open_count += 1
+			_open_serial += 1
+			_last_opened = weakref(self)
 			_holds_back = true
 		var focus := get_viewport().gui_get_focus_owner()
 		_previous_focus = weakref(focus) if focus != null and not is_ancestor_of(focus) else null

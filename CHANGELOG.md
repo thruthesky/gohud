@@ -24,7 +24,11 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   nothing closes, as before). `GoSurface.set_aside()` / `path_count()` / `held_count()` are the counts they share.
   Only a close the player asked for brings the launcher back: **`GoSurface.close_requests()`** counts
   `request_close()` calls (✕, Escape, back, scrim), and a window that closed itself (its job done) leaves the launcher
-  closed instead of popping it back over the new place.
+  closed instead of popping it back over the new place. The wait for the window is its own open
+  (**`GoSurface.open_serial()`** / `last_opened()`), at most the wait given (**`GoSurface.HAND_OVER_SECONDS`** = 0.5 s —
+  was two frames, so a window opening a little late fell back to "launcher closes, then a window pops");
+  `GoDrawer.hand_over(action, 0.0)` is a row that acts on the screen behind (closes at once). **`GoPage.recall()`** brings
+  a page standing aside back by asking its window to close as the player would.
 - **`GoSurface.back_before_close`** (off) and **`GoSurface.request_back()`** — Escape and the Android back press a
   showing back button before they close the window (GoPage turns it on). `request_back()` is that step for code (a voice
   "close").

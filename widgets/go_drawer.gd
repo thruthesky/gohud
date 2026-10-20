@@ -110,10 +110,11 @@ var _open := false
 var _surfaces_at_open := 0
 ## The side the panel face was last made for (`_restyle`).
 var _styled_left := true
-## A hand-over in progress (`hand_over`): {at, frames, aside}. Empty when none.
+## A hand-over in progress (`hand_over`): {at, asks, serial, until, aside}. Empty when none.
 var _hand := {}
-## Frames a hand-over waits for the window its action opens before it reads "nothing opened" and closes.
-const HAND_OVER_FRAMES := 2
+## How long a hand-over waits, at most, for the window its action opens (`GoSurface.open_serial` — the window's own
+## open) before it reads "nothing opened" and closes — `GoSurface.HAND_OVER_SECONDS`, the one wait both launchers share.
+const HAND_OVER_SECONDS := GoSurface.HAND_OVER_SECONDS
 
 
 func _init() -> void:
@@ -262,11 +263,15 @@ func is_open() -> bool:
 
 ## Runs [param action] (a row's press) and hands the screen to the window it opens — see the header. 🔑 The window opens
 ## while the drawer is still up and the drawer steps aside in the same frame, so the player sees one transition.
-func hand_over(action: Callable) -> void:
-	if not _open:
+## [param wait_seconds] is how long it waits for that window (its own open — `GoSurface.open_serial`); `0` is a row that
+## acts on the screen behind (a zoom, a toggle): the drawer closes at once so its effect shows, then the row runs.
+func hand_over(action: Callable, wait_seconds := HAND_OVER_SECONDS) -> void:
+	if not _open or wait_seconds <= 0.0:
+		if _open: close()
 		if action.is_valid(): action.call()
 		return
-	_hand = {at = GoSurface.path_count(), asks = GoSurface.close_requests(), frames = HAND_OVER_FRAMES, aside = false}
+	_hand = {at = GoSurface.path_count(), asks = GoSurface.close_requests(), serial = GoSurface.open_serial(),
+		until = Time.get_ticks_msec() + int(wait_seconds * 1000.0), aside = false}
 	if action.is_valid(): action.call()
 	_watch_hand_over()
 	if not _hand.is_empty(): set_process(not Engine.is_editor_hint())
@@ -282,13 +287,11 @@ func _watch_hand_over() -> void:
 	if not bool(_hand.aside):
 		if not _open:
 			_hand = {}   # the action closed the drawer itself
-		elif GoSurface.path_count() > int(_hand.at):
+		elif GoSurface.open_serial() != int(_hand.serial) and GoSurface.path_count() > int(_hand.at):
 			_step_aside()
-		else:
-			_hand.frames = int(_hand.frames) - 1
-			if int(_hand.frames) < 0:
-				_hand = {}
-				close()   # nothing opened: the press acted on the screen behind — show it
+		elif Time.get_ticks_msec() >= int(_hand.until):
+			_hand = {}
+			close()   # nothing opened in time: the press acted on the screen behind — show it
 		return
 	# Another launcher opened while away (a second drawer): the player moved on — this one gives up coming back.
 	if GoSurface.is_any_held_open():

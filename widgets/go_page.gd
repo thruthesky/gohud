@@ -113,10 +113,10 @@ var _root_back := Callable()
 var _status_was := false
 ## `surface.close_enabled` as it was before a `hold` turned the ✕ off.
 var _close_was := true
-## A hand-over in progress (`hand_over`): {at, held, frames, focus, aside}. Empty when none.
+## A hand-over in progress (`hand_over`): {at, held, asks, serial, until, focus, aside, window}. Empty when none.
 var _hand := {}
-## Frames a hand-over waits for the window its action opens (a window that opens one frame late is still caught).
-const HAND_OVER_FRAMES := 2
+## How long a hand-over waits, at most, for the window its action opens — `GoSurface.HAND_OVER_SECONDS`.
+const HAND_OVER_SECONDS := GoSurface.HAND_OVER_SECONDS
 
 
 ## 🛑 Built in `_init` — `page.open()` and `page.body` before adding the page to the tree is natural use (as `GoSheet`).
@@ -587,20 +587,21 @@ class _Answer extends RefCounted:
 # ── Handing the screen to another window ───────────────────────────────
 
 ## Runs [param action] — a row that opens a window this page cannot hold (a shop, a screen of the game's own). When a
-## window opens (now or within `HAND_OVER_FRAMES`), the page **steps aside in that same frame** — hidden, its tab, body,
+## window opens (in the action, or later within [param wait_seconds] — the window's own open, `GoSurface.open_serial`),
+## the page **steps aside in that same frame** — hidden, its tab, body,
 ## sub-pages and scroll kept, not `closed` — and comes back when that window and anything it opened in turn have
 ## closed, focus on the row that handed over. One transition each way, and back retraces the path. Nothing opened: the
 ## page simply stays. A drawer or other held window opening while it is away means the player moved on: the page
 ## closes for good (`closed`) — and so does a window that closed **itself** (no `GoSurface.close_requests` since the
-## hand-over: its job is done, the player stays where it put them).
-func hand_over(action: Callable) -> void:
+## hand-over: its job is done, the player stays where it put them). `recall()` brings it back early.
+func hand_over(action: Callable, wait_seconds := HAND_OVER_SECONDS) -> void:
 	_drop_hand_over()
 	if not visible or not is_inside_tree():
 		if action.is_valid(): action.call()
 		return
 	var focus := get_viewport().gui_get_focus_owner()
 	_hand = {at = GoSurface.path_count(), held = GoSurface.held_count(), asks = GoSurface.close_requests(),
-		frames = HAND_OVER_FRAMES,
+		serial = GoSurface.open_serial(), until = Time.get_ticks_msec() + int(maxf(0.0, wait_seconds) * 1000.0),
 		focus = weakref(focus) if focus != null and surface.is_ancestor_of(focus) else null, aside = false}
 	if action.is_valid(): action.call()
 	_watch_hand_over()
@@ -624,13 +625,13 @@ func _watch_hand_over() -> void:
 	if not bool(_hand.aside):
 		if not visible:
 			_hand = {}   # the action closed the page itself
-		elif GoSurface.path_count() > int(_hand.at):
+		elif GoSurface.open_serial() != int(_hand.serial) and GoSurface.path_count() > int(_hand.at):
 			_hand.aside = true
+			_hand.window = weakref(GoSurface.last_opened())
 			GoSurface.set_aside(true)
 			visible = false   # the surface lets go of the back gesture; it takes it again on the way back
-		else:
-			_hand.frames = int(_hand.frames) - 1
-			if int(_hand.frames) < 0: _hand = {}
+		elif Time.get_ticks_msec() >= int(_hand.until):
+			_hand = {}   # nothing opened in time: the page simply stays
 		return
 	if GoSurface.held_count() > int(_hand.held):
 		_give_up_hand_over()
@@ -639,12 +640,30 @@ func _watch_hand_over() -> void:
 		if GoSurface.close_requests() == int(_hand.asks):
 			_give_up_hand_over()
 			return
-		var focus: WeakRef = _hand.focus
-		_hand = {}
-		GoSurface.set_aside(false)
-		visible = true
-		surface.relayout()
-		_restore_focus_to.call_deferred(focus)
+		_come_back()
+
+
+## Back as it stood (tab, sub-page, scroll), focus on the row that handed over — the window it stood aside for closed.
+func _come_back() -> void:
+	var focus: WeakRef = _hand.focus
+	_hand = {}
+	GoSurface.set_aside(false)
+	visible = true
+	surface.relayout()
+	_restore_focus_to.call_deferred(focus)
+
+
+## Asks for the page back while it stands aside (the host's own way in — its menu key pressed again): the window it
+## handed the screen to is asked to close as the player would (`GoSurface.request_close` — that window's own guards
+## still hold, e.g. a purchase in flight keeps it up), and the page returns as that window closes. `false` when the page
+## is not standing aside, or that window is not the top one (something the player opened over it answers first).
+func recall() -> bool:
+	if not is_handing_over(): return false
+	var ref: WeakRef = _hand.get("window")
+	var window := ref.get_ref() as GoSurface if ref != null else null
+	if window == null or not window.is_top(): return false
+	window.request_close()
+	return true
 
 
 func _drop_hand_over() -> void:

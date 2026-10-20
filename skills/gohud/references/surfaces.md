@@ -381,7 +381,9 @@ makes the app bar's menu button open it.
 - 🚪 `hand_over(action)` — what a tile press runs: the window the action opens comes up while the drawer is still there,
   and the drawer **steps aside in that same frame** (no slide-out, nothing left under the window); when that window and
   anything it opened in turn have closed, the drawer is back as it was (`is_handing_over()`). Back from the window
-  retraces the path to the drawer. An action that opens nothing within `HAND_OVER_FRAMES` (it acts on the screen behind)
+  retraces the path to the drawer. It waits for the window's own open (`GoSurface.open_serial()`), at most
+  the wait given (`hand_over(action, seconds)`, default `GoSurface.HAND_OVER_SECONDS` = 0.5 s) — a window that opens a few frames late still gets one
+  transition; `hand_over(action, 0.0)` is a row that acts on the screen behind (the drawer closes at once). An action that opens nothing in that wait (it acts on the screen behind)
   closes the drawer so its effect shows. `close()` while it stands aside only gives up the way back. Only a close the
   **player** asked for (✕, Escape, back, scrim — `request_close()`) brings it back; a window that closes itself (its
   job done: a teleport that went through) leaves the drawer closed (`GoSurface.close_requests()`).
@@ -531,7 +533,7 @@ restore all come from `GoSurface`.
 | `set_page_title(text)` · `set_page_title_key(key)` | The page's own title from any depth — under a sub-page, what the last pop shows (`set_title` re-titles the level shown) |
 | `hold(on)` · `is_held()` | The top sub-page can't be left while held (a form mid-send): back, Escape, the gesture and the ✕ do nothing; a code `pop()` / `close()` still works, and `close_enabled` comes back as it was |
 | `confirm(title, body, ok := "", cancel := "", extra := "", args := {}, destructive := false)` / `confirm_key(…)` | `await` a yes/no **inside the page** — a pushed sub-page with [cancel] [confirm] in its pinned row. Back, Escape, the back gesture or closing the page answer `false`. The same shape as `GoDialogs.confirm` |
-| `hand_over(action)` · `is_handing_over()` | Runs a row whose window the page cannot hold: when a window opens (now or within `HAND_OVER_FRAMES`) the page steps aside in that frame, and comes back — same tab, sub-page and row focused — when the player closes that window (and anything it opened). A window that closes itself, or a drawer opening meanwhile, = the player moved on: the page closes |
+| `hand_over(action, seconds := HAND_OVER_SECONDS)` · `is_handing_over()` · `recall()` | Runs a row whose window the page cannot hold: when a window opens (in the action, or later within the wait given — its own open, `GoSurface.open_serial()`) the page steps aside in that frame; and comes back — same tab, sub-page and row focused — when the player closes that window (and anything it opened). A window that closes itself, or a drawer opening meanwhile, = the player moved on: the page closes. `recall()` (the host's own way back in — its menu key again) asks that window to close as the player would (`request_close`, its own guards hold) |
 | `toolbar()` / `footer()` | The pinned rows under the header / at the bottom (the surface's own) |
 | `set_scrolls(on)` · `is_landscape()` | Turn the content scroll off for content with its own scroll (a grid, a list view) |
 

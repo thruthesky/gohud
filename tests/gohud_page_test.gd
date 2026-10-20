@@ -760,9 +760,26 @@ func _page_hand_over() -> void:
 	check(page.is_open() and not page.is_handing_over() and GoBackPolicy.owners() == 1,
 		"the player closed the window → the page is back (owners %d)" % GoBackPolicy.owners())
 	check(get_root().gui_get_focus_owner() == row, "focus back on the row that handed over")
-	page.hand_over(func() -> void: pass)
-	await frames(4)
+	page.hand_over(func() -> void: pass, 0.1)
+	await frames(2)
+	check(page.visible and not page.is_handing_over(), "waiting for the window: the page is still up")
+	await create_timer(0.2).timeout
+	await frames(1)
 	check(page.is_open() and not page.is_handing_over(), "an action that opens nothing leaves the page where it is")
+	# A window that opens late (a deferred call, a cached load) — the page waits for its open, not a frame count.
+	page.hand_over(func() -> void: create_timer(0.15).timeout.connect(func() -> void: shop.open("Shop")))
+	await frames(4)
+	check(page.visible and not page.is_handing_over(), "a late window: the page waits, still up")
+	await create_timer(0.25).timeout
+	await frames(1)
+	check(not page.visible and page.is_handing_over() and shop.is_open(),
+		"the late window opened → the page stepped aside then, in one transition")
+	# The host's own way back in (its menu key again): `recall` asks the window to close as the player would.
+	check(page.recall(), "recall() while aside asks the window to close")
+	await frames(3)
+	check(not shop.is_open() and page.is_open() and not page.is_handing_over() and int(closes[0]) == 0,
+		"recall: the window closed (a player close) → the page is back, never closed")
+	check(not page.recall(), "recall() with nothing handed over does nothing")
 	# The window closes itself (its job done — no close asked for): the page stays closed, the player stays there.
 	page.hand_over(func() -> void: shop.open("Shop"))
 	await frames(2)
@@ -822,9 +839,9 @@ func _drawer_hand_over() -> void:
 	check(not settings.is_open() and drawer.is_open() and drawer.visible and int(closed[0]) == 0,
 		"Escape closes the page → the drawer is back where it was")
 	check(GoBackPolicy.owners() == 1 and GoSurface.is_any_held_open(), "the drawer holds back again (%d)" % GoBackPolicy.owners())
-	drawer.hand_over(func() -> void: pass)
-	await frames(4)
-	check(not drawer.is_open() and int(closed[0]) == 1, "a tile that opens nothing closes the drawer (its effect is behind)")
+	drawer.hand_over(func() -> void: pass, 0.0)
+	check(not drawer.is_open() and int(closed[0]) == 1,
+		"a tile that acts on the screen behind (wait 0) closes the drawer at once (its effect is behind)")
 	await frames(2)
 	check(GoBackPolicy.owners() == 0, "all closed: owners 0 (%d)" % GoBackPolicy.owners())
 	drawer.open("Menu")
@@ -836,6 +853,27 @@ func _drawer_hand_over() -> void:
 	settings.close()
 	await frames(3)
 	check(not drawer.is_open() and GoBackPolicy.owners() == 0, "and the page's close brings nothing back")
+	# A window that opens late: the drawer stays up until it opens, then steps aside — one transition, not slide-then-pop.
+	drawer.open("Menu")
+	await frames(2)
+	drawer.hand_over(func() -> void: create_timer(0.15).timeout.connect(func() -> void: settings.open("Settings")))
+	await frames(4)
+	check(drawer.is_open() and drawer.visible and not drawer.is_handing_over(), "a late window: the drawer waits, still up")
+	await create_timer(0.25).timeout
+	await frames(1)
+	check(drawer.is_handing_over() and not drawer.visible and settings.is_open() and int(closed[0]) == 2,
+		"the late window opened → the drawer stepped aside then (never closed)")
+	settings.surface.request_close()
+	await frames(3)
+	check(drawer.is_open() and drawer.visible, "the player closed it → the drawer is back")
+	# Nothing opens within the wait: the drawer closes when it runs out.
+	drawer.hand_over(func() -> void: pass, 0.1)
+	await frames(2)
+	check(drawer.is_open(), "waiting for a window that never comes: the drawer is still up")
+	await create_timer(0.2).timeout
+	await frames(1)
+	check(not drawer.is_open() and int(closed[0]) == 3, "the wait ran out → the drawer closed (its effect is behind)")
+	await frames(2)
 	# A window that closes itself (its job done — a teleport made): the drawer does not pop back over the battle screen.
 	drawer.open("Menu")
 	await frames(2)
@@ -843,7 +881,7 @@ func _drawer_hand_over() -> void:
 	await frames(2)
 	settings.close()
 	await frames(3)
-	check(not drawer.is_open() and not drawer.is_handing_over() and int(closed[0]) == 3 and GoBackPolicy.owners() == 0,
+	check(not drawer.is_open() and not drawer.is_handing_over() and int(closed[0]) == 4 and GoBackPolicy.owners() == 0,
 		"the page closed itself (no close asked for) → the drawer closes instead of coming back")
 	drawer.queue_free()
 	settings.queue_free()
