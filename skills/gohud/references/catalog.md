@@ -201,13 +201,14 @@ sheet.body.add_child(bag_list)
 
 ### `GoPage`
 
-Extends `CanvasLayer`. A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview and back. Details: `surfaces.md` §14 (GoPage).
+Extends `CanvasLayer`. A full-screen page with a category rail (left in landscape, tabs on top in portrait), a preview, back, and sub-pages pushed inside it. Details: `surfaces.md` §14 (GoPage).
 
 ```gdscript
 var page := GoPage.new()
 add_child(page)
 page.open("Settings")
 page.set_tabs([{id = &"sound", label = "Sound", icon = GoIconSet.VOLUME_HIGH, badge = ""}])
+page.push("About", func(box: VBoxContainer) -> void: box.add_child(GoStyle.label("Version 1.0")))
 ```
 
 ### `GoDialogs`

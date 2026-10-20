@@ -30,11 +30,35 @@
 ## A full-screen page covers the screen; drawing the world behind a covered page is wasted work. `opaque` keeps the
 ## panel and the ground behind it fully opaque, so a host may stop drawing what is underneath while it is open.
 ## Turn it off only for a page that must show something through (and then do not hide the world).
+##
+## ## 🧭 Sub-pages — one place, one level deeper, back retraces the path
+## A row with more to show does not open a second window over the page: it **pushes a sub-page inside it**.
+## ```gdscript
+## about_row.pressed.connect(func() -> void:
+##     page.push("About", func(box: VBoxContainer) -> void: box.add_child(GoStyle.label("Version 1.2"))))
+## if await page.confirm("Log out", "Log out now?", "Log out", "", "", {}, true):
+##     log_out()
+## ```
+## - `push(title, build)` / `push_key(title_key, build)` hide the current level and show a new one in the content area
+##   with its own title, a scrolling body (returned, and handed to `build`) and a pinned row `sub_footer()`. `build`
+##   runs **on push** — nothing of a sub-page exists before it is opened, and a popped level is freed.
+## - The header's back button shows from depth 1. **Escape, the Android back gesture and the back button pop one
+##   level** (`GoSurface.back_before_close`); only at depth 0 do they close the page. The close button closes the whole
+##   page. `pop()` · `pop_to(depth)` · `depth()` · `depth_changed`.
+## - While a sub-page is up the tab rail and the root's pinned footer step away (a deeper level is not a tab, and the
+##   root's actions belong to the root's content); the toolbar and the preview stay. Focus returns to the control that
+##   pushed when the level pops.
+## - `confirm()` / `confirm_key()` ask inside the page — a pushed sub-page with the question and [cancel] [confirm] in
+##   its pinned row (`await` → `true` on confirm; back, Escape or closing the page answer `false`).
+## - `hand_over(action)` — for a row that opens a window the page cannot hold (a shop, another screen): the page steps
+##   aside in the same frame that window opens and comes back, on the same tab and row, when it closes.
 @tool
 class_name GoPage
 extends CanvasLayer
 
 signal closed
+## A sub-page was pushed or popped — [param depth] is the new depth (0: the page's own content).
+signal depth_changed(depth: int)
 ## The shown tab changed — by a tap on its tab, `select_tab()`, or `set_tabs()` choosing the first one.
 signal tab_changed(id: StringName)
 
@@ -73,6 +97,19 @@ var _current := &""
 var _landscape := false
 var _arranged := false
 var _content_edge_padding := -1
+## Sub-pages, bottom to top: {root, scroll, body, footer, focus: WeakRef, under_title, under_mode, answer}.
+var _levels: Array[Dictionary] = []
+## What the first push hid, to give back on the last pop: the content area's own parts ([node, was visible]), the
+## pinned footer and the rail.
+var _root_parts: Array = []
+var _footer_was := false
+var _rail_was := false
+## The host's own back action for the page's first level (`set_back`) — the sub-pages put theirs over it.
+var _root_back := Callable()
+## A hand-over in progress (`hand_over`): {at, held, frames, focus, aside}. Empty when none.
+var _hand := {}
+## Frames a hand-over waits for the window its action opens (a window that opens one frame late is still caught).
+const HAND_OVER_FRAMES := 2
 
 
 ## 🛑 Built in `_init` — `page.open()` and `page.body` before adding the page to the tree is natural use (as `GoSheet`).
@@ -86,6 +123,7 @@ func _init() -> void:
 	surface.resizable = false
 	surface.scroll_body = false
 	surface.dismiss_on_scrim = false
+	surface.back_before_close = true
 	surface.alpha = 1.0 if opaque else -1.0
 	surface.close_requested.connect(close)
 	add_child(surface)
@@ -94,6 +132,14 @@ func _init() -> void:
 
 func _ready() -> void:
 	if layer == 1: layer = 10
+	set_process(false)
+
+
+func _notification(what: int) -> void:
+	# A page freed while it stood aside gives its place on the path back (`GoSurface.set_aside`).
+	if what == NOTIFICATION_EXIT_TREE and not _hand.is_empty() and bool(_hand.get("aside", false)):
+		_hand = {}
+		GoSurface.set_aside(false)
 
 
 func _build_frame() -> void:
@@ -144,7 +190,10 @@ func _build_frame() -> void:
 # ── Opening and closing ────────────────────────────────────────────────
 
 ## Opens full screen with [param title] (already translated). Resets the back button; keeps tabs, preview and body.
+## Opens on the page's own level — sub-pages left from before are popped (and a hand-over in progress is dropped).
 func open(title: String) -> void:
+	_drop_hand_over()
+	pop_to(0)
 	if not visible: GoFeedback.opened()
 	surface.set_title(title)
 	set_back(Callable())
@@ -158,15 +207,27 @@ func open_key(title_key: String) -> void:
 	surface.set_title_key(title_key)
 
 
-## Changes only the title (a sub-page inside the same page carries its own title).
+## Changes only the title of the level shown (a sub-page carries its own title — `push`).
 func set_title(value: String) -> void:
 	surface.set_title(value)
 
 
+## The same by translation key — the engine redraws it when the language changes.
+func set_title_key(key: String) -> void:
+	surface.set_title_key(key)
+
+
+## Closes the whole page (from any depth): the sub-pages are popped and freed, so it opens on its own level next time.
+## A page that stood aside for a window (`hand_over`) stays closed — it does not come back.
 func close() -> void:
+	if not _hand.is_empty() and bool(_hand.get("aside", false)):
+		_give_up_hand_over()
+		return
+	_hand = {}
 	if not visible: return
 	GoFeedback.closed()
 	visible = false
+	pop_to(0)
 	closed.emit()
 
 
@@ -174,9 +235,11 @@ func is_open() -> bool:
 	return visible
 
 
-## A sub-page's back button (like `GoSheet.set_back`). An empty `Callable` hides it.
+## The back button of the page's own level (like `GoSheet.set_back`). An empty `Callable` hides it. 🔑 Escape and the
+## Android back run it too (`GoSurface.back_before_close`). A sub-page's back is the page's own (`pop`).
 func set_back(action: Callable) -> void:
-	surface.set_back(action)
+	_root_back = action
+	if _levels.is_empty(): surface.set_back(action)
 
 
 ## Empties the content area (the current tab's body).
@@ -213,11 +276,307 @@ func set_scrolls(on: bool) -> void:
 		_content_scroll.set_section_visible(false)
 
 
+# ── Sub-pages ──────────────────────────────────────────────────────────
+
+## Pushes a sub-page titled [param title] (already translated) and returns its body — a column that scrolls like a tab
+## body. [param build], when given, is called with that body right away (`build.call(body)`): build the sub-page there,
+## on push — never up front. Escape, the Android back and the header's back pop it (`pop`).
+func push(title: String, build := Callable()) -> VBoxContainer:
+	return _push(title, false, build)
+
+
+## The same with a translation key as the title — the engine redraws it when the language changes.
+func push_key(title_key: String, build := Callable()) -> VBoxContainer:
+	return _push(title_key, true, build)
+
+
+## Pops the top sub-page (freed) and shows the level under it, its title and back, focus on the control that pushed.
+## `false` at depth 0 — there is nothing to pop (the page itself closes with `close()`).
+func pop() -> bool:
+	if _levels.is_empty(): return false
+	_pop_level(true)
+	depth_changed.emit(_levels.size())
+	return true
+
+
+## Pops down to [param level_depth] at once (0: the page's own level) — no focus moves, `depth_changed` fires once.
+func pop_to(level_depth: int) -> void:
+	var target := maxi(0, level_depth)
+	if _levels.size() <= target: return
+	while _levels.size() > target: _pop_level(false)
+	depth_changed.emit(_levels.size())
+
+
+## How many sub-pages are up (0: the page's own content shows).
+func depth() -> int:
+	return _levels.size()
+
+
+## The body of the level shown — the top sub-page's, or `body` at depth 0.
+func sub_body() -> VBoxContainer:
+	return _levels.back().body if not _levels.is_empty() else body
+
+
+## The pinned row under the top sub-page's body (confirm buttons, [Send]) — it shows once something is put in it. At
+## depth 0 the page's own `footer()`.
+func sub_footer() -> VBoxContainer:
+	return _levels.back().footer if not _levels.is_empty() else surface.footer
+
+
+func _push(title: String, translate: bool, build: Callable) -> VBoxContainer:
+	var view := get_viewport() if is_inside_tree() else null
+	var focus: Control = view.gui_get_focus_owner() if view != null else null
+	if focus != null and not surface.is_ancestor_of(focus): focus = null
+	var level := {focus = weakref(focus) if focus != null else null, under_title = surface.title_label.text,
+		under_mode = surface.title_label.auto_translate_mode}
+	if _levels.is_empty():
+		# 🔑 The first level hides the page's own content (every part of the content area, whatever `set_scrolls` made
+		#    of it), the root's pinned footer and the rail — and remembers each, so the last pop gives back exactly that.
+		_root_parts.clear()
+		for part in _content_holder.get_children():
+			_root_parts.append([part, (part as CanvasItem).visible])
+			(part as CanvasItem).visible = false
+		_footer_was = surface.footer.visible
+		surface.footer.visible = false
+		_rail_was = _rail_scroll.visible
+		_rail_scroll.visible = false
+	else:
+		(_levels.back().root as Control).visible = false
+	var root := GoStyle.column(0)
+	root.name = "SubPage%d" % (_levels.size() + 1)
+	root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_content_holder.add_child(root)
+	var scroll := GoScroll.new()
+	scroll.name = "SubPageScroll"
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	root.add_child(scroll)
+	var column := GoStyle.column()
+	column.name = "SubPageBody"
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(column)
+	# The shared panel edge, as the tab body (`_build_frame`) — in the tree first: the edge frame wraps the scroll there.
+	scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+	var foot := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	foot.name = "SubPageFooter"
+	foot.visible = false
+	foot.child_entered_tree.connect(func(_child: Node) -> void: foot.visible = true)
+	root.add_child(foot)
+	level.root = root
+	level.scroll = scroll
+	level.body = column
+	level.footer = foot
+	_levels.append(level)
+	if translate: surface.set_title_key(title)
+	else: surface.set_title(title)
+	surface.set_back(_back_one)
+	_sync_content_edge()
+	if build.is_valid(): build.call(column)
+	if visible and is_inside_tree():
+		GoFeedback.opened()
+		_focus_level.call_deferred(root)
+	depth_changed.emit(_levels.size())
+	return column
+
+
+func _back_one() -> void:
+	pop()
+
+
+func _pop_level(restore_focus: bool) -> void:
+	var level: Dictionary = _levels.pop_back()
+	var root: Control = level.root
+	if is_instance_valid(root):
+		_content_holder.remove_child(root)
+		root.queue_free()
+	if _levels.is_empty():
+		for part: Array in _root_parts:
+			if is_instance_valid(part[0]): (part[0] as CanvasItem).visible = part[1]
+		_root_parts.clear()
+		surface.footer.visible = _footer_was
+		_rail_scroll.visible = _rail_was
+		surface.set_back(_root_back)
+		_content_edge_padding = -1   # the root's column comes back — measure its edge again
+	else:
+		(_levels.back().root as Control).visible = true
+	if int(level.under_mode) == Node.AUTO_TRANSLATE_MODE_ALWAYS: surface.set_title_key(str(level.under_title))
+	else: surface.set_title(str(level.under_title))
+	_sync_content_edge()
+	# A question popped by back / Escape / close is answered "no" — deferred, so the asker never resumes mid-pop.
+	var answer: _Answer = level.get("answer")
+	if answer != null: answer.give.call_deferred(false)
+	if restore_focus and visible and is_inside_tree():
+		GoFeedback.closed()
+		_restore_focus_to.call_deferred(level.focus)
+
+
+## Steering by keyboard: focus moves into the new level (its first control, else the back button). By pointer nothing
+## takes focus — no ring on a page opened by a tap (`GoSurface._focus_default`'s rule).
+func _focus_level(root: Control) -> void:
+	if not is_instance_valid(root) or not root.is_visible_in_tree(): return
+	if GoUi.config.suppress_pointer_focus_ring and GoSurface._pointer_navigation: return
+	var target := root.find_next_valid_focus()
+	if target == null or not root.is_ancestor_of(target): target = surface.back_button
+	if is_instance_valid(target) and target.is_visible_in_tree(): target.grab_focus()
+
+
+## Focus back on [param ref]'s control — without its ring when the player steers by pointer.
+func _restore_focus_to(ref: WeakRef) -> void:
+	var target := ref.get_ref() as Control if ref != null else null
+	if not is_instance_valid(target) or not target.is_visible_in_tree(): return
+	target.grab_focus(GoUi.config.suppress_pointer_focus_ring and GoSurface._pointer_navigation)
+
+
+# ── Asking inside the page ─────────────────────────────────────────────
+
+## Asks yes or no **inside the page** — a pushed sub-page titled [param title] with [param body_text] (and [param extra]
+## under it), [cancel] and [confirm] in its pinned row; `true` on confirm. Back, Escape, the back gesture and closing the
+## page answer `false`. [param args] fill `{name}` placeholders in the title and body. [param destructive] paints the
+## confirm button in the danger colour. Texts are already translated (`confirm_key` takes keys) — the same shape as
+## `GoDialogs.confirm`, so a call site moves over by changing its receiver.
+func confirm(title: String, body_text: String, ok_text := "", cancel_text := "", extra := "", args := {},
+		destructive := false) -> bool:
+	return await _ask(false, title, body_text, ok_text if not ok_text.is_empty() else GoUi.text(&"confirm"),
+		cancel_text if not cancel_text.is_empty() else GoUi.text(&"cancel"), extra, args, destructive)
+
+
+## Asks by translation key (`confirm`). Without [param args] the title and body follow a language switch.
+func confirm_key(title_key: String, body_key: String, ok_key := "", cancel_key := "", extra := "", args := {},
+		destructive := false) -> bool:
+	return await _ask(true, title_key, body_key, ok_key if not ok_key.is_empty() else GoUi.text_key(&"confirm"),
+		cancel_key if not cancel_key.is_empty() else GoUi.text_key(&"cancel"), extra, args, destructive)
+
+
+func _ask(translate: bool, title: String, body_text: String, ok_text: String, cancel_text: String, extra: String,
+		args: Dictionary, destructive: bool) -> bool:
+	var answer := _Answer.new()
+	var keyed := translate and args.is_empty()
+	var box := _push(title if keyed else (tr(title) if translate else title).format(args), keyed, Callable())
+	_levels.back().answer = answer
+	var question := GoStyle.label_key(body_text) if keyed \
+		else GoStyle.label((tr(body_text) if translate else body_text).format(args))
+	question.name = "ConfirmBody"
+	question.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(question)
+	if not extra.is_empty():
+		var more := GoStyle.label(extra, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED))
+		more.name = "ConfirmExtra"
+		more.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		more.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		box.add_child(more)
+	var level_depth := _levels.size()
+	var reply := func(yes: bool) -> void:
+		# Off the stack first, then the answer — the asker resumes on the level it asked from.
+		if _levels.size() >= level_depth: pop_to(level_depth - 1)
+		if yes: GoFeedback.confirmed()
+		else: GoFeedback.canceled()
+		answer.give(yes)
+	var row := GoStyle.row(GoUi.metric(GoTheme.GAP_SMALL))
+	row.name = "ConfirmActions"
+	var cancel := GoStyle.button_key(cancel_text, reply.bind(false)) if translate \
+		else GoStyle.button(cancel_text, reply.bind(false))
+	cancel.name = "Cancel"
+	var ok := GoStyle.button_key(ok_text, reply.bind(true), GoStyle.Tone.PRIMARY) if translate \
+		else GoStyle.button(ok_text, reply.bind(true), GoStyle.Tone.PRIMARY)
+	ok.name = "Confirm"
+	if destructive: GoStyle.style_button(ok, GoStyle.Tone.DANGER_SOLID)
+	for button: Button in [cancel, ok]:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		row.add_child(button)
+	sub_footer().add_child(row)
+	var yes: bool = await answer.done
+	return yes
+
+
+## One question's answer — its own signal, so two askers never get each other's reply (`GoDialogs.Ticket`).
+class _Answer extends RefCounted:
+	signal done(yes: bool)
+	var _given := false
+
+	func give(yes: bool) -> void:
+		if _given: return
+		_given = true
+		done.emit(yes)
+
+
+# ── Handing the screen to another window ───────────────────────────────
+
+## Runs [param action] — a row that opens a window this page cannot hold (a shop, a screen of the game's own). When a
+## window opens (now or within `HAND_OVER_FRAMES`), the page **steps aside in that same frame** — hidden, its tab, body,
+## sub-pages and scroll kept, not `closed` — and comes back when that window and anything it opened in turn have
+## closed, focus on the row that handed over. One transition each way, and back retraces the path. Nothing opened: the
+## page simply stays. A drawer or other held window opening while it is away means the player moved on: the page
+## closes for good (`closed`).
+func hand_over(action: Callable) -> void:
+	_drop_hand_over()
+	if not visible or not is_inside_tree():
+		if action.is_valid(): action.call()
+		return
+	var focus := get_viewport().gui_get_focus_owner()
+	_hand = {at = GoSurface.path_count(), held = GoSurface.held_count(), frames = HAND_OVER_FRAMES,
+		focus = weakref(focus) if focus != null and surface.is_ancestor_of(focus) else null, aside = false}
+	if action.is_valid(): action.call()
+	_watch_hand_over()
+	set_process(not _hand.is_empty())
+
+
+## Is the page standing aside for a window it handed the screen to?
+func is_handing_over() -> bool:
+	return not _hand.is_empty() and bool(_hand.get("aside", false))
+
+
+func _process(_delta: float) -> void:
+	if _hand.is_empty():
+		set_process(false)
+		return
+	_watch_hand_over()
+
+
+func _watch_hand_over() -> void:
+	if _hand.is_empty(): return
+	if not bool(_hand.aside):
+		if not visible:
+			_hand = {}   # the action closed the page itself
+		elif GoSurface.path_count() > int(_hand.at):
+			_hand.aside = true
+			GoSurface.set_aside(true)
+			visible = false   # the surface lets go of the back gesture; it takes it again on the way back
+		else:
+			_hand.frames = int(_hand.frames) - 1
+			if int(_hand.frames) < 0: _hand = {}
+		return
+	if GoSurface.held_count() > int(_hand.held):
+		_give_up_hand_over()
+	elif GoSurface.path_count() <= int(_hand.at):
+		var focus: WeakRef = _hand.focus
+		_hand = {}
+		GoSurface.set_aside(false)
+		visible = true
+		surface.relayout()
+		_restore_focus_to.call_deferred(focus)
+
+
+func _drop_hand_over() -> void:
+	if _hand.is_empty(): return
+	if bool(_hand.get("aside", false)): GoSurface.set_aside(false)
+	_hand = {}
+
+
+func _give_up_hand_over() -> void:
+	_drop_hand_over()
+	pop_to(0)
+	closed.emit()
+
+
 # ── Tabs ───────────────────────────────────────────────────────────────
 
 ## The tab list (see the header). [param selected] is shown first (the first tab when empty or unknown); `tab_changed`
 ## fires for it, so a host that builds on `tab_changed` gets its first body. An empty list hides the rail.
 func set_tabs(tabs: Array[Dictionary], selected: StringName = &"") -> void:
+	pop_to(0)
 	for child in _rail.get_children():
 		_rail.remove_child(child)
 		child.queue_free()
@@ -273,9 +632,12 @@ func _dress_tab(button: Button, badge: String, alert: bool) -> void:
 	else: GoBadge.detach(button)
 
 
-## Shows tab [param id] and fires `tab_changed` when it is a different tab. An unknown id does nothing.
+## Shows tab [param id] and fires `tab_changed` when it is a different tab. An unknown id does nothing. A tab is the
+## page's own level: sub-pages up are popped first.
 func select_tab(id: StringName) -> void:
-	if not _tab_buttons.has(id) or id == _current: return
+	if not _tab_buttons.has(id): return
+	pop_to(0)
+	if id == _current: return
 	_current = id
 	for key in _tab_buttons:
 		GoStyle.restyle_list_row(_tab_buttons[key], key == id)
@@ -344,10 +706,17 @@ func _layout_to(area: Vector2) -> void:
 ## The content column borrows the card's right padding for its scrollbar only where it meets that edge: always left
 ## to right, and in portrait (one column) right to left too. A right-to-left landscape page has the rail on the right —
 ## there the content column's right side borders the rail and there is no padding to borrow.
+## A sub-page's scroll follows the same rule; while it is up the rail is away, so its column meets the edge unless a
+## right-to-left landscape preview stands there.
 func _sync_content_edge() -> void:
-	var meets_edge := not _landscape or not surface.is_layout_rtl()
-	var padding: int = surface._content_padding if meets_edge else 0
-	# Only on a change — re-applying the same insets still re-emits minimum sizes, and the page relayouts on those.
+	var right_taken := _landscape and surface.is_layout_rtl() and (_rail_scroll.visible or _preview_slot.visible)
+	var padding: int = surface._content_padding if not right_taken else 0
+	for level in _levels:
+		# Only on a change — re-applying the same insets still re-emits minimum sizes, and the page relayouts on those.
+		if int(level.get("pad", -1)) != padding:
+			level["pad"] = padding
+			(level.scroll as GoScroll).set_panel_padding(padding)
+	if not _levels.is_empty(): return   # the root's column is hidden — it catches up on the last pop
 	if padding == _content_edge_padding: return
 	_content_edge_padding = padding
 	_content_scroll.set_panel_padding(padding)

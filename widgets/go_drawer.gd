@@ -18,6 +18,12 @@
 ## `LEFT` is the left of the screen in Arabic too. To follow the text direction, turn on `follow_text_direction` —
 ## that flips it in RTL (for places where "the start side" carries meaning, such as a menu drawer).
 ##
+## ## ## 🚪 A launcher hands over, it does not slide away first
+## `hand_over(action)` runs a row's action: when it opens a window, the drawer **steps aside in that same frame** (no
+## slide, nothing left under the window) and is back — as it was — when that window and anything it opened in turn have
+## closed. Back from the window retraces the path to the drawer. An action that opens nothing (it acts on the screen
+## behind) closes the drawer as usual.
+##
 ## ## 🛑 It does not intrude on the safe area
 ## On a device with a notch or rounded corners, a drawer that runs to the screen edge has its content clipped
 ## at the corners. The background fills all the way out, but **the content stays inside the safe area**.
@@ -103,6 +109,10 @@ var _open := false
 var _surfaces_at_open := 0
 ## The side the panel face was last made for (`_restyle`).
 var _styled_left := true
+## A hand-over in progress (`hand_over`): {at, frames, aside}. Empty when none.
+var _hand := {}
+## Frames a hand-over waits for the window its action opens before it reads "nothing opened" and closes.
+const HAND_OVER_FRAMES := 2
 
 
 func _init() -> void:
@@ -170,6 +180,9 @@ func _ready() -> void:
 
 ## `close_when_surface_opens`: watched only while open — a count compare a frame, nothing while closed.
 func _process(_delta: float) -> void:
+	if not _hand.is_empty():
+		_watch_hand_over()
+		return
 	if not _open:
 		set_process(false)
 		return
@@ -191,6 +204,7 @@ func _exit_tree() -> void:
 	# 🛑 **Clear `_open` along with it.** Leave it set and the claim is released while the state still says
 	#    "open", so putting this back in the tree and calling `close()` sends `release` **a second time** and
 	#    eats another window's claim (after which that window no longer closes on back).
+	_hand = {}
 	if _open:
 		GoBackPolicy.release(get_tree())
 		GoSurface.hold_open(false)
@@ -224,6 +238,13 @@ func open(title := "") -> void:
 
 
 func close() -> void:
+	if not _hand.is_empty() and bool(_hand.aside):
+		# Standing aside (`hand_over`): it was already off the screen — it only gives up coming back.
+		_hand = {}
+		set_process(false)
+		closed.emit()
+		return
+	_hand = {}
 	if not _open: return
 	_open = false
 	set_process(false)
@@ -236,6 +257,69 @@ func close() -> void:
 
 func is_open() -> bool:
 	return _open
+
+
+## Runs [param action] (a row's press) and hands the screen to the window it opens — see the header. 🔑 The window opens
+## while the drawer is still up and the drawer steps aside in the same frame, so the player sees one transition.
+func hand_over(action: Callable) -> void:
+	if not _open:
+		if action.is_valid(): action.call()
+		return
+	_hand = {at = GoSurface.path_count(), frames = HAND_OVER_FRAMES, aside = false}
+	if action.is_valid(): action.call()
+	_watch_hand_over()
+	if not _hand.is_empty(): set_process(not Engine.is_editor_hint())
+
+
+## Is the drawer standing aside for a window it handed the screen to (`hand_over`)?
+func is_handing_over() -> bool:
+	return not _hand.is_empty() and bool(_hand.aside)
+
+
+func _watch_hand_over() -> void:
+	if _hand.is_empty(): return
+	if not bool(_hand.aside):
+		if not _open:
+			_hand = {}   # the action closed the drawer itself
+		elif GoSurface.path_count() > int(_hand.at):
+			_step_aside()
+		else:
+			_hand.frames = int(_hand.frames) - 1
+			if int(_hand.frames) < 0:
+				_hand = {}
+				close()   # nothing opened: the press acted on the screen behind — show it
+		return
+	# Another launcher opened while away (a second drawer): the player moved on — this one gives up coming back.
+	if GoSurface.is_any_held_open():
+		close()
+	elif GoSurface.path_count() <= int(_hand.at):
+		_come_back()
+
+
+## Off the screen at once (no slide-out: the window is already on top), the back gesture and the held place handed to it.
+func _step_aside() -> void:
+	_hand.aside = true
+	_open = false
+	if is_instance_valid(_tween) and _tween.is_valid(): _tween.kill()
+	visible = false
+	GoBackPolicy.release(get_tree())
+	GoSurface.hold_open(false)
+
+
+## Back where it was, at once (the window that covered it just closed) — as `open()` without the slide-in, and without
+## `opened`: it never closed.
+func _come_back() -> void:
+	_hand = {}
+	_open = true
+	visible = true
+	_relayout()
+	var full := get_viewport().get_visible_rect()
+	panel.position.x = 0.0 if effective_side() == Side.LEFT else full.size.x - panel.size.x
+	_scrim.color = _scrim_color(true)
+	GoBackPolicy.acquire(get_tree())
+	GoSurface.hold_open(true)
+	_surfaces_at_open = GoSurface.open_surface_count()
+	set_process(close_when_surface_opens and not Engine.is_editor_hint())
 
 
 ## Empty the body (for swapping pages).

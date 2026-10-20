@@ -70,6 +70,12 @@ static func open_surface_count() -> int:
 	return _open_count
 
 
+## How many held windows are open (drawers — `hold_open`). A window that stepped aside for another (`GoPage.hand_over`)
+## gives up its way back when this rises: the player opened a launcher, so the path it came by is gone.
+static func held_count() -> int:
+	return _held_count
+
+
 ## Is a held window open (a `GoDrawer` — `hold_open`)? Unlike a surface, a held window has no "lets play go on" variant:
 ## a game asking "does a window take the screen away" counts it as blocking whatever surfaces are up.
 static func is_any_held_open() -> bool:
@@ -80,6 +86,24 @@ static func is_any_held_open() -> bool:
 ## and once on close, from `_exit_tree` too (the back-gesture rule, `GoBackPolicy`).
 static func hold_open(on: bool) -> void:
 	_held_count = maxi(0, _held_count + (1 if on else -1))
+
+
+## Surfaces that stepped aside for a window they opened and come back when it closes (`GoPage.hand_over`) — hidden, so
+## not in `open_surface_count()`, but still on the player's path back.
+static var _aside_count := 0
+
+
+## A surface steps aside (`on`) or comes back / gives up (`not on`) — once each, like `hold_open`.
+static func set_aside(on: bool) -> void:
+	_aside_count = maxi(0, _aside_count + (1 if on else -1))
+
+
+## How many windows are on the player's path right now: the open surfaces plus those that stepped aside for a window
+## they opened. 🔑 A launcher handing the screen to a window (`GoPage.hand_over`, `GoDrawer.hand_over`) waits for this to
+## drop back to its value before the hand-over — a window that itself handed over to a third one still counts, so the
+## first launcher never comes back while the chain it started is still up.
+static func path_count() -> int:
+	return _open_count + _aside_count
 
 
 # ── Placement ──────────────────────────────────────────────────────────
@@ -230,6 +254,11 @@ var resizable := false
 var show_header := true
 var scroll_body := true
 var close_enabled := true
+## ⬅️ **Escape and back go back before they close.** While the back button shows (`set_back`), Escape, the Android back
+## gesture and `request_back()` press it instead of closing the window — a window with screens inside it (`GoPage`'s
+## sub-pages) steps back one level, and closes only from its first screen. The close button still closes. Off by default:
+## a sheet with a back button closes on Escape as before.
+var back_before_close := false
 ## 🔔 Say `GoFeedback.opened()` each time the window shows (enters the tree visible, or it or a parent turns visible).
 ## Off by default: `GoSheet`, `GoPopover` and `GoDialogs` say their own; turn it on for a window the game shows itself.
 var open_feedback := false
@@ -1179,6 +1208,18 @@ func request_close() -> void:
 		close_requested.emit()
 
 
+## ⬅️ What Escape, the Android back gesture and a voice "close" ask for: one step back. With `back_before_close` on and
+## the back button showing, that is the back button's action (`back_requested`); otherwise the window closes
+## (`request_close`). 🔑 Going back is not gated by `close_enabled` — a window that may not close (a roster, a menu
+## that is busy) can still leave a screen inside it.
+func request_back() -> void:
+	if not is_top(): return
+	if back_before_close and is_instance_valid(back_button) and back_button.visible:
+		back_requested.emit()
+		return
+	request_close()
+
+
 # ── Topmost test ───────────────────────────────────────────────────────
 
 ## Is this surface the topmost one — decided by the real draw order, nested `CanvasLayer`s included.
@@ -1753,7 +1794,7 @@ func _input(event: InputEvent) -> void:
 		_dragging = false
 		return
 	if GoUi.config.close_on_back and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
-		request_close()
+		request_back()
 		get_viewport().set_input_as_handled()
 		return
 	if not _dragging: return
@@ -1816,4 +1857,4 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and GoUi.config.close_on_os_back \
 			and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
-		request_close.call_deferred()
+		request_back.call_deferred()

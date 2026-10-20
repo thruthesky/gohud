@@ -6,6 +6,19 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoPage` sub-pages** — `push(title, build)` / `push_key(key, build)` open a level **inside the page** (its own
+  title, the header's back button, a body that scrolls like a tab body, a pinned `sub_footer()`); `pop()` · `pop_to()` ·
+  `depth()` · `sub_body()` · signal `depth_changed(depth)`. Escape, the Android back gesture and the back button pop one
+  level; the page closes only from depth 0 (the ✕ closes from any depth). The rail and the root's footer step away while
+  a sub-page is up; focus returns to the control that pushed; `build` runs on push and a popped level is freed.
+- **`GoPage.confirm()` / `confirm_key()`** — `await` a yes/no inside the page (a pushed sub-page with [cancel] [confirm];
+  back / Escape / close answer `false`), the same arguments as `GoDialogs.confirm`.
+- **`GoPage.hand_over(action)` and `GoDrawer.hand_over(action)`** — a row that opens a window the launcher cannot hold:
+  the launcher steps aside in the frame the window opens and comes back when it closes (a drawer whose tile opened
+  nothing closes, as before). `GoSurface.set_aside()` / `path_count()` / `held_count()` are the counts they share.
+- **`GoSurface.back_before_close`** (off) and **`GoSurface.request_back()`** — Escape and the Android back press a
+  showing back button before they close the window (GoPage turns it on). `request_back()` is that step for code (a voice
+  "close").
 - **`GoPage.set_tab_badge(id, badge, alert)`** changes one tab's count badge and red dot in place (no `set_tabs()`
   rebuild — the shown tab, its body and the focus stay): a count that changes while the page is up.
 - **`GoDrawer.close_when_surface_opens`** (off): a launcher drawer closes when a surface opens while it is up (a tile,
@@ -67,6 +80,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   one under it, which the deferred `request_close()` then found on top.
 
 ### Changed
+
+- `GoPage`'s content scroll also borrows the card's right padding in a right-to-left landscape page that has neither a
+  rail nor a preview on that side (its column meets the edge there).
 
 - **gohud loads only what the game uses** (a faster first frame). `GoUi.DEFAULT_THEME`, `LIGHT_THEME` and
   `DEFAULT_ICONS` are read on first use, not preloaded the moment anything names `GoUi`; the backup theme is read only
