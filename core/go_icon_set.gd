@@ -150,6 +150,9 @@ const TARGET := &"target"
 const FLAG := &"flag"
 const POTION := &"potion"
 const SKULL := &"skull"
+# The kill feed's glyphs — painted for arcade_light only (`icons/arcade_light/`, tools/paint_arcade_killfeed.gd).
+const MAGNET_ARROW := &"magnet_arrow"
+const FALL := &"fall"
 const RUN := &"run"
 
 # ── What the set holds ─────────────────────────────────────────────────

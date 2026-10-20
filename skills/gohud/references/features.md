@@ -104,7 +104,7 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §34 |
 | **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §33 |
 | **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §32 |
-| **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` | hud.md §31 |
+| **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` · `feed.push_versus(killer, picture, victim)` | hud.md §31 |
 | **`GoNameplate`** a name plate over a character in 3D, the same size at any distance | `GoNameplate.make(name, color, own)` + `follow(camera, point)` | hud.md §30 |
 | **`GoHudButton`** a HUD corner button: a picture button with its key on a cap beside it (the pause button and "Esc") | `GoHudButton.make(art, 52.0, "Esc")` | hud.md §29 |
 | **`GoCountdown`** the match-start count: 3 · 2 · 1 · GO! big on a disc, each step popping in | `count.show_step("3")` | hud.md §28 |

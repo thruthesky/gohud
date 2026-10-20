@@ -6,6 +6,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoNoticeFeed.push_versus(left, picture, right, own, left_color, right_color)`**: a kill feed's
+  `[killer] [picture] [victim]` row — a new `Left` label before the icon (hidden by `push`), each name in its own
+  colour (alpha 0 keeps the theme's), an empty `left` leaving `[picture] [victim]`, a wide picture kept in shape at
+  `icon_size` high; the same pool, reuse, fade, own row and feedback as `push`.
+- **`GoNoticeFeed.max_row_width`** (0, no limit): a longer row shrinks both names by one shared scale until it fits
+  (icons keep their size; short rows stay compact), down to **`fit_min_scale`** (negative: `GoUi.config.fit_min_scale`);
+  **`font_size`** (0: the theme's) and **`row_alignment`** (left / centre / right → `SIZE_SHRINK_BEGIN` / `CENTER` / `END`).
+- **arcade_light's kill-feed glyphs** `GoIconSet.MAGNET_ARROW` (`&"magnet_arrow"`: the horseshoe magnet lying on its
+  side, poles to the right, three yellow force waves leaving them) and `GoIconSet.FALL` (`&"fall"`: a down arrow beside
+  the ledge it left), painted by `tools/paint_arcade_killfeed.gd`.
 - **`GoHudCard.show_panel`** (on): off draws no board at all — no `GoHudPanel`, no margins — so the icon, banner,
   labels and bars sit bare on the 3D scene (a match HUD's status corner). A `gauge` keeps its board.
 - **`GoHudCard.icon_ink`** (transparent): tints the card's picture (`self_modulate`), so a white icon from the icon set

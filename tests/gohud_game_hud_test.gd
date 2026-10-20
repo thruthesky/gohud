@@ -33,6 +33,7 @@ func _initialize() -> void:
 		await _hud_button(look)
 		await _nameplate(look)
 		await _notice_feed(look)
+		await _notice_feed_versus(look)
 		await _touch_button(look)
 		await _joystick_art(look)
 		await _touch_lifecycle(look)
@@ -701,6 +702,87 @@ func _notice_feed(look: StringName) -> void:
 		feed.push("H", true)
 		check(feed.rows()[0].theme_type_variation == &"GoNotice" and feed.rows()[1].theme_type_variation == &"GoNoticeGold",
 			"feed: arcade_light rows use GoNotice / GoNoticeGold")
+	holder.queue_free()
+	await frames(1)
+
+
+func _feed_parts(row: Control) -> Array:
+	return [row.find_child("Left", true, false) as Label, row.find_child("Icon", true, false) as TextureRect,
+		row.find_child("Text", true, false) as Label]
+
+
+func _notice_feed_versus(look: StringName) -> void:
+	var feed := GoNoticeFeed.new()
+	feed.auto_advance = false
+	var holder := _host(feed, 600.0)
+	await frames(1)
+	# Only arcade_light paints magnet_arrow; a plain look shows the skull it is handed instead.
+	var magnet := GoUi.icons().texture(GoIconSet.MAGNET_ARROW)
+	if magnet == null: magnet = GoUi.icons().texture(GoIconSet.SKULL)
+	feed.push_versus("RED", magnet, "BLUE", false, Color.RED, Color.BLUE)
+	var parts := _feed_parts(feed.rows()[0])
+	var left := parts[0] as Label
+	var icon := parts[1] as TextureRect
+	var right := parts[2] as Label
+	check(left.visible and left.text == "RED" and icon.texture == magnet and right.text == "BLUE",
+		"versus: [left] [picture] [right] (%s)" % look)
+	check(left.get_index() < icon.get_index() and icon.get_index() < right.get_index(), "versus: left, icon, right in order")
+	check(left.get_theme_color(&"font_color") == Color.RED and right.get_theme_color(&"font_color") == Color.BLUE,
+		"versus: each name in its own colour")
+	check(left.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED, "versus: the names are shown as given")
+	check(icon.custom_minimum_size.y == feed.icon_size, "versus: the picture is icon_size high")
+	feed.push_versus("", GoUi.icons().texture(GoIconSet.FALL), "GREEN")
+	parts = _feed_parts(feed.rows()[1])
+	check(not (parts[0] as Label).visible and (parts[1] as TextureRect).visible and (parts[2] as Label).text == "GREEN",
+		"versus: an empty left hides it — [picture] [right]")
+	var normal := (parts[2] as Label)
+	check(not normal.has_theme_color_override(&"font_color"), "versus: an alpha-0 colour keeps the theme's")
+	feed.push("PLAIN")
+	parts = _feed_parts(feed.rows()[2])
+	check(not (parts[0] as Label).visible and (parts[2] as Label).text == "PLAIN" and (parts[1] as TextureRect).visible
+		and (parts[1] as TextureRect).custom_minimum_size == Vector2(22, 22), "versus: a plain push hides Left, icon and text as before")
+	check(not (parts[2] as Label).has_theme_color_override(&"font_color"), "versus: a plain push drops a reused row's colour")
+	check(not (parts[2] as Label).has_theme_font_size_override(&"font_size"), "versus: no limit, no size set — the theme's")
+	feed.push_versus("ME", magnet, "YOU", true)
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(feed.rows()[3].theme_type_variation == &"GoNoticeGold", "versus: own rows are gold")
+	feed.clear()
+	# Reuse: three into a pool of two keeps the two newest.
+	feed.max_items = 2
+	feed.push_versus("A1", magnet, "B1")
+	feed.push_versus("A2", magnet, "B2")
+	feed.push_versus("A3", magnet, "B3")
+	var texts: Array = feed.rows().map(func(row: Control) -> String: return (_feed_parts(row)[0] as Label).text)
+	check(feed.count == 2 and feed.get_child_count() == 2 and texts == ["A2", "A3"], "versus: max_items 2 keeps the two newest %s" % str(texts))
+	feed.clear()
+	# The width limit: two long names shrink together to fit; a short row keeps its size.
+	feed.max_items = 4
+	feed.font_size = 18
+	feed.max_row_width = 260.0
+	feed.fit_min_scale = 0.2
+	feed.push_versus("WWWWWWWWWWWWWWW", magnet, "WWWWWWWWWWWWWWW")
+	feed.push_versus("AB", magnet, "CD")
+	await frames(2)
+	var long_row := feed.rows()[0]
+	parts = _feed_parts(long_row)
+	var shrunk := (parts[0] as Label).get_theme_font_size(&"font_size")
+	check(shrunk < 18 and shrunk == (parts[2] as Label).get_theme_font_size(&"font_size"), "versus: both names shrink together (%d)" % shrunk)
+	check(long_row.size.x <= 260.0 and long_row.size.x > 200.0, "versus: the long row fits max_row_width (%.1f)" % long_row.size.x)
+	check((parts[1] as TextureRect).custom_minimum_size.y == feed.icon_size, "versus: the icon keeps its size")
+	var short_row := feed.rows()[1]
+	parts = _feed_parts(short_row)
+	check((parts[0] as Label).get_theme_font_size(&"font_size") == 18 and short_row.size.x < 200.0,
+		"versus: a short row keeps font_size and its own width (%.1f)" % short_row.size.x)
+	# The floor: at 0.9 the long names stop at ceil(18 × 0.9) = 17 and run over.
+	feed.fit_min_scale = 0.9
+	parts = _feed_parts(long_row)
+	check((parts[0] as Label).get_theme_font_size(&"font_size") == 17, "versus: fit_min_scale is the floor (%d)" % (parts[0] as Label).get_theme_font_size(&"font_size"))
+	# Alignment.
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_CENTER, "versus: rows centred by default")
+	feed.row_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_END, "versus: row_alignment RIGHT sets SHRINK_END")
+	feed.row_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_BEGIN, "versus: row_alignment LEFT sets SHRINK_BEGIN")
 	holder.queue_free()
 	await frames(1)
 

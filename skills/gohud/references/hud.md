@@ -988,11 +988,20 @@ var feed := GoNoticeFeed.new()
 hud.add_child(feed)                              # top centre is usual
 feed.push(tr("KO_BY") % [hitter, target])        # the server said who knocked out whom
 feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
+
+# A kill feed row: [killer] [picture] [victim], names in team colours, long ones shrunk to fit 320 dp.
+feed.max_row_width = 320.0
+feed.row_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+feed.push_versus(hitter, GoUi.icons().texture(GoIconSet.MAGNET_ARROW), target, false, Color.RED, Color.BLUE)
+feed.push_versus("", GoUi.icons().texture(GoIconSet.FALL), target)   # fell on their own: [picture] [name]
 ```
 
 | Member | Default | Notes |
 |---|---|---|
 | `push(text, own := false, picture := null)` | | Shows a row at the bottom; when all rows show, the oldest is reused |
+| `push_versus(left, picture, right, own := false, left_color, right_color)` | | A `[left] [picture] [right]` row (killer, how, victim); empty `left` hides it; a colour with alpha 0 keeps the theme's; a wide picture keeps its shape at `icon_size` high |
+| `font_size` · `max_row_width` · `fit_min_scale` | `0` · `0.0` · `-1.0` | Row text size (0: the theme's) · the widest a row may be (0: no limit) — longer rows shrink both names by one scale, icons keep their size · the floor of that shrink (negative: `GoUi.config.fit_min_scale`) |
+| `row_alignment` | `HORIZONTAL_ALIGNMENT_CENTER` | Rows stand left / centred / right (`SIZE_SHRINK_BEGIN` / `CENTER` / `END`) |
 | `advance(delta)` · `auto_advance` | · `true` | The clock: `_process` runs it, or turn it off and call `advance` |
 | `clear()` · `count` · `rows()` | | Hide all (kept built) · how many show · the showing rows, oldest first |
 | `max_items` · `seconds` · `fade_in` | `4` · `2.0` · `0.2` | Rows built up front · how long a row stays · its fade (none under `reduce_motion`) |
