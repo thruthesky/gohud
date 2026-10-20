@@ -6,6 +6,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSignalBars`** (`PanelContainer`): a phone-style signal meter — `max_bars` (4) bars rising left to right, the
+  first `bars` lit in the reading's `tone` (`Tone.GOOD` / `FAIR` / `POOR` take `success_fill` / `warning_fill` /
+  `danger_fill`; `NONE`, no reading yet, leaves every bar a faded `muted_fill`), an optional `text` readout ("48 ms") in
+  the look's outlined HUD text (`GoOutlineLabel`, else the name plate's ink and edge); `bar_height` (24), `text_size`
+  (20), `text_width` (a fixed room that shrinks a long text with `GoStyle.fit_font_size`), `panel` (the `GoHudPanel`
+  board), `scale_factor`; `GoSignalBars.make(bars, tone)` and `set_reading(bars, tone, text)` (one rebuild). Display
+  only — the caller decides every value. A match HUD's ping.
+- **Skin hook** `GoSkin.draw_signal_bars(canvas, rects, lit, ink, dim)`: plain rounded bars by default; the arcade
+  looks paint each bar as a small key — the ink outline, the paint's gradient and gloss, no lip.
 - **`GoStarRow`** (`HBoxContainer`): a row of rating stars — `stars` (0) of `max_stars` (3) lit, the rest dim;
   `star_size`, `gap`, `scale_factor`, `earned_texture` / `empty_texture`, `GoStarRow.make(earned, total, side)`.
   arcade_light paints them (`assets/arcade_light/stage/star.png` and `star_empty.png`, drawn by

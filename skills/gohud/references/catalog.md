@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (25)
+8. [HUD and game shapes](#hud-and-game-shapes) (26)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -1003,6 +1003,15 @@ Extends `PanelContainer`. An always-on performance band: fps, frame time, triang
 var perf := GoPerfReadout.new()
 perf.tier_text = "LOW (auto)"
 overlay_layer.add_child(perf)
+```
+
+### `GoSignalBars`
+
+Extends `PanelContainer`. A phone-style signal meter: bars rising left to right, lit green, gold or red, with a readout such as "48 ms" — a match HUD's ping. Details: `hud.md` §36 (GoSignalBars).
+
+```gdscript
+var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
+ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")
 ```
 
 ### `GoMapPreview`

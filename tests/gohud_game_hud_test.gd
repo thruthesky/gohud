@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
+		await _signal_bars(look)
 		await _slot_touch(look)
 		await _icon_focus(look)
 	await _touch_label_cache()
@@ -1129,6 +1130,117 @@ func _perf_readout(look: StringName) -> void:
 	await frames(1)
 
 
+# ── The signal meter ───────────────────────────────────────────────────
+
+func _signal_bars(look: StringName) -> void:
+	var arcade := look == GoThemePresets.ARCADE_LIGHT
+	var meter := GoSignalBars.make()
+	var holder := _host(meter, 400.0)
+	await frames(1)
+	check(meter.max_bars == 4 and meter.bars == 0 and meter.tone == GoSignalBars.Tone.NONE and meter.text == "",
+		"signal: make() defaults — 0 of 4, no reading, no text")
+	check(meter.mouse_filter == Control.MOUSE_FILTER_IGNORE and meter.meter.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		and meter.label.mouse_filter == Control.MOUSE_FILTER_IGNORE, "signal: never takes input")
+	check(meter.layout_direction == Control.LAYOUT_DIRECTION_LTR, "signal: never flips with the language")
+	check(not meter.label.visible, "signal: no text, no readout")
+	check(meter.label.autowrap_mode == TextServer.AUTOWRAP_OFF and meter.label.has_meta(&"go_no_wrap"),
+		"signal: the readout stays on one line (GoStyle.one_line)")
+	# Clamping.
+	meter.set_reading(9, GoSignalBars.Tone.GOOD)
+	check(meter.lit() == 4 and meter.is_lit(3) and not meter.is_lit(4), "signal: more than max_bars lights them all")
+	meter.bars = -3
+	check(meter.bars == 0 and meter.lit() == 0, "signal: under 0 counts as 0")
+	meter.max_bars = 0
+	check(meter.max_bars == 1, "signal: max_bars is at least 1")
+	meter.max_bars = 5
+	meter.bars = 3
+	check(meter.lit() == 3 and meter.bar_rects().size() == 5, "signal: 3 of 5")
+	meter.tone = GoSignalBars.Tone.NONE
+	check(meter.lit() == 0, "signal: NONE shows every bar dim, whatever bars says")
+	meter.max_bars = 4
+	# Geometry: rising left to right, standing on one line, the tallest bar_height × scale_factor.
+	var rects := meter.bar_rects()
+	var rising := true
+	for i in range(1, rects.size()):
+		rising = rising and rects[i].size.y > rects[i - 1].size.y and rects[i].position.x > rects[i - 1].end.x
+		rising = rising and is_equal_approx(rects[i].end.y, rects[0].end.y)
+	check(rising and rects[-1].size.y == 24.0, "signal: the bars rise left to right on one line, the tallest 24 dp")
+	meter.scale_factor = 1.5
+	await frames(1)
+	check(meter.bar_rects()[-1].size.y == 36.0 and meter.meter.size == meter.meter_size(),
+		"signal: scale_factor scales the bars (%s)" % meter.meter.size)
+	meter.scale_factor = 1.0
+	# Tone colours come from the fill tokens.
+	var tones := {GoSignalBars.Tone.GOOD: GoTheme.SUCCESS_FILL, GoSignalBars.Tone.FAIR: GoTheme.WARNING_FILL,
+		GoSignalBars.Tone.POOR: GoTheme.DANGER_FILL}
+	for t: int in tones:
+		meter.tone = t
+		check(meter.tone_color() == GoUi.color(tones[t]), "signal: tone %d is %s" % [t, tones[t]])
+	meter.tone = GoSignalBars.Tone.NONE
+	check(meter.tone_color() == meter.dim_color(), "signal: NONE is the dim colour")
+	var muted := GoUi.color(GoTheme.MUTED_FILL)
+	check(meter.dim_color().is_equal_approx(Color(muted, muted.a * GoSignalBars.DIM_ALPHA)), "signal: dim is a faded muted_fill")
+	# Text visibility and the outlined HUD text.
+	meter.set_reading(4, GoSignalBars.Tone.GOOD, "48 ms")
+	await frames(1)
+	check(meter.label.visible and meter.label.text == "48 ms", "signal: the readout shows its text")
+	check(meter.label.get_theme_constant(&"outline_size") > 0, "signal: over the scene the readout is outlined")
+	check(meter.accessibility_name == "4/4 48 ms", "signal: a screen reader hears the reading (%s)" % meter.accessibility_name)
+	if arcade:
+		check(meter.label.theme_type_variation == GoSignalBars.VAR_TEXT
+			and meter.label.get_theme_color(&"font_color") == Color.WHITE, "signal: arcade_light: white GoOutlineLabel text")
+	else:
+		check(meter.label.get_theme_color(&"font_color") == GoUi.skin().nameplate_ink(false),
+			"signal: a look with no outlined label takes the name plate's ink")
+	meter.text = ""
+	check(not meter.label.visible, "signal: empty text hides the readout")
+	# A fixed room keeps the bars still and shrinks a long text.
+	meter.text_width = 40.0
+	meter.text = "1480 ms"
+	await frames(1)
+	var fitted := meter.label.get_theme_font_size(&"font_size")
+	check(meter.label.custom_minimum_size.x == 40.0 and fitted < 20 and fitted >= GoStyle.fit_floor(20),
+		"signal: text_width holds the room and shrinks the text (%d)" % fitted)
+	meter.text_width = 0.0
+	# The board.
+	check(meter.get_theme_stylebox(&"panel") is StyleBoxEmpty, "signal: no board by default")
+	meter.panel = true
+	var board := meter.get_theme_stylebox(&"panel")
+	var probe := PanelContainer.new()
+	probe.theme_type_variation = GoSignalBars.VAR_PANEL
+	holder.add_child(probe)
+	check(meter.theme_type_variation == GoSignalBars.VAR_PANEL and board.get_class() == probe.get_theme_stylebox(&"panel", GoSignalBars.VAR_PANEL).get_class(),
+		"signal: panel puts it on GoHudPanel (%s)" % board.get_class())
+	probe.free()
+	check(board.get_content_margin(SIDE_LEFT) >= GoStyle.face_clearance(meter, true) + GoSignalBars.BOARD_ROOM,
+		"signal: the board keeps the readout off its rim (%s)" % board.get_content_margin(SIDE_LEFT))
+	meter.refresh()
+	check(meter.get_theme_stylebox(&"panel") == board, "signal: a refresh keeps the same padded board")
+	check(meter.label.get_theme_constant(&"outline_size") == meter.label.get_theme_constant(&"outline_size", &"Label")
+		and not meter.label.has_theme_color_override(&"font_color"), "signal: on the board, the board's label ink")
+	meter.panel = false
+	check(meter.get_theme_stylebox(&"panel") is StyleBoxEmpty, "signal: and off again")
+	# Setters skip unchanged values; set_reading rebuilds once.
+	var count := meter.get(&"_refreshes") as int
+	meter.bars = meter.bars
+	meter.max_bars = meter.max_bars
+	meter.tone = meter.tone
+	meter.text = meter.text
+	meter.bar_height = meter.bar_height
+	meter.scale_factor = meter.scale_factor
+	meter.panel = meter.panel
+	meter.set_reading(meter.bars, meter.tone, meter.text)
+	check(meter.get(&"_refreshes") == count, "signal: unchanged values rebuild nothing")
+	meter.set_reading(2, GoSignalBars.Tone.POOR, "300 ms")
+	check(meter.get(&"_refreshes") == count + 1 and meter.lit() == 2 and meter.label.text == "300 ms",
+		"signal: set_reading rebuilds once")
+	# The skin draws: the hook exists on every look.
+	check(GoUi.skin().has_method(&"draw_signal_bars"), "signal: the skin draws the bars")
+	check(arcade == (GoUi.skin() is GoSkinArcade), "signal: arcade_light paints them as arcade keys")
+	holder.queue_free()
+	await frames(1)
+
+
 # ── The HUD widgets follow a look change and a reparent ───────────────
 
 ## What a widget shows that comes from the look: its theme's panel box, its text font, the skin's inks. The widgets
@@ -1160,6 +1272,7 @@ func _look_follows() -> void:
 			spot.auto_advance = false
 			spot.light(Rect2(50, 50, 80, 60))
 			return spot,
+		"signal bars": func() -> Control: return GoSignalBars.make(3, GoSignalBars.Tone.GOOD),
 	}
 	for key: String in makers:
 		GoUi.use_preset(from)
@@ -1221,6 +1334,11 @@ func _look_sig(key: String, widget: Control) -> String:
 		"spotlight":
 			var ring := widget.get(&"_ring") as StyleBoxFlat
 			return "%s" % (ring.border_color if ring != null else "none")
+		"signal bars":
+			var bars := widget as GoSignalBars
+			bars.text = "48 ms"
+			return "%s|%s|%s|%s" % [bars.tone_color(), bars.dim_color(), bars.label.get_theme_color(&"font_color"),
+				bars.label.get_theme_font(&"font").resource_path]
 	return ""
 
 

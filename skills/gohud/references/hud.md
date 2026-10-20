@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout and GoSignalBars.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -42,6 +42,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 33. [GoSpotlight — dim round one thing and ring it](#33-gospotlight--dim-round-one-thing-and-ring-it)
 34. [GoTaskCard — a lesson's card](#34-gotaskcard--a-lessons-card)
 35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
+36. [GoSignalBars — a signal meter](#36-gosignalbars--a-signal-meter)
 
 ## 1. GoHudAnchor
 
@@ -1133,3 +1134,31 @@ perf.one_line = true                                    # one slim line where ro
 
 - Skin hooks: `perf_box()` (the band), `perf_ink(level)` and `perf_font()` (null keeps the theme's).
 - Triangles and draw calls come from the RenderingServer, shadow passes included; a headless run reads 0 there.
+
+
+## 36. GoSignalBars — a signal meter
+
+`class_name GoSignalBars extends PanelContainer`. A phone's signal bars: `max_bars` bars rising left to right, the
+first `bars` lit in the reading's tone and the rest dim, with an optional readout beside them — a match HUD's ping.
+🛑 Display only: the caller (the server's measured round trip, say) decides the bars, the tone and the text.
+
+```gdscript
+var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
+ping.text_width = 56.0                                   # the bars keep still as the number changes
+ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")   # one call, one rebuild
+```
+
+| Member | Notes |
+|---|---|
+| `enum Tone { GOOD, FAIR, POOR, NONE }` | GOOD lights `success_fill`, FAIR `warning_fill`, POOR `danger_fill` (the bright fills — the plain `success` / `warning` / `danger` are text colours, too deep for a bar). NONE is no reading yet: every bar dim |
+| `make(p_bars := 0, p_tone := Tone.NONE)` · `set_reading(p_bars, p_tone, p_text := "")` | `set_reading` sets all three with one rebuild |
+| `bars` (0) · `max_bars` (4, 1–8) | More than `max_bars` lights them all; under 0 counts as 0. `lit()` is the shown count (0 while NONE), `is_lit(i)` one bar |
+| `tone` (NONE) · `tone_color()` · `dim_color()` | A dim bar is `muted_fill` at `DIM_ALPHA` (0.55) |
+| `text` ("") · `text_size` (20) · `text_width` (0) · `label` | The readout; empty hides it. Over the scene it is the look's outlined HUD text (`GoOutlineLabel` — arcade_light's white text with the ink edge — else the name plate's `nameplate_ink` / `nameplate_outline`). `text_width` > 0 holds that room and shrinks a longer text (`GoStyle.fit_font_size`, never under the floor) |
+| `bar_height` (24) · `scale_factor` (1) · `bar_rects()` · `meter_size()` · `meter` | The tallest bar; the shortest is 40 %, a bar 40 % of the height wide |
+| `panel` (false) | On: the theme's `GoHudPanel` board behind it (a theme without one: its PanelContainer panel), the readout in the board's label ink |
+
+- The bars are the skin's: `GoSkin.draw_signal_bars(canvas, rects, lit, ink, dim)` — plain rounded bars by default;
+  the arcade looks paint each as a small key with the ink outline and gloss.
+- 🛑 It ignores the mouse and never flips with the language; it follows a look change (`GoUi.watch`). A screen reader
+  hears "3/4 48 ms" (`accessibility_name`).

@@ -1456,6 +1456,18 @@ func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 		canvas.draw_line(Vector2(x, rect.position.y), Vector2(x, rect.end.y), notch, 1.0)
 
 
+## 📶 A `GoSignalBars` meter's bars, on [param canvas]: [param rects] left to right (the short one first), the first
+## [param lit] of them in [param ink], the rest in [param dim]. The default draws plain rounded bars.
+func draw_signal_bars(canvas: CanvasItem, rects: Array[Rect2], lit: int, ink: Color, dim: Color) -> void:
+	var face := StyleBoxFlat.new()
+	face.anti_aliasing = true
+	for index in rects.size():
+		var rect := rects[index]
+		face.bg_color = ink if index < lit else dim
+		face.set_corner_radius_all(roundi(minf(rect.size.x, rect.size.y) * 0.3))
+		face.draw(canvas.get_canvas_item(), rect)
+
+
 ## The arrow reaching from the coach-mark card to its target.
 func draw_coach_pointer(canvas: CanvasItem, start: Vector2, tip: Vector2,
 		direction: Vector2, ink: Color) -> void:
