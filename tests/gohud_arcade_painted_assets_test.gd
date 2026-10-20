@@ -38,9 +38,11 @@ const STAGE_SPRITES := {
 }
 
 ## The match HUD's painted sprites (the game's `assets/ui/hud`): the player's head, the power bolt, the opponents
-## badge, the stopwatch and the round pause key. None has mipmaps.
+## badge, the stopwatch and the round pause key — and the stability shield painted for gohud in the bolt's style
+## (tools/paint_arcade_shield.gd). None has mipmaps.
 const HUD_SPRITES := {
 	"avatar_head": false, "bolt": false, "opponents_badge": false, "pause_button": false, "stopwatch": false,
+	"shield": false,
 }
 
 ## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's
@@ -56,6 +58,10 @@ const GLYPH_FILES := {
 	"trophy": false,
 	# Painted for gohud in the same style (tools/paint_arcade_glyphs.gd): the - and + steppers and the close key.
 	"plus": true, "minus": true, "close": true,
+	# The kill feed's glyphs, painted for gohud in the same style (tools/paint_arcade_killfeed.gd).
+	"magnet_arrow": true, "fall": true,
+	# A menu's multiplayer button: three people (tools/paint_arcade_multiplayer.gd).
+	"multiplayer": true,
 }
 
 var passed := 0
@@ -174,6 +180,10 @@ func _light_icons() -> void:
 		&"person": "person", &"user": "person",
 		# The - and + steppers and the window's close key, painted in the same style.
 		&"plus": "plus", &"minus": "minus", &"close": "close",
+		# The kill feed's glyphs: the magnet with its force waves, and a fall.
+		&"magnet_arrow": "magnet_arrow", &"fall": "fall",
+		# A menu's multiplayer button: three people.
+		&"multiplayer": "multiplayer",
 	}
 	for name: StringName in expect:
 		var want := _glyph(expect[name])
@@ -191,6 +201,10 @@ func _light_icons() -> void:
 	GoUi.use_preset(preset)
 	check(GoUi.icons().texture(&"home") == _glyph("exit"), "with arcade_light chosen, GoUi.icons() draws home with the exit glyph")
 	check(GoUi.icons().texture(&"close") == _glyph("close"), "with arcade_light chosen, close is the painted one")
+	check(GoUi.icons().texture(GoIconSet.MAGNET_ARROW) == _glyph("magnet_arrow") and GoUi.icons().texture(GoIconSet.FALL) == _glyph("fall"),
+		"with arcade_light chosen, GoUi.icons() draws magnet_arrow and fall with the painted kill-feed glyphs")
+	check(GoUi.icons().texture(GoIconSet.MULTIPLAYER) == _glyph("multiplayer"),
+		"with arcade_light chosen, GoUi.icons() draws multiplayer with the painted three-people glyph")
 	check(GoUi.icons().texture(&"trash") == GoUi.DEFAULT_ICONS.texture(&"trash"), "with arcade_light chosen, trash is gohud's")
 	GoUi.reset()
 

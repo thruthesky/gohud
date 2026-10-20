@@ -338,6 +338,17 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	grade.add_child(GoStyle.label("GoStarRow — a result screen's grade", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(grade)
 
+	page.add_child(GoStyle.section("Signal bars", false))
+	# GoSignalBars: the caller (the server's measured ping) picks the bars, the tone and the text — 0 of 4 is no reading.
+	var signals := GoStyle.wrap_row()   # wraps, so a 320dp phone holds them
+	for reading: Array in [[4, GoSignalBars.Tone.GOOD, "48 ms"], [2, GoSignalBars.Tone.FAIR, "180 ms"],
+			[1, GoSignalBars.Tone.POOR, "420 ms"], [0, GoSignalBars.Tone.NONE, ""]]:
+		var ping := GoSignalBars.make()
+		ping.set_reading(reading[0], reading[1], reading[2])
+		ping.panel = true   # the gallery page is no 3D scene: on the HUD board so the readout has its ground
+		signals.add_child(ping)
+	page.add_child(signals)
+
 	page.add_child(GoStyle.section("Fields", false))
 	_gallery_field = GoField.make("Guild name", GoStyle.line_edit("2-16 characters"),
 		"Everyone in the guild sees this")

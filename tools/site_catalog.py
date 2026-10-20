@@ -2164,6 +2164,25 @@ overlay_layer.add_child(perf)""", T(
 		"Постійна смуга продуктивності: fps, час кадру, трикутники, виклики малювання, вузли й пам'ять; червоніє, коли fps падає.",
 		"แถบประสิทธิภาพที่แสดงตลอด: fps เวลาเฟรม สามเหลี่ยม draw call โหนด และหน่วยความจำ เปลี่ยนเป็นสีแดงเมื่อ fps ตก",
 		"شريط أداء ظاهر دائمًا: الإطارات في الثانية وزمن الإطار والمثلثات واستدعاءات الرسم والعُقد والذاكرة؛ يحمرّ عند هبوط الإطارات.")),
+	("hud", "GoSignalBars", "PanelContainer", """var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
+ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")""", T(
+		"A phone-style signal meter: bars rising left to right, lit green, gold or red, with a readout such as \"48 ms\" — a match HUD's ping.",
+		"휴대폰 같은 신호 막대 — 왼쪽에서 오른쪽으로 높아지는 막대를 초록·금색·빨강으로 켜고 옆에 \"48 ms\" 같은 수치를. 매치 HUD의 핑.",
+		"スマホのような電波メーター。左から右へ高くなるバーを緑・金・赤で点灯し、横に「48 ms」などの数値。試合HUDのping表示に。",
+		"手机式信号格：从左到右逐渐升高的竖条，以绿、金、红点亮，旁边显示“48 ms”之类的读数——对局 HUD 的延迟。",
+		"手機式訊號格：由左到右逐漸升高的直條，以綠、金、紅點亮，旁邊顯示「48 ms」之類的讀數——對局 HUD 的延遲。",
+		"Un medidor de señal como el de un móvil: barras que crecen de izquierda a derecha, encendidas en verde, oro o rojo, con una lectura como «48 ms»; el ping del HUD de una partida.",
+		"Um medidor de sinal como o do celular: barras que sobem da esquerda para a direita, acesas em verde, dourado ou vermelho, com uma leitura como \"48 ms\" — o ping do HUD da partida.",
+		"Индикатор сигнала как на телефоне: столбики растут слева направо, горят зелёным, золотым или красным, рядом показание вроде «48 ms» — пинг в HUD матча.",
+		"Un indicateur de signal façon téléphone : des barres qui montent de gauche à droite, allumées en vert, or ou rouge, avec une valeur comme « 48 ms » — le ping du HUD d'une partie.",
+		"Telefon tarzı bir sinyal göstergesi: soldan sağa yükselen çubuklar yeşil, altın ya da kırmızı yanar, yanında \"48 ms\" gibi bir değer — maç HUD'unun ping'i.",
+		"Wskaźnik sygnału jak w telefonie: słupki rosnące od lewej do prawej, świecące na zielono, złoto lub czerwono, z odczytem w rodzaju „48 ms” — ping w HUD meczu.",
+		"Un indicatore di segnale come quello del telefono: barre che salgono da sinistra a destra, accese in verde, oro o rosso, con una lettura come «48 ms» — il ping dell'HUD di una partita.",
+		"Thanh sóng kiểu điện thoại: các cột cao dần từ trái sang phải, sáng xanh lá, vàng hoặc đỏ, kèm số đo như \"48 ms\" — ping trên HUD trận đấu.",
+		"Indikator sinyal seperti di ponsel: batang yang naik dari kiri ke kanan, menyala hijau, emas, atau merah, dengan angka seperti \"48 ms\" — ping di HUD pertandingan.",
+		"Індикатор сигналу як у телефоні: стовпчики ростуть зліва направо, світяться зеленим, золотим чи червоним, поруч показник на кшталт «48 ms» — пінг у HUD матчу.",
+		"มาตรวัดสัญญาณแบบโทรศัพท์: แท่งที่สูงขึ้นจากซ้ายไปขวา สว่างเป็นสีเขียว ทอง หรือแดง พร้อมค่าอย่าง \"48 ms\" — ค่า ping บน HUD ของแมตช์",
+		"مقياس إشارة كما في الهاتف: أعمدة ترتفع من اليسار إلى اليمين، تضيء بالأخضر أو الذهبي أو الأحمر، مع قراءة مثل \"48 ms\" — زمن الاستجابة في واجهة المباراة.")),
 	("hud", "GoMapPreview", "Control", """var map := GoMapPreview.new()
 map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
 map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))

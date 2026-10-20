@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard and GoPerfReadout.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout and GoSignalBars.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -42,6 +42,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 33. [GoSpotlight — dim round one thing and ring it](#33-gospotlight--dim-round-one-thing-and-ring-it)
 34. [GoTaskCard — a lesson's card](#34-gotaskcard--a-lessons-card)
 35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
+36. [GoSignalBars — a signal meter](#36-gosignalbars--a-signal-meter)
 
 ## 1. GoHudAnchor
 
@@ -95,6 +96,7 @@ Full rules: `theming.md` §4.
 | `segments` · `segment_count()` | `-1` → the look | Ticks that split the bar into chunks — decoration only, the fill still moves smoothly. `-1` asks the look (`GoSkin.bar_ticks()`: smooth by default, six chunks under the arcade looks), `0` is always smooth, `2`–`24` that many everywhere. The size never changes |
 | `ease_seconds` | `0.18` | 0 = instant; `reduce_motion` also makes it instant |
 | `icon` · `icon_size` · `icon_gap` | `null` · `16` · `3` | An icon before the name (a HUD's bolt) |
+| `icon_beside` | `false` | The icon sits left of the bar instead, centred on it (`Track` › `Icon`, then the fill or the painted frame taking the rest of the width); the name row hides while it has no name and no readout |
 | `label_size` · `label_ink` | `-1` · transparent | The name's and readout's size (-1: the compact role's) and colour (transparent: `secondary`) |
 | `label_gap` · `lead` | `-1` · `0` | The room between the name row and the bar (-1: `gap_tiny`) · room left above the name |
 | `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`): a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
@@ -860,16 +862,29 @@ repulse.gauge = true
 repulse.title = "REPULSE"
 repulse.value = "2.4s"
 repulse.set_lit(false)             # dimmed, ink rim; set_lit(true) pops it
+var status := GoHudCard.new()      # no board: two bars, each with its picture beside it
+status.show_panel = false
+for row in [[&"shield", Color("#ff8a3d"), Color("#ffc24a")], [&"bolt", Color("#1fb5f0"), Color("#6ff0ff")]]:
+	var bar := status.add_bar("", row[1], row[2], GoUi.skin().widget_art(row[0]))
+	bar.icon_beside = true
+	bar.icon_size = 28
+	bar.segments = 0
+var count := GoHudCard.make(GoUi.icons().texture(GoIconSet.USERS), 28.0)
+count.icon_ink = GoUi.color(GoTheme.ACCENT)  # a white icon in a token colour
+count.layout = GoHudCard.Layout.INLINE
+count.value = "7"
 ```
 
 | Member | Default | Notes |
 |---|---|---|
 | `icon` · `icon_size` · `icon_snap` | `null` · `36` · `true` | The picture at the start of the row. `icon_snap` false lets it fill the row's height (centred on a half pixel when the row is odd — the game's clock and badge) |
+| `icon_ink` | transparent | Tints the picture (`self_modulate`) — a white icon-set icon in a token colour, e.g. `GoUi.icons().texture(GoIconSet.USERS)` in `GoUi.color(GoTheme.ACCENT)`. Transparent: its own colours |
 | `gap` | `8` | Room between the icon and what follows |
 | `banner_text` · `banner_size` · `banner_padding` | `""` · `16` · `-1` | A gold banner (`GoBannerGold`) at the top of the column |
 | `title` · `value` · `layout` (`STACKED`, `INLINE`) | | Stacked: the caption (label ink at 75 %) over the value, centred; inline: both in the row |
 | `title_size` · `value_size` · `value_ink` | `-1` · `-1` · transparent | -1: 12 / 24 stacked, 19 / 19 inline |
 | `padding` | `-1` | Clear space inside the board's rim on every side (`-1`: the theme's). The margins become padding + border width |
+| `show_panel` | `true` | `false`: no board and no margins — the icon, banner, labels and bars sit bare on the scene. A `gauge` keeps its board |
 | `add_bar(label, ink, ink_end, icon) -> GoBar` · `bars()` | | A `GoBar` laid out as a HUD's (14 dp, 11 dp name, no readout, 2 dp lead) |
 | `set_clock(seconds, warn := false)` · `static format_clock(seconds)` · `is_warning()` · `warn_ink` | | `MM:SS`; `warn` paints it in `warn_ink` (transparent: `GoSkin.hud_alert_ink()`) |
 | `gauge` · `set_lit(lit, animate := true)` · `is_lit()` | `false` | The board becomes `GoSkin.hud_gauge_box(lit)`; unlit dims to `DIM_ALPHA` 0.55; lighting pops to 1.15 and back (none under `reduce_motion`) |
@@ -973,11 +988,20 @@ var feed := GoNoticeFeed.new()
 hud.add_child(feed)                              # top centre is usual
 feed.push(tr("KO_BY") % [hitter, target])        # the server said who knocked out whom
 feed.push(tr("KO_BY") % ["YOU", target], true)   # the player's own line
+
+# A kill feed row: [killer] [picture] [victim], names in team colours, long ones shrunk to fit 320 dp.
+feed.max_row_width = 320.0
+feed.row_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+feed.push_versus(hitter, GoUi.icons().texture(GoIconSet.MAGNET_ARROW), target, false, Color.RED, Color.BLUE)
+feed.push_versus("", GoUi.icons().texture(GoIconSet.FALL), target)   # fell on their own: [picture] [name]
 ```
 
 | Member | Default | Notes |
 |---|---|---|
 | `push(text, own := false, picture := null)` | | Shows a row at the bottom; when all rows show, the oldest is reused |
+| `push_versus(left, picture, right, own := false, left_color, right_color)` | | A `[left] [picture] [right]` row (killer, how, victim); empty `left` hides it; a colour with alpha 0 keeps the theme's; a wide picture keeps its shape at `icon_size` high |
+| `font_size` · `max_row_width` · `fit_min_scale` | `0` · `0.0` · `-1.0` | Row text size (0: the theme's) · the widest a row may be (0: no limit) — longer rows shrink both names by one scale, icons keep their size · the floor of that shrink (negative: `GoUi.config.fit_min_scale`) |
+| `row_alignment` | `HORIZONTAL_ALIGNMENT_CENTER` | Rows stand left / centred / right (`SIZE_SHRINK_BEGIN` / `CENTER` / `END`) |
 | `advance(delta)` · `auto_advance` | · `true` | The clock: `_process` runs it, or turn it off and call `advance` |
 | `clear()` · `count` · `rows()` | | Hide all (kept built) · how many show · the showing rows, oldest first |
 | `max_items` · `seconds` · `fade_in` | `4` · `2.0` · `0.2` | Rows built up front · how long a row stays · its fade (none under `reduce_motion`) |
@@ -1133,3 +1157,31 @@ perf.one_line = true                                    # one slim line where ro
 
 - Skin hooks: `perf_box()` (the band), `perf_ink(level)` and `perf_font()` (null keeps the theme's).
 - Triangles and draw calls come from the RenderingServer, shadow passes included; a headless run reads 0 there.
+
+
+## 36. GoSignalBars — a signal meter
+
+`class_name GoSignalBars extends PanelContainer`. A phone's signal bars: `max_bars` bars rising left to right, the
+first `bars` lit in the reading's tone and the rest dim, with an optional readout beside them — a match HUD's ping.
+🛑 Display only: the caller (the server's measured round trip, say) decides the bars, the tone and the text.
+
+```gdscript
+var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
+ping.text_width = 56.0                                   # the bars keep still as the number changes
+ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")   # one call, one rebuild
+```
+
+| Member | Notes |
+|---|---|
+| `enum Tone { GOOD, FAIR, POOR, NONE }` | GOOD lights `success_fill`, FAIR `warning_fill`, POOR `danger_fill` (the bright fills — the plain `success` / `warning` / `danger` are text colours, too deep for a bar). NONE is no reading yet: every bar dim |
+| `make(p_bars := 0, p_tone := Tone.NONE)` · `set_reading(p_bars, p_tone, p_text := "")` | `set_reading` sets all three with one rebuild |
+| `bars` (0) · `max_bars` (4, 1–8) | More than `max_bars` lights them all; under 0 counts as 0. `lit()` is the shown count (0 while NONE), `is_lit(i)` one bar |
+| `tone` (NONE) · `tone_color()` · `dim_color()` | A dim bar is `muted_fill` at `DIM_ALPHA` (0.55) |
+| `text` ("") · `text_size` (20) · `text_width` (0) · `label` | The readout; empty hides it. Over the scene it is the look's outlined HUD text (`GoOutlineLabel` — arcade_light's white text with the ink edge — else the name plate's `nameplate_ink` / `nameplate_outline`). `text_width` > 0 holds that room and shrinks a longer text (`GoStyle.fit_font_size`, never under the floor) |
+| `bar_height` (24) · `scale_factor` (1) · `bar_rects()` · `meter_size()` · `meter` | The tallest bar; the shortest is 40 %, a bar 40 % of the height wide |
+| `panel` (false) | On: the theme's `GoHudPanel` board behind it (a theme without one: its PanelContainer panel), the readout in the board's label ink |
+
+- The bars are the skin's: `GoSkin.draw_signal_bars(canvas, rects, lit, ink, dim)` — plain rounded bars by default;
+  the arcade looks paint each as a small key with the ink outline and gloss.
+- 🛑 It ignores the mouse and never flips with the language; it follows a look change (`GoUi.watch`). A screen reader
+  hears "3/4 48 ms" (`accessibility_name`).

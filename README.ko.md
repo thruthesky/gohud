@@ -430,7 +430,7 @@ icons.canonical(&"gear")             # &"settings"
 `GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
 초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px), `GoScoreRow` · `GoScoreRowGold` · `GoScoreHead`(점수판 줄,
 우승자의 금색 줄, 머리줄), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
-플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
+플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키, 번개와 같은 화풍으로 gohud 가 그린 안정도 방패)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
 REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
 룩은 모두 `null` 을 돌려준다.
 
@@ -649,6 +649,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoKbd` | HBoxContainer | 키 안내. `GoKbd.for_action(&"interact")` 가 InputMap 에서 **실제 배치**를 읽으므로 키를 바꾸면 안내도 바뀐다. `hide_on_handheld` 가 폰에서는 감춘다. `done` 은 플레이어가 끝낸 단계의 키캡을 초록으로 바꾼다 |
 | `GoKeyCluster` | Control | 역 T 모양의 이동 키 네 개 — W 위에 A S D, 또는 방향키 — 조작 안내 화면처럼 보여 준다. 키마다 룩의 키캡(`GoSkin.key_cluster_box`)이고 방향 글자는 삼각형으로 그리며, 플레이어가 배치를 누르면 `picked` 가 나온다. 키 이름은 번역하지 않는다 |
 | `GoLevelCard` | Button | 스테이지 선택 카드 — 썸네일, 제목, 부제 줄(사람 아이콘과 "OPPONENTS: 3"), 오른쪽에 깬 레벨은 체크, 잠긴 레벨은 자물쇠(카드는 `disabled`), 다음 레벨은 비스듬한 PLAY! 태그. `selected` 는 금색 링을 그린다. `stars`(0 이면 줄 없음)는 부제 아래에 `max_stars`(3) 개 중 몇 개를 켠 별점 줄을 더한다. 얼굴은 `GoLevelCard` · `GoLevelCardCurrent` · `GoLevelCardLocked` 에서 오고, 글자는 칸에 맞게 줄어든다(`GoStyle.fit_font_size` — 테마의 글꼴로 잰다. `arcade_light` 에서는 게임처럼 Nunito 와 CJK 대체 글꼴 넷) |
+| `GoSignalBars` | PanelContainer | 휴대폰 신호 막대 — 왼쪽에서 오른쪽으로 높아지는 `max_bars` 개의 막대 중 앞의 `bars` 개를 측정값의 톤(GOOD 초록, FAIR 금색, POOR 빨강 — `*_fill` 토큰, NONE 은 모두 흐리게)으로 켜고, 옆에 선택적인 수치("48 ms")를 외곽선 HUD 글자로 — 판 없이 장면 위에서도 읽힌다(`panel` 은 `GoHudPanel` 판). 막대는 스킨이 그린다(`GoSkin.draw_signal_bars`: 아케이드 룩은 칠한 키). 표시 전용. `GoSignalBars.make(4, GoSignalBars.Tone.GOOD)` |
 | `GoStarRow` | HBoxContainer | 별점 줄 — `max_stars` 개 중 `stars` 개는 켜고 나머지는 흐리게: 레벨의 최고 클리어, 결과 화면의 등급. arcade_light 는 칠한 금색 별과 회색 빈 칸(`GoSkin.widget_art` `star` / `star_empty`), 그림이 없는 룩은 아이콘 세트의 별을 `warning_fill` 색으로. `GoStarRow.make(2)` |
 | `GoCoverImage` | Control | 상자를 가득 채우는 그림 — CSS `object-fit: cover`: 빈틈이 없을 때까지 키우고 넘친 부분은 자르며, `focus` 가 남길 부분을 고른다. `clip_contents` 가 필요 없고 마우스는 통과시킨다 |
 | `GoGlyphButton` | Button | 라벨 바로 옆에 글리프가 붙는 버튼 — 오락실 메뉴의 반짝이는 알약. 글리프·간격·라벨이 함께 가운데에 선다. `Button.icon` 으로는 안 된다. 라벨은 평범한 `text` 라 번역과 테스트가 다른 버튼과 같다 |
@@ -660,7 +661,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 | `GoTaskCard` | PanelContainer | 게임을 하며 배우는 튜토리얼의 과제 카드 — 단계 줄, 제목(한 줄에 맞게 줄어든다), 할 일, 부분마다 하나씩 끝나면 `✓` 가 붙는 키캡 칩, 막혔을 때의 힌트와 꼬리말. `compact` 면 한 줄(단계, 제목, 칩)로 접힌다. 버튼이 없고 입력을 받지 않는다 |
 | `GoSpotlight` | Control | 한 가지(사각형, 또는 따라가는 컨트롤) 둘레의 화면을 어둡게 하고 테두리를 둘러 "바로 이것"을 가리킨다. 어둠은 `dim_seconds` 뒤 사라지고 테두리는 남는다. 카드도 버튼도 없다 — `GoTaskCard` 와 함께 쓴다. 입력을 받지 않는다 |
 | `GoTouchButton` | Control | 모바일 액션 게임의 둥근 엄지 버튼 — 둥근 그림(`GoSkin.widget_art`)과 아이콘 아래 이름(맞게 줄어든다), 쿨다운 고리(`cooling`, `cooldown` 0~1)와 준비되면 한 번 튀는 효과. 누르면 작아지고 어두워진다. `drag_aim` 이면 작은 스틱도 된다 — 누른 채 끌어 조준, `aimed(pull)`. 표시와 입력만 한다 |
-| `GoNoticeFeed` | VBoxContainer | 알림 피드(킬 피드) — 한 줄 알림이 새 것이 아래로 쌓이고, 서서히 나타났다가 `seconds` 뒤 저절로 사라진다. `push(text, own)` — 플레이어 자신의 줄은 눈에 띈다. 줄은 `max_items` 개를 미리 만들어 재사용하므로 알림이 몰려도 아무것도 만들지 않는다. 줄은 테마의 `GoNotice` / `GoNoticeGold` 패널, 없으면 `GoSkin.notice_box()`. 표시만 한다 |
+| `GoNoticeFeed` | VBoxContainer | 알림 피드(킬 피드) — 한 줄 알림이 새 것이 아래로 쌓이고, 서서히 나타났다가 `seconds` 뒤 저절로 사라진다. `push(text, own)` — 플레이어 자신의 줄은 눈에 띈다. `push_versus(left, picture, right, own, left_color, right_color)` — 가해자 / 그림 / 피해자 줄, 긴 이름은 `max_row_width` 에 맞게 함께 줄어든다(하한 `fit_min_scale`), `font_size`, `row_alignment`. 줄은 `max_items` 개를 미리 만들어 재사용하므로 알림이 몰려도 아무것도 만들지 않는다. 줄은 테마의 `GoNotice` / `GoNoticeGold` 패널, 없으면 `GoSkin.notice_box()`. 표시만 한다 |
 | `GoNameplate` | PanelContainer | 3D 세계의 캐릭터 위에 뜨는 이름표 — 캐릭터 색의 작은 둥근 태그(자기 것은 `GoSkin.nameplate_own_fill()`), 폭은 `base_width` 에서 이름 전체가 들어가도록 `max_width` 까지 넓어진다. `follow(camera, point)` 가 투영한 점에 가운데를 맞추고 카메라 뒤에서는 숨긴다. 표시만 한다 |
 | `GoHudButton` | HBoxContainer | HUD 모서리 버튼 — 그림 버튼(`GoIconButton.art`, 포커스를 잡지 않음) 옆에 같은 일을 하는 키를 키캡에 보인다(일시정지 버튼 옆 "Esc"). 터치 화면에서는 `show_hint = false`. 키캡은 `GoSkin.hud_key_hint_box()`. 표시만 한다 — `pressed` 를 알릴 뿐 무엇을 할지는 게임이 정한다 |
 | `GoCountdown` | Label | 경기 시작 카운트 — 3 · 2 · 1 · GO! 를 원판 위에 크게(`show_step(text, final)`, `hide_step()`), 단계마다 톡 튀어 나온다(커졌다 흐려진 채 0.35초에 걸쳐 자리 잡음, `reduce_motion` 이면 없음). 원판은 `GoSkin.countdown_disc(final)`, 글자는 `GoSkin.countdown_ink()` 에 두꺼운 외곽선과 그림자. 표시만 한다 — 어떤 단계를 보일지는 호출자가 정한다 |

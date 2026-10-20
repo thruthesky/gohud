@@ -494,6 +494,18 @@ func draw_bar_ticks(canvas: CanvasItem, rect: Rect2, count: int) -> void:
 		canvas.draw_line(Vector2(x, rect.position.y + 1.0), Vector2(x, rect.end.y - 1.0), line, width, true)
 
 
+## A signal meter's bars are small painted keys: the ink outline, the paint's gradient and its gloss, no lip (nothing
+## to press). A dim bar keeps the outline round a faded slot, so an empty meter still reads as bars on the scene.
+func draw_signal_bars(canvas: CanvasItem, rects: Array[Rect2], lit: int, ink_color: Color, dim: Color) -> void:
+	for index in rects.size():
+		var rect := rects[index]
+		var on := index < lit
+		var edge := clampi(roundi(rect.size.x * 0.28), 1, arcade_edge)
+		var face := key(vivid(ink_color) if on else dim, minf(rect.size.x, rect.size.y) * 0.4, 0, edge,
+			arcade_gloss if on else 0.0)
+		face.draw(canvas.get_canvas_item(), rect)
+
+
 # ── Window chrome and the feel of a press ─────────────────────────────
 
 ## A window's title sits on a gold banner — a painted key with its lip and gloss, its ends folded back into swallow

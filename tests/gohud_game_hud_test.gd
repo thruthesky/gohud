@@ -27,11 +27,13 @@ func _initialize() -> void:
 		await _bar_frame(look)
 		await _bar_ink(look)
 		await _hud_card(look)
+		await _bare_card(look)
 		await _countdown(look)
 		await _art_button(look)
 		await _hud_button(look)
 		await _nameplate(look)
 		await _notice_feed(look)
+		await _notice_feed_versus(look)
 		await _touch_button(look)
 		await _joystick_art(look)
 		await _touch_lifecycle(look)
@@ -40,6 +42,7 @@ func _initialize() -> void:
 		await _task_card(look)
 		await _spotlight(look)
 		await _perf_readout(look)
+		await _signal_bars(look)
 		await _slot_touch(look)
 		await _icon_focus(look)
 	await _touch_label_cache()
@@ -296,6 +299,99 @@ func _hud_card(look: StringName) -> void:
 	GoUi.config.reduce_motion = true
 	gauge.set_lit(true)
 	check(gauge.scale == Vector2.ONE, "card: set_lit settles the scale")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── A bare card: no board, bars with their icon beside them, a tinted icon ─────────
+
+func _bare_card(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var skin := GoUi.skin()
+	var shield := skin.widget_art(&"shield")
+	check((shield != null) == painted, "bare: %s %s the shield art" % [look, "ships" if painted else "has no"])
+	if painted: check(shield.get_size() == Vector2(64, 64), "bare: the shield is 64 px")
+	var status := GoHudCard.new()
+	status.custom_minimum_size.x = 220.0
+	# A look with no art: any picture will do for the layout.
+	var stability := status.add_bar("", Color("#ff8a3d"), Color("#ffc24a"),
+		shield if shield != null else GoUi.icons().texture(GoIconSet.STAR))
+	var power := status.add_bar("", Color("#1fb5f0"), Color("#6ff0ff"), skin.widget_art(&"bolt"))
+	for bar in [stability, power]:
+		bar.segments = 0
+		bar.icon_size = 28.0
+		bar.icon_gap = 5
+		bar.icon_beside = true
+	var holder := _host(status)
+	await frames(2)
+	stability.set_values(70.0, 100.0, false)
+	check(status.get_theme_stylebox(&"panel").get_minimum_size() != Vector2.ZERO or not painted,
+		"bare: the card starts on the theme's board")
+	status.show_panel = false
+	await frames(1)
+	var bare := status.get_theme_stylebox(&"panel")
+	check(bare is StyleBoxEmpty and bare.get_minimum_size() == Vector2.ZERO, "bare: show_panel off draws no board, no margins")
+	var row := status.find_child("Row", true, false) as Control
+	check(row != null and row.position == Vector2.ZERO, "bare: the content starts at the card's corner")
+	var track := stability.find_child("Track", true, false) as HBoxContainer
+	var icon := stability.find_child("Icon", true, false) as TextureRect
+	check(track != null and track.visible and icon != null and icon.get_parent() == track and track.get_child(0) == icon,
+		"bare: icon_beside puts the icon first in the bar's track")
+	check(track != null and track.get_theme_constant(&"separation") == 5, "bare: icon_gap spaces the icon from the bar")
+	var shown := (stability.find_child("Frame", true, false) if painted else stability.find_child("Fill", true, false)) as Control
+	check(shown != null and shown.get_parent() == track and shown.visible, "bare: the %s sits in the track" %
+		("frame" if painted else "fill"))
+	if shown != null and icon != null:
+		check(icon.size == Vector2(28, 28), "bare: the icon keeps icon_size (got %s)" % icon.size)
+		check(is_equal_approx(shown.size.y, 14.0), "bare: the bar keeps its thickness beside the icon (got %s)" % shown.size.y)
+		check(shown.position.x >= icon.size.x + 5.0 - 0.5, "bare: the bar starts right of the icon (%s, %s)" % [shown.position, icon.size])
+		check(absf(shown.get_global_rect().get_center().y - icon.get_global_rect().get_center().y) <= 0.5,
+			"bare: the icon is centred on the bar (%s, %s)" % [shown.get_global_rect(), icon.get_global_rect()])
+		check(shown.get_global_rect().end.x >= stability.get_global_rect().end.x - 0.5, "bare: the bar takes the rest of the width")
+	var head := stability.find_child("Head", true, false) as Control
+	check(head != null and not head.visible, "bare: an empty name row hides beside the icon")
+	stability.label_text = "STABILITY"
+	check(head != null and head.visible, "bare: a name brings the name row back")
+	stability.label_text = ""
+	stability.readout = GoBar.Readout.PERCENT
+	check(head != null and head.visible, "bare: a readout brings the name row back")
+	stability.readout = GoBar.Readout.NONE
+	check(stability.segment_count() == 0, "bare: segments 0 is one smooth bar")
+	stability.segments = 4
+	await frames(1)
+	check(stability.segment_count() == 4, "bare: segments still apply beside the icon")
+	stability.icon_beside = false
+	await frames(1)
+	var title := stability.find_child("Title", true, false) as HBoxContainer
+	check(icon != null and icon.get_parent() == title and title.get_child(0) == icon, "bare: icon_beside off puts the icon back before the name")
+	check(shown != null and shown.get_parent() == stability.find_child("Column", true, false) and track != null and not track.visible,
+		"bare: icon_beside off puts the bar back under the name row")
+	check(head != null and head.visible, "bare: icon_beside off shows the name row")
+	status.show_panel = true
+	await frames(1)
+	check(not (status.get_theme_stylebox(&"panel") is StyleBoxEmpty), "bare: show_panel on brings the board back")
+	status.padding = 4.0
+	status.show_panel = false
+	check(status.get_theme_stylebox(&"panel") is StyleBoxEmpty, "bare: show_panel off wins over padding")
+	status.show_panel = true
+	check(status.get_theme_stylebox(&"panel").get_content_margin(SIDE_LEFT) >= 4.0, "bare: padding pads the board again")
+	status.gauge = true
+	status.show_panel = false
+	check(not (status.get_theme_stylebox(&"panel") is StyleBoxEmpty), "bare: a gauge keeps its board")
+	holder.queue_free()
+
+	# A white icon from the icon set, tinted to read on the board.
+	var count := GoHudCard.make(GoUi.icons().texture(GoIconSet.USERS), 28.0)
+	count.layout = GoHudCard.Layout.INLINE
+	count.value = "7"
+	holder = _host(count)
+	await frames(1)
+	var picture := count.find_child("Icon", true, false) as TextureRect
+	check(picture != null and picture.self_modulate == Color.WHITE, "bare: icon_ink transparent leaves the picture untinted")
+	count.icon_ink = GoUi.color(GoTheme.ACCENT)
+	check(picture != null and picture.self_modulate.is_equal_approx(GoUi.color(GoTheme.ACCENT)), "bare: icon_ink tints the picture")
+	count.icon_ink = Color.TRANSPARENT
+	check(picture != null and picture.self_modulate == Color.WHITE, "bare: icon_ink back to transparent clears the tint")
 	holder.queue_free()
 	await frames(1)
 
@@ -606,6 +702,87 @@ func _notice_feed(look: StringName) -> void:
 		feed.push("H", true)
 		check(feed.rows()[0].theme_type_variation == &"GoNotice" and feed.rows()[1].theme_type_variation == &"GoNoticeGold",
 			"feed: arcade_light rows use GoNotice / GoNoticeGold")
+	holder.queue_free()
+	await frames(1)
+
+
+func _feed_parts(row: Control) -> Array:
+	return [row.find_child("Left", true, false) as Label, row.find_child("Icon", true, false) as TextureRect,
+		row.find_child("Text", true, false) as Label]
+
+
+func _notice_feed_versus(look: StringName) -> void:
+	var feed := GoNoticeFeed.new()
+	feed.auto_advance = false
+	var holder := _host(feed, 600.0)
+	await frames(1)
+	# Only arcade_light paints magnet_arrow; a plain look shows the skull it is handed instead.
+	var magnet := GoUi.icons().texture(GoIconSet.MAGNET_ARROW)
+	if magnet == null: magnet = GoUi.icons().texture(GoIconSet.SKULL)
+	feed.push_versus("RED", magnet, "BLUE", false, Color.RED, Color.BLUE)
+	var parts := _feed_parts(feed.rows()[0])
+	var left := parts[0] as Label
+	var icon := parts[1] as TextureRect
+	var right := parts[2] as Label
+	check(left.visible and left.text == "RED" and icon.texture == magnet and right.text == "BLUE",
+		"versus: [left] [picture] [right] (%s)" % look)
+	check(left.get_index() < icon.get_index() and icon.get_index() < right.get_index(), "versus: left, icon, right in order")
+	check(left.get_theme_color(&"font_color") == Color.RED and right.get_theme_color(&"font_color") == Color.BLUE,
+		"versus: each name in its own colour")
+	check(left.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED, "versus: the names are shown as given")
+	check(icon.custom_minimum_size.y == feed.icon_size, "versus: the picture is icon_size high")
+	feed.push_versus("", GoUi.icons().texture(GoIconSet.FALL), "GREEN")
+	parts = _feed_parts(feed.rows()[1])
+	check(not (parts[0] as Label).visible and (parts[1] as TextureRect).visible and (parts[2] as Label).text == "GREEN",
+		"versus: an empty left hides it — [picture] [right]")
+	var normal := (parts[2] as Label)
+	check(not normal.has_theme_color_override(&"font_color"), "versus: an alpha-0 colour keeps the theme's")
+	feed.push("PLAIN")
+	parts = _feed_parts(feed.rows()[2])
+	check(not (parts[0] as Label).visible and (parts[2] as Label).text == "PLAIN" and (parts[1] as TextureRect).visible
+		and (parts[1] as TextureRect).custom_minimum_size == Vector2(22, 22), "versus: a plain push hides Left, icon and text as before")
+	check(not (parts[2] as Label).has_theme_color_override(&"font_color"), "versus: a plain push drops a reused row's colour")
+	check(not (parts[2] as Label).has_theme_font_size_override(&"font_size"), "versus: no limit, no size set — the theme's")
+	feed.push_versus("ME", magnet, "YOU", true)
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(feed.rows()[3].theme_type_variation == &"GoNoticeGold", "versus: own rows are gold")
+	feed.clear()
+	# Reuse: three into a pool of two keeps the two newest.
+	feed.max_items = 2
+	feed.push_versus("A1", magnet, "B1")
+	feed.push_versus("A2", magnet, "B2")
+	feed.push_versus("A3", magnet, "B3")
+	var texts: Array = feed.rows().map(func(row: Control) -> String: return (_feed_parts(row)[0] as Label).text)
+	check(feed.count == 2 and feed.get_child_count() == 2 and texts == ["A2", "A3"], "versus: max_items 2 keeps the two newest %s" % str(texts))
+	feed.clear()
+	# The width limit: two long names shrink together to fit; a short row keeps its size.
+	feed.max_items = 4
+	feed.font_size = 18
+	feed.max_row_width = 260.0
+	feed.fit_min_scale = 0.2
+	feed.push_versus("WWWWWWWWWWWWWWW", magnet, "WWWWWWWWWWWWWWW")
+	feed.push_versus("AB", magnet, "CD")
+	await frames(2)
+	var long_row := feed.rows()[0]
+	parts = _feed_parts(long_row)
+	var shrunk := (parts[0] as Label).get_theme_font_size(&"font_size")
+	check(shrunk < 18 and shrunk == (parts[2] as Label).get_theme_font_size(&"font_size"), "versus: both names shrink together (%d)" % shrunk)
+	check(long_row.size.x <= 260.0 and long_row.size.x > 200.0, "versus: the long row fits max_row_width (%.1f)" % long_row.size.x)
+	check((parts[1] as TextureRect).custom_minimum_size.y == feed.icon_size, "versus: the icon keeps its size")
+	var short_row := feed.rows()[1]
+	parts = _feed_parts(short_row)
+	check((parts[0] as Label).get_theme_font_size(&"font_size") == 18 and short_row.size.x < 200.0,
+		"versus: a short row keeps font_size and its own width (%.1f)" % short_row.size.x)
+	# The floor: at 0.9 the long names stop at ceil(18 × 0.9) = 17 and run over.
+	feed.fit_min_scale = 0.9
+	parts = _feed_parts(long_row)
+	check((parts[0] as Label).get_theme_font_size(&"font_size") == 17, "versus: fit_min_scale is the floor (%d)" % (parts[0] as Label).get_theme_font_size(&"font_size"))
+	# Alignment.
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_CENTER, "versus: rows centred by default")
+	feed.row_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_END, "versus: row_alignment RIGHT sets SHRINK_END")
+	feed.row_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	check(long_row.size_flags_horizontal == Control.SIZE_SHRINK_BEGIN, "versus: row_alignment LEFT sets SHRINK_BEGIN")
 	holder.queue_free()
 	await frames(1)
 
@@ -1129,6 +1306,117 @@ func _perf_readout(look: StringName) -> void:
 	await frames(1)
 
 
+# ── The signal meter ───────────────────────────────────────────────────
+
+func _signal_bars(look: StringName) -> void:
+	var arcade := look == GoThemePresets.ARCADE_LIGHT
+	var meter := GoSignalBars.make()
+	var holder := _host(meter, 400.0)
+	await frames(1)
+	check(meter.max_bars == 4 and meter.bars == 0 and meter.tone == GoSignalBars.Tone.NONE and meter.text == "",
+		"signal: make() defaults — 0 of 4, no reading, no text")
+	check(meter.mouse_filter == Control.MOUSE_FILTER_IGNORE and meter.meter.mouse_filter == Control.MOUSE_FILTER_IGNORE
+		and meter.label.mouse_filter == Control.MOUSE_FILTER_IGNORE, "signal: never takes input")
+	check(meter.layout_direction == Control.LAYOUT_DIRECTION_LTR, "signal: never flips with the language")
+	check(not meter.label.visible, "signal: no text, no readout")
+	check(meter.label.autowrap_mode == TextServer.AUTOWRAP_OFF and meter.label.has_meta(&"go_no_wrap"),
+		"signal: the readout stays on one line (GoStyle.one_line)")
+	# Clamping.
+	meter.set_reading(9, GoSignalBars.Tone.GOOD)
+	check(meter.lit() == 4 and meter.is_lit(3) and not meter.is_lit(4), "signal: more than max_bars lights them all")
+	meter.bars = -3
+	check(meter.bars == 0 and meter.lit() == 0, "signal: under 0 counts as 0")
+	meter.max_bars = 0
+	check(meter.max_bars == 1, "signal: max_bars is at least 1")
+	meter.max_bars = 5
+	meter.bars = 3
+	check(meter.lit() == 3 and meter.bar_rects().size() == 5, "signal: 3 of 5")
+	meter.tone = GoSignalBars.Tone.NONE
+	check(meter.lit() == 0, "signal: NONE shows every bar dim, whatever bars says")
+	meter.max_bars = 4
+	# Geometry: rising left to right, standing on one line, the tallest bar_height × scale_factor.
+	var rects := meter.bar_rects()
+	var rising := true
+	for i in range(1, rects.size()):
+		rising = rising and rects[i].size.y > rects[i - 1].size.y and rects[i].position.x > rects[i - 1].end.x
+		rising = rising and is_equal_approx(rects[i].end.y, rects[0].end.y)
+	check(rising and rects[-1].size.y == 24.0, "signal: the bars rise left to right on one line, the tallest 24 dp")
+	meter.scale_factor = 1.5
+	await frames(1)
+	check(meter.bar_rects()[-1].size.y == 36.0 and meter.meter.size == meter.meter_size(),
+		"signal: scale_factor scales the bars (%s)" % meter.meter.size)
+	meter.scale_factor = 1.0
+	# Tone colours come from the fill tokens.
+	var tones := {GoSignalBars.Tone.GOOD: GoTheme.SUCCESS_FILL, GoSignalBars.Tone.FAIR: GoTheme.WARNING_FILL,
+		GoSignalBars.Tone.POOR: GoTheme.DANGER_FILL}
+	for t: int in tones:
+		meter.tone = t
+		check(meter.tone_color() == GoUi.color(tones[t]), "signal: tone %d is %s" % [t, tones[t]])
+	meter.tone = GoSignalBars.Tone.NONE
+	check(meter.tone_color() == meter.dim_color(), "signal: NONE is the dim colour")
+	var muted := GoUi.color(GoTheme.MUTED_FILL)
+	check(meter.dim_color().is_equal_approx(Color(muted, muted.a * GoSignalBars.DIM_ALPHA)), "signal: dim is a faded muted_fill")
+	# Text visibility and the outlined HUD text.
+	meter.set_reading(4, GoSignalBars.Tone.GOOD, "48 ms")
+	await frames(1)
+	check(meter.label.visible and meter.label.text == "48 ms", "signal: the readout shows its text")
+	check(meter.label.get_theme_constant(&"outline_size") > 0, "signal: over the scene the readout is outlined")
+	check(meter.accessibility_name == "4/4 48 ms", "signal: a screen reader hears the reading (%s)" % meter.accessibility_name)
+	if arcade:
+		check(meter.label.theme_type_variation == GoSignalBars.VAR_TEXT
+			and meter.label.get_theme_color(&"font_color") == Color.WHITE, "signal: arcade_light: white GoOutlineLabel text")
+	else:
+		check(meter.label.get_theme_color(&"font_color") == GoUi.skin().nameplate_ink(false),
+			"signal: a look with no outlined label takes the name plate's ink")
+	meter.text = ""
+	check(not meter.label.visible, "signal: empty text hides the readout")
+	# A fixed room keeps the bars still and shrinks a long text.
+	meter.text_width = 40.0
+	meter.text = "1480 ms"
+	await frames(1)
+	var fitted := meter.label.get_theme_font_size(&"font_size")
+	check(meter.label.custom_minimum_size.x == 40.0 and fitted < 20 and fitted >= GoStyle.fit_floor(20),
+		"signal: text_width holds the room and shrinks the text (%d)" % fitted)
+	meter.text_width = 0.0
+	# The board.
+	check(meter.get_theme_stylebox(&"panel") is StyleBoxEmpty, "signal: no board by default")
+	meter.panel = true
+	var board := meter.get_theme_stylebox(&"panel")
+	var probe := PanelContainer.new()
+	probe.theme_type_variation = GoSignalBars.VAR_PANEL
+	holder.add_child(probe)
+	check(meter.theme_type_variation == GoSignalBars.VAR_PANEL and board.get_class() == probe.get_theme_stylebox(&"panel", GoSignalBars.VAR_PANEL).get_class(),
+		"signal: panel puts it on GoHudPanel (%s)" % board.get_class())
+	probe.free()
+	check(board.get_content_margin(SIDE_LEFT) >= GoStyle.face_clearance(meter, true) + GoSignalBars.BOARD_ROOM,
+		"signal: the board keeps the readout off its rim (%s)" % board.get_content_margin(SIDE_LEFT))
+	meter.refresh()
+	check(meter.get_theme_stylebox(&"panel") == board, "signal: a refresh keeps the same padded board")
+	check(meter.label.get_theme_constant(&"outline_size") == meter.label.get_theme_constant(&"outline_size", &"Label")
+		and not meter.label.has_theme_color_override(&"font_color"), "signal: on the board, the board's label ink")
+	meter.panel = false
+	check(meter.get_theme_stylebox(&"panel") is StyleBoxEmpty, "signal: and off again")
+	# Setters skip unchanged values; set_reading rebuilds once.
+	var count := meter.get(&"_refreshes") as int
+	meter.bars = meter.bars
+	meter.max_bars = meter.max_bars
+	meter.tone = meter.tone
+	meter.text = meter.text
+	meter.bar_height = meter.bar_height
+	meter.scale_factor = meter.scale_factor
+	meter.panel = meter.panel
+	meter.set_reading(meter.bars, meter.tone, meter.text)
+	check(meter.get(&"_refreshes") == count, "signal: unchanged values rebuild nothing")
+	meter.set_reading(2, GoSignalBars.Tone.POOR, "300 ms")
+	check(meter.get(&"_refreshes") == count + 1 and meter.lit() == 2 and meter.label.text == "300 ms",
+		"signal: set_reading rebuilds once")
+	# The skin draws: the hook exists on every look.
+	check(GoUi.skin().has_method(&"draw_signal_bars"), "signal: the skin draws the bars")
+	check(arcade == (GoUi.skin() is GoSkinArcade), "signal: arcade_light paints them as arcade keys")
+	holder.queue_free()
+	await frames(1)
+
+
 # ── The HUD widgets follow a look change and a reparent ───────────────
 
 ## What a widget shows that comes from the look: its theme's panel box, its text font, the skin's inks. The widgets
@@ -1160,6 +1448,7 @@ func _look_follows() -> void:
 			spot.auto_advance = false
 			spot.light(Rect2(50, 50, 80, 60))
 			return spot,
+		"signal bars": func() -> Control: return GoSignalBars.make(3, GoSignalBars.Tone.GOOD),
 	}
 	for key: String in makers:
 		GoUi.use_preset(from)
@@ -1221,6 +1510,11 @@ func _look_sig(key: String, widget: Control) -> String:
 		"spotlight":
 			var ring := widget.get(&"_ring") as StyleBoxFlat
 			return "%s" % (ring.border_color if ring != null else "none")
+		"signal bars":
+			var bars := widget as GoSignalBars
+			bars.text = "48 ms"
+			return "%s|%s|%s|%s" % [bars.tone_color(), bars.dim_color(), bars.label.get_theme_color(&"font_color"),
+				bars.label.get_theme_font(&"font").resource_path]
 	return ""
 
 

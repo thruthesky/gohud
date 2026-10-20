@@ -505,7 +505,8 @@ const ART_ROOT := "res://addons/gohud/assets/arcade_light/"
 ## The stage-select art: check, lock, person, play_tag, pointer. 🛑 A file that is not there reads as no art, and the
 ## widget falls back to the icon set.
 const STAGE_ART := ART_ROOT + "stage/"
-## The match HUD's art (avatar_head, bolt, opponents_badge, stopwatch, pause_button) and the touch controls' art
+## The match HUD's art (avatar_head, bolt, opponents_badge, stopwatch, pause_button; shield, painted for gohud by
+## `tools/paint_arcade_shield.gd`) and the touch controls' art
 ## (btn_attract, btn_repulse, btn_jump, stick_base, stick_knob) — the game's `assets/ui/hud` and `assets/ui/touch`.
 const HUD_ART := ART_ROOT + "hud/"
 const TOUCH_ART := ART_ROOT + "touch/"

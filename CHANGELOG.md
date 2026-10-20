@@ -20,6 +20,39 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   can stop drawing what a page covers. The card snaps to whole pixels inside the usable area and refits when its
   content's minimum drops; the content scroll keeps the shared panel edge where its column meets the card's right
   edge; a tab's glyph icon never wraps with the rail's labels. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+- **`GoNoticeFeed.push_versus(left, picture, right, own, left_color, right_color)`**: a kill feed's
+  `[killer] [picture] [victim]` row — a new `Left` label before the icon (hidden by `push`), each name in its own
+  colour (alpha 0 keeps the theme's), an empty `left` leaving `[picture] [victim]`, a wide picture kept in shape at
+  `icon_size` high; the same pool, reuse, fade, own row and feedback as `push`.
+- **`GoNoticeFeed.max_row_width`** (0, no limit): a longer row shrinks both names by one shared scale until it fits
+  (icons keep their size; short rows stay compact), down to **`fit_min_scale`** (negative: `GoUi.config.fit_min_scale`);
+  **`font_size`** (0: the theme's) and **`row_alignment`** (left / centre / right → `SIZE_SHRINK_BEGIN` / `CENTER` / `END`).
+- **arcade_light's kill-feed glyphs** `GoIconSet.MAGNET_ARROW` (`&"magnet_arrow"`: the horseshoe magnet lying on its
+  side, poles to the right, three yellow force waves leaving them) and `GoIconSet.FALL` (`&"fall"`: a down arrow beside
+  the ledge it left), painted by `tools/paint_arcade_killfeed.gd`.
+- **arcade_light's `GoIconSet.MULTIPLAYER`** (`&"multiplayer"`): three white people, one in front of two, in the
+  painted glyph style (navy rim, pale lip) — a main menu's multiplayer button; painted by
+  `tools/paint_arcade_multiplayer.gd`. `GoIconSet.USERS` (the HUD's opponents count) is unchanged.
+- **`GoHudCard.show_panel`** (on): off draws no board at all — no `GoHudPanel`, no margins — so the icon, banner,
+  labels and bars sit bare on the 3D scene (a match HUD's status corner). A `gauge` keeps its board.
+- **`GoHudCard.icon_ink`** (transparent): tints the card's picture (`self_modulate`), so a white icon from the icon set
+  reads on the white board in a token colour — `GoIconSet.USERS` in `GoTheme.ACCENT`. Transparent leaves the picture's
+  own colours.
+- **`GoBar.icon_beside`** (off): the icon sits left of the bar, centred on it, and the bar (the plain fill or the
+  painted frame, ticks and all) takes the rest of the width; `icon_size` and `icon_gap` still apply, and the name row
+  hides while it has no name and no readout. `GoHudCard.add_bar` bars take it too.
+- **arcade_light's HUD `shield`** (`assets/arcade_light/hud/shield.png`, `GoUi.skin().widget_art(&"shield")`): a
+  solid 64 px shield in the painted bolt's style — the navy rim, a gold-to-orange face (the stability bar's paint), a
+  darker lip and ridge, a gloss on the upper left — drawn by `tools/paint_arcade_shield.gd`.
+- **`GoSignalBars`** (`PanelContainer`): a phone-style signal meter — `max_bars` (4) bars rising left to right, the
+  first `bars` lit in the reading's `tone` (`Tone.GOOD` / `FAIR` / `POOR` take `success_fill` / `warning_fill` /
+  `danger_fill`; `NONE`, no reading yet, leaves every bar a faded `muted_fill`), an optional `text` readout ("48 ms") in
+  the look's outlined HUD text (`GoOutlineLabel`, else the name plate's ink and edge); `bar_height` (24), `text_size`
+  (20), `text_width` (a fixed room that shrinks a long text with `GoStyle.fit_font_size`), `panel` (the `GoHudPanel`
+  board), `scale_factor`; `GoSignalBars.make(bars, tone)` and `set_reading(bars, tone, text)` (one rebuild). Display
+  only — the caller decides every value. A match HUD's ping.
+- **Skin hook** `GoSkin.draw_signal_bars(canvas, rects, lit, ink, dim)`: plain rounded bars by default; the arcade
+  looks paint each bar as a small key — the ink outline, the paint's gradient and gloss, no lip.
 - **`GoStarRow`** (`HBoxContainer`): a row of rating stars — `stars` (0) of `max_stars` (3) lit, the rest dim;
   `star_size`, `gap`, `scale_factor`, `earned_texture` / `empty_texture`, `GoStarRow.make(earned, total, side)`.
   arcade_light paints them (`assets/arcade_light/stage/star.png` and `star_empty.png`, drawn by

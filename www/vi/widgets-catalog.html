@@ -836,7 +836,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD và thành phần game <small>(25)</small></h2>
+  <h2>HUD và thành phần game <small>(26)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -990,6 +990,13 @@ card.<wbr>set_parts(<wbr>[<wbr>"W",<wbr> "A",<wbr> "S",<wbr> "D"],<wbr> [<wbr>tr
       <pre><code>var perf := GoPerfReadout.<wbr>new(<wbr>)
 perf.<wbr>tier_text = "LOW (<wbr>auto)"
 overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gosignalbars"><code>GoSignalBars</code></h3>
+      <p>Thanh sóng kiểu điện thoại: các cột cao dần từ trái sang phải, sáng xanh lá, vàng hoặc đỏ, kèm số đo như "48 ms" — ping trên HUD trận đấu.</p>
+      <p class="catalog-base">kế thừa <code>PanelContainer</code></p>
+      <pre><code>var ping := GoSignalBars.<wbr>make(<wbr>4,<wbr> GoSignalBars.<wbr>Tone.<wbr>GOOD)
+ping.<wbr>set_reading(<wbr>2,<wbr> GoSignalBars.<wbr>Tone.<wbr>FAIR,<wbr> "180 ms")</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>
