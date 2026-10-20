@@ -38,6 +38,7 @@ func _initialize() -> void:
 	await _sub_pages()
 	await _sub_page_rtl()
 	await _in_page_confirm()
+	await _hold()
 	await _page_hand_over()
 	await _drawer_hand_over()
 
@@ -670,6 +671,63 @@ func _in_page_confirm() -> void:
 	page.queue_free()
 	await frames(2)
 	section("in-page confirm")
+
+
+func _hold() -> void:
+	GoBackPolicy.reset(self)
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Settings")
+	await frames(2)
+	page.set_status_text("Saved settings", &"success")
+	page.push("Contact")
+	await frames(2)
+	page.set_page_title("Settings · Ana")
+	check(page.surface.title_label.text == "Contact", "set_page_title under a sub-page leaves the shown title alone")
+	page.set_title("Contact us")
+	check(page.surface.title_label.text == "Contact us", "set_title re-titles the level shown")
+	var level_status := page.find_child("SubPageStatus", true, false) as VBoxContainer
+	check(not page.surface.status.visible and level_status != null and not level_status.visible,
+		"a sub-page hides the root's status row and starts with its own row hidden")
+	page.set_status_text("Sending…")
+	var status_text := level_status.get_node_or_null(^"StatusLineText") as Label
+	check(level_status.visible and status_text != null and status_text.text == "Sending…"
+		and page.surface.status_label.text == "Saved settings", "set_status_text fills the sub-page's own pinned row")
+	page.clear_status()
+	check(not level_status.visible, "clear_status hides it")
+	page.hold(true)
+	check(page.is_held() and page.surface.back_button.disabled and not page.surface.close_enabled,
+		"hold: the back button and the ✕ are off")
+	root.push_input(_cancel())
+	await frames(3)
+	page.surface.back_requested.emit()
+	page.surface.request_close()
+	await frames(2)
+	check(page.depth() == 1 and page.is_open(), "held: Escape, back and ✕ leave the sub-page up")
+	page.hold(false)
+	check(not page.is_held() and not page.surface.back_button.disabled and page.surface.close_enabled,
+		"hold(false) gives back and ✕ back")
+	root.push_input(_cancel())
+	await frames(3)
+	check(page.depth() == 0 and page.is_open(), "released: Escape pops")
+	check(page.surface.title_label.text == "Settings · Ana", "the last pop shows the page title set while it was under")
+	check(page.surface.status.visible and page.surface.status_label.text == "Saved settings",
+		"the last pop gives the root's status row back")
+	page.clear_status()
+	page.push("Contact")
+	page.hold(true)
+	check(page.pop() and page.depth() == 0 and page.surface.close_enabled and not page.surface.back_button.disabled,
+		"a code pop of a held level releases the hold")
+	page.surface.close_enabled = false
+	page.push("Contact")
+	page.hold(true)
+	page.hold(false)
+	check(not page.surface.close_enabled, "the hold restores close_enabled as it was (off stays off)")
+	page.surface.close_enabled = true
+	page.close()
+	page.queue_free()
+	await frames(2)
+	section("sub-page status row · hold — a sub-page mid-send can't be left")
 
 
 # ── Handing the screen to another window ───────────────────────────────

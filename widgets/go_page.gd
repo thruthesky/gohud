@@ -48,6 +48,9 @@
 ## - While a sub-page is up the tab rail and the root's pinned footer step away (a deeper level is not a tab, and the
 ##   root's actions belong to the root's content); the toolbar and the preview stay. Focus returns to the control that
 ##   pushed when the level pops.
+## - A sub-page has its own pinned status row (`set_status_text` / `set_status_key` / `clear_status`).
+## - `hold(true)` holds the top sub-page while it must not be left (a form mid-send): back, Escape, the gesture and
+##   the ✕ do nothing until `hold(false)` or a code `pop()`.
 ## - `confirm()` / `confirm_key()` ask inside the page — a pushed sub-page with the question and [cancel] [confirm] in
 ##   its pinned row (`await` → `true` on confirm; back, Escape or closing the page answer `false`).
 ## - `hand_over(action)` — for a row that opens a window the page cannot hold (a shop, another screen): the page steps
@@ -106,6 +109,10 @@ var _footer_was := false
 var _rail_was := false
 ## The host's own back action for the page's first level (`set_back`) — the sub-pages put theirs over it.
 var _root_back := Callable()
+## Whether the root's pinned status row showed when the first sub-page went up.
+var _status_was := false
+## `surface.close_enabled` as it was before a `hold` turned the ✕ off.
+var _close_was := true
 ## A hand-over in progress (`hand_over`): {at, held, frames, focus, aside}. Empty when none.
 var _hand := {}
 ## Frames a hand-over waits for the window its action opens (a window that opens one frame late is still caught).
@@ -215,6 +222,26 @@ func set_title(value: String) -> void:
 ## The same by translation key — the engine redraws it when the language changes.
 func set_title_key(key: String) -> void:
 	surface.set_title_key(key)
+
+
+## The page's **own** title, whatever level shows: at depth 0 it is the title shown; under a sub-page it is the title
+## the last pop brings back (a page that re-titles itself as its data changes must not re-title a sub-page).
+func set_page_title(value: String) -> void:
+	_set_page_title(value, false)
+
+
+## The same by translation key.
+func set_page_title_key(key: String) -> void:
+	_set_page_title(key, true)
+
+
+func _set_page_title(value: String, translate: bool) -> void:
+	if _levels.is_empty():
+		if translate: surface.set_title_key(value)
+		else: surface.set_title(value)
+		return
+	_levels[0].under_title = value
+	_levels[0].under_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
 
 
 ## Closes the whole page (from any depth): the sub-pages are popped and freed, so it opens on its own level next time.
@@ -338,6 +365,8 @@ func _push(title: String, translate: bool, build: Callable) -> VBoxContainer:
 			(part as CanvasItem).visible = false
 		_footer_was = surface.footer.visible
 		surface.footer.visible = false
+		_status_was = surface.status.visible
+		surface.status.visible = false
 		_rail_was = _rail_scroll.visible
 		_rail_scroll.visible = false
 	else:
@@ -359,6 +388,11 @@ func _push(title: String, translate: bool, build: Callable) -> VBoxContainer:
 	scroll.add_child(column)
 	# The shared panel edge, as the tab body (`_build_frame`) — in the tree first: the edge frame wraps the scroll there.
 	scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+	# The level's own pinned status row, between its body and its footer — as the surface's (`set_status_text`).
+	var status_row := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	status_row.name = "SubPageStatus"
+	status_row.visible = false
+	root.add_child(status_row)
 	var foot := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
 	foot.name = "SubPageFooter"
 	foot.visible = false
@@ -368,6 +402,7 @@ func _push(title: String, translate: bool, build: Callable) -> VBoxContainer:
 	level.scroll = scroll
 	level.body = column
 	level.footer = foot
+	level.status = status_row
 	_levels.append(level)
 	if translate: surface.set_title_key(title)
 	else: surface.set_title(title)
@@ -381,12 +416,58 @@ func _push(title: String, translate: bool, build: Callable) -> VBoxContainer:
 	return column
 
 
+## The pinned status row of the level shown — the one line that must not be missed ("Passwords do not match"), between
+## the sub-page's body and its pinned row, as `GoSurface.set_status_text` (which it is at depth 0). An empty text hides it.
+func set_status_text(text: String, tone := StringName()) -> void:
+	_set_level_status(text, tone, false)
+
+
+## By translation key — the engine redraws it when the language changes.
+func set_status_key(key: String, tone := StringName()) -> void:
+	_set_level_status(key, tone, true)
+
+
+## Hides the status row of the level shown.
+func clear_status() -> void:
+	_set_level_status("", StringName(), false)
+
+
+func _set_level_status(text: String, tone: StringName, translate: bool) -> void:
+	if _levels.is_empty():
+		surface._set_status(text, tone, translate)
+		return
+	var row: VBoxContainer = _levels.back().status
+	GoSurface._fill_status_row(row, row.get_node_or_null(^"StatusLineText") as Label, text, tone, translate)
+
+
+## Holds the top sub-page while it must not be left — a form mid-send, whose answer has nowhere to show once its
+## sub-page is gone: back, Escape, the back gesture and the page's ✕ do nothing until `hold(false)`. A code `pop()` /
+## `close()` still works. The hold is the level's own: it ends when that level is popped.
+func hold(on: bool) -> void:
+	if _levels.is_empty() or bool(_levels.back().get("held", false)) == on: return
+	_levels.back().held = on
+	if on: _close_was = surface.close_enabled
+	_apply_hold(on)
+
+
+## Whether the top sub-page is held (`hold`).
+func is_held() -> bool:
+	return not _levels.is_empty() and bool(_levels.back().get("held", false))
+
+
+func _apply_hold(on: bool) -> void:
+	surface.close_enabled = _close_was if not on else false
+	if is_instance_valid(surface.back_button): surface.back_button.disabled = on
+
+
 func _back_one() -> void:
+	if is_held(): return
 	pop()
 
 
 func _pop_level(restore_focus: bool) -> void:
 	var level: Dictionary = _levels.pop_back()
+	if bool(level.get("held", false)): _apply_hold(false)
 	var root: Control = level.root
 	if is_instance_valid(root):
 		_content_holder.remove_child(root)
@@ -396,6 +477,7 @@ func _pop_level(restore_focus: bool) -> void:
 			if is_instance_valid(part[0]): (part[0] as CanvasItem).visible = part[1]
 		_root_parts.clear()
 		surface.footer.visible = _footer_was
+		surface.status.visible = _status_was
 		_rail_scroll.visible = _rail_was
 		surface.set_back(_root_back)
 		_content_edge_padding = -1   # the root's column comes back — measure its edge again

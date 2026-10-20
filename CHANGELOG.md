@@ -13,6 +13,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   a sub-page is up; focus returns to the control that pushed; `build` runs on push and a popped level is freed.
 - **`GoPage.confirm()` / `confirm_key()`** — `await` a yes/no inside the page (a pushed sub-page with [cancel] [confirm];
   back / Escape / close answer `false`), the same arguments as `GoDialogs.confirm`.
+- **`GoPage.set_status_text()` / `set_status_key()` / `clear_status()`** — a sub-page has its own pinned status row
+  between its body and its pinned row (at depth 0 they are the surface's). The root's row steps away under a sub-page.
+- **`GoPage.set_page_title()` / `set_page_title_key()`** — the page's own title from any depth (under a sub-page it is
+  what the last pop shows); `set_title()` still re-titles the level shown.
+- **`GoPage.hold(on)` / `is_held()`** — a sub-page mid-send holds itself up: back, Escape, the back gesture and the ✕
+  do nothing until it releases (a code `pop()` / `close()` still works; `close_enabled` comes back as it was).
 - **`GoPage.hand_over(action)` and `GoDrawer.hand_over(action)`** — a row that opens a window the launcher cannot hold:
   the launcher steps aside in the frame the window opens and comes back when it closes (a drawer whose tile opened
   nothing closes, as before). `GoSurface.set_aside()` / `path_count()` / `held_count()` are the counts they share.

@@ -1177,21 +1177,27 @@ func clear_status() -> void:
 
 
 func _set_status(text: String, tone: StringName, translate: bool) -> void:
+	status_label = _fill_status_row(status, status_label, text, tone, translate)
+
+
+## Fills a pinned status row ([param row]) with [param text] — its label made on first use and returned; an empty text
+## hides the row. Shared by the surface's row and a `GoPage` sub-page's own row, so both read the same.
+static func _fill_status_row(row: VBoxContainer, label: Label, text: String, tone: StringName, translate: bool) -> Label:
 	if text.is_empty():
-		if status_label != null: status_label.text = ""
-		status.visible = false
-		return
-	if status_label == null:
-		status_label = GoStyle.label("", GoTheme.ROLE_CAPTION)
-		status_label.name = "StatusLineText"
-		status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		status.add_child(status_label)
-	status_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
-	status_label.text = text
-	GoStyle.typography(status_label, GoTheme.ROLE_CAPTION,
-		GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
-	status.visible = true
+		if label != null: label.text = ""
+		row.visible = false
+		return label
+	if label == null:
+		label = GoStyle.label("", GoTheme.ROLE_CAPTION)
+		label.name = "StatusLineText"
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		row.add_child(label)
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	label.text = text
+	GoStyle.typography(label, GoTheme.ROLE_CAPTION, GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
+	row.visible = true
+	return label
 
 
 ## Empties the body.
