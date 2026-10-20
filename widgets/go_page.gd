@@ -591,14 +591,16 @@ class _Answer extends RefCounted:
 ## sub-pages and scroll kept, not `closed` — and comes back when that window and anything it opened in turn have
 ## closed, focus on the row that handed over. One transition each way, and back retraces the path. Nothing opened: the
 ## page simply stays. A drawer or other held window opening while it is away means the player moved on: the page
-## closes for good (`closed`).
+## closes for good (`closed`) — and so does a window that closed **itself** (no `GoSurface.close_requests` since the
+## hand-over: its job is done, the player stays where it put them).
 func hand_over(action: Callable) -> void:
 	_drop_hand_over()
 	if not visible or not is_inside_tree():
 		if action.is_valid(): action.call()
 		return
 	var focus := get_viewport().gui_get_focus_owner()
-	_hand = {at = GoSurface.path_count(), held = GoSurface.held_count(), frames = HAND_OVER_FRAMES,
+	_hand = {at = GoSurface.path_count(), held = GoSurface.held_count(), asks = GoSurface.close_requests(),
+		frames = HAND_OVER_FRAMES,
 		focus = weakref(focus) if focus != null and surface.is_ancestor_of(focus) else null, aside = false}
 	if action.is_valid(): action.call()
 	_watch_hand_over()
@@ -633,6 +635,10 @@ func _watch_hand_over() -> void:
 	if GoSurface.held_count() > int(_hand.held):
 		_give_up_hand_over()
 	elif GoSurface.path_count() <= int(_hand.at):
+		# Closed by itself, not by the player (`GoSurface.close_requests`): its job is done — stay closed.
+		if GoSurface.close_requests() == int(_hand.asks):
+			_give_up_hand_over()
+			return
 		var focus: WeakRef = _hand.focus
 		_hand = {}
 		GoSurface.set_aside(false)

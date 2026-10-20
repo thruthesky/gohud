@@ -22,6 +22,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`GoPage.hand_over(action)` and `GoDrawer.hand_over(action)`** — a row that opens a window the launcher cannot hold:
   the launcher steps aside in the frame the window opens and comes back when it closes (a drawer whose tile opened
   nothing closes, as before). `GoSurface.set_aside()` / `path_count()` / `held_count()` are the counts they share.
+  Only a close the player asked for brings the launcher back: **`GoSurface.close_requests()`** counts
+  `request_close()` calls (✕, Escape, back, scrim), and a window that closed itself (its job done) leaves the launcher
+  closed instead of popping it back over the new place.
 - **`GoSurface.back_before_close`** (off) and **`GoSurface.request_back()`** — Escape and the Android back press a
   showing back button before they close the window (GoPage turns it on). `request_back()` is that step for code (a voice
   "close").

@@ -753,22 +753,33 @@ func _page_hand_over() -> void:
 	check(GoBackPolicy.owners() == 1 and int(closes[0]) == 0, "aside: only the window holds back, the page did not close (%d)"
 		% GoBackPolicy.owners())
 	check(GoSurface.path_count() == 2, "path: the shop open + the page aside (%d)" % GoSurface.path_count())
-	shop.close()
+	var asked := GoSurface.close_requests()
+	shop.surface.request_close()   # the player closes the shop (its ✕)
 	await frames(3)
+	check(GoSurface.close_requests() == asked + 1, "the ✕ counts as a close the player asked for")
 	check(page.is_open() and not page.is_handing_over() and GoBackPolicy.owners() == 1,
-		"the window closed → the page is back (owners %d)" % GoBackPolicy.owners())
+		"the player closed the window → the page is back (owners %d)" % GoBackPolicy.owners())
 	check(get_root().gui_get_focus_owner() == row, "focus back on the row that handed over")
 	page.hand_over(func() -> void: pass)
 	await frames(4)
 	check(page.is_open() and not page.is_handing_over(), "an action that opens nothing leaves the page where it is")
+	# The window closes itself (its job done — no close asked for): the page stays closed, the player stays there.
+	page.hand_over(func() -> void: shop.open("Shop"))
+	await frames(2)
+	shop.close()
+	await frames(3)
+	check(not page.is_open() and not page.is_handing_over() and int(closes[0]) == 1 and GoSurface.path_count() == 0,
+		"a window that closed itself → the page gives up its way back (closed once, path %d)" % GoSurface.path_count())
+	page.open("Settings")
+	await frames(2)
 	# The player moves on: a drawer opens while the page is away → the page closes for good.
 	page.hand_over(func() -> void: shop.open("Shop"))
 	var drawer := GoDrawer.new()
 	root.add_child(drawer)
 	drawer.open("Menu")
 	await frames(2)
-	check(not page.is_open() and int(closes[0]) == 1 and GoSurface.path_count() == 1,
-		"a drawer opened while away → the page gives up its way back (closed once, path %d)" % GoSurface.path_count())
+	check(not page.is_open() and int(closes[0]) == 2 and GoSurface.path_count() == 1,
+		"a drawer opened while away → the page gives up its way back (closed once more, path %d)" % GoSurface.path_count())
 	shop.close()
 	drawer.close()
 	await frames(3)
@@ -803,9 +814,9 @@ func _drawer_hand_over() -> void:
 	# A chain: the page hands over to a third window — the drawer waits for the whole chain.
 	settings.hand_over(func() -> void: shop.open("Shop"))
 	await frames(2)
-	shop.close()
+	shop.surface.request_close()
 	await frames(3)
-	check(settings.is_open() and drawer.is_handing_over(), "the shop closed → the page is back, the drawer still waits")
+	check(settings.is_open() and drawer.is_handing_over(), "the shop closed (✕) → the page is back, the drawer still waits")
 	root.push_input(_cancel())
 	await frames(3)
 	check(not settings.is_open() and drawer.is_open() and drawer.visible and int(closed[0]) == 0,
@@ -825,6 +836,15 @@ func _drawer_hand_over() -> void:
 	settings.close()
 	await frames(3)
 	check(not drawer.is_open() and GoBackPolicy.owners() == 0, "and the page's close brings nothing back")
+	# A window that closes itself (its job done — a teleport made): the drawer does not pop back over the battle screen.
+	drawer.open("Menu")
+	await frames(2)
+	drawer.hand_over(func() -> void: settings.open("Settings"))
+	await frames(2)
+	settings.close()
+	await frames(3)
+	check(not drawer.is_open() and not drawer.is_handing_over() and int(closed[0]) == 3 and GoBackPolicy.owners() == 0,
+		"the page closed itself (no close asked for) → the drawer closes instead of coming back")
 	drawer.queue_free()
 	settings.queue_free()
 	shop.queue_free()

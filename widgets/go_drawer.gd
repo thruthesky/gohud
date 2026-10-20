@@ -18,11 +18,12 @@
 ## `LEFT` is the left of the screen in Arabic too. To follow the text direction, turn on `follow_text_direction` —
 ## that flips it in RTL (for places where "the start side" carries meaning, such as a menu drawer).
 ##
-## ## ## 🚪 A launcher hands over, it does not slide away first
+## ## 🚪 A launcher hands over, it does not slide away first
 ## `hand_over(action)` runs a row's action: when it opens a window, the drawer **steps aside in that same frame** (no
 ## slide, nothing left under the window) and is back — as it was — when that window and anything it opened in turn have
-## closed. Back from the window retraces the path to the drawer. An action that opens nothing (it acts on the screen
-## behind) closes the drawer as usual.
+## closed **by the player** (`GoSurface.close_requests` — ✕, Escape, the back gesture, a scrim tap). Back from the
+## window retraces the path to the drawer. A window that closed itself (its job done — a teleport made) leaves the player
+## there: the drawer closes. An action that opens nothing (it acts on the screen behind) closes the drawer as usual.
 ##
 ## ## 🛑 It does not intrude on the safe area
 ## On a device with a notch or rounded corners, a drawer that runs to the screen edge has its content clipped
@@ -265,7 +266,7 @@ func hand_over(action: Callable) -> void:
 	if not _open:
 		if action.is_valid(): action.call()
 		return
-	_hand = {at = GoSurface.path_count(), frames = HAND_OVER_FRAMES, aside = false}
+	_hand = {at = GoSurface.path_count(), asks = GoSurface.close_requests(), frames = HAND_OVER_FRAMES, aside = false}
 	if action.is_valid(): action.call()
 	_watch_hand_over()
 	if not _hand.is_empty(): set_process(not Engine.is_editor_hint())
@@ -293,7 +294,9 @@ func _watch_hand_over() -> void:
 	if GoSurface.is_any_held_open():
 		close()
 	elif GoSurface.path_count() <= int(_hand.at):
-		_come_back()
+		# Closed by itself, not by the player: its job is done — the drawer does not pop back over where it left them.
+		if GoSurface.close_requests() == int(_hand.asks): close()
+		else: _come_back()
 
 
 ## Off the screen at once (no slide-out: the window is already on top), the back gesture and the held place handed to it.

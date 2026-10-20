@@ -106,6 +106,18 @@ static func path_count() -> int:
 	return _open_count + _aside_count
 
 
+## How many closes the player has asked for — the close button, the close key, Escape and the back gesture when they
+## close, a scrim tap, a voice "close" (`request_close` counts each one it lets through). 🔑 A launcher standing aside
+## (`hand_over`) comes back only when the windows it stood aside for were closed **by the player**: a window that closed
+## itself — its job done (a teleport made, a form sent) — leaves the player where that job put them, never with the
+## launcher popping back over it.
+static func close_requests() -> int:
+	return _close_requests
+
+
+static var _close_requests := 0
+
+
 # ── Placement ──────────────────────────────────────────────────────────
 
 ## 🔑 Every layout input below is a setter that marks the layout dirty **only when the value really changes** — a
@@ -1211,6 +1223,7 @@ func clear() -> void:
 func request_close() -> void:
 	if close_enabled and is_top():
 		if close_feedback: GoFeedback.closed()
+		_close_requests += 1
 		close_requested.emit()
 
 
