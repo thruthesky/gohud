@@ -760,17 +760,18 @@ func _page_hand_over() -> void:
 	check(page.is_open() and not page.is_handing_over() and GoBackPolicy.owners() == 1,
 		"the player closed the window → the page is back (owners %d)" % GoBackPolicy.owners())
 	check(get_root().gui_get_focus_owner() == row, "focus back on the row that handed over")
-	page.hand_over(func() -> void: pass, 0.1)
-	await frames(2)
+	# 🔑 Times well above a frame: a software-rendered frame can take 50 ms+, so a wait of a few frames is not "short".
+	page.hand_over(func() -> void: pass, 0.6)
+	await frames(1)
 	check(page.visible and not page.is_handing_over(), "waiting for the window: the page is still up")
-	await create_timer(0.2).timeout
+	await create_timer(0.8).timeout
 	await frames(1)
 	check(page.is_open() and not page.is_handing_over(), "an action that opens nothing leaves the page where it is")
 	# A window that opens late (a deferred call, a cached load) — the page waits for its open, not a frame count.
-	page.hand_over(func() -> void: create_timer(0.15).timeout.connect(func() -> void: shop.open("Shop")))
-	await frames(4)
+	page.hand_over(func() -> void: create_timer(0.6).timeout.connect(func() -> void: shop.open("Shop")), 1.5)
+	await frames(1)
 	check(page.visible and not page.is_handing_over(), "a late window: the page waits, still up")
-	await create_timer(0.25).timeout
+	await create_timer(0.9).timeout
 	await frames(1)
 	check(not page.visible and page.is_handing_over() and shop.is_open(),
 		"the late window opened → the page stepped aside then, in one transition")
@@ -856,10 +857,10 @@ func _drawer_hand_over() -> void:
 	# A window that opens late: the drawer stays up until it opens, then steps aside — one transition, not slide-then-pop.
 	drawer.open("Menu")
 	await frames(2)
-	drawer.hand_over(func() -> void: create_timer(0.15).timeout.connect(func() -> void: settings.open("Settings")))
-	await frames(4)
+	drawer.hand_over(func() -> void: create_timer(0.6).timeout.connect(func() -> void: settings.open("Settings")), 1.5)
+	await frames(1)
 	check(drawer.is_open() and drawer.visible and not drawer.is_handing_over(), "a late window: the drawer waits, still up")
-	await create_timer(0.25).timeout
+	await create_timer(0.9).timeout
 	await frames(1)
 	check(drawer.is_handing_over() and not drawer.visible and settings.is_open() and int(closed[0]) == 2,
 		"the late window opened → the drawer stepped aside then (never closed)")
@@ -867,10 +868,10 @@ func _drawer_hand_over() -> void:
 	await frames(3)
 	check(drawer.is_open() and drawer.visible, "the player closed it → the drawer is back")
 	# Nothing opens within the wait: the drawer closes when it runs out.
-	drawer.hand_over(func() -> void: pass, 0.1)
-	await frames(2)
+	drawer.hand_over(func() -> void: pass, 0.6)
+	await frames(1)
 	check(drawer.is_open(), "waiting for a window that never comes: the drawer is still up")
-	await create_timer(0.2).timeout
+	await create_timer(0.8).timeout
 	await frames(1)
 	check(not drawer.is_open() and int(closed[0]) == 3, "the wait ran out → the drawer closed (its effect is behind)")
 	await frames(2)
