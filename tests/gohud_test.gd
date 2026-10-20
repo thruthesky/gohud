@@ -1059,27 +1059,30 @@ func _i18n() -> void:
 		check(csv_locales.has(locale), "%s from GoUi.LOCALES has a CSV column" % locale)
 
 	# For every declared language, check the text really **comes out** — a bare key means the .translation file is not attached.
+	# 🛑 Only the current language's piece is registered (`GoUi.add_locale_translations`): `GoUi.text()` reads a newly
+	#    switched language in itself, a bare `tr()` relies on the `GoRuntime` autoload having heard the switch.
 	for locale: String in GoUi.LOCALES:
 		TranslationServer.set_locale(locale)
-		var got := tr("gohud_confirm")
+		var got := GoUi.text(&"confirm")
 		check(got != "gohud_confirm" and got != "", "text comes out in %s (%s)" % [locale, got])
+		if locale != "en": check(got != "Confirm", "%s has its own words, not the English fallback (%s)" % [locale, got])
 
 	# Samples of the languages added on 2026-09-12 — a shifted column order is caught here (the slot fits, the content is wrong).
 	TranslationServer.set_locale("tr")
-	check(tr("gohud_cancel") == "İptal", "tr translation")
+	check(GoUi.text(&"cancel") == "İptal", "tr translation")
 	TranslationServer.set_locale("th")
-	check(tr("gohud_close") == "ปิด", "th translation")
+	check(GoUi.text(&"close") == "ปิด", "th translation")
 	TranslationServer.set_locale("vi")
-	check(tr("gohud_retry") == "Thử lại", "vi translation")
+	check(GoUi.text(&"retry") == "Thử lại", "vi translation")
 	TranslationServer.set_locale("id")
-	check(tr("gohud_next") == "Berikutnya", "id translation")
+	check(GoUi.text(&"next") == "Berikutnya", "id translation")
 	# 🛑 Traditional must be **Taiwanese vocabulary**, not converted Simplified — 搜尋, not 搜索 (mainland).
 	TranslationServer.set_locale("zh_TW")
-	check(tr("gohud_search") == "搜尋", "zh_TW uses Taiwanese vocabulary (%s)" % tr("gohud_search"))
+	check(GoUi.text(&"search") == "搜尋", "zh_TW uses Taiwanese vocabulary (%s)" % GoUi.text(&"search"))
 	TranslationServer.set_locale("zh")
-	check(tr("gohud_search") == "搜索", "zh uses mainland vocabulary (%s)" % tr("gohud_search"))
+	check(GoUi.text(&"search") == "搜索", "zh uses mainland vocabulary (%s)" % GoUi.text(&"search"))
 	TranslationServer.set_locale("he")
-	check(tr("gohud_done") == "סיום", "he translation")
+	check(GoUi.text(&"done") == "סיום", "he translation")
 
 	TranslationServer.set_locale(original)
 

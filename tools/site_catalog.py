@@ -1926,6 +1926,25 @@ card.pressed.connect(play_stage)""", T(
 		"Плитка вибору рівня: мініатюра, назва, підзаголовок і за станом — галочка, замок або мітка PLAY!.",
 		"การ์ดเลือกด่าน: ภาพย่อ ชื่อ ชื่อรอง และตามสถานะจะเป็นเครื่องหมายถูก แม่กุญแจ หรือป้าย PLAY!",
 		"بطاقة اختيار المرحلة: صورة مصغرة وعنوان وعنوان فرعي، وحسب الحالة علامة صح أو قفل أو وسم PLAY!.")),
+	("hud", "GoStarRow", "HBoxContainer", """var rating := GoStarRow.make(2)
+rating.star_size = 40.0""", T(
+		"A row of rating stars: some lit in gold, the rest dim — a level's best clear or a result screen's grade.",
+		"별점 줄 — 몇 개는 금색으로 켜고 나머지는 흐리게. 레벨의 최고 클리어나 결과 화면의 등급.",
+		"評価の星の列。いくつかは金色に光り、残りは暗い — レベルの最高クリアや結果画面の評価に。",
+		"一排评分星星：部分亮起金色，其余变暗——关卡最佳通关或结算画面的评级。",
+		"一排評分星星：部分亮起金色，其餘變暗——關卡最佳通關或結算畫面的評級。",
+		"Una fila de estrellas de valoración: unas encendidas en oro, el resto apagadas; el mejor resultado de un nivel o la nota de una pantalla de resultados.",
+		"Uma fileira de estrelas de avaliação: algumas acesas em dourado, o resto apagado — a melhor vitória de uma fase ou a nota de uma tela de resultado.",
+		"Ряд звёзд оценки: часть горит золотом, остальные тусклые — лучшее прохождение уровня или оценка на экране итогов.",
+		"Une rangée d'étoiles de notation : certaines allumées en or, les autres ternes — le meilleur passage d'un niveau ou la note d'un écran de résultats.",
+		"Bir sıra puan yıldızı: bazıları altın renginde yanar, kalanı sönük — bir bölümün en iyi geçişi ya da sonuç ekranının notu.",
+		"Rząd gwiazdek oceny: część świeci złotem, reszta przygaszona — najlepsze przejście etapu lub ocena na ekranie wyników.",
+		"Una fila di stelle di valutazione: alcune accese d'oro, le altre spente — il miglior completamento di un livello o il voto di una schermata dei risultati.",
+		"Một hàng sao đánh giá: vài ngôi sáng vàng, số còn lại mờ — lần qua màn tốt nhất hay điểm của màn hình kết quả.",
+		"Sederet bintang penilaian: sebagian menyala emas, sisanya redup — penyelesaian terbaik sebuah tahap atau nilai di layar hasil.",
+		"Ряд зірок оцінки: частина світиться золотом, решта тьмяні — найкраще проходження рівня або оцінка на екрані підсумків.",
+		"แถวดาวให้คะแนน: บางดวงสว่างสีทอง ที่เหลือหม่น — ผลผ่านด่านที่ดีที่สุดหรือเกรดในหน้าผลลัพธ์",
+		"صف من نجوم التقييم: بعضها مضاء بالذهبي والباقي باهت — أفضل إنهاء لمرحلة أو تقدير شاشة النتائج.")),
 	("hud", "GoKeyCluster", "Control", """var wasd := GoKeyCluster.make(["W", "A", "S", "D"])
 var arrows := GoKeyCluster.make(GoKeyCluster.ARROWS)""", T(
 		"Four movement keys in an inverted T — WASD or the arrow keys — as a controls page shows them.",

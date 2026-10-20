@@ -26,6 +26,8 @@ func _initialize() -> void:
 		_skin_hooks(look)
 		await _key_cluster(look)
 		await _level_card(look)
+		await _star_row(look)
+		await _level_card_stars(look)
 		await _glyph_button(look)
 		await _kbd_done(look)
 		await _surface(look)
@@ -299,6 +301,118 @@ func _level_card(look: StringName) -> void:
 	var art := card.check.get_child(0) as TextureRect
 	check(art != null and art.texture == own, "%s card: an exported texture wins over the skin's art" % look)
 	holder.queue_free()
+	await frames(1)
+
+
+# ── Star row and the level card's stars ────────────────────────────────
+
+func _star_row(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var row := GoStarRow.make(2)
+	root.add_child(row)
+	await frames(1)
+	check(row.max_stars == 3 and row.stars == 2 and row.star_nodes.size() == 3, "%s stars: make(2) holds 2 of 3" % look)
+	check(row.is_earned(0) and row.is_earned(1) and not row.is_earned(2), "%s stars: the first two are lit" % look)
+	check(row.row_size() == Vector2(18 * 3 + 2 * 2, 18) and row.get_combined_minimum_size() == row.row_size(),
+		"%s stars: three 18 px stars 2 apart (got %s)" % [look, row.get_combined_minimum_size()])
+	check(row.mouse_filter == Control.MOUSE_FILTER_IGNORE, "%s stars: the row ignores the mouse" % look)
+	check(row.accessibility_name == "2/3", "%s stars: a screen reader hears 2/3" % look)
+	var lit := row.star_nodes[0].get_child(0) if row.star_nodes[0].get_child_count() > 0 else null
+	var dim := row.star_nodes[2].get_child(0) if row.star_nodes[2].get_child_count() > 0 else null
+	check(lit != null and dim != null, "%s stars: every star has art or the icon set's glyph" % look)
+	if painted:
+		check(lit is TextureRect and (lit as TextureRect).texture == GoUi.skin().widget_art(&"star")
+			and dim is TextureRect and (dim as TextureRect).texture == GoUi.skin().widget_art(&"star_empty"),
+			"%s stars: the painted gold star and its grey slot" % look)
+	else:
+		check(GoUi.skin().widget_art(&"star") == null and lit != null and dim != null
+			and lit.modulate.a + lit.get_theme_color(&"font_color").a > dim.modulate.a * dim.get_theme_color(&"font_color").a,
+			"%s stars: without art the icon set's star, the unearned one faded" % look)
+	row.stars = 9
+	check(row.earned() == 3, "%s stars: more than max_stars lights them all" % look)
+	row.stars = -2
+	check(row.stars == 0 and row.earned() == 0 and not row.is_earned(0), "%s stars: under 0 counts as 0" % look)
+	row.max_stars = 5
+	check(row.star_nodes.size() == 5 and row.get_child_count() == 5, "%s stars: max_stars 5 holds five" % look)
+	row.max_stars = 2
+	check(row.star_nodes.size() == 2 and row.get_child_count() == 2, "%s stars: and back to two" % look)
+	row.scale_factor = 2.0
+	check(row.row_size() == Vector2(36 * 2 + 4, 36), "%s stars: every size follows scale_factor" % look)
+	var own := ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGBA8))
+	row.stars = 1
+	row.earned_texture = own
+	var art := row.star_nodes[0].get_child(0) as TextureRect
+	check(art != null and art.texture == own, "%s stars: an exported texture wins over the skin's art" % look)
+	row.queue_free()
+	await frames(1)
+
+
+func _level_card_stars(look: StringName) -> void:
+	var holder := VBoxContainer.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	var card := GoLevelCard.make("STAGE 2", "OPPONENTS: 2", GoLevelCard.State.CLEARED)
+	holder.add_child(card)
+	await frames(2)
+	check(card.stars == 0 and card.max_stars == 3 and not card.star_row.visible,
+		"%s card stars: none by default, so no row" % look)
+	for state: GoLevelCard.State in [GoLevelCard.State.CLEARED, GoLevelCard.State.CURRENT, GoLevelCard.State.OPEN]:
+		for earned in [1, 2, 3]:
+			card.state = state
+			card.stars = earned
+			await frames(1)
+			check(card.star_row.visible and card.star_row.earned() == earned and card.star_row.max_stars == 3,
+				"%s card stars: state %d shows %d of 3" % [look, state, earned])
+	var bottom := card.star_row.get_global_rect().end.y
+	var card_bottom := card.get_global_rect().end.y
+	check(card.star_size == 22.0 and card.star_row.star_side() == 22.0,
+		"%s card stars: 22 px by default, big enough to read on a phone" % look)
+	check(is_equal_approx(card.size.y, card.card_size.y),
+		"%s card stars: the bigger stars keep the tile its height (%s)" % [look, card.size.y])
+	check(bottom <= card_bottom - 6.0, "%s card stars: the row sits inside the card (row %s, card %s)" % [look, bottom, card_bottom])
+	check(card.star_row.get_global_rect().position.y >= card.subtitle_label.get_global_rect().end.y - 1.0
+		and is_equal_approx(card.star_row.get_global_rect().position.x, card.title_label.get_global_rect().position.x),
+		"%s card stars: a third line under the subtitle, lined up with the title" % look)
+	card.state = GoLevelCard.State.LOCKED
+	await frames(1)
+	check(not card.star_row.visible, "%s card stars: a locked card shows none" % look)
+	card.state = GoLevelCard.State.CLEARED
+	card.max_stars = 5
+	card.stars = 4
+	card.scale_factor = 0.5
+	await frames(1)
+	check(card.star_row.visible and card.star_row.star_nodes.size() == 5 and card.star_row.earned() == 4
+		and is_equal_approx(card.star_row.scale_factor, 0.5) and card.star_row.star_side() == 11.0,
+		"%s card stars: max_stars and scale_factor reach the row" % look)
+	card.stars = 0
+	await frames(1)
+	check(not card.star_row.visible, "%s card stars: back to 0 hides the row" % look)
+	holder.queue_free()
+	await frames(1)
+	# 🛑 Under a GoScroll a scaled card with stars once never finished its frame (the gallery at 0.8): the row now
+	#    restyles its stars in place, and the tile holds its three lines.
+	var scroll := GoScroll.new()
+	scroll.theme = GoUi.theme()
+	scroll.custom_minimum_size = Vector2(320, 400)
+	root.add_child(scroll)
+	var page := VBoxContainer.new()
+	scroll.add_child(page)
+	var scaled := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
+	scaled.stars = 2
+	scaled.scale_factor = 0.8
+	scaled.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	page.add_child(scaled)
+	await frames(2)
+	var kept := scaled.star_row.star_nodes[0].get_child(0)
+	scaled.star_size = 20.0
+	await frames(2)
+	check(scaled.star_row.visible and scaled.star_row.star_nodes[0].get_child(0) == kept
+		and scaled.star_row.star_nodes[0].get_child_count() == 1 and scaled.star_row.star_side() == 16.0,
+		"%s card stars: a new star size restyles the same star in a GoScroll" % look)
+	check(scaled.star_row.get_global_rect().end.y <= scaled.get_global_rect().end.y,
+		"%s card stars: a scaled tile holds its star line (row %s, card %s)" % [look,
+			scaled.star_row.get_global_rect().end.y, scaled.get_global_rect().end.y])
+	scroll.queue_free()
 	await frames(1)
 
 

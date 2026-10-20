@@ -1,11 +1,13 @@
 ## 🗺️ **A level-select tile** — the thumbnail on the left, the level's title and a subtitle row (a person icon and
 ## "OPPONENTS: 3", say) beside it, and on the right the state: a check on a cleared level, a padlock with LOCKED on a
-## locked one, a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile.
+## locked one, a tilted PLAY! tag on the level to play next. A gold ring marks the selected tile. `stars` adds a row of
+## rating stars under the subtitle (`GoStarRow`: 1 cleared on easy, 2 on normal, 3 on hard, say).
 ##
 ## ```gdscript
 ## var card := GoLevelCard.make("STAGE 3", "OPPONENTS: 3", GoLevelCard.State.CURRENT)
 ## card.thumbnail = preload("res://levels/3.png")       # or put your own node in card.thumbnail_slot
 ## card.selected = true
+## card.stars = 2                                        # two of max_stars (3) lit; 0, the default, shows no row
 ## card.pressed.connect(_play.bind(3))
 ## ```
 ##
@@ -36,6 +38,8 @@ const VAR_TITLE := &"GoTitle"
 const VAR_WELL := &"GoWell"
 ## The thumbnail of a locked level is greyed with this (the game greys its map preview).
 const LOCKED_TINT := Color(0.62, 0.64, 0.7)
+## How much vertical padding a tile gives up for its star line (`stars`), so the default tile keeps its height.
+const STAR_LINE_ROOM := 5.0
 
 ## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, `FAILED` for a locked card, …). Empty:
 ## silent. A press from code says nothing.
@@ -74,6 +78,19 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 @export var play_text := "PLAY!":
 	set(value):
 		play_text = value
+		_queue_refresh()
+
+## The stars earned, shown as a row under the subtitle (`star_row`): `stars` of `max_stars` lit, the rest dim.
+## 0 (the default) shows no row; a locked tile never shows one.
+@export_range(0, 10) var stars := 0:
+	set(value):
+		stars = maxi(0, value)
+		_queue_refresh()
+
+## How many stars the row holds.
+@export_range(1, 10) var max_stars := 3:
+	set(value):
+		max_stars = maxi(1, value)
 		_queue_refresh()
 
 ## The thumbnail, drawn to cover its slot (`GoCoverImage`). Leave it empty to put your own node in `thumbnail_slot`.
@@ -213,6 +230,16 @@ const LOCKED_TINT := Color(0.62, 0.64, 0.7)
 	set(value):
 		pointer_size = value
 		_queue_refresh()
+## One rating star's side (`stars`).
+@export var star_size := 22.0:
+	set(value):
+		star_size = value
+		_queue_refresh()
+## The space between two rating stars.
+@export var star_gap := 2.0:
+	set(value):
+		star_gap = value
+		_queue_refresh()
 @export_group("")
 
 ## Put your own thumbnail here (a live map preview, say): a Control added to it is anchored to fill the slot inside
@@ -228,6 +255,8 @@ var lock: Control
 var play_tag: Control
 var pointer: TextureRect
 var selection_ring: Panel
+## The rating stars under the subtitle (`stars`, `max_stars`) — hidden at 0 stars and on a locked tile.
+var star_row: GoStarRow
 
 var _margin: MarginContainer
 var _row: HBoxContainer
@@ -380,6 +409,9 @@ func _build() -> void:
 	subtitle_label = _text("Subtitle")
 	subtitle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_subtitle_row.add_child(subtitle_label)
+	star_row = GoStarRow.new()
+	star_row.name = "Stars"
+	_text_box.add_child(star_row)
 
 	_lock_box = VBoxContainer.new()
 	_lock_box.name = "Lock"
@@ -513,11 +545,14 @@ func _refresh() -> void:
 	#    taller than the game's (on purpose: it stays easy to press).
 	custom_minimum_size = Vector2(card_size.x * k, maxf(card_size.y * k, GoUi.touch_size()))
 
+	# Three lines (title, subtitle, stars) close up so the default tile stays its height.
+	var three_lines := stars > 0 and not locked
 	_margin.add_theme_constant_override(&"margin_left", roundi(thumbnail_inset * k))
-	for side in [&"margin_right", &"margin_top", &"margin_bottom"]:
-		_margin.add_theme_constant_override(side, roundi(card_padding * k))
+	_margin.add_theme_constant_override(&"margin_right", roundi(card_padding * k))
+	for side in [&"margin_top", &"margin_bottom"]:
+		_margin.add_theme_constant_override(side, _pad_y(three_lines))
 	_row.add_theme_constant_override(&"separation", roundi(row_gap * k))
-	_text_box.add_theme_constant_override(&"separation", roundi(4.0 * k))
+	_text_box.add_theme_constant_override(&"separation", roundi((2.0 if three_lines else 4.0) * k))
 	_lock_box.add_theme_constant_override(&"separation", lock_gap)
 	_subtitle_row.add_theme_constant_override(&"separation", roundi(text_gap * k))
 
@@ -545,6 +580,12 @@ func _refresh() -> void:
 	locked_label.text = locked_text
 	tag_label.text = play_text
 	_subtitle_row.visible = not subtitle.is_empty()
+	star_row.visible = stars > 0 and not locked
+	star_row.max_stars = max_stars
+	star_row.stars = stars
+	star_row.star_size = star_size
+	star_row.gap = star_gap
+	star_row.scale_factor = k
 
 	var face_ink := ink()
 	var edge := outline_ink()
@@ -655,6 +696,26 @@ func _fit_texts() -> void:
 	var icon_room := room - (person_size + text_gap) * k
 	subtitle_label.add_theme_font_size_override(&"font_size",
 			GoStyle.fit_font_size(PackedStringArray([shown_subtitle]), sub_base, icon_room, font))
+	_hold_text()
+
+
+## The tile is at least as tall as its text column with the padding — the star line never spills out of the card.
+## 🛑 A text column taller than the tile (the stars under a small `scale_factor`, whose fonts stop at their floor) spilled
+##    out, and inside a `GoScroll` the overflow set the layout swinging so a frame never ended (the gallery at 0.8,
+##    2026-10-19). The `Button` takes no size from its children, so the height is handed over here.
+func _hold_text() -> void:
+	var k := scale_factor
+	var tall := maxf(card_size.y * k, GoUi.touch_size())
+	if star_row.visible:
+		var pad := _pad_y(true) * 2
+		tall = maxf(tall, ceilf(_text_box.get_combined_minimum_size().y) + pad)
+	custom_minimum_size = Vector2(card_size.x * k, tall)
+
+
+## The padding above and below the text column. With the star line it gives up `STAR_LINE_ROOM`, so the 22 px stars
+## (readable on a phone) fit the default tile's height.
+func _pad_y(three_lines: bool) -> int:
+	return roundi(maxf(0.0, card_padding - (STAR_LINE_ROOM if three_lines else 0.0)) * scale_factor)
 
 
 func _label_font() -> Font:

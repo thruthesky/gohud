@@ -32,6 +32,9 @@ const SPRITES := {
 const STAGE_SPRITES := {
 	"card_cleared": false, "card_current": false, "card_locked": false, "check": false, "lock": false, "person": false,
 	"play_tag": false, "pointer": false, "ribbon_title": false, "well": false, "window": false,
+	# Painted for gohud in the same style (tools/paint_arcade_stars.gd): GoStarRow's earned star and its empty slot,
+	# drawn small, so with mipmaps.
+	"star": true, "star_empty": true,
 }
 
 ## The match HUD's painted sprites (the game's `assets/ui/hud`): the player's head, the power bolt, the opponents
@@ -138,6 +141,9 @@ func _hud_sprites() -> void:
 		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [TOUCH, name]),
 			"arcade_light's widget_art('%s') is the touch sprite" % name)
 	check(GoUi.skin().widget_art(&"check") == load("%s/check.png" % STAGE), "widget_art still answers the stage art")
+	for name in ["star", "star_empty"]:
+		check(GoUi.skin().widget_art(StringName(name)) == load("%s/%s.png" % [STAGE, name]),
+			"arcade_light's widget_art('%s') is the painted star" % name)
 	check(GoUi.skin().widget_art(&"no_such_art") == null, "widget_art answers null for art the theme does not ship")
 	GoUi.reset()
 	check(GoUi.skin().widget_art(&"stopwatch") == null, "the default look ships no HUD art")
@@ -173,7 +179,10 @@ func _light_icons() -> void:
 		var want := _glyph(expect[name])
 		check(want != null and icons.texture(name) == want, "arcade_light draws '%s' with the %s glyph" % [name, expect[name]])
 	# Not a glyph here — the default set still draws it.
-	for name: StringName in [&"trash", &"star", &"lock"]:
+	# The rating star is the filled painted one (gold, navy rim, gloss), the same art as GoStarRow's earned star.
+	check(icons.texture(&"star") != null and icons.texture(&"star") == load("res://addons/gohud/assets/arcade_light/stage/star.png"),
+		"arcade_light draws 'star' with the filled painted star")
+	for name: StringName in [&"trash", &"lock"]:
 		var drawn := icons.texture(name)
 		check(drawn != null and drawn == GoUi.DEFAULT_ICONS.texture(name),
 			"arcade_light falls back to the default set for '%s'" % name)

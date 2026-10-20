@@ -20,6 +20,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   can stop drawing what a page covers. The card snaps to whole pixels inside the usable area and refits when its
   content's minimum drops; the content scroll keeps the shared panel edge where its column meets the card's right
   edge; a tab's glyph icon never wraps with the rail's labels. Tests: `tests/gohud_page_test.gd` (in `tools/check_all.sh`).
+- **`GoStarRow`** (`HBoxContainer`): a row of rating stars — `stars` (0) of `max_stars` (3) lit, the rest dim;
+  `star_size`, `gap`, `scale_factor`, `earned_texture` / `empty_texture`, `GoStarRow.make(earned, total, side)`.
+  arcade_light paints them (`assets/arcade_light/stage/star.png` and `star_empty.png`, drawn by
+  `tools/paint_arcade_stars.gd` in the style of the painted check, `GoSkin.widget_art` `star` / `star_empty`); a look
+  with no art draws the icon set's star in `warning_fill`, the unearned ones in a faded `muted_fill`. Both painted stars
+  are solid (a gold one with a navy rim and a gloss, a grey one), never an outline.
+- **arcade_light's icon set draws `GoIconSet.STAR` with the filled painted gold star** (it fell back to the default
+  set's outline star).
+- **`GoLevelCard.stars`** (0) and **`max_stars`** (3): a `GoStarRow` (`star_row`, `star_size` 22 — readable on a phone — `star_gap` 2) as a
+  third line under the subtitle, on an open, cleared or current tile; 0 shows no row and a locked tile never shows
+  one, so a card that never sets it is unchanged.
 - **The widgets speak their own UI cue** (`GoFeedback`, plugged into `GoFeedback.sound_handler`): every one has a
   `feedback` export, the `GoFeedback` event it plays (an empty one is silent). `GoGlyphButton`, `GoLevelCard` and
   `GoSwitch` say `tapped` on the player's press (never on a `button_pressed` set from code); `GoSlider` says the new
@@ -54,6 +65,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`GoConfig.close_on_os_back`** (on): off leaves the Android back gesture to the game while Escape / `ui_cancel`
   still close the top window. A game with its own Back handler closed two windows with one Back — its own and the
   one under it, which the deferred `request_close()` then found on top.
+
+### Changed
+
+- **gohud loads only what the game uses** (a faster first frame). `GoUi.DEFAULT_THEME`, `LIGHT_THEME` and
+  `DEFAULT_ICONS` are read on first use, not preloaded the moment anything names `GoUi`; the backup theme is read only
+  when the current one lacks a token; `set_mobile_type()` and `set_font_locale()` no longer read the default theme
+  before a look is chosen. The default icon set lists its drawings as `paths`, so each SVG is read when first drawn.
+  Only the current locale's (and the fallback locale's) built-in translation is registered; another is read when the
+  game switches to it (`GoUi.set_locale()`, the `GoRuntime` autoload, `GoUi.text()`). New
+  `GoUi.add_locale_translations(code)` registers a language's piece without switching to it (a language picker).
 
 ### Fixed
 

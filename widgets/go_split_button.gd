@@ -121,7 +121,9 @@ func _restyle() -> void:
 
 ## A copy of the theme's [param state] face for a button of type [param variation] (walking up its base types).
 static func _face(variation: StringName, state: StringName) -> StyleBox:
-	for look in [GoUi.theme(), GoUi.DEFAULT_THEME]:
+	# gohud's default theme is read only when the current one lacks it (it is loaded on first use).
+	for step in 2:
+		var look: Theme = GoUi.theme() if step == 0 else GoUi.DEFAULT_THEME
 		if look == null: continue
 		var type := variation if not variation.is_empty() else &"Button"
 		while not type.is_empty():

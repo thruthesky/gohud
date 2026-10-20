@@ -474,7 +474,9 @@ func swatch_box(diameter: float, color: Color) -> StyleBox:
 ##    the card style drags its inner padding (12dp) along and turns a thin bar into a fat block.
 func progress_fill_box(ink: Color) -> StyleBox:
 	var source: StyleBox = null
-	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
+	# gohud's default theme is read only when the current one lacks it (it is loaded on first use).
+	for step in 2:
+		var candidate: Theme = GoUi.theme() if step == 0 else GoUi.DEFAULT_THEME
 		if candidate != null and candidate.has_stylebox(&"fill", &"ProgressBar"):
 			source = candidate.get_stylebox(&"fill", &"ProgressBar")
 			break
@@ -712,7 +714,9 @@ func fab_box(extent: float, state: StringName) -> StyleBox:
 ## Icon and label colour on a FAB. Default: the primary button's label colour.
 func fab_ink() -> Color:
 	var theme := GoUi.theme()
-	for candidate in [theme, GoUi.DEFAULT_THEME]:
+	# gohud's default theme is read only when the current one lacks it (it is loaded on first use).
+	for step in 2:
+		var candidate: Theme = theme if step == 0 else GoUi.DEFAULT_THEME
 		if candidate != null and candidate.has_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON):
 			return candidate.get_color(&"font_color", GoTheme.VAR_PRIMARY_BUTTON)
 	return GoUi.color(GoTheme.ON_ACCENT)
@@ -1002,7 +1006,9 @@ const FULL_ROUND := 999
 ## 🔑 Follows the variation to its base: `GoButton` draws with `Button`'s boxes, and asked for itself alone it handed
 ##    back the plain square — the outlined button came out a bare box (2026-10-02 screenshots).
 func variation_box(type: StringName, key: StringName) -> StyleBox:
-	for candidate in [GoUi.theme(), GoUi.DEFAULT_THEME]:
+	# gohud's default theme is read only when the current one lacks it (it is loaded on first use).
+	for step in 2:
+		var candidate: Theme = GoUi.theme() if step == 0 else GoUi.DEFAULT_THEME
 		if candidate == null: continue
 		var kind := type
 		for depth in 8:

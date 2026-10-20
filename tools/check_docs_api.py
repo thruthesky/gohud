@@ -111,7 +111,7 @@ MEMBER = re.compile(
 	r"(?:static\s+)?"                            # static var · static func
 	r"(?:func\s+([a-z_][A-Za-z0-9_]*)"
 	r"|signal\s+([a-z_][A-Za-z0-9_]*)"
-	r"|var\s+([a-z_][A-Za-z0-9_]*)"
+	r"|var\s+([A-Za-z_][A-Za-z0-9_]*)"              # an upper-case `static var` is a lazily loaded constant (GoUi.DEFAULT_THEME)
 	r"|const\s+([A-Za-z_][A-Za-z0-9_]*)"
 	r"|enum\s+([A-Z][A-Za-z0-9_]*)"
 	r"|class\s+([A-Z][A-Za-z0-9_]*))")

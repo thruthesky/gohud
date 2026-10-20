@@ -2016,7 +2016,7 @@ func _game_icons() -> void:
 	check(orphans.is_empty(), "game icons: every constant belongs to a group %s" % str(orphans))
 	var clash: Array = []
 	for icon: StringName in names:
-		if GoUi.DEFAULT_ICONS.textures.has(icon): clash.append(icon)
+		if GoUi.DEFAULT_ICONS.paths.has(icon): clash.append(icon)
 	check(clash.is_empty(), "game icons: no name redraws a default icon %s" % str(clash))
 	check(game.texture(GoIconSet.CLOSE) == GoUi.DEFAULT_ICONS.texture(GoIconSet.CLOSE), "game icons: default names still resolve")
 	check(game.attribution.contains("Tabler") and game.attribution.contains("MIT"), "game icons: the set carries its attribution")
@@ -2064,7 +2064,7 @@ func _icon_library() -> void:
 	check(orphans.is_empty(), "icon library: every constant belongs to a group %s" % str(orphans))
 	var clash: Array = []
 	for icon: StringName in names:
-		if GoUi.DEFAULT_ICONS.textures.has(icon) or game.paths.has(icon): clash.append(icon)
+		if GoUi.DEFAULT_ICONS.paths.has(icon) or game.paths.has(icon): clash.append(icon)
 	check(clash.is_empty(), "icon library: no name repeats the default or game set %s" % str(clash))
 	var blurry: Array = []
 	for key: StringName in keys:
