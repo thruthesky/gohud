@@ -70,6 +70,12 @@ static func open_surface_count() -> int:
 	return _open_count
 
 
+## How many held windows are open (drawers — `hold_open`). A window that stepped aside for another (`GoPage.hand_over`)
+## gives up its way back when this rises: the player opened a launcher, so the path it came by is gone.
+static func held_count() -> int:
+	return _held_count
+
+
 ## Is a held window open (a `GoDrawer` — `hold_open`)? Unlike a surface, a held window has no "lets play go on" variant:
 ## a game asking "does a window take the screen away" counts it as blocking whatever surfaces are up.
 static func is_any_held_open() -> bool:
@@ -80,6 +86,59 @@ static func is_any_held_open() -> bool:
 ## and once on close, from `_exit_tree` too (the back-gesture rule, `GoBackPolicy`).
 static func hold_open(on: bool) -> void:
 	_held_count = maxi(0, _held_count + (1 if on else -1))
+
+
+## Surfaces that stepped aside for a window they opened and come back when it closes (`GoPage.hand_over`) — hidden, so
+## not in `open_surface_count()`, but still on the player's path back.
+static var _aside_count := 0
+
+
+## A surface steps aside (`on`) or comes back / gives up (`not on`) — once each, like `hold_open`.
+static func set_aside(on: bool) -> void:
+	_aside_count = maxi(0, _aside_count + (1 if on else -1))
+
+
+## How many windows are on the player's path right now: the open surfaces plus those that stepped aside for a window
+## they opened. 🔑 A launcher handing the screen to a window (`GoPage.hand_over`, `GoDrawer.hand_over`) waits for this to
+## drop back to its value before the hand-over — a window that itself handed over to a third one still counts, so the
+## first launcher never comes back while the chain it started is still up.
+static func path_count() -> int:
+	return _open_count + _aside_count
+
+
+## How many closes the player has asked for — the close button, the close key, Escape and the back gesture when they
+## close, a scrim tap, a voice "close" (`request_close` counts each one it lets through). 🔑 A launcher standing aside
+## (`hand_over`) comes back only when the windows it stood aside for were closed **by the player**: a window that closed
+## itself — its job done (a teleport made, a form sent) — leaves the player where that job put them, never with the
+## launcher popping back over it.
+static func close_requests() -> int:
+	return _close_requests
+
+
+static var _close_requests := 0
+
+
+## Bumped by every surface the moment it opens (it becomes visible in the tree — the window's own open, not a frame
+## count). 🔑 A launcher handing the screen over (`GoPage.hand_over`, `GoDrawer.hand_over`) waits for it to move — for as
+## long as its wait allows — so a window that opens a few frames late (after a deferred call or a cached load) still
+## takes the screen in one transition.
+static func open_serial() -> int:
+	return _open_serial
+
+
+## The surface that opened last (`open_serial`), or null once it is gone — the window a launcher handed the screen to.
+static func last_opened() -> GoSurface:
+	return _last_opened.get_ref() as GoSurface if _last_opened != null else null
+
+
+static var _open_serial := 0
+static var _last_opened: WeakRef = null
+
+## How long a launcher's hand-over (`GoPage.hand_over`, `GoDrawer.hand_over`) waits, at most, for the window its action
+## opens (`open_serial` — caught in the frame that window opens). Half a second covers a window that opens after a
+## deferred call or a cached load; a window that waits on the network should open first and show its loading state —
+## past the wait a page simply stays and a drawer closes.
+const HAND_OVER_SECONDS := 0.5
 
 
 # ── Placement ──────────────────────────────────────────────────────────
@@ -230,6 +289,11 @@ var resizable := false
 var show_header := true
 var scroll_body := true
 var close_enabled := true
+## ⬅️ **Escape and back go back before they close.** While the back button shows (`set_back`), Escape, the Android back
+## gesture and `request_back()` press it instead of closing the window — a window with screens inside it (`GoPage`'s
+## sub-pages) steps back one level, and closes only from its first screen. The close button still closes. Off by default:
+## a sheet with a back button closes on Escape as before.
+var back_before_close := false
 ## 🔔 Say `GoFeedback.opened()` each time the window shows (enters the tree visible, or it or a parent turns visible).
 ## Off by default: `GoSheet`, `GoPopover` and `GoDialogs` say their own; turn it on for a window the game shows itself.
 var open_feedback := false
@@ -1148,21 +1212,27 @@ func clear_status() -> void:
 
 
 func _set_status(text: String, tone: StringName, translate: bool) -> void:
+	status_label = _fill_status_row(status, status_label, text, tone, translate)
+
+
+## Fills a pinned status row ([param row]) with [param text] — its label made on first use and returned; an empty text
+## hides the row. Shared by the surface's row and a `GoPage` sub-page's own row, so both read the same.
+static func _fill_status_row(row: VBoxContainer, label: Label, text: String, tone: StringName, translate: bool) -> Label:
 	if text.is_empty():
-		if status_label != null: status_label.text = ""
-		status.visible = false
-		return
-	if status_label == null:
-		status_label = GoStyle.label("", GoTheme.ROLE_CAPTION)
-		status_label.name = "StatusLineText"
-		status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		status.add_child(status_label)
-	status_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
-	status_label.text = text
-	GoStyle.typography(status_label, GoTheme.ROLE_CAPTION,
-		GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
-	status.visible = true
+		if label != null: label.text = ""
+		row.visible = false
+		return label
+	if label == null:
+		label = GoStyle.label("", GoTheme.ROLE_CAPTION)
+		label.name = "StatusLineText"
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		row.add_child(label)
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS if translate else Node.AUTO_TRANSLATE_MODE_DISABLED
+	label.text = text
+	GoStyle.typography(label, GoTheme.ROLE_CAPTION, GoUi.color(tone) if tone != StringName() else Color.TRANSPARENT)
+	row.visible = true
+	return label
 
 
 ## Empties the body.
@@ -1176,7 +1246,20 @@ func clear() -> void:
 func request_close() -> void:
 	if close_enabled and is_top():
 		if close_feedback: GoFeedback.closed()
+		_close_requests += 1
 		close_requested.emit()
+
+
+## ⬅️ What Escape, the Android back gesture and a voice "close" ask for: one step back. With `back_before_close` on and
+## the back button showing, that is the back button's action (`back_requested`); otherwise the window closes
+## (`request_close`). 🔑 Going back is not gated by `close_enabled` — a window that may not close (a roster, a menu
+## that is busy) can still leave a screen inside it.
+func request_back() -> void:
+	if not is_top(): return
+	if back_before_close and is_instance_valid(back_button) and back_button.visible:
+		back_requested.emit()
+		return
+	request_close()
 
 
 # ── Topmost test ───────────────────────────────────────────────────────
@@ -1219,6 +1302,8 @@ func _sync_active() -> void:
 		if not _holds_back:
 			GoBackPolicy.acquire(get_tree())
 			_open_count += 1
+			_open_serial += 1
+			_last_opened = weakref(self)
 			_holds_back = true
 		var focus := get_viewport().gui_get_focus_owner()
 		_previous_focus = weakref(focus) if focus != null and not is_ancestor_of(focus) else null
@@ -1753,7 +1838,7 @@ func _input(event: InputEvent) -> void:
 		_dragging = false
 		return
 	if GoUi.config.close_on_back and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
-		request_close()
+		request_back()
 		get_viewport().set_input_as_handled()
 		return
 	if not _dragging: return
@@ -1816,4 +1901,4 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST and GoUi.config.close_on_back and GoUi.config.close_on_os_back \
 			and is_top():
 		# Deferred so that one OS notification does not close several stacked windows.
-		request_close.call_deferred()
+		request_back.call_deferred()

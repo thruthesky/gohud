@@ -44,7 +44,7 @@ Source: `widgets/go_surface.gd`, `widgets/go_sheet.gd`, `services/go_dialogs.gd`
 | title extras | `title_glyph: Texture2D` · `title_glyph_size` (0 = in step with the title) — a glyph left of the title, in its colour · `title_overhang()` · `title_glyph_side()` — a look whose plate hangs over the card's top edge (`GoSkin.title_plate_overhang()`, the painted ribbon in `arcade_light`) lifts the head; the body keeps its own clip, and clips only while its content overflows (a fitting body draws its parts' rims whole). The look may fix the title's size and the plate's height (`GoSkin.title_plate_font_size()` / `title_plate_height()`: 34 on 57 in `arcade_light`); a long title shrinks to the plate's room as drawn, past the card's sides, down to `title_plate_min_size()` — and past that folds, or under `fit_mode = SCALE` widens the card (the fit then shrinks the whole window). On a plate the glyph's cell is its side wide and the title's line tall, kept to its aspect |
 | opaque | `opaque` — a solid colour (`GoSkin.opaque_backdrop_color()`, the game's sky in `arcade_light`) under the window instead of the see-through veil, for a window opened where the world behind is not drawn (a menu at boot) |
 | parts | `card` PanelContainer · `header` HBox · `title_label` · `close_button` GoIconButton · `back_button` · `scroll` GoScroll (**created in `_ready`**) · `body` VBox · `toolbar` VBox (hidden) · `footer` VBox (hidden) |
-| methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
+| methods | `set_title(text)` · `set_title_key(key)` · `set_back(callable)` (empty Callable hides) · `clear()` · `request_close()` (counted: static `close_requests()`) · `is_top()` · `relayout()` · `content_inset()` · `section_gap()` · `attach_resize_handle(control)` |
 | status line | `set_status_text(text, tone := StringName())` · `set_status_key(key, tone)` · `clear_status()` — one pinned line between the body and the footer ("Passwords do not match"), in a colour token's tone. 🛑 Not in the body: an error that lands below a long form's fold looks as if nothing happened. `status` (VBox) · `status_label` (created on first use) |
 | layout pass | Runs **when something changes**, not every frame: a size field above set to a new value, a section's minimum size or visibility, the window, the keyboard, the config. Assign a field and it applies next frame — no `relayout()` call needed. An `ANCHOR` popover follows its anchor every frame. A subclass may replace `relayout()` outright (no `super()`) and still gets these calls |
 | static | `GoSurface.is_any_open() -> bool` — pause gameplay input while true (counts an open `GoDrawer` too) · `is_any_surface_open()` (surfaces only) · `open_surface_count()` (how many surfaces are open) · `is_any_held_open()` (held windows only — an open `GoDrawer`) · `hold_open(on)` (a non-surface window takes / gives back its place in `is_any_open`) |
@@ -378,6 +378,15 @@ makes the app bar's menu button open it.
   a tile, a hotkey, a voice command or a prompt from the game — closes it, so the window is never left UNDER the drawer
   (layer 80), where the first Escape / back would close it unseen. A surface already open when the drawer opened does
   not count (`GoSurface.open_surface_count()`).
+- 🚪 `hand_over(action)` — what a tile press runs: the window the action opens comes up while the drawer is still there,
+  and the drawer **steps aside in that same frame** (no slide-out, nothing left under the window); when that window and
+  anything it opened in turn have closed, the drawer is back as it was (`is_handing_over()`). Back from the window
+  retraces the path to the drawer. It waits for the window's own open (`GoSurface.open_serial()`), at most
+  the wait given (`hand_over(action, seconds)`, default `GoSurface.HAND_OVER_SECONDS` = 0.5 s) — a window that opens a few frames late still gets one
+  transition; `hand_over(action, 0.0)` is a row that acts on the screen behind (the drawer closes at once). An action that opens nothing in that wait (it acts on the screen behind)
+  closes the drawer so its effect shows. `close()` while it stands aside only gives up the way back. Only a close the
+  **player** asked for (✕, Escape, back, scrim — `request_close()`) brings it back; a window that closes itself (its
+  job done: a teleport that went through) leaves the drawer closed (`GoSurface.close_requests()`).
 
 
 **Opacity.** `drawer.alpha = 0.7` — a ratio (negative = theme/config value).
@@ -509,14 +518,22 @@ restore all come from `GoSurface`.
 
 | Member | Notes |
 |---|---|
-| signals | `closed` · `tab_changed(id: StringName)` |
+| signals | `closed` · `tab_changed(id: StringName)` · `depth_changed(depth: int)` |
 | vars | `body` (the content column; scrolls unless `set_scrolls(false)`) · `surface` · `opaque` (true: opaque panel and ground — a host may stop drawing what is behind) · `rail_ratio` / `rail_min_width` / `rail_max_width` · `preview_ratio_landscape` / `preview_ratio_portrait` |
 | `open(title)` / `open_key(key)` | Shows the page, resets the back button. **Keeps** tabs, preview and `body` (call `clear()` for a fresh tab) |
 | `set_tabs(tabs: Array[Dictionary], selected := &"")` | `{id, label, icon, badge}` (+ `alert = true` for a dot); `label` is translated text or a key; fires `tab_changed` for the shown tab; an empty list hides the rail |
 | `select_tab(id)` · `current_tab()` · `tab_button(id)` | `select_tab` fires `tab_changed` only for a different, known tab |
 | `set_tab_badge(id, badge := "", alert := false)` | Changes one tab's count (`""` removes it) and red dot in place — no rebuild, so the shown tab, its body and the focus stay |
 | `set_preview(node)` | `null` hides it. The page never frees a preview it was handed — replacing it only detaches it |
-| `set_back(callable)` · `set_title(text)` · `clear()` · `close()` · `is_open()` | As `GoSheet` |
+| `set_back(callable)` · `set_title(text)` · `set_title_key(key)` · `clear()` · `close()` · `is_open()` | As `GoSheet`. `set_back` is the page's own level's back; `close()` closes from any depth and pops every sub-page |
+| `push(title, build := Callable())` / `push_key(key, build)` → `VBoxContainer` | A **sub-page inside the page**: hides the shown level, shows a new one with its title, the header's back button and a scrolling body (returned, and passed to `build` — run **on push**) |
+| `pop()` → `bool` · `pop_to(depth)` · `depth()` | `pop` frees the top level and shows the one under it (title, back, focus on the control that pushed); `false` at depth 0. `pop_to` is quiet (no focus move) |
+| `sub_body()` · `sub_footer()` | The shown level's body, and its pinned row (shows once it has a child) — `body` / `footer()` at depth 0 |
+| `set_status_text(text, tone)` · `set_status_key(key, tone)` · `clear_status()` | The shown level's pinned status row (between its body and its pinned row) — the surface's own at depth 0 |
+| `set_page_title(text)` · `set_page_title_key(key)` | The page's own title from any depth — under a sub-page, what the last pop shows (`set_title` re-titles the level shown) |
+| `hold(on)` · `is_held()` | The top sub-page can't be left while held (a form mid-send): back, Escape, the gesture and the ✕ do nothing; a code `pop()` / `close()` still works, and `close_enabled` comes back as it was |
+| `confirm(title, body, ok := "", cancel := "", extra := "", args := {}, destructive := false)` / `confirm_key(…)` | `await` a yes/no **inside the page** — a pushed sub-page with [cancel] [confirm] in its pinned row. Back, Escape, the back gesture or closing the page answer `false`. The same shape as `GoDialogs.confirm` |
+| `hand_over(action, seconds := HAND_OVER_SECONDS)` · `is_handing_over()` · `recall()` | Runs a row whose window the page cannot hold: when a window opens (in the action, or later within the wait given — its own open, `GoSurface.open_serial()`) the page steps aside in that frame; and comes back — same tab, sub-page and row focused — when the player closes that window (and anything it opened). A window that closes itself, or a drawer opening meanwhile, = the player moved on: the page closes. `recall()` (the host's own way back in — its menu key again) asks that window to close as the player would (`request_close`, its own guards hold) |
 | `toolbar()` / `footer()` | The pinned rows under the header / at the bottom (the surface's own) |
 | `set_scrolls(on)` · `is_landscape()` | Turn the content scroll off for content with its own scroll (a grid, a list view) |
 
@@ -543,3 +560,40 @@ window never rounds its last row off screen) and fits again whenever its content
 takes the shared panel edge (`GoScroll.use_panel_edge` — the scrollbar in the card's right padding) wherever its column
 meets the card's right edge, i.e. always left to right and in portrait — in a right-to-left landscape page the rail is
 there instead; a tab's glyph icon never wraps with the rail's labels.
+
+### Sub-pages — no second window over a page
+
+A row with more to show (an About screen, a form, a confirmation) **pushes a sub-page inside the page** instead of
+opening a dialog over it or closing the page for another window. A toggle changes in place in the tab itself.
+
+```gdscript
+about_row.pressed.connect(func() -> void:
+	page.push_key("about_title", func(box: VBoxContainer) -> void:
+		box.add_child(GoStyle.label("Version %s" % version))))
+if await page.confirm_key("logout_title", "logout_body", "logout", "", "", {}, true):
+	log_out()
+```
+
+- **Back retraces the path.** The page's surface has `back_before_close` on: Escape, the Android back gesture, the
+  header's back button and `GoSurface.request_back()` (a voice "close") pop **one level**; only at depth 0 do they close
+  the page. The close button (✕) closes the whole page from any depth. The back-gesture owner count does not change
+  with the depth — the page holds it once, as before.
+- While a sub-page is up the **rail and the root's pinned footer step away** (a deeper level is not a tab; the root's
+  actions belong to the root's content); the toolbar, the preview and everything below the level stay as they were.
+  The sub-page body scrolls with the same panel edge as a tab body and mirrors in a right-to-left language; the back
+  button sits on the header's leading edge (the right in Arabic or Urdu).
+- 🛑 Build a sub-page **on push** (`build`), never up front: a popped level is freed, so nothing of it stays in memory.
+- Focus: by keyboard / gamepad focus moves into the new level (its first control, else the back button); on `pop()` it
+  returns to the control that pushed — without the ring when the player taps.
+- `select_tab()`, `set_tabs()` and `open()` pop back to the page's own level first.
+
+### Handing the screen to a window the page cannot hold
+
+`page.hand_over(func() -> void: shop.open())` — the page steps aside in the frame the window opens (it is hidden, not
+closed: tab, body, sub-pages and scroll stay) and comes back on the same row when that window closes. `GoDrawer` has the
+same `hand_over` for its tiles. Both wait on `GoSurface.path_count()` (open surfaces + surfaces standing aside), so a
+chain — drawer → page → shop — unwinds one window at a time in the order it came. The way back is for a close the
+player asked for: `GoSurface.close_requests()` counts every `request_close()` (✕, Escape, back, scrim, voice), and a
+window gone with no new request closed itself — its job is done (a teleport landed, a purchase finished), so the
+launcher closes instead of popping back over the new place. A window that closes from its own button must call
+`request_close()` (as GoSurface's ✕ does), not free itself, to keep the way back.

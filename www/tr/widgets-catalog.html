@@ -263,12 +263,13 @@ sheet.<wbr>body.<wbr>add_child(<wbr>bag_list)</code></pre>
     </div>
     <div class="card">
       <h3 id="gopage"><code>GoPage</code></h3>
-      <p>Kategori rayı (yatayda solda, dikeyde üstte sekmeler), önizleme ve geri içeren tam ekran bir sayfa.</p>
+      <p>Kategori rayı (yatayda solda, dikeyde üstte sekmeler), önizleme, geri ve içine eklenen alt sayfalar içeren tam ekran bir sayfa.</p>
       <p class="catalog-base">türetildiği <code>CanvasLayer</code></p>
       <pre><code>var page := GoPage.<wbr>new(<wbr>)
 add_child(<wbr>page)
 page.<wbr>open(<wbr>"Settings")
-page.<wbr>set_tabs(<wbr>[<wbr>{<wbr>id = &amp;"sound",<wbr> label = "Sound",<wbr> icon = GoIconSet.<wbr>VOLUME_HIGH,<wbr> badge = ""}])</code></pre>
+page.<wbr>set_tabs(<wbr>[<wbr>{<wbr>id = &amp;"sound",<wbr> label = "Sound",<wbr> icon = GoIconSet.<wbr>VOLUME_HIGH,<wbr> badge = ""}])
+page.<wbr>push(<wbr>"About",<wbr> func(<wbr>box: VBoxContainer) -&gt; void: box.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Version 1.0")))</code></pre>
     </div>
     <div class="card">
       <h3 id="godialogs"><code>GoDialogs</code></h3>

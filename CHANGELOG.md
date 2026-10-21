@@ -6,6 +6,32 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoPage` sub-pages** — `push(title, build)` / `push_key(key, build)` open a level **inside the page** (its own
+  title, the header's back button, a body that scrolls like a tab body, a pinned `sub_footer()`); `pop()` · `pop_to()` ·
+  `depth()` · `sub_body()` · signal `depth_changed(depth)`. Escape, the Android back gesture and the back button pop one
+  level; the page closes only from depth 0 (the ✕ closes from any depth). The rail and the root's footer step away while
+  a sub-page is up; focus returns to the control that pushed; `build` runs on push and a popped level is freed.
+- **`GoPage.confirm()` / `confirm_key()`** — `await` a yes/no inside the page (a pushed sub-page with [cancel] [confirm];
+  back / Escape / close answer `false`), the same arguments as `GoDialogs.confirm`.
+- **`GoPage.set_status_text()` / `set_status_key()` / `clear_status()`** — a sub-page has its own pinned status row
+  between its body and its pinned row (at depth 0 they are the surface's). The root's row steps away under a sub-page.
+- **`GoPage.set_page_title()` / `set_page_title_key()`** — the page's own title from any depth (under a sub-page it is
+  what the last pop shows); `set_title()` still re-titles the level shown.
+- **`GoPage.hold(on)` / `is_held()`** — a sub-page mid-send holds itself up: back, Escape, the back gesture and the ✕
+  do nothing until it releases (a code `pop()` / `close()` still works; `close_enabled` comes back as it was).
+- **`GoPage.hand_over(action)` and `GoDrawer.hand_over(action)`** — a row that opens a window the launcher cannot hold:
+  the launcher steps aside in the frame the window opens and comes back when it closes (a drawer whose tile opened
+  nothing closes, as before). `GoSurface.set_aside()` / `path_count()` / `held_count()` are the counts they share.
+  Only a close the player asked for brings the launcher back: **`GoSurface.close_requests()`** counts
+  `request_close()` calls (✕, Escape, back, scrim), and a window that closed itself (its job done) leaves the launcher
+  closed instead of popping it back over the new place. The wait for the window is its own open
+  (**`GoSurface.open_serial()`** / `last_opened()`), at most the wait given (**`GoSurface.HAND_OVER_SECONDS`** = 0.5 s —
+  was two frames, so a window opening a little late fell back to "launcher closes, then a window pops");
+  `GoDrawer.hand_over(action, 0.0)` is a row that acts on the screen behind (closes at once). **`GoPage.recall()`** brings
+  a page standing aside back by asking its window to close as the player would.
+- **`GoSurface.back_before_close`** (off) and **`GoSurface.request_back()`** — Escape and the Android back press a
+  showing back button before they close the window (GoPage turns it on). `request_back()` is that step for code (a voice
+  "close").
 - **`GoPage.set_tab_badge(id, badge, alert)`** changes one tab's count badge and red dot in place (no `set_tabs()`
   rebuild — the shown tab, its body and the focus stay): a count that changes while the page is up.
 - **`GoDrawer.close_when_surface_opens`** (off): a launcher drawer closes when a surface opens while it is up (a tile,
@@ -100,6 +126,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   one under it, which the deferred `request_close()` then found on top.
 
 ### Changed
+
+- `GoPage`'s content scroll also borrows the card's right padding in a right-to-left landscape page that has neither a
+  rail nor a preview on that side (its column meets the edge there).
 
 - **gohud loads only what the game uses** (a faster first frame). `GoUi.DEFAULT_THEME`, `LIGHT_THEME` and
   `DEFAULT_ICONS` are read on first use, not preloaded the moment anything names `GoUi`; the backup theme is read only
