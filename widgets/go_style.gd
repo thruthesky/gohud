@@ -1362,6 +1362,46 @@ static func surface(variant := GoTheme.BOX_CARD, accent := Color.TRANSPARENT, al
 	return GoUi.skin().surface_box(variant, accent, alpha)
 
 
+## A compact flat face for a host-drawn HUD control. Geometry stays explicit; construction lives in the common style.
+## The optional bottom edge gives a keyboard cap its depth without a second face or shadow.
+static func flat_face(fill: Color, edge: Color, border: int, radius: int, bottom_border := -1, detail := 8) -> StyleBoxFlat:
+	var face := StyleBoxFlat.new()
+	face.bg_color = fill
+	face.border_color = edge
+	face.set_border_width_all(border)
+	if bottom_border >= 0: face.border_width_bottom = bottom_border
+	face.set_corner_radius_all(radius)
+	face.corner_detail = detail
+	face.anti_aliasing = true
+	return face
+
+
+## A chamfered HUD face with no content padding or shadow. The host supplies geometry and semantic colours.
+static func cut_face(fill: Color, edge: Color, border: float, cut: float) -> StyleBox:
+	var face := GoStyleBoxCut.new()
+	face.bg_color = fill
+	face.border_color = edge
+	face.border_width = border
+	face.cut = cut
+	face.cut_corners = 15
+	face.set_content_margin_all(0)
+	return face
+
+
+## Keep text legible on painted art or a live gauge; width zero clears the outline for an empty slot.
+static func text_outline(node: Control, width: int, ink: Color) -> void:
+	if node == null: return
+	node.add_theme_constant_override(&"outline_size", width)
+	node.add_theme_color_override(&"font_outline_color", ink)
+
+
+## A host's cached font variation, applied through the common style just like its typography roles.
+static func text_font(node: Control, font: Font, size := -1) -> void:
+	if node == null: return
+	node.add_theme_font_override(&"font", font)
+	if size >= 0: pin_font_size(node, size)
+
+
 ## A **copy** of a card or panel StyleBox. Pass `accent` and the border takes that color.
 ##
 ## 🛑 **Always returns a `StyleBoxFlat`** — many call sites already take it back and fix `bg_color` or

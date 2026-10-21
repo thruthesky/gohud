@@ -76,6 +76,7 @@ func _initialize() -> void:
 	_safe_area_units()
 	await _safe_area_viewport()
 	await _widget_feedback()
+	_hud_style_factories()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -2937,3 +2938,31 @@ func _safe_area_viewport() -> void:
 		"safe area: a bottom-right anchor in a SubViewport sits in its corner (got %s)" % spot)
 	view.queue_free()
 	await frames(1)
+
+
+## Host HUD factories keep explicit geometry, alpha and typography when moving chrome into the shared style.
+func _hud_style_factories() -> void:
+	section("host HUD face factories")
+	var fill := Color(0.1, 0.2, 0.3, 0.92)
+	var edge := Color(0.2, 0.7, 0.8, 1.0)
+	var pill := GoStyle.flat_face(fill, edge, 2, 14, -1, 4)
+	check(pill.bg_color == fill and pill.border_color == edge and pill.border_width_left == 2
+		and pill.corner_radius_top_left == 14 and pill.corner_detail == 4, "flat HUD face keeps fill, rim and rounded geometry")
+	var key := GoStyle.flat_face(fill, edge, 1, 4, 2)
+	check(key.border_width_bottom == 2 and key.border_width_top == 1 and key.corner_detail == 8,
+		"keycap keeps its heavier lower rim and default curve detail")
+	var face := GoStyle.cut_face(fill, edge, 2.0, 5.0) as GoStyleBoxCut
+	check(face != null and face.bg_color == fill and face.border_color == edge
+		and face.border_width == 2.0 and face.cut == 5.0 and face.cut_corners == 15
+		and face.get_content_margin(SIDE_LEFT) == 0, "chamfered HUD face keeps all four cuts and no padding")
+	var label := Label.new()
+	root.add_child(label)
+	var font := label.get_theme_font(&"font")
+	GoStyle.text_font(label, font, 11)
+	GoStyle.text_outline(label, 3, edge)
+	check(label.get_theme_font(&"font") == font and label.get_theme_font_size(&"font_size") == 11
+		and label.get_theme_constant(&"outline_size") == 3 and label.get_theme_color(&"font_outline_color") == edge,
+		"HUD text keeps its font, size and art outline")
+	GoStyle.text_outline(label, 0, edge)
+	check(label.get_theme_constant(&"outline_size") == 0, "empty HUD glyph clears its outline")
+	label.free()
