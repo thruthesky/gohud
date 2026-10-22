@@ -544,14 +544,18 @@ class _Yield extends Node:
 ## The control a press at [param point] (viewport coordinates) reaches under [param node] — the topmost visible one that
 ## takes the mouse, found the way the GUI finds it. `null` when nothing there takes the press.
 ## 🛑 A clipping control (a scroll, a row with `clip_contents`) hides what lies outside it — its subtree is skipped there.
+## 🛑 Internal children count: the engine's GUI picks them too (`Viewport::_gui_find_control_at_pos` walks
+##    `get_child_count()`, which includes internal children in C++). Skipping them, a control added with
+##    `INTERNAL_MODE_*` (kept out of a rebuild's diff) was invisible here, so its `SIDEWAYS` mark was never seen and an
+##    up-and-down swipe that started on it did not scroll the list.
 static func control_at(node: Node, point: Vector2) -> Control:
 	var control := node as Control
 	if control != null:
 		var local := control.get_global_transform_with_canvas().affine_inverse() * point
 		var inside := Rect2(Vector2.ZERO, control.size).has_point(local)
 		if not inside and (control.clip_contents or control is Container): return null
-		for index in range(node.get_child_count() - 1, -1, -1):
-			var child := node.get_child(index)
+		for index in range(node.get_child_count(true) - 1, -1, -1):
+			var child := node.get_child(index, true)
 			if not child is Control or not (child as Control).visible or (child as Control).top_level: continue
 			var found := control_at(child, point)
 			if found != null: return found
@@ -579,7 +583,10 @@ static func _audit_touch(node: Node, inside: bool, root: Node, problems: Array[S
 		problems.append("%s: %s is STOP inside a scroll — a finger drag that starts on it never reaches the scroll" % [
 			where, control.get_class()])
 	if node is ScrollBar: return
-	for child in node.get_children(): _audit_touch(child, inside or node is GoScroll, root, problems)
+	# 🛑 Internal children count (the GUI picks them — see `control_at`), but a Window child (an OptionButton's
+	#    PopupMenu) is its own viewport: its controls never take a press meant for this scroll, so it is not walked.
+	for child in node.get_children(true):
+		if not child is Viewport: _audit_touch(child, inside or node is GoScroll, root, problems)
 
 
 func _notification(what: int) -> void:

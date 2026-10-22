@@ -3142,6 +3142,23 @@ func _scroll_swipe() -> void:
 	doomed.free()
 	await frames(2)
 	check(survivor.mouse_filter == Control.MOUSE_FILTER_PASS, "a row freed in the frame it entered does not stop the second pass")
+	# 🛑 An INTERNAL child is picked by the GUI like any other — a sideways-drag control kept out of a rebuild's diff
+	#    (`add_child(…, INTERNAL_MODE_BACK)`) must still hand an up-and-down swipe to the list.
+	var turner_holder := MarginContainer.new()
+	turner_holder.custom_minimum_size.y = 96
+	column.add_child(turner_holder)
+	column.move_child(turner_holder, 0)
+	var turner := Panel.new()
+	turner.mouse_filter = Control.MOUSE_FILTER_STOP
+	turner.set_meta(GoScroll.SIDEWAYS, true)
+	turner_holder.add_child(turner, false, Node.INTERNAL_MODE_BACK)
+	scroll.scroll_vertical = 0
+	await frames(3)
+	var on_turner := turner.get_global_rect().get_center()
+	check(GoScroll.control_at(scroll, on_turner) == turner, "control_at finds an internal child, as the GUI does")
+	await _swipe(scroll, on_turner, -120.0)
+	await frames(2)
+	check(scroll.scroll_vertical > 0, "an up-and-down swipe that starts on an internal sideways control scrolls the list (%d)" % scroll.scroll_vertical)
 	scroll.queue_free()
 	await frames(1)
 
