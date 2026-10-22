@@ -262,16 +262,25 @@ func outlined_button_box(face: StyleBox, state: StringName) -> StyleBox:
 	return key_cap
 
 
-## The game's HUD bar groove (`UiTheme.box(BAR_BG, 9, 3, INK)`, no padding): the gradient fill is clipped to it.
+## The HUD bar's groove. Its content margins reserve the ink rim for the fill's separate rounded mask.
 func bar_frame_box() -> StyleBox:
 	var groove := StyleBoxFlat.new()
 	groove.bg_color = BAR_BG
 	groove.set_corner_radius_all(BAR_RADIUS)
 	groove.set_border_width_all(BAR_OUTLINE)
 	groove.border_color = INK
-	groove.set_content_margin_all(0.0)
+	groove.set_content_margin_all(BAR_OUTLINE)
 	groove.anti_aliasing = true
 	return groove
+
+
+func bar_fill_clip_box() -> StyleBox:
+	var inside := StyleBoxFlat.new()
+	inside.bg_color = Color.WHITE
+	inside.set_corner_radius_all(BAR_RADIUS - BAR_OUTLINE)
+	inside.set_content_margin_all(0.0)
+	inside.anti_aliasing = true
+	return inside
 
 
 ## The game's repulse panel (`HUD._repulse_box`: `UiTheme.box(PANEL, 14, 3, rim, shadow, 14, 8)`) — a READY_RED rim

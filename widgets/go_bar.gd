@@ -19,7 +19,7 @@
 ##
 ## ## 🎮 A match HUD's bar
 ## Under a look with a bar frame (`GoSkin.bar_frame_box()` — arcade_light's is the painted HUD's groove) the bar is a
-## rounded frame whose `ink` → `ink_end` gradient is clipped to it. Name it like a HUD does:
+## rounded frame whose `ink` → `ink_end` gradient is clipped inside its rim. Name it like a HUD does:
 ## ```gdscript
 ## var power := GoBar.new()
 ## power.label_text = "POWER"
@@ -158,6 +158,7 @@ var _title: HBoxContainer
 var _track: HBoxContainer
 var _icon: TextureRect
 var _frame: Panel
+var _fill_clip: Panel
 var _gradient: TextureRect
 var _paint_gradient: Gradient
 var _frame_ticks: Control
@@ -247,20 +248,25 @@ func _init() -> void:
 	_ticks.draw.connect(_draw_ticks)
 	_bar.add_child(_ticks)
 
-	# The painted frame: a rounded groove (the skin's `bar_frame_box`) clipping a gradient fill and the chunk lines.
+	# The frame keeps its rim; a separate inner mask clips the gradient and chunk lines inside the skin's margins.
 	_frame = Panel.new()
 	_frame.name = "Frame"
 	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_frame.custom_minimum_size.y = thickness
-	_frame.clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
 	_frame.visible = false
 	column.add_child(_frame)
+	_fill_clip = Panel.new()
+	_fill_clip.name = "FillClip"
+	_fill_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fill_clip.clip_children = CanvasItem.CLIP_CHILDREN_ONLY
+	_frame.add_child(_fill_clip)
+	_fill_clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_gradient = TextureRect.new()
 	_gradient.name = "Gradient"
 	_gradient.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_gradient.stretch_mode = TextureRect.STRETCH_SCALE
 	_gradient.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_frame.add_child(_gradient)
+	_fill_clip.add_child(_gradient)
 	_gradient.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_gradient.anchor_right = 0.0
 	_frame_ticks = Control.new()
@@ -268,7 +274,7 @@ func _init() -> void:
 	_frame_ticks.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_frame_ticks.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame_ticks.draw.connect(_draw_frame_ticks)
-	_frame.add_child(_frame_ticks)
+	_fill_clip.add_child(_frame_ticks)
 	# 🛑 A `Control` does **not inherit** the minimum height of its child container — left alone, one bar is measured
 	#    as taking only its own thickness (8dp), so in a vertical stack the name row and the bar below draw on top
 	#    of each other (measured on a 2026-09-12 screenshot: the HP/MP/XP rows overlapped).
@@ -341,7 +347,13 @@ func _restyle() -> void:
 	var groove := GoUi.skin().bar_frame_box()
 	_frame.visible = groove != null
 	_bar.visible = groove == null
-	if groove != null: _frame.add_theme_stylebox_override(&"panel", groove)
+	if groove != null:
+		_frame.add_theme_stylebox_override(&"panel", groove)
+		_fill_clip.add_theme_stylebox_override(&"panel", GoUi.skin().bar_fill_clip_box())
+		_fill_clip.offset_left = groove.get_content_margin(SIDE_LEFT)
+		_fill_clip.offset_top = groove.get_content_margin(SIDE_TOP)
+		_fill_clip.offset_right = -groove.get_content_margin(SIDE_RIGHT)
+		_fill_clip.offset_bottom = -groove.get_content_margin(SIDE_BOTTOM)
 	_paint()
 	_apply_label_style()
 	_apply_gap()
