@@ -1367,9 +1367,16 @@ func bar_ticks() -> int:
 
 
 ## 📊 A frame a `GoBar` draws instead of its `ProgressBar`: a rounded groove whose fill is a gradient clipped to its
-## shape (the painted HUD's power and stability bars). null — the default — keeps the theme's `ProgressBar`.
+## inner shape (the painted HUD's power and stability bars). Its content margins reserve the rim; the fill is clipped
+## with [method bar_fill_clip_box]. null — the default — keeps the theme's `ProgressBar`.
 func bar_frame_box() -> StyleBox:
 	return null
+
+
+## The rounded mask for a framed bar's fill, inside [method bar_frame_box]'s content margins. It is used only for
+## clipping, never drawn over the frame. The default keeps the frame's shape; a rimmed skin supplies its inner shape.
+func bar_fill_clip_box() -> StyleBox:
+	return bar_frame_box()
 
 
 ## 🎮 A `GoHudCard` gauge's board (a cooldown readout): [param lit] when the ability is ready. The default is the HUD

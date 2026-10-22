@@ -25,6 +25,7 @@ func _initialize() -> void:
 		GoUi.use_preset(look)
 		await frames(1)
 		await _bar_frame(look)
+		if look == GoThemePresets.ARCADE_LIGHT: await _bar_fill_keeps_its_rim()
 		await _bar_ink(look)
 		await _hud_card(look)
 		await _bare_card(look)
@@ -88,7 +89,7 @@ func _bar_frame(look: StringName) -> void:
 			check(flat.border_color.is_equal_approx(INK) and flat.border_width_left == 3 and flat.border_width_bottom == 3,
 				"bar: the frame has a 3 px ink rim")
 			check(flat.corner_radius_top_left == 9 and flat.corner_radius_bottom_right == 9, "bar: the frame's corners are 9")
-			check(flat.get_minimum_size() == Vector2.ZERO, "bar: the frame has no content margin of its own")
+			check(flat.get_minimum_size() == Vector2(6, 6), "bar: the frame reserves its 3 px rim on every side")
 	else:
 		check(frame_box == null, "bar: %s has no painted frame (the ProgressBar stays)" % look)
 
@@ -117,7 +118,13 @@ func _bar_frame(look: StringName) -> void:
 			"frame" if painted else "ProgressBar"])
 		var shown := frame if painted else progress as Control
 		check(is_equal_approx(shown.size.y, 14.0), "bar: thickness 14 sets the shown bar's height (got %s)" % shown.size.y)
-		check(frame.clip_children == CanvasItem.CLIP_CHILDREN_AND_DRAW, "bar: the frame clips its fill to its shape")
+		var clip := frame.find_child("FillClip", true, false) as Panel
+		check(frame.clip_children == CanvasItem.CLIP_CHILDREN_DISABLED and clip != null
+			and clip.clip_children == CanvasItem.CLIP_CHILDREN_ONLY, "bar: the inner track clips the fill without covering the rim")
+		if painted and clip != null:
+			var mask := clip.get_theme_stylebox(&"panel") as StyleBoxFlat
+			check(mask != null and mask.corner_radius_top_left == 6 and mask.border_width_left == 0,
+				"bar: the inner clip follows the corner inside the ink rim")
 		var fill := frame.find_child("Gradient", true, false) as TextureRect
 		check(fill != null, "bar: the frame holds a gradient fill")
 		if fill != null:
@@ -145,6 +152,34 @@ func _bar_frame(look: StringName) -> void:
 	if fill2 != null and fill2.texture is GradientTexture2D:
 		var g := (fill2.texture as GradientTexture2D).gradient
 		check(g.colors[0].is_equal_approx(g.colors[1]), "bar: no ink_end is one paint")
+	holder.queue_free()
+	await frames(1)
+
+
+func _bar_fill_keeps_its_rim() -> void:
+	var bar := GoBar.new()
+	bar.readout = GoBar.Readout.NONE
+	bar.icon_beside = true
+	bar.icon = GoUi.skin().widget_art(&"shield")
+	bar.segments = 0
+	var holder := _host(bar, 200.0)
+	bar.size.x = 200.0
+	await frames(2)
+	var frame := bar.find_child("Frame", true, false) as Panel
+	var fill := bar.find_child("Gradient", true, false) as TextureRect
+	for height: int in [14, 24, 48]:
+		bar.thickness = height
+		for ratio: float in [0.0, 0.01, 0.5, 1.0]:
+			bar.set_ratio(ratio, false)
+			await frames(2)
+			var outer := frame.get_global_rect()
+			var paint := fill.get_global_rect()
+			check(paint.position.x >= outer.position.x + 3.0 and paint.position.y >= outer.position.y + 3.0,
+				"bar: %d dp at %.0f%% keeps the left and top rim" % [height, ratio * 100.0])
+			check(paint.end.x <= outer.end.x - 3.0 and paint.end.y <= outer.end.y - 3.0,
+				"bar: %d dp at %.0f%% keeps the right and bottom rim" % [height, ratio * 100.0])
+			check(is_equal_approx(paint.size.x, (outer.size.x - 6.0) * ratio),
+				"bar: %.0f%% measures the inner track" % (ratio * 100.0))
 	holder.queue_free()
 	await frames(1)
 

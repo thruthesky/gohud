@@ -111,6 +111,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- Fix arcade_light `GoBar` fills covering their outlines: clip the gradient and segment ticks to a separate rounded
+  inner track, reserving the skin's 3 px rim at every fill level. `GoSkin.bar_fill_clip_box()` supplies the inner mask.
+
 - **Right-to-left content inside a panel-edge scroll mirrors again.** `GoScroll.use_panel_edge` moves the content into
   an inset that stays physically left to right (its margins hold the scrollbar gutter); the scroll handed the locale's
   direction only to its own children, so content built before the scroll entered the tree — a `GoPage` body, a
