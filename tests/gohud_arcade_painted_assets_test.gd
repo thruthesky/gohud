@@ -192,6 +192,8 @@ func _light_icons() -> void:
 	# The rating star is the filled painted one (gold, navy rim, gloss), the same art as GoStarRow's earned star.
 	check(icons.texture(&"star") != null and icons.texture(&"star") == load("res://addons/gohud/assets/arcade_light/stage/star.png"),
 		"arcade_light draws 'star' with the filled painted star")
+	check(icons.texture(GoIconSet.TARGET) != null and icons.texture(GoIconSet.TARGET) == load("res://addons/gohud/assets/arcade_light/score/rank_target.svg"),
+		"arcade_light draws target with one complete red and white reticle texture")
 	for name: StringName in [&"trash", &"lock"]:
 		var drawn := icons.texture(name)
 		check(drawn != null and drawn == GoUi.DEFAULT_ICONS.texture(name),

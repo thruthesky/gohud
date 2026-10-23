@@ -47,11 +47,27 @@ def arrow(direction):
 </svg>\n'''
 
 
+def target():
+    return '''<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+<defs>
+<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff8376"/><stop offset=".45" stop-color="#ff4945"/><stop offset="1" stop-color="#df1c29"/></linearGradient>
+<linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbe5ff"/></linearGradient>
+</defs>
+<path d="M34 4 H46 V12 C57 14 66 23 68 34 H76 V46 H68 C66 57 57 66 46 68 V76 H34 V68 C23 66 14 57 12 46 H4 V34 H12 C14 23 23 14 34 12 Z" fill="url(#white)" stroke="#10194c" stroke-width="5" stroke-linejoin="round"/>
+<circle cx="40" cy="40" r="24" fill="url(#red)" stroke="#10194c" stroke-width="3"/>
+<circle cx="40" cy="40" r="14" fill="url(#white)" stroke="#10194c" stroke-width="3"/>
+<circle cx="40" cy="40" r="5" fill="#356eff" stroke="#10194c" stroke-width="2"/>
+<path d="M24 29 Q27 21 36 20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+<path d="M40 6 V14 M40 66 V74 M6 40 H14 M66 40 H74" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+</svg>\n'''
+
+
 if __name__ == "__main__":
     ROOT.mkdir(parents=True, exist_ok=True)
     check = "--check" in sys.argv
     artwork = {f"medal_{name}": render(name, colors) for name, colors in MEDALS.items()}
     artwork.update({f"scroll_{direction}": arrow(direction) for direction in ("up", "down", "left", "right")})
+    artwork["rank_target"] = target()
     for name, source in artwork.items():
         path = ROOT / f"{name}.svg"
         if check:
