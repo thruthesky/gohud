@@ -845,7 +845,7 @@ bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoSc
 `GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
 `GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
-`GoScoreRowOwn` (a stronger blue rim), `GoScorePanel` (the pale-blue scoreboard well), `GoStagePanel` (a glossy
+`GoScoreRibbon` (a rounded glossy gold title plate), `GoScoreRowOwn` (a stronger blue rim), `GoScorePanel` (the pale-blue scoreboard well), `GoStagePanel` (a glossy
 stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action) and `GoHardBadge` (a short red status
 PanelContainer; use a `GoOutlineLabel` inside). `GoSurface.fit_flex_max_height` caps its scrolling list's natural
 height in dp (0: unlimited). `GoSurface.title_width` centres a narrower floating ribbon (0 fills the header),

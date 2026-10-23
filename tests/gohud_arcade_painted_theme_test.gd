@@ -582,6 +582,9 @@ func _scoreboard(theme: Theme) -> void:
 	var gold := theme.get_stylebox(&"panel", &"GoScoreRowGold") as GoStyleBoxArcade
 	check(gold != null and gold.bottom_color.r > 0.95 and gold.bottom_color.b < 0.3,
 		"first place has a gold fill as well as a gold rim")
+	var ribbon := theme.get_stylebox(&"panel", &"GoScoreRibbon") as GoStyleBoxArcade
+	check(ribbon != null and ribbon.radius == 36.0 and ribbon.shine > 0.9,
+		"the scoreboard title is a rounded glossy gold capsule")
 	var own := theme.get_stylebox(&"panel", &"GoScoreRowOwn") as GoStyleBoxArcade
 	check(own != null and own.border_color.is_equal_approx(CONTROL_BLUE) and own.border_width == 3.0,
 		"the player's row has a stronger blue rim")

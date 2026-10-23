@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=194 format=3]
+[gd_resource type="Theme" load_steps=195 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1159,6 +1159,21 @@ border_width = 2
 radius = 14
 lip = 0
 shine = 0.8
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreRibbon"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 6
+content_margin_right = 22
+content_margin_bottom = 12
+bg_color = Color(1, 0.94, 0.3, 1)
+bottom_color = Color(1, 0.72, 0.025, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 4
+radius = 36
+lip = 3
+shine = 0.95
 band = 0
 
 [sub_resource type="StyleBoxEmpty" id="painted_GoScoreHead"]
@@ -2618,6 +2633,8 @@ GoScorePrimaryButton/colors/font_pressed_color = Color(1, 1, 1, 1)
 GoScorePrimaryButton/constants/outline_size = 6
 GoScorePrimaryButton/font_sizes/font_size = 24
 GoScorePrimaryButton/fonts/font = SubResource("painted_score_font")
+GoScoreRibbon/base_type = &"PanelContainer"
+GoScoreRibbon/styles/panel = SubResource("painted_GoScoreRibbon")
 GoScoreRow/base_type = &"PanelContainer"
 GoScoreRow/styles/panel = SubResource("painted_GoScoreRow")
 GoScoreRowGold/base_type = &"PanelContainer"
