@@ -356,7 +356,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     put("GoStagePanel/styles/panel", arcade("painted_GoStagePanel", score_top, score_bottom, CONTROL_BLUE,
         radius=14, margins=(12, 3, 12, 3), shine=0.8))
     put("GoScoreRibbon/styles/panel", arcade("painted_GoScoreRibbon", (1.0, 0.94, 0.30, 1.0),
-        (1.0, 0.72, 0.025, 1.0), INK, radius=36, edge=4, margins=(22, 6, 22, 12), lip=3, shine=0.95))
+        (1.0, 0.50, 0.015, 1.0), INK, radius=36, edge=4, margins=(22, 6, 22, 12), lip=3, shine=0.95))
     # The header stays transparent: one board behind it, its text aligned exactly over the rows' columns.
     boxes["painted_GoScoreHead"] = ("StyleBoxEmpty", ["content_margin_left = 12", "content_margin_right = 12"])
     put("GoScoreHead/styles/panel", "painted_GoScoreHead")
