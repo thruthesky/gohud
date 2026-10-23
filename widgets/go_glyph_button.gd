@@ -299,7 +299,13 @@ func _update_shift() -> void:
 func _draw_glyph() -> void:
 	var art := glyph_texture()
 	if art == null: return
-	draw_texture_rect(art, glyph_draw_rect(), false, glyph_tint())
+	var rect := glyph_rect()
+	# Custom textures (GoTextureSprite) draw their own destination rectangle and need not preserve the engine's
+	# negative-width convention. Mirror the canvas instead, leaving every texture a normal positive rectangle.
+	if glyph_flip_h:
+		draw_set_transform(Vector2(rect.get_center().x * 2.0, 0.0), 0.0, Vector2(-1.0, 1.0))
+	draw_texture_rect(art, rect, false, glyph_tint())
+	if glyph_flip_h: draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 ## The signed drawing rectangle: a negative width mirrors the art within the unchanged [method glyph_rect].
