@@ -396,11 +396,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             ("GoScoreTitleLabel", 42, WHITE, 6), ("GoScoreOutlineLabel", 15, WHITE, 4),
             ("GoScoreButton", 24, WHITE, 6), ("GoScorePrimaryButton", 24, WHITE, 6),
             ("GoScoreTab", 18, WHITE, 4), ("GoScoreTabSelected", 18, WHITE, 4),
-            ("GoScoreGoldButton", 24, WHITE, 6)):
+            ("GoScoreGoldButton", 24, score_ink, 6)):
         put(type_name + "/fonts/font", "painted_score_font")
         setT(type_name + "/font_sizes/font_size", size)
         setT(type_name + "/colors/font_color", C(ink))
-        setT(type_name + "/colors/font_outline_color", C(score_ink))
+        setT(type_name + "/colors/font_outline_color", C(WHITE if type_name == "GoScoreGoldButton" else score_ink))
         setT(type_name + "/constants/outline_size", outline)
         if BASES[type_name] != "Label":
             for slot in FONT_STATES:

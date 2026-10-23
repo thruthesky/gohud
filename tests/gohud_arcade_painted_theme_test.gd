@@ -565,6 +565,9 @@ func _scoreboard(theme: Theme) -> void:
 			for character: String in ["한", "日", "中"]:
 				check(font.has_char(character.unicode_at(0)), "%s: the heavy face can display %s" % [type, character])
 	check(normal_font.variation_embolden == 0.0, "the heavier scoreboard does not change ordinary UI font weight")
+	check(theme.get_color(&"font_color", &"GoScoreGoldButton").b < 0.3
+		and theme.get_color(&"font_outline_color", &"GoScoreGoldButton") == Color.WHITE,
+		"the gold leaderboard menu action uses navy letters with a white outline")
 	var skin := load("res://addons/gohud/themes/skins/gohud_skin_arcade_light.tres") as GoSkinArcadePainted
 	for name: StringName in [&"medal_gold", &"medal_silver", &"medal_bronze"]:
 		var art := skin.widget_art(name)
