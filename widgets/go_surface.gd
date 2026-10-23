@@ -218,6 +218,23 @@ var title_variation: StringName = &"":
 		if title_variation == value: return
 		title_variation = value
 		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## A centred title plate of this natural width (dp). 0 fills the header, as usual. A long translation can widen it.
+var title_width := 0.0:
+	set(value):
+		title_width = maxf(0.0, value)
+		if not is_instance_valid(title_label): return
+		title_label.size_flags_horizontal = Control.SIZE_EXPAND | Control.SIZE_SHRINK_CENTER if title_width > 0.0 else Control.SIZE_EXPAND_FILL
+		_fit_title.call_deferred()
+## The title's starting font size; 0 uses the look's. It still shrinks to the configured fit floor.
+var title_font_size := 0:
+	set(value):
+		title_font_size = maxi(0, value)
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
+## The natural title plate height (dp); 0 uses the look's height.
+var title_height := 0.0:
+	set(value):
+		title_height = maxf(0.0, value)
+		if is_instance_valid(title_label) and is_instance_valid(close_button): _dress_chrome()
 ## 🏷 A glyph left of the title (a trophy, the pause bars) — glyph and title stand centred together on the plate.
 ## Drawn in the title's colour (white glyphs read as drawn on the arcade ribbon). Null: the title alone.
 var title_glyph: Texture2D:
@@ -374,6 +391,14 @@ var fit_flex: ScrollContainer:
 		_watch_flex(false)
 		fit_flex = value
 		_watch_flex(true)
+		_layout_dirty = true
+## `SCALE`: the most height (dp before scaling) requested by [member fit_flex], even when its content is longer.
+## 0 leaves it unlimited. A leaderboard can show a balanced window while its growing list scrolls inside it.
+var fit_flex_max_height := 0.0:
+	set(value):
+		value = maxf(0.0, value)
+		if is_equal_approx(fit_flex_max_height, value): return
+		fit_flex_max_height = value
 		_layout_dirty = true
 ## 📏 `SCALE`, centred: the least share of the safe area (0–1) the window covers. Smaller, the whole card grows past its
 ## own size (a scale above 1) until it and its overhang reach the share across or down, whichever comes first, as far
@@ -724,7 +749,8 @@ func _fit_title_size() -> void:
 	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
 	var fitted := natural
-	while fitted > GoUi.skin().title_plate_min_size() \
+	var floor_size := GoStyle.fit_floor(title_font_size) if title_font_size > 0 else GoUi.skin().title_plate_min_size()
+	while fitted > floor_size \
 			and font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x > room:
 		fitted -= 1
 	if fitted == role_size:
@@ -735,9 +761,9 @@ func _fit_title_size() -> void:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
 	if over != null: _sink_plate(over, font, fitted)
-	var wide := 0.0
+	var wide := title_width
 	if fit_mode == FitMode.SCALE:
-		wide = ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room)
+		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room))
 	_widen_title(wide)
 
 
@@ -752,6 +778,7 @@ func _widen_title(wide: float) -> void:
 
 ## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.
 func _title_natural_size() -> int:
+	if title_font_size > 0: return title_font_size
 	var on_plate := title_label.has_meta(&"go_plate_align")
 	var look := GoUi.skin().title_plate_font_size() if on_plate else 0
 	return look if look > 0 else GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
@@ -767,7 +794,7 @@ func _plate_end(plate: OverhangPlate, side: Side) -> float:
 ## A plate of a fixed height (`GoSkin.title_plate_height`) holds a taller title by growing down over the gap below:
 ## the words keep the plate's top margin and the plate is drawn down to fit them, while the head keeps its height.
 func _sink_plate(plate: OverhangPlate, font: Font, size: int) -> void:
-	var tall := GoUi.skin().title_plate_height()
+	var tall := title_height if title_height > 0.0 else GoUi.skin().title_plate_height()
 	var sink := 0.0
 	if tall > 0.0 and plate.base != null and font != null:
 		sink = maxf(0.0, plate.base.get_margin(SIDE_TOP) + plate.base.get_margin(SIDE_BOTTOM) + font.get_height(size) - tall)
@@ -896,7 +923,7 @@ func _dress_title_extras(plate: StyleBox) -> void:
 	_overhang = GoUi.skin().title_plate_overhang() if on_plate and show_header else Vector2.ZERO
 	var extra := title_glyph_side() + TITLE_GLYPH_GAP if title_glyph != null else 0.0
 	# The plate's height the look fixes (`GoSkin.title_plate_height`, the game's 57 dp ribbon) — the head's height.
-	var tall := GoUi.skin().title_plate_height() if on_plate else 0.0
+	var tall := (title_height if title_height > 0.0 else GoUi.skin().title_plate_height()) if on_plate else 0.0
 	if tall > 0.0:
 		title_label.custom_minimum_size.y = tall
 		title_label.set_meta(&"go_plate_height", true)
@@ -1676,7 +1703,9 @@ func _fit_height(most: float) -> float:
 			var others := _desired_height() - fit_flex.get_combined_minimum_size().y
 			# 🔑 Whole dp: the card's padding (a MarginContainer) lays its column out on whole units, so a fractional list
 			#    left the body a fraction short of its rows and it clipped. Within a unit of the game's.
-			var tall := floorf(GoFitBox.flex_height(content.get_combined_minimum_size().y, others, most))
+			var request := content.get_combined_minimum_size().y
+			if fit_flex_max_height > 0.0: request = minf(request, fit_flex_max_height)
+			var tall := floorf(GoFitBox.flex_height(request, others, most))
 			if not is_equal_approx(fit_flex.custom_minimum_size.y, tall): fit_flex.custom_minimum_size.y = tall
 		return _desired_height()
 	var desired := _desired_height()

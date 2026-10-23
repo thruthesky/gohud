@@ -1093,7 +1093,40 @@ func _fit_surface(look: StringName) -> void:
 		await frames(4)
 		check(is_equal_approx(surface.card.size.x, 400.0) and title.custom_minimum_size.x <= title.size.x,
 			"%s scale fit: a short title gives the width back (card %.0f)" % [look, surface.card.size.x])
+	# A long list can request a bounded natural height, independently of its full content or the screen height.
+	view.size = Vector2i(1280, 900)
+	if painted:
+		surface.max_width = 940.0
+		surface.title_width = 640.0
+		surface.title_font_size = 42
+		surface.title_height = 72.0
+		surface.title_glyph_size = 70
+		surface.title_glyph = GoUi.skin().widget_art(&"stopwatch")
+		await frames(4)
+		check(surface.title_label.size.x >= 640.0 and surface.title_label.size.x < surface.card.size.x - 100.0,
+			"%s scale fit: the floating title plate can be narrower than its card" % look)
+		check(absf(surface.title_label.get_global_rect().get_center().x - surface.card.get_global_rect().get_center().x) < 1.0,
+			"%s scale fit: the short title plate stays centred" % look)
+		check(surface.title_label.get_theme_font_size(&"font_size") == 42,
+			"%s scale fit: the title uses its requested font size when it fits" % look)
+		check(surface.title_label.custom_minimum_size.y == 72.0,
+			"%s scale fit: the taller title plate keeps its requested height" % look)
+	rows.custom_minimum_size.y = 2000.0
+	surface.fit_flex_max_height = 260.0
+	await frames(4)
+	check(standings.custom_minimum_size.y == 260.0 and standings.size.y < rows.size.y,
+		"%s scale fit: a bounded long list scrolls inside its 260dp request" % look)
+	rows.custom_minimum_size.y = 40.0
+	await frames(4)
+	check(standings.custom_minimum_size.y == 40.0,
+		"%s scale fit: the maximum does not force a short list taller" % look)
+	rows.custom_minimum_size.y = 2000.0
+	surface.fit_flex_max_height = 0.0
+	await frames(4)
+	check(standings.custom_minimum_size.y > 260.0,
+		"%s scale fit: removing the cap restores the natural list request" % look)
 	# Back to SCROLL: the card loses its scale.
+	surface.title_width = 0.0
 	rows.custom_minimum_size.y = 2000.0
 	await frames(3)
 	surface.fit_mode = GoSurface.FitMode.SCROLL

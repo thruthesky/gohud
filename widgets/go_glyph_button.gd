@@ -48,6 +48,13 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		_update_shift()
 		queue_redraw()
 
+## Mirror only the glyph, for paired directional keys using one texture. The label and the layout stay upright.
+@export var glyph_flip_h := false:
+	set(value):
+		if glyph_flip_h == value: return
+		glyph_flip_h = value
+		queue_redraw()
+
 ## 🔤 Shrink the label to fit: from [member fit_base_size] (0: the look's size for this variation) down to
 ## `GoStyle.fit_floor()` at most, until it fits the button's width less its normal face's padding and the glyph's
 ## room (`glyph_allowance()`). Off, the label keeps its size (what the button does today).
@@ -292,7 +299,16 @@ func _update_shift() -> void:
 func _draw_glyph() -> void:
 	var art := glyph_texture()
 	if art == null: return
-	draw_texture_rect(art, glyph_rect(), false, glyph_tint())
+	draw_texture_rect(art, glyph_draw_rect(), false, glyph_tint())
+
+
+## The signed drawing rectangle: a negative width mirrors the art within the unchanged [method glyph_rect].
+func glyph_draw_rect() -> Rect2:
+	var rect := glyph_rect()
+	if glyph_flip_h:
+		rect.position.x += rect.size.x
+		rect.size.x = -rect.size.x
+	return rect
 
 
 ## The glyph's colour: the theme's icon colour for the state (white glyphs read as drawn on the arcade pills). A

@@ -528,7 +528,7 @@ GoUi.use_preset(GoThemePresets.MEDIEVAL_DARK)   # before building UI — theme, 
 | `kids_dark` | The same jelly toy box at night: blueberry ground, sunny-yellow primary, mint pills and a mint title ribbon | `GoSkinKids` |
 | `comic_light` | A comic panel: a bold ink outline around every key, field, row and panel (`GoStyleBoxComic`) and a hard, faint shadow down and to the right of what stands off the page, gone while pressed; a yellow caption box behind window titles; navy ink on newsprint. The outline width, the shadow size and whether shadows show are one setting each (`GoUi.config.comic_border_width`, `comic_shadow_size`, `comic_shadow`), and `GoStyle.comic_shadow(node, on)` decides for one widget | `GoSkinComic` |
 | `comic_dark` | The same comic page at night: chalk ink on navy, a sunny-yellow primary | `GoSkinComic` |
-| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), green primary and success buttons, a blue info button (`GoInfoButton`), red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. A plain `Button` is the engine's, as in the game (every painted key is a variation). The dropdown keeps the engine's arrow and its list the engine's radio marks, as in the game. Tooltips, container gaps and scroll bars are the engine's too, as in the game. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
+| `arcade_light` | Magnet Mayhem’s painted look: 9-slice PNG keys (`GoStyleBoxSprite`), green primary and success buttons, a blue info button (`GoInfoButton`), red danger and grey neutral buttons; painted cards, insets, keycaps, gold/red ribbons and round badges; the game’s white glyphs with default-icon fallback; a frosted modal scrim and six-chunk gauges. A plain `Button` is the engine's, as in the game (every painted key is a variation). The dropdown keeps the engine's arrow and its list the engine's radio marks, as in the game. Tooltips and container gaps are the engine's. Scroll bars use glossy blue tracks and thumbs. Fields, the horizontal slider and the switch are painted too; tabs and the vertical slider retain the code-drawn arcade shapes | `GoSkinArcadePainted` |
 | `arcade_dark` | A code-drawn arcade cabinet at night: navy boards and page, glossy pill keys in bright paints, a gold ribbon and chunked gauges | `GoSkinArcade` |
 
 Pick one from **Project Settings → gohud → Theme → Preset**, or fill `preset` on your `GoConfig`.
@@ -841,12 +841,18 @@ banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a
 `GoPanelFlat` and `GoCardFlat` (a translucent panel and a white card, ink-rimmed); `GoChoiceButton` (a light choice
 key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
 bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoScoreRow`, `GoScoreRowGold` and
-`GoScoreHead` (a scoreboard row, the winner's gold one, its head row); `GoTile` and `GoTileLit` (a loading block, unlit
+`GoScoreHead` (a glossy blue scoreboard row, the winner's gold one, its transparent head row);
+`GoScoreRowOwn` (a stronger blue rim), `GoScorePanel` (the pale-blue scoreboard well), `GoStagePanel` (a glossy
+stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action) and `GoHardBadge` (a short red status
+PanelContainer; use a `GoOutlineLabel` inside). `GoSurface.fit_flex_max_height` caps its scrolling list's natural
+height in dp (0: unlimited). `GoSurface.title_width` centres a narrower floating ribbon (0 fills the header),
+`title_height` sets its natural height, and `title_font_size` sets its starting size while preserving the fit floor. `GoGlyphButton.glyph_flip_h` mirrors its glyph without changing its label or layout; `GoTile` and `GoTileLit` (a loading block, unlit
 and lit). A theme without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
 player's head, the power bolt, the opponents badge, the stopwatch, the round pause key, and a stability shield painted
 for gohud in the bolt's style) and touch art
 (`assets/arcade_light/touch/`: the ATTRACT, REPULSE and JUMP keys, the stick's base and knob); a widget asks for one by
-name with `GoUi.skin().widget_art(&"stopwatch")`, and every other look answers `null`.
+name with `GoUi.skin().widget_art(&"stopwatch")`, and every other look answers `null`. The scoreboard awards
+`medal_gold`, `medal_silver` and `medal_bronze` are glossy numbered medals with ribbon tails, exposed by the same API.
 
 Filled buttons sit flat. The two `*GlowButton` variations raise them with a soft shadow in the button's own colour
 (a glow on the sci-fi shape): set `GoConfig.button_glow` for every filled button, or call

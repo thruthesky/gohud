@@ -185,6 +185,8 @@ BASES = {
     "GoPanelFlat": "PanelContainer", "GoCardFlat": "PanelContainer", "GoChoiceButton": "Button",
     "GoBigButton": "Button", "GoBigSecondaryButton": "Button", "GoSmallLabel": "Label", "GoBarLabel": "Label",
     "GoMapPreview": "Panel",
+    "GoScoreRowOwn": "PanelContainer", "GoScorePanel": "PanelContainer", "GoStagePanel": "PanelContainer",
+    "GoArrowButton": "Button", "GoGoldButton": "Button", "GoHardBadge": "PanelContainer",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -227,6 +229,20 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if tint != WHITE:
             lines.append("tint = %s" % C(tint))
         boxes[bid] = ("Texture2D", lines)
+        return bid
+
+    def arcade(bid, top, bottom, rim, radius=12, edge=2, margins=(12, 4, 12, 6), lip=0, shine=0.7,
+               pressed=False):
+        """Small reusable glossy arcade plates; the drawing remains entirely inside its allocated rectangle."""
+        lines = ['script = ExtResource("arcade")']
+        lines += ["content_margin_%s = %g" % (side, margin) for side, margin in
+                  zip(("left", "top", "right", "bottom"), margins)]
+        lines += ["bg_color = %s" % C(top), "bottom_color = %s" % C(bottom),
+                  "border_color = %s" % C(rim), "border_width = %g" % edge, "radius = %g" % radius,
+                  "lip = %g" % lip, "shine = %g" % shine, "band = 0"]
+        if pressed:
+            lines.append("pressed = true")
+        boxes[bid] = ("StyleBox", lines)
         return bid
 
     def box(bid, bg, radius, border, border_color=INK, shadow=False, margin_h=14.0, margin_v=8.0, bottom=None,
@@ -323,15 +339,50 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 🔔 The player's own notice (`NotifPlayer`): the same pill, cream inside a gold rim.
     put("GoNoticeGold/styles/panel", box("painted_GoNoticeGold", NOTIF_OWN, 16, 3, GOLD, margin_h=12.0,
                                          margin_v=(2.0 + 3, 2.0 + 5), bottom=5, outer=(INK, 3, (0, 2))))
-    # 🏁 The round scoreboard's rows (`ScoreRow`: `chunky_box(PANEL, 14, 12, 1, 3, 5, CONTROL_BLUE)`; the winner's
-    #    `ScoreRowWin`, the same in cream inside a gold rim) — the notice pill a little flatter, with no navy edge — and
-    #    its head row (`ScoreHead`): no box, only the rows' side margins, so its labels sit over their columns.
-    put("GoScoreRow/styles/panel", box("painted_GoScoreRow", PANEL, 14, 3, CONTROL_BLUE, margin_h=12.0,
-                                       margin_v=(1.0 + 3, 1.0 + 5), bottom=5))
-    put("GoScoreRowGold/styles/panel", box("painted_GoScoreRowGold", NOTIF_OWN, 14, 3, GOLD, margin_h=12.0,
-                                           margin_v=(1.0 + 3, 1.0 + 5), bottom=5))
+    # 🏁 Scoreboards: pale-blue glossy rows, a gold first place and a strong blue rim around the player's row.
+    score_top, score_bottom = (0.91, 0.975, 1.0, 1.0), (0.70, 0.865, 0.97, 1.0)
+    score_rim = (0.22, 0.70, 1.0, 1.0)
+    for type_name, top, bottom, rim, edge in (
+            ("GoScoreRow", score_top, score_bottom, score_rim, 2),
+            ("GoScoreRowGold", (1.0, 0.96, 0.63, 1.0), (1.0, 0.81, 0.22, 1.0), GOLD, 2),
+            ("GoScoreRowOwn", score_top, score_bottom, CONTROL_BLUE, 3)):
+        put(type_name + "/styles/panel", arcade("painted_" + type_name, top, bottom, rim, edge=edge))
+    put("GoScorePanel/styles/panel", arcade("painted_GoScorePanel", (0.86, 0.95, 1.0, 1.0),
+        (0.78, 0.91, 0.99, 1.0), score_rim, margins=(6, 5, 6, 5), shine=0.25))
+    put("GoStagePanel/styles/panel", arcade("painted_GoStagePanel", score_top, score_bottom, CONTROL_BLUE,
+        radius=14, margins=(12, 3, 12, 3), shine=0.8))
+    # The header stays transparent: one board behind it, its text aligned exactly over the rows' columns.
     boxes["painted_GoScoreHead"] = ("StyleBoxEmpty", ["content_margin_left = 12", "content_margin_right = 12"])
     put("GoScoreHead/styles/panel", "painted_GoScoreHead")
+    # Short noninteractive status pill. Its label uses GoOutlineLabel and can fit to the available width.
+    put("GoHardBadge/styles/panel", sprite("painted_GoHardBadge", "btn_red.png", GLOSS_EDGE, 6.0, 10, 2, 3))
+    # Compact square navigation buttons use the same candy gloss as the menu pills without their wide end caps.
+    for state in ("normal", "hover", "pressed", "hover_pressed", "disabled"):
+        down = state in ("pressed", "hover_pressed")
+        tint = DISABLED_TINT if state == "disabled" else WHITE
+        put("GoArrowButton/styles/" + state, arcade("painted_GoArrowButton_" + state,
+            _times((0.25, 0.65, 1.0, 1.0), tint), _times((0.02, 0.22, 0.98, 1.0), tint), INK,
+            radius=12, edge=3, margins=(6, 3, 6, 5), lip=3, shine=0.9, pressed=down))
+    put("GoArrowButton/styles/focus", "painted_empty")
+    for slot in FONT_STATES:
+        setT("GoArrowButton/colors/" + slot, C(WHITE))
+    setT("GoArrowButton/colors/font_outline_color", C(INK))
+    setT("GoArrowButton/constants/outline_size", 4)
+    setT("GoArrowButton/font_sizes/font_size", GLOSS_FONT_SIZE)
+    # A gold menu action, matching the scoreboard's awards and title ribbon.
+    for state in ("normal", "hover", "pressed", "hover_pressed", "disabled"):
+        down = state in ("pressed", "hover_pressed")
+        tint = DISABLED_TINT if state == "disabled" else WHITE
+        put("GoGoldButton/styles/" + state, arcade("painted_GoGoldButton_" + state,
+            _times((1.0, 0.94, 0.38, 1.0), tint), _times((1.0, 0.72, 0.04, 1.0), tint), INK,
+            radius=24, edge=3, margins=(22, 3, 22, 6), lip=3, shine=0.9, pressed=down))
+    put("GoGoldButton/styles/focus", "painted_empty")
+    for slot in FONT_STATES:
+        setT("GoGoldButton/colors/" + slot, C(WHITE))
+    setT("GoGoldButton/colors/font_outline_color", C(INK))
+    setT("GoGoldButton/constants/outline_size", 4)
+    setT("GoGoldButton/constants/h_separation", 10)
+    setT("GoGoldButton/font_sizes/font_size", GLOSS_FONT_SIZE)
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
@@ -554,9 +605,23 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 💬 The rest the game's theme leaves to the engine and still draws: its tooltips (dark, light text), the 4 px gap
     #    of every box and grid it does not override, and the scroll bars of the controls card and the room list.
     for type_name in ("TooltipPanel", "TooltipLabel", "BoxContainer", "HBoxContainer", "VBoxContainer",
-                      "GridContainer", "HFlowContainer", "VFlowContainer", "ScrollContainer", "HScrollBar",
-                      "VScrollBar"):
+                      "GridContainer", "HFlowContainer", "VFlowContainer", "ScrollContainer"):
         drop(type_name)
+
+    # A visible blue scrollbar in every arcade_light scroll: no engine-grey fallback chrome.
+    for type_name in ("HScrollBar", "VScrollBar"):
+        drop(type_name)
+        vertical = type_name == "VScrollBar"
+        margin = (9, 0, 9, 0) if vertical else (0, 9, 0, 9)
+        track = arcade("painted_" + type_name + "_track", score_top, score_bottom, score_rim,
+                       radius=8, margins=margin, shine=0.3)
+        for state in ("scroll", "scroll_focus"):
+            put(type_name + "/styles/" + state, track)
+        for state in ("grabber", "grabber_highlight", "grabber_pressed"):
+            top = (0.18, 0.60, 1.0, 1.0) if state == "grabber" else (0.35, 0.72, 1.0, 1.0)
+            thumb = arcade("painted_" + type_name + "_" + state, top, (0.02, 0.25, 0.98, 1.0),
+                           INK, radius=8, margins=(9, 9, 9, 9), shine=0.9)
+            put(type_name + "/styles/" + state, thumb)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
