@@ -1102,6 +1102,8 @@ func _fit_surface(look: StringName) -> void:
 		surface.title_height = 72.0
 		surface.title_glyph_size = 70
 		surface.title_glyph = GoUi.skin().widget_art(&"stopwatch")
+		surface.title_label.theme_type_variation = &"GoScoreTitleLabel"
+		surface._dress_chrome()
 		await frames(4)
 		check(surface.title_label.size.x >= 640.0 and surface.title_label.size.x < surface.card.size.x - 100.0,
 			"%s scale fit: the floating title plate can be narrower than its card" % look)
@@ -1111,6 +1113,8 @@ func _fit_surface(look: StringName) -> void:
 			"%s scale fit: the title uses its requested font size when it fits" % look)
 		check(surface.title_label.custom_minimum_size.y == 72.0,
 			"%s scale fit: the taller title plate keeps its requested height" % look)
+		check(surface.title_label.get_theme_constant(&"outline_size") == 6,
+			"%s scale fit: the title skin respects the explicit typography variation's outline" % look)
 	rows.custom_minimum_size.y = 2000.0
 	surface.fit_flex_max_height = 260.0
 	await frames(4)

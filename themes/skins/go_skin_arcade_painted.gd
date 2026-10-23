@@ -488,8 +488,13 @@ func title_plate_min_size() -> int:
 
 ## …with the ribbon header's ink outline.
 func dress_title(label: Label) -> void:
-	label.add_theme_color_override(&"font_outline_color", INK)
-	label.add_theme_constant_override(&"outline_size", RIBBON_TITLE_OUTLINE)
+	var variation := label.theme_type_variation
+	var look := GoUi.theme()
+	# A caller can select a typography variation while keeping the look's title plate and fit behavior.
+	var ink := look.get_color(&"font_outline_color", variation) if look.has_color(&"font_outline_color", variation) else INK
+	var outline := look.get_constant(&"outline_size", variation) if look.has_constant(&"outline_size", variation) else RIBBON_TITLE_OUTLINE
+	label.add_theme_color_override(&"font_outline_color", ink)
+	label.add_theme_constant_override(&"outline_size", outline)
 
 
 ## A scrim is the game's frosted backdrop while `arcade_scrim_blur` is above 0 (it sets the mip level read; 3 is the

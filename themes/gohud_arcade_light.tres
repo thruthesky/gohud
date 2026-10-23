@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=186 format=3]
+[gd_resource type="Theme" load_steps=194 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -24,6 +24,10 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_track.png" id="painted_slider_track"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_off.png" id="painted_toggle_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_on.png" id="painted_toggle_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_down.svg" id="score_scroll_down"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_left.svg" id="score_scroll_left"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_right.svg" id="score_scroll_right"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_up.svg" id="score_scroll_up"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_cleared.png" id="stage_card_cleared"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_current.png" id="stage_card_current"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_locked.png" id="stage_card_locked"]
@@ -1989,6 +1993,16 @@ lip = 0
 shine = 0.9
 band = 0
 
+[sub_resource type="Texture2D" id="painted_HScrollBar_decrement"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_left")
+draw_size = Vector2(18, 18)
+
+[sub_resource type="Texture2D" id="painted_HScrollBar_increment"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_right")
+draw_size = Vector2(18, 18)
+
 [sub_resource type="StyleBox" id="painted_VScrollBar_track"]
 script = ExtResource("arcade")
 content_margin_left = 9
@@ -2048,6 +2062,16 @@ radius = 8
 lip = 0
 shine = 0.9
 band = 0
+
+[sub_resource type="Texture2D" id="painted_VScrollBar_decrement"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_up")
+draw_size = Vector2(18, 18)
+
+[sub_resource type="Texture2D" id="painted_VScrollBar_increment"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_down")
+draw_size = Vector2(18, 18)
 
 [resource]
 CheckBox/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -2688,6 +2712,12 @@ GoWell/base_type = &"PanelContainer"
 GoWell/styles/panel = SubResource("painted_GoWell")
 GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
+HScrollBar/icons/decrement = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/decrement_highlight = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/decrement_pressed = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/increment = SubResource("painted_HScrollBar_increment")
+HScrollBar/icons/increment_highlight = SubResource("painted_HScrollBar_increment")
+HScrollBar/icons/increment_pressed = SubResource("painted_HScrollBar_increment")
 HScrollBar/styles/grabber = SubResource("painted_HScrollBar_grabber")
 HScrollBar/styles/grabber_highlight = SubResource("painted_HScrollBar_grabber_highlight")
 HScrollBar/styles/grabber_pressed = SubResource("painted_HScrollBar_grabber_pressed")
@@ -2807,6 +2837,12 @@ TextEdit/colors/selection_color = Color(0.103552, 0.264971, 0.639586, 0.35)
 TextEdit/styles/focus = SubResource("painted_field_focus")
 TextEdit/styles/normal = SubResource("painted_field")
 TextEdit/styles/read_only = SubResource("painted_field_read_only")
+VScrollBar/icons/decrement = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/decrement_highlight = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/decrement_pressed = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/increment = SubResource("painted_VScrollBar_increment")
+VScrollBar/icons/increment_highlight = SubResource("painted_VScrollBar_increment")
+VScrollBar/icons/increment_pressed = SubResource("painted_VScrollBar_increment")
 VScrollBar/styles/grabber = SubResource("painted_VScrollBar_grabber")
 VScrollBar/styles/grabber_highlight = SubResource("painted_VScrollBar_grabber_highlight")
 VScrollBar/styles/grabber_pressed = SubResource("painted_VScrollBar_grabber_pressed")

@@ -609,6 +609,10 @@ func _scoreboard(theme: Theme) -> void:
 		for state: StringName in [&"scroll", &"scroll_focus", &"grabber", &"grabber_highlight", &"grabber_pressed"]:
 			check(bar.get_theme_stylebox(state) is GoStyleBoxArcade,
 				"%s/%s inherits arcade chrome with no engine fallback" % [bar.get_class(), state])
+		for state: StringName in [&"increment", &"decrement", &"increment_highlight", &"decrement_highlight",
+				&"increment_pressed", &"decrement_pressed"]:
+			check(bar.get_theme_icon(state) != null and bar.get_theme_icon(state).get_width() == 18,
+				"%s/%s has a compact painted arrow cap" % [bar.get_class(), state])
 		check(bar.get_combined_minimum_size().y >= 18.0 if horizontal else bar.get_combined_minimum_size().x >= 18.0,
 			"the blue scrollbar has a visible 18dp thickness")
 		scroll.queue_free()

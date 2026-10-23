@@ -644,6 +644,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             thumb = arcade("painted_" + type_name + "_" + state, top, (0.02, 0.25, 0.98, 1.0),
                            INK, radius=8, margins=(9, 9, 9, 9), shine=0.9)
             put(type_name + "/styles/" + state, thumb)
+        for action, direction in (("decrement", "up" if vertical else "left"),
+                                  ("increment", "down" if vertical else "right")):
+            art = icon("painted_" + type_name + "_" + action, "score/scroll_" + direction + ".svg", (18, 18))
+            for suffix in ("", "_highlight", "_pressed"):
+                put(type_name + "/icons/" + action + suffix, art)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
     used = set()
@@ -664,12 +669,16 @@ def texture_id(file):
     """"btn_blue.png" → `painted_btn_blue`; "stage/window.png" → `stage_window`."""
     if file.startswith("stage/"):
         return "stage_" + file[len("stage/"):-len(".png")]
+    if file.startswith("score/"):
+        return "score_" + file[len("score/"):-len(".svg")]
     return "painted_" + file[:-len(".png")]
 
 
 def texture_path(rid):
     if rid.startswith("stage_"):
         return STAGE + rid[len("stage_"):] + ".png"
+    if rid.startswith("score_"):
+        return RES + "/assets/arcade_light/score/" + rid[len("score_"):] + ".svg"
     return PAINTED + rid[len("painted_"):] + ".png"
 
 
@@ -693,7 +702,7 @@ def ext_resources(boxes):
     if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
-                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_"))})
+                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_", "texture = ExtResource(\"score_"))})
     for rid in files:
         lines.append('[ext_resource type="Texture2D" path="%s" id="%s"]' % (texture_path(rid), rid))
     return lines

@@ -37,12 +37,23 @@ def render(name, colors):
 </g></svg>\n'''
 
 
+def arrow(direction):
+    degrees = {"up": 0, "right": 90, "down": 180, "left": 270}[direction]
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#effbff"/><stop offset="1" stop-color="#9ed7ff"/></linearGradient></defs>
+<rect x=".8" y=".8" width="16.4" height="16.4" rx="4" fill="url(#g)" stroke="#183670" stroke-width="1.6"/>
+<path d="M3 6 Q3 3 6 3 H12" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M9 4.5 L14 11.5 Q14.5 12.5 13 12.5 H5 Q3.5 12.5 4 11.5 Z" fill="#10194c" stroke="#fff" stroke-width=".7" stroke-linejoin="round" transform="rotate({degrees} 9 9)"/>
+</svg>\n'''
+
+
 if __name__ == "__main__":
     ROOT.mkdir(parents=True, exist_ok=True)
     check = "--check" in sys.argv
-    for name, colors in MEDALS.items():
-        path = ROOT / f"medal_{name}.svg"
-        source = render(name, colors)
+    artwork = {f"medal_{name}": render(name, colors) for name, colors in MEDALS.items()}
+    artwork.update({f"scroll_{direction}": arrow(direction) for direction in ("up", "down", "left", "right")})
+    for name, source in artwork.items():
+        path = ROOT / f"{name}.svg"
         if check:
             if not path.is_file() or path.read_text() != source:
                 raise SystemExit(f"stale medal artwork: {path}")
