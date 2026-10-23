@@ -842,6 +842,9 @@ banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a
 key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
 bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoScoreRow`, `GoScoreRowGold` and
 `GoScoreHead` (a glossy blue scoreboard row, the winner's gold one, its transparent head row);
+`GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
+(heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
+`GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
 `GoScoreRowOwn` (a stronger blue rim), `GoScorePanel` (the pale-blue scoreboard well), `GoStagePanel` (a glossy
 stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action) and `GoHardBadge` (a short red status
 PanelContainer; use a `GoOutlineLabel` inside). `GoSurface.fit_flex_max_height` caps its scrolling list's natural

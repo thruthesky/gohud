@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=185 format=3]
+[gd_resource type="Theme" load_steps=186 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1326,6 +1326,10 @@ lip = 3
 shine = 0.9
 band = 0
 
+[sub_resource type="FontVariation" id="painted_score_font"]
+base_font = SubResource("painted_font")
+variation_embolden = 1.2
+
 [sub_resource type="StyleBoxFlat" id="painted_GoTile"]
 content_margin_left = 0
 content_margin_top = 3
@@ -2538,16 +2542,90 @@ GoRibbonWideTitle/colors/font_color = Color(1, 1, 1, 1)
 GoRibbonWideTitle/constants/line_spacing = -6
 GoRibbonWideTitle/constants/outline_size = 8
 GoRibbonWideTitle/font_sizes/font_size = 54
+GoScoreButton/base_type = &"GoInfoButton"
+GoScoreButton/colors/font_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreButton/constants/outline_size = 6
+GoScoreButton/font_sizes/font_size = 24
+GoScoreButton/fonts/font = SubResource("painted_score_font")
+GoScoreGoldButton/base_type = &"GoGoldButton"
+GoScoreGoldButton/colors/font_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/constants/outline_size = 6
+GoScoreGoldButton/font_sizes/font_size = 24
+GoScoreGoldButton/fonts/font = SubResource("painted_score_font")
 GoScoreHead/base_type = &"PanelContainer"
 GoScoreHead/styles/panel = SubResource("painted_GoScoreHead")
+GoScoreHeadLabel/base_type = &"Label"
+GoScoreHeadLabel/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreHeadLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreHeadLabel/constants/outline_size = 0
+GoScoreHeadLabel/font_sizes/font_size = 22
+GoScoreHeadLabel/fonts/font = SubResource("painted_score_font")
+GoScoreLabel/base_type = &"Label"
+GoScoreLabel/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreLabel/constants/outline_size = 0
+GoScoreLabel/font_sizes/font_size = 26
+GoScoreLabel/fonts/font = SubResource("painted_score_font")
+GoScoreOutlineLabel/base_type = &"Label"
+GoScoreOutlineLabel/colors/font_color = Color(1, 1, 1, 1)
+GoScoreOutlineLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreOutlineLabel/constants/outline_size = 4
+GoScoreOutlineLabel/font_sizes/font_size = 15
+GoScoreOutlineLabel/fonts/font = SubResource("painted_score_font")
 GoScorePanel/base_type = &"PanelContainer"
 GoScorePanel/styles/panel = SubResource("painted_GoScorePanel")
+GoScorePrimaryButton/base_type = &"GoPrimaryButton"
+GoScorePrimaryButton/colors/font_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScorePrimaryButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/constants/outline_size = 6
+GoScorePrimaryButton/font_sizes/font_size = 24
+GoScorePrimaryButton/fonts/font = SubResource("painted_score_font")
 GoScoreRow/base_type = &"PanelContainer"
 GoScoreRow/styles/panel = SubResource("painted_GoScoreRow")
 GoScoreRowGold/base_type = &"PanelContainer"
 GoScoreRowGold/styles/panel = SubResource("painted_GoScoreRowGold")
 GoScoreRowOwn/base_type = &"PanelContainer"
 GoScoreRowOwn/styles/panel = SubResource("painted_GoScoreRowOwn")
+GoScoreTab/base_type = &"GoButton"
+GoScoreTab/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTab/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreTab/constants/outline_size = 4
+GoScoreTab/font_sizes/font_size = 18
+GoScoreTab/fonts/font = SubResource("painted_score_font")
+GoScoreTabSelected/base_type = &"GoInfoButton"
+GoScoreTabSelected/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTabSelected/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/constants/outline_size = 4
+GoScoreTabSelected/font_sizes/font_size = 18
+GoScoreTabSelected/fonts/font = SubResource("painted_score_font")
+GoScoreTitleLabel/base_type = &"Label"
+GoScoreTitleLabel/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTitleLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTitleLabel/constants/outline_size = 6
+GoScoreTitleLabel/font_sizes/font_size = 42
+GoScoreTitleLabel/fonts/font = SubResource("painted_score_font")
 GoSliderCyan/base_type = &"HSlider"
 GoSliderCyan/styles/grabber_area = SubResource("painted_GoSliderCyan_fill")
 GoSliderCyan/styles/grabber_area_highlight = SubResource("painted_GoSliderCyan_fill")

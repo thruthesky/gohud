@@ -555,6 +555,16 @@ func _engine_bases(theme: Theme) -> void:
 
 ## Real scroll containers inherit painted bars even when the caller never supplies a variation or an override.
 func _scoreboard(theme: Theme) -> void:
+	var normal_font := theme.default_font as FontVariation
+	for type: StringName in [&"GoScoreLabel", &"GoScoreHeadLabel", &"GoScoreTitleLabel", &"GoScoreOutlineLabel",
+			&"GoScoreButton", &"GoScorePrimaryButton", &"GoScoreTab", &"GoScoreTabSelected", &"GoScoreGoldButton"]:
+		var font := theme.get_font(&"font", type) as FontVariation
+		check(font != null and font.variation_embolden >= 1.0 and font.base_font == normal_font,
+			"%s: heavy lettering shares the multilingual body's locale order" % type)
+		if font != null:
+			for character: String in ["한", "日", "中"]:
+				check(font.has_char(character.unicode_at(0)), "%s: the heavy face can display %s" % [type, character])
+	check(normal_font.variation_embolden == 0.0, "the heavier scoreboard does not change ordinary UI font weight")
 	var skin := load("res://addons/gohud/themes/skins/gohud_skin_arcade_light.tres") as GoSkinArcadePainted
 	for name: StringName in [&"medal_gold", &"medal_silver", &"medal_bronze"]:
 		var art := skin.widget_art(name)

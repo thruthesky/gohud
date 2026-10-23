@@ -187,6 +187,9 @@ BASES = {
     "GoMapPreview": "Panel",
     "GoScoreRowOwn": "PanelContainer", "GoScorePanel": "PanelContainer", "GoStagePanel": "PanelContainer",
     "GoArrowButton": "Button", "GoGoldButton": "Button", "GoHardBadge": "PanelContainer",
+    "GoScoreLabel": "Label", "GoScoreHeadLabel": "Label", "GoScoreTitleLabel": "Label",
+    "GoScoreOutlineLabel": "Label", "GoScoreButton": "GoInfoButton", "GoScorePrimaryButton": "GoPrimaryButton",
+    "GoScoreTab": "GoButton", "GoScoreTabSelected": "GoInfoButton", "GoScoreGoldButton": "GoGoldButton",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -383,6 +386,25 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoGoldButton/constants/outline_size", 4)
     setT("GoGoldButton/constants/h_separation", 10)
     setT("GoGoldButton/font_sizes/font_size", GLOSS_FONT_SIZE)
+    # Heavy scoreboard typography is opt-in, leaving the rest of the game's menus and dialogs unchanged.
+    # Wrap the multilingual body font itself: its language-specific fallback ordering stays shared with GoUi.
+    boxes["painted_score_font"] = ("FontVariation", ['base_font = SubResource("painted_font")',
+                                                   "variation_embolden = 1.2"])
+    score_ink = (0.025, 0.035, 0.22, 1.0)
+    for type_name, size, ink, outline in (
+            ("GoScoreLabel", 26, score_ink, 0), ("GoScoreHeadLabel", 22, score_ink, 0),
+            ("GoScoreTitleLabel", 42, WHITE, 6), ("GoScoreOutlineLabel", 15, WHITE, 4),
+            ("GoScoreButton", 24, WHITE, 6), ("GoScorePrimaryButton", 24, WHITE, 6),
+            ("GoScoreTab", 18, WHITE, 4), ("GoScoreTabSelected", 18, WHITE, 4),
+            ("GoScoreGoldButton", 24, WHITE, 6)):
+        put(type_name + "/fonts/font", "painted_score_font")
+        setT(type_name + "/font_sizes/font_size", size)
+        setT(type_name + "/colors/font_color", C(ink))
+        setT(type_name + "/colors/font_outline_color", C(score_ink))
+        setT(type_name + "/constants/outline_size", outline)
+        if BASES[type_name] != "Label":
+            for slot in FONT_STATES:
+                setT(type_name + "/colors/" + slot, C(ink))
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
