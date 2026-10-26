@@ -696,11 +696,10 @@ func _field(theme: Theme) -> void:
 ##    fallbacks, Korean, Japanese, Simplified then Traditional Chinese (`fallback_order("")`), at 16 px.
 func _font(theme: Theme) -> void:
 	const FONTS := "res://addons/gohud/assets/fonts/"
-	check(theme.has_default_font() and theme.default_font is FontVariation,
-		"arcade_light: the default font is the game's FontVariation (got %s)" % theme.default_font)
+	var font := theme.get_meta(&"go_body_font_baked", null) as FontVariation
+	check(font != null, "arcade_light: baked font metadata preserves the game's FontVariation (got %s)" % font)
 	check(theme.default_font_size == 16, "arcade_light: the game's 16 px default size (got %d)" % theme.default_font_size)
-	if not (theme.default_font is FontVariation): return
-	var font := theme.default_font as FontVariation
+	if font == null: return
 	check(font.base_font is FontFile and font.base_font.resource_path == FONTS + "nunito/Nunito-Bold.ttf",
 		"the base font is Nunito Bold (got %s)" % (font.base_font.resource_path if font.base_font else "none"))
 	var want := ["NotoSansKR-Bold.ttf", "NotoSansJP-Bold.ttf", "NotoSansSC-Bold.ttf", "NotoSansTC-Bold.ttf"]
@@ -718,6 +717,17 @@ func _font(theme: Theme) -> void:
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	check(GoUi.theme().default_font == (null if GoUi.project_has_font() else font),
 		"GoUi.theme(): the game's font only while the project chose none (project font: %s)" % GoUi.project_has_font())
+	var probe := Label.new()
+	probe.theme = GoUi.theme()
+	root.add_child(probe)
+	var expected: Font = font
+	if GoUi.project_has_font():
+		var custom := str(ProjectSettings.get_setting("gui/theme/custom_font", ""))
+		var project_theme := ThemeDB.get_project_theme()
+		expected = load(custom) as Font if not custom.is_empty() else (project_theme.default_font if project_theme != null and project_theme.default_font != null else ThemeDB.fallback_font)
+	check(probe.get_theme_font(&"font") == expected,
+		"arcade_light: effective label font respects custom project ownership or standalone baked font (got %s, expected %s)" % [probe.get_theme_font(&"font"), expected])
+	probe.free()
 	# 🔤 Shrink-to-fit with no font measures with that font, CJK fallbacks and all — the game's fit_font_size()
 	#    measures with them, so a plain Nunito here would fit Korean, Japanese and Chinese labels differently.
 	if not GoUi.project_has_font():

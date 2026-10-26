@@ -1418,10 +1418,14 @@ func _signal_bars(look: StringName) -> void:
 	meter.panel = true
 	var board := meter.get_theme_stylebox(&"panel")
 	var probe := PanelContainer.new()
+	probe.theme = meter.theme
 	probe.theme_type_variation = GoSignalBars.VAR_PANEL
 	holder.add_child(probe)
-	check(meter.theme_type_variation == GoSignalBars.VAR_PANEL and board.get_class() == probe.get_theme_stylebox(&"panel", GoSignalBars.VAR_PANEL).get_class(),
-		"signal: panel puts it on GoHudPanel (%s)" % board.get_class())
+	var source_board := probe.get_theme_stylebox(&"panel")
+	check(meter.theme_type_variation == GoSignalBars.VAR_PANEL and board.get_class() == source_board.get_class()
+		and meter._board[0] == source_board and board != source_board,
+		"signal: panel puts a padded copy of its selected GoHudPanel on the meter (variation %s, themes %s/%s, boxes %s/%s)" %
+		[meter.theme_type_variation, meter.theme, probe.theme, board.get_class(), source_board.get_class()])
 	probe.free()
 	check(board.get_content_margin(SIDE_LEFT) >= GoStyle.face_clearance(meter, true) + GoSignalBars.BOARD_ROOM,
 		"signal: the board keeps the readout off its rim (%s)" % board.get_content_margin(SIDE_LEFT))
@@ -1493,6 +1497,8 @@ func _look_follows() -> void:
 		widget.size = Vector2(400, 300)
 		await frames(2)
 		check(widget.theme == GoUi.theme(), "%s: built with the look's theme" % key)
+		if key == "nameplate":
+			check(GoUi._watchers.has(Callable(widget, &"_restyle")), "nameplate: live look changes watch its actual paint method")
 		var before := _look_sig(key, widget)
 		GoUi.use_preset(to)
 		await frames(2)
@@ -1535,8 +1541,10 @@ func _look_sig(key: String, widget: Control) -> String:
 			return "%s|%s" % [hint.get_theme_color(&"font_color"), hint.get_theme_font(&"font").resource_path]
 		"nameplate":
 			var label := widget.find_child("Name", true, false) as Label
-			return "%s|%s|%s" % [label.get_theme_color(&"font_color"), label.get_theme_font(&"font").resource_path,
-				label.get_theme_constant(&"outline_size")]
+			var plate := widget.get_theme_stylebox(&"panel") as StyleBoxFlat
+			return "%s|%s|%s|%s|%s|%s|%s|%s" % [label.get_theme_color(&"font_color"), label.get_theme_font(&"font").resource_path,
+				label.get_theme_constant(&"outline_size"), label.get_theme_color(&"font_outline_color"),
+				plate.bg_color, plate.border_color, plate.border_width_left, plate.corner_radius_top_left]
 		"notice feed":
 			var row := (widget as GoNoticeFeed).rows()[0] as PanelContainer
 			var text := row.find_child("Text", true, false) as Label

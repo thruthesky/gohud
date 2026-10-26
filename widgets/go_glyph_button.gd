@@ -92,14 +92,14 @@ class ShiftedBox:
 		base = from
 		if from == null: return
 		# The label's centre moves away from the glyph by `shift`. On a face with real padding (the far side at least
-		# `edge`, as on the painted pills) that much padding goes from the far side to the near one, exactly as the
+		# `edge` and the full shift) that much padding goes from the far side to the near one, exactly as the
 		# game's GlossButton does; past the far padding the button grows (a negative margin would read as "unset").
 		# A thin face (a flat look's few pixels) instead keeps the group centred and the glyph `edge` off its side.
 		var lead := SIDE_RIGHT if mirrored else SIDE_LEFT
 		var trail := SIDE_LEFT if mirrored else SIDE_RIGHT
 		var near := from.get_margin(lead)
 		var far := from.get_margin(trail)
-		if far >= edge:
+		if far >= maxf(edge, shift):
 			set_content_margin(lead, near + shift)
 			set_content_margin(trail, maxf(far - shift, 0.0))
 		else:

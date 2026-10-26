@@ -1217,8 +1217,9 @@ func _popover_card(look: StringName) -> void:
 	key.queue_free()
 	await frames(1)
 	# GoPopover takes the same options: the game's top-bar card in one call.
+	var logical := GoSafeArea.usable_rect(root)
 	var anchor := Button.new()
-	anchor.position = Vector2(1210, 14)
+	anchor.position = Vector2(logical.end.x - 70.0, logical.position.y + 14.0)
 	anchor.size = Vector2(56, 56)
 	root.add_child(anchor)
 	var block := Control.new()
@@ -1231,8 +1232,14 @@ func _popover_card(look: StringName) -> void:
 			and card_surface.pass_anchor_taps and not card_surface.show_header,
 		"%s popover: the options reach the surface" % look)
 	var drawn := card_surface.card.get_global_rect()
-	check(absf(drawn.end.x - anchor.get_global_rect().end.x) < 0.51 and absf(drawn.position.y - 80.0) < 0.51,
+	check(absf(drawn.end.x - anchor.get_global_rect().end.x) < 0.51 and absf(drawn.position.y - anchor.get_global_rect().end.y - 10.0) < 0.51,
 		"%s popover: right edge on the key's, 10 under it (card %s)" % [look, drawn])
+	anchor.position.x = logical.end.x + 56.0
+	card_surface.relayout()
+	await frames(4)
+	drawn = card_surface.card.get_global_rect()
+	check(absf(drawn.end.x - logical.end.x) < 0.51 and logical.grow(0.51).encloses(drawn),
+		"%s popover: off-screen anchor keeps the whole card inside the measured safe rect (card %s, safe %s)" % [look, drawn, logical])
 	GoPopover.close()
 	anchor.queue_free()
 	await frames(2)
