@@ -4715,6 +4715,41 @@ func _widgets() -> void:
 	var urgent_face := GoStyle.chip("x", pick_ink, false, &"", -1, true).get_theme_stylebox(&"panel")
 	check(&"border_color" not in calm_face or calm_face.get(&"border_color") != urgent_face.get(&"border_color"),
 		"chip(urgent): the urgent border differs from an ordinary chip")
+	# 🔑 A chip on the world (opaque): a solid face, and its text reads on that face whatever lies under it — the pale
+	#    floor that left the see-through tint at 1.2:1.
+	var world_chip := GoStyle.chip("9m", pick_ink, false, &"", -1, false, true)
+	root.add_child(world_chip)
+	await frames(1)
+	var world_back := GoSkin.box_background(world_chip.get_theme_stylebox(&"panel"))
+	var world_ink := (world_chip.get_child(0) as Label).get_theme_color(&"font_color")
+	var world_ratio := GoSkin.contrast_ratio(GoSkin.blend(world_ink, world_back), world_back)
+	check(world_back.a >= 0.999 and world_ratio >= 4.5,
+		"chip(opaque): a solid face (alpha %.2f) and the text reads on it (%.2f:1 ≥ 4.5)" % [world_back.a, world_ratio])
+	GoStyle.restyle_chip(world_chip, pick_ink, true, true)
+	var world_restyled := world_chip.get_theme_stylebox(&"panel")
+	check(GoSkin.box_background(world_restyled).a >= 0.999 and (&"border_color" not in world_restyled or world_restyled.get(&"border_color") == urgent_face.get(&"border_color")),
+		"restyle_chip(urgent, opaque): stays solid and takes the urgent border")
+	world_chip.queue_free()
+	# 🔑 card_body(fit_width): a row of choice cards each as wide as its own content (a Button ignores its children's width).
+	var card_row := GoStyle.row(4)
+	root.add_child(card_row)
+	var wide_cards: Array[Button] = []
+	for word: String in ["Ab", "A much longer name"]:
+		var fit_card := Button.new()
+		GoStyle.style_choice_card(fit_card, pick_ink, false, false)
+		var fit_body := GoStyle.card_body(fit_card, 8, 0, true)
+		var fit_name := GoStyle.label(word, GoTheme.ROLE_CAPTION)
+		GoStyle.natural_width(fit_name)
+		fit_body.add_child(fit_name)
+		card_row.add_child(fit_card)
+		wide_cards.append(fit_card)
+	await frames(4)
+	var name_w := ((wide_cards[1].get_child(0) as Control).get_child(0) as Control).get_child(0) as Control
+	check(wide_cards[0].size.x > 16.0 and wide_cards[1].size.x > wide_cards[0].size.x
+		and wide_cards[1].position.x >= wide_cards[0].position.x + wide_cards[0].size.x
+		and wide_cards[1].size.x >= name_w.get_combined_minimum_size().x + 16.0 - 0.5,
+		"card_body(fit_width): each card is as wide as its name + padding, side by side (%.0f · %.0f)" % [wide_cards[0].size.x, wide_cards[1].size.x])
+	card_row.queue_free()
 	var chip_button := Button.new()
 	GoStyle.style_chip_button(chip_button, pick_ink)
 	var filled_button := Button.new()

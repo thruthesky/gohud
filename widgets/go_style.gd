@@ -2010,7 +2010,10 @@ static func _choice_face(accent: Color) -> StyleBox:
 ## 🛑 Used on a `PanelContainer` whose face has padding (`card()`) the padding doubles — put a `column()` straight into that card.
 ## 🛑 When the card is a button, call `let_input_through(body)` once the content is filled — the card is what gets pressed.
 ## [param padding] negative means the `padding_compact` token (dp), [param spacing] negative the `gap_tiny` token (dp).
-static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContainer:
+## [param fit_width] on, the card's width follows the content too (`fit_content_width`) — for a card that takes its width
+##   from its own text, a chip-like choice card in a row: a Button's minimum width ignores its children, so off, a row of
+##   them lays every card out 0 wide, all stacked at the row's start. Off (the default) for cards a column stretches.
+static func card_body(card: Control, padding := -1, spacing := -1, fit_width := false) -> VBoxContainer:
 	var inset := MarginContainer.new()
 	inset.name = "Inset"
 	insets(inset, GoUi.metric(GoTheme.PADDING_COMPACT) if padding < 0 else padding)
@@ -2022,6 +2025,7 @@ static func card_body(card: Control, padding := -1, spacing := -1) -> VBoxContai
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inset.add_child(body)
 	fit_content_height(card, inset)
+	if fit_width: fit_content_width(card, inset)
 	return body
 
 
@@ -2176,9 +2180,10 @@ static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARE
 
 ## A small pill-shaped mark (a state, a tag, a quantity).
 ## Pass [param icon] and the icon set's art goes before the text — with the text empty it is an **icon-only** chip (HUD buff marks and the like).
+## [param opaque] fills the face solid (`_chip_face`) — for a chip that sits straight on the game world, not on a panel.
 ## [param icon_size] negative means the skin's chip glyph (`GoSkin.chip_glyph_size`: the `list_glyph` token, 18dp under Material). [param urgent] puts a warning border on what is about to go (a buff with little time left).
 static func chip(text: String, ink := Color.TRANSPARENT, translate := false, icon: StringName = &"",
-		icon_size := -1, urgent := false) -> PanelContainer:
+		icon_size := -1, urgent := false, opaque := false) -> PanelContainer:
 	var color := ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY)
 	var node := PanelContainer.new()
 	node.name = "Chip"
@@ -2186,7 +2191,7 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 	node.custom_minimum_size.y = GoUi.skin().chip_height()
 	node.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	node.add_theme_stylebox_override(&"panel", _chip_face(color, urgent))
+	node.add_theme_stylebox_override(&"panel", _chip_face(color, urgent, opaque))
 	# 🛑 The text must read **on the chip face** — the background is a tint of the same color, so used as it is it sinks in.
 	var ink_on_chip := GoUi.skin().chip_ink(color)
 	var text_node: Label = null
@@ -2221,8 +2226,13 @@ static func chip(text: String, ink := Color.TRANSPARENT, translate := false, ico
 
 
 ## The chip face — the skin decides the shape, and only the urgent ones swap to a warning border (assumes nothing about the skin's face type).
-static func _chip_face(color: Color, urgent: bool) -> StyleBox:
+## [param opaque] fills the face solid with the colour `GoSkin.chip_ink` reads the text against (the tint over the soft
+## surface) — for a chip **straight on the world** (a HUD buff row over a bright floor): the see-through tint lets the
+## world decide the contrast there (cyan text on a pale stone floor measured 1.2:1, 2026-10-26).
+static func _chip_face(color: Color, urgent: bool, opaque := false) -> StyleBox:
 	var face := GoUi.skin().chip_box(color)
+	if opaque and &"bg_color" in face:
+		face.set(&"bg_color", GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE_SOFT)))
 	if urgent and &"border_color" in face:
 		face.set(&"border_color", Color(GoUi.color(GoTheme.DANGER), 0.9))
 	return face
@@ -2230,9 +2240,9 @@ static func _chip_face(color: Color, urgent: bool) -> StyleBox:
 
 ## Restyles **the face only** of a chip you already built — so places that refresh often never rebuild the node
 ## (a roster whose party leader changed, a mark counting a remaining time down). The caller changes the text and icon colors alongside.
-static func restyle_chip(node: PanelContainer, ink: Color, urgent := false) -> void:
+static func restyle_chip(node: PanelContainer, ink: Color, urgent := false, opaque := false) -> void:
 	if node == null: return
-	node.add_theme_stylebox_override(&"panel", _chip_face(ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY), urgent))
+	node.add_theme_stylebox_override(&"panel", _chip_face(ink if ink.a > 0 else GoUi.color(GoTheme.SECONDARY), urgent, opaque))
 
 
 ## Applies a chip face to **a label you already built** — for when `chip()`'s container cannot be used, as where the
@@ -2563,6 +2573,28 @@ static func _fit_height(control_ref: WeakRef, content_ref: WeakRef, baseline: fl
 	var height := maxf(baseline, content.get_combined_minimum_size().y)
 	if not is_equal_approx(control.custom_minimum_size.y, height):
 		control.custom_minimum_size.y = height
+
+
+## The same for the **width**: a control that does not inherit a minimum width from its children (a `Button` card in a
+## row) grows to its content's — a translated or re-fonted name is never cut and never overlaps the next card. Never
+## narrower than the width it had when this was called. 🛑 Content that wraps has almost no minimum width; give such a card
+## its width from the container instead (a column's EXPAND_FILL), not from this.
+## A scroll that must bring such a card into view waits for the fit (`GoScroll.reveal`, two frames) — calling
+## `ensure_control_visible` right away scrolls to where the card was while it was still 0 wide.
+static func fit_content_width(control: Control, content: Control) -> void:
+	var baseline := control.custom_minimum_size.x
+	var update := _fit_width.bind(weakref(control), weakref(content), baseline)
+	content.minimum_size_changed.connect(update, CONNECT_DEFERRED)
+	update.call_deferred()
+
+
+static func _fit_width(control_ref: WeakRef, content_ref: WeakRef, baseline: float) -> void:
+	var control := control_ref.get_ref() as Control
+	var content := content_ref.get_ref() as Control
+	if control == null or content == null: return
+	var width := maxf(baseline, content.get_combined_minimum_size().x)
+	if not is_equal_approx(control.custom_minimum_size.x, width):
+		control.custom_minimum_size.x = width
 
 
 ## 🔑 **One tooltip to the gohud spec.** Return it from `Control._make_custom_tooltip()`.
