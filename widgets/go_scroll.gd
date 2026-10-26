@@ -250,6 +250,13 @@ func reveal(control: Control) -> void:
 	ensure_control_visible(control)
 
 
+## How far this scroll's bounds reach below its own slot for glows (dp — the bottom bleed `use_panel_edge` borrows from
+## the parent's padding), 0 without an edge frame. A pinned row placed right under the scroll keeps at least this gap,
+## or the scroll's last line is drawn under it.
+func edge_bleed_bottom() -> int:
+	return maxi(0, -_edge_frame.get_theme_constant(&"margin_bottom")) if _edge_frame != null else 0
+
+
 ## Show and hide the whole scroll section together (the edge frame included).
 func set_section_visible(value: bool) -> void:
 	if _edge_frame != null: _edge_frame.visible = value

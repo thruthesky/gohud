@@ -645,6 +645,11 @@ func _in_page_confirm() -> void:
 		and body_label.text == "Log out of Ana?", "confirm pushes a sub-page with the question, args filled")
 	check(ok != null and cancel != null and ok.is_visible_in_tree() and cancel.is_visible_in_tree()
 		and ok.text == "Log out" and cancel.text == "Stay", "[cancel] [confirm] in the sub-page's pinned row")
+	var level_scroll := page._levels.back().scroll as GoScroll
+	var footer_top := page.sub_footer().get_global_rect().position.y
+	check(footer_top >= level_scroll.get_global_rect().end.y - 0.5,
+		"the sub-page's pinned row sits below its scroll, never over the body's last line (row top %.1f · scroll end %.1f · bleed %d)"
+		% [footer_top, level_scroll.get_global_rect().end.y, level_scroll.edge_bleed_bottom()])
 	check(root.find_children("*", "CanvasLayer", true, false).size() == layers_before, "no new window (CanvasLayer) for the question")
 	check(GoBackPolicy.owners() == 1, "the question takes no second back-gesture owner")
 	ok.pressed.emit()

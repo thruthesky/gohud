@@ -823,10 +823,22 @@ func _sync_content_edge() -> void:
 		if int(level.get("pad", -1)) != padding:
 			level["pad"] = padding
 			(level.scroll as GoScroll).set_panel_padding(padding)
+		_sync_level_gap(level)
 	if not _levels.is_empty(): return   # the root's column is hidden — it catches up on the last pop
 	if padding == _content_edge_padding: return
 	_content_edge_padding = padding
 	_content_scroll.set_panel_padding(padding)
+
+
+## The gap between a sub-page's scroll and its pinned rows (status, footer): the surface's own section gap, never less
+## than the bottom bleed the scroll borrows for glows (`GoScroll.edge_bleed_bottom`). That bleed is meant for padding;
+## a pinned row right under the scroll is not padding — with no gap the body's last line was drawn under the
+## sub-page's footer (12dp at 360×800, measured 2026-10-26). The column's separation only applies between visible
+## children, so a level without status or footer is unchanged.
+func _sync_level_gap(level: Dictionary) -> void:
+	var gap := maxi(surface.section_gap(), (level.scroll as GoScroll).edge_bleed_bottom())
+	var column := level.root as BoxContainer
+	if column.get_theme_constant(&"separation") != gap: column.add_theme_constant_override(&"separation", gap)
 
 
 func _arrange(force := false) -> void:
