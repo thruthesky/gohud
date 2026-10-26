@@ -846,7 +846,7 @@ bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoSc
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
 `GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
 `GoScoreRibbon` (a rounded glossy gold title plate), `GoScoreRowOwn` (a stronger blue rim), `GoScorePanel` (the pale-blue scoreboard well), `GoStagePanel` (a glossy
-stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action) and `GoHardBadge` (a short red status
+stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action), `GoWhiteButton` and `GoBlackButton` (the pill painted white with an ink label and black with a white one — a "Sign in with Google" / "Sign in with Apple" key; no icon colour, so `GoIconSet.GOOGLE` keeps its colours and the white `GoIconSet.APPLE` reads on black) and `GoHardBadge` (a short red status
 PanelContainer; use a `GoOutlineLabel` inside). `GoSurface.fit_flex_max_height` caps its scrolling list's natural
 height in dp (0: unlimited). `GoSurface.title_width` centres a narrower floating ribbon (0 fills the header),
 `title_height` sets its natural height, and `title_font_size` sets its starting size while preserving the fit floor. `GoGlyphButton.glyph_flip_h` mirrors its glyph without changing its label or layout; `GoTile` and `GoTileLit` (a loading block, unlit

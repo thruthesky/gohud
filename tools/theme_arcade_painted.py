@@ -118,6 +118,8 @@ FACES = {
     "btn_blue.png": (0.227451, 0.47451, 0.988235, 1.0),      # #3a79fc
     "btn_red.png": (0.964706, 0.231373, 0.219608, 1.0),      # #f63b38
     "btn_green.png": (0.262745, 0.843137, 0.356863, 1.0),    # #43d75b
+    "btn_white.png": (0.921569, 0.933333, 0.964706, 1.0),    # #ebeef6 (tools/paint_arcade_sign_in.gd)
+    "btn_black.png": (0.141176, 0.14902, 0.176471, 1.0),     # #24262d (tools/paint_arcade_sign_in.gd)
     "card.png": (0.952941, 0.972549, 0.992157, 1.0),         # #f3f8fd
     "inset.png": (0.878431, 0.941176, 0.992157, 1.0),        # #e0f0fd
     "keycap.png": (0.937255, 0.941176, 0.972549, 1.0),       # #eff0f8
@@ -191,6 +193,7 @@ BASES = {
     "GoScoreOutlineLabel": "Label", "GoScoreButton": "GoInfoButton", "GoScorePrimaryButton": "GoPrimaryButton",
     "GoScoreTab": "GoButton", "GoScoreTabSelected": "GoInfoButton", "GoScoreGoldButton": "GoGoldButton",
     "GoScoreRibbon": "PanelContainer",
+    "GoWhiteButton": "Button", "GoBlackButton": "Button",
 }
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
@@ -314,6 +317,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     gloss("GoSuccessButton", "btn_green.png")
     # The toggle (`_gloss_toggle`): the grey pill, blue while it is on.
     gloss("GoToggleButton", "btn_grey.png")
+    # 🔑 The sign-in keys (gohud's own, not the game's): the blue pill repainted white and black
+    #    (tools/paint_arcade_sign_in.gd) — "Sign in with Google" stands on white with ink text, "Sign in with Apple" on
+    #    black with the white outlined label of every pill. Icons stay white (the engine's), so a glyph is drawn as
+    #    painted: the Google G keeps its colours, the white Apple logo reads on the black key.
+    gloss("GoWhiteButton", "btn_white.png")
+    for slot in FONT_STATES:
+        setT("GoWhiteButton/colors/%s" % slot, C(INK))
+    setT("GoWhiteButton/colors/font_disabled_color", C(SMALL_INK))
+    setT("GoWhiteButton/constants/outline_size", 0)
+    gloss("GoBlackButton", "btn_black.png")
     on = sprite("painted_GoToggleButton_on", "btn_blue.png", GLOSS_EDGE, PAINT_PPU, 22.0, 3.0, 6.0)
     put("GoToggleButton/styles/pressed", on)
     put("GoToggleButton/styles/hover_pressed", on)

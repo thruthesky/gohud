@@ -20,7 +20,7 @@ const DARK := "res://addons/gohud/themes/presets/arcade_dark.tres"
 
 ## Every painted sprite → does the game import it with mipmaps (its `.import` says `mipmaps/generate`).
 const SPRITES := {
-	"badge_blue": false, "badge_green": false, "btn_blue": true, "btn_green": true, "btn_grey": true, "btn_red": true,
+	"badge_blue": false, "badge_green": false, "btn_blue": true, "btn_white": true, "btn_black": true, "btn_green": true, "btn_grey": true, "btn_red": true,
 	"card": true, "close_key": true, "inset": true, "keycap": true, "ribbon_gold": true, "ribbon_red": false, "slider_blue": true,
 	"slider_cyan": true, "slider_green": true, "slider_handle": true, "slider_track": true, "toggle_off": true,
 	"toggle_on": true,
@@ -62,6 +62,8 @@ const GLYPH_FILES := {
 	"magnet_arrow": true, "fall": true,
 	# A menu's multiplayer button: three people (tools/paint_arcade_multiplayer.gd).
 	"multiplayer": true,
+	# An e-mail sign-in's envelope (tools/paint_arcade_sign_in.gd).
+	"mail": true,
 }
 
 var passed := 0
@@ -208,7 +210,41 @@ func _light_icons() -> void:
 	check(GoUi.icons().texture(GoIconSet.MULTIPLAYER) == _glyph("multiplayer"),
 		"with arcade_light chosen, GoUi.icons() draws multiplayer with the painted three-people glyph")
 	check(GoUi.icons().texture(&"trash") == GoUi.DEFAULT_ICONS.texture(&"trash"), "with arcade_light chosen, trash is gohud's")
+	_sign_in_icons()
 	GoUi.reset()
+
+
+## The sign-in marks: the Google G in its own colours, the white Apple logo, the painted envelope — reached through
+## `GoUi.icons()` with arcade_light chosen (called with the preset in use).
+func _sign_in_icons() -> void:
+	check(GoUi.icons().texture(GoIconSet.MAIL) == _glyph("mail"), "with arcade_light chosen, mail is the painted envelope")
+	var google := GoUi.icons().texture(GoIconSet.GOOGLE)
+	var apple := GoUi.icons().texture(GoIconSet.APPLE)
+	check(google != null and google.resource_path == GLYPHS + "/google.svg", "with arcade_light chosen, google is the G mark")
+	check(apple != null and apple.resource_path == GLYPHS + "/apple.svg", "with arcade_light chosen, apple is the Apple logo")
+	if google == null or apple == null: return
+	check(google.get_width() >= 96 and apple.get_width() >= 96, "the marks import at 96 px, sharp on a 56 px key")
+	# The G keeps its four colours: blue, red, yellow and green pixels are all there (drawn untinted, `node()` is white).
+	var image := google.get_image()
+	image.clear_mipmaps()
+	image.convert(Image.FORMAT_RGBA8)
+	var seen := {}
+	for want: Color in [Color("#4285F4"), Color("#EA4335"), Color("#FBBC05"), Color("#34A853")]:
+		for y in range(0, image.get_height(), 2):
+			for x in range(0, image.get_width(), 2):
+				var c := image.get_pixel(x, y)
+				if c.a > 0.95 and absf(c.r - want.r) < 0.04 and absf(c.g - want.g) < 0.04 and absf(c.b - want.b) < 0.04:
+					seen[want.to_html(false)] = true
+	check(seen.size() == 4, "the Google G keeps its four brand colours (found %s)" % str(seen.keys()))
+	var mark := GoUi.icons().node(GoIconSet.GOOGLE, 40)
+	check(mark is TextureRect and mark.modulate == Color.WHITE, "node(google) with no ink draws the G untinted")
+	mark.free()
+	# The Apple logo is white, so it reads on the black key as is and takes any ink.
+	var logo := apple.get_image()
+	logo.clear_mipmaps()
+	logo.convert(Image.FORMAT_RGBA8)
+	var middle := logo.get_pixel(logo.get_width() / 2, logo.get_height() * 3 / 5)
+	check(middle.a > 0.95 and middle.r > 0.95 and middle.g > 0.95 and middle.b > 0.95, "the Apple logo is white (got %s)" % str(middle))
 
 
 func _dark_icons() -> void:

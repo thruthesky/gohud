@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GoIconSet" load_steps=28 format=3]
+[gd_resource type="Resource" script_class="GoIconSet" load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/core/go_icon_set.gd" id="script"]
 [ext_resource type="Resource" path="res://addons/gohud/icons/gohud_icons.tres" id="fallback"]
@@ -27,11 +27,14 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/close.png" id="close"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/star.png" id="star"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/rank_target.svg" id="target"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/google.svg" id="google"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/apple.svg" id="apple"]
+[ext_resource type="Texture2D" path="res://addons/gohud/icons/arcade_light/mail.png" id="mail"]
 
 [resource]
 script = ExtResource("script")
 set_name = "Arcade painted glyphs"
-attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd); star is the filled gold rating star (tools/paint_arcade_stars.gd); magnet_arrow and fall, the kill feed's glyphs, painted for gohud from magnet.png and in the same style (tools/paint_arcade_killfeed.gd); multiplayer, three people for a menu's multiplayer button, painted for gohud in the same style (tools/paint_arcade_multiplayer.gd). gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
+attribution = "White painted glyphs from the Magnet Mayhem game (Withcenter), drawn for that game; plus, minus and close painted for gohud in the same style (tools/paint_arcade_glyphs.gd); star is the filled gold rating star (tools/paint_arcade_stars.gd); magnet_arrow and fall, the kill feed's glyphs, painted for gohud from magnet.png and in the same style (tools/paint_arcade_killfeed.gd); multiplayer, three people for a menu's multiplayer button, painted for gohud in the same style (tools/paint_arcade_multiplayer.gd); mail, an envelope for an e-mail sign-in, painted the same way (tools/paint_arcade_sign_in.gd); google and apple, the sign-in brand marks (the multi-colour Google G, drawn in its own colours, and the Simple Icons Apple logo, CC0, white) — see THIRD_PARTY_NOTICES.md. gohud's own names (home, refresh, settings, ...) point at them; everything else is the gohud default set."
 fallback = ExtResource("fallback")
 textures = {
 &"back": ExtResource("back"),
@@ -59,6 +62,9 @@ textures = {
 &"close": ExtResource("close"),
 &"star": ExtResource("star"),
 &"target": ExtResource("target"),
+&"google": ExtResource("google"),
+&"apple": ExtResource("apple"),
+&"mail": ExtResource("mail"),
 &"home": ExtResource("exit"),
 &"refresh": ExtResource("retry"),
 &"forward": ExtResource("skip"),

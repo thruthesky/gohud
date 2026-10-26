@@ -150,6 +150,28 @@ func _buttons(theme: Theme) -> void:
 	_gloss(theme, &"GoInfoButton", "btn_blue.png")
 	_gloss(theme, &"GoDangerButton", "btn_red.png")
 	_gloss(theme, &"GoSuccessButton", "btn_green.png")
+	# 🔑 The sign-in keys (gohud's own): the blue pill repainted black (white outlined label, as every pill) and white
+	#    (an ink label, no outline). Neither sets an icon colour, so a glyph keeps its own colours (the Google G).
+	_gloss(theme, &"GoBlackButton", "btn_black.png")
+	for state: StringName in [&"normal", &"hover"]:
+		_sprite(theme, state, &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_sprite(theme, state, &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, PRESSED_TINT, [22.0, 5.0, 22.0, 4.0])
+	_sprite(theme, &"disabled", &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, DISABLED_TINT, [22.0, 3.0, 22.0, 6.0])
+	check(theme.get_stylebox(&"focus", &"GoWhiteButton") is StyleBoxEmpty, "GoWhiteButton/focus draws nothing")
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, &"GoWhiteButton").is_equal_approx(INK), "GoWhiteButton/%s is the ink" % slot)
+	check(theme.get_constant(&"outline_size", &"GoWhiteButton") == 0, "GoWhiteButton: no outline on the white key")
+	check(theme.get_font_size(&"font_size", &"GoWhiteButton") == 22, "GoWhiteButton: the pills' 22 px label")
+	for type: StringName in [&"GoWhiteButton", &"GoBlackButton"]:
+		check(not theme.has_color(&"icon_normal_color", type), "%s leaves the icon colour white (a glyph keeps its colours)" % type)
+		var face := theme.get_stylebox(&"normal", type).get(&"face_color") as Color
+		var text := theme.get_color(&"font_color", type)
+		var lum := func(c: Color) -> float: return 0.2126 * c.srgb_to_linear().r + 0.7152 * c.srgb_to_linear().g + 0.0722 * c.srgb_to_linear().b
+		var hi := maxf(lum.call(face), lum.call(text))
+		var lo := minf(lum.call(face), lum.call(text))
+		check((hi + 0.05) / (lo + 0.05) >= 4.5, "%s: its label reads on its face (contrast %.1f)" % [type, (hi + 0.05) / (lo + 0.05)])
 	# The toggle: the grey pill, blue while it is on.
 	_sprite(theme, &"normal", &"GoToggleButton", "btn_grey.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
 	_sprite(theme, &"pressed", &"GoToggleButton", "btn_blue.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
@@ -378,6 +400,7 @@ func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
 		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button", &"GoInfoButton": &"Button",
+		&"GoWhiteButton": &"Button", &"GoBlackButton": &"Button",
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
 		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label", &"GoRibbonWideTitle": &"Label",
@@ -494,7 +517,7 @@ func _item_sets(theme: Theme) -> void:
 			"font_pressed_color"], "constants": ["outline_size"], "font_sizes": ["font_size"]}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
-		&"GoInfoButton": gloss,
+		&"GoInfoButton": gloss, &"GoWhiteButton": gloss, &"GoBlackButton": gloss,
 		&"GoToggleButton": gloss,
 		&"GoKeycap": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color"],
