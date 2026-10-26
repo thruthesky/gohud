@@ -902,7 +902,100 @@ func _drawer() -> void:
 		"section(rtl): the skin's heading face is mirrored")
 	ltr_heading.free()
 	rtl_heading.free()
+	await _drawer_scroll_owner()
 	section("drawer")
+
+
+class _DrawerWorld extends Node:
+	var events := 0
+
+	func _unhandled_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton or event is InputEventGesture: events += 1
+
+
+func _drawer_wheel(point: Vector2) -> void:
+	for down in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.position = point
+		event.global_position = point
+		event.button_index = MOUSE_BUTTON_WHEEL_DOWN
+		event.factor = 3.0
+		event.pressed = down
+		root.push_input(event, true)
+
+
+func _drawer_gestures(point: Vector2) -> void:
+	var pan := InputEventPanGesture.new()
+	pan.position = point
+	pan.delta = Vector2(0, 30)
+	root.push_input(pan, true)
+	var magnify := InputEventMagnifyGesture.new()
+	magnify.position = point
+	magnify.factor = 1.1
+	root.push_input(magnify, true)
+
+
+func _drawer_scroll_owner() -> void:
+	var world := _DrawerWorld.new()
+	root.add_child(world)
+	var full := root.get_visible_rect()
+	check(not GoSurface.is_any_open(), "drawer: negative control starts without another open window")
+	_drawer_wheel(full.get_center())
+	_drawer_gestures(full.get_center())
+	check(world.events == 4, "drawer: negative control observes both wheel phases, pan and magnify")
+	var drawer := GoDrawer.new()
+	drawer.motion_seconds = 0.0
+	var nested := GoScroll.new()
+	nested.custom_minimum_size.y = 180.0
+	nested.size_flags_vertical = Control.SIZE_FILL
+	var rows := GoStyle.column()
+	nested.add_child(rows)
+	for index in 40: rows.add_child(GoStyle.label("Nested row %d" % index))
+	drawer.body.add_child(nested)
+	for index in 40: drawer.body.add_child(GoStyle.label("Drawer row %d" % index))
+	root.add_child(drawer)
+	drawer.open("Scroll owner")
+	await frames(4)
+	var outer := drawer._scroll
+	var nested_point := nested.get_global_rect().get_center()
+	check(outer.get_global_rect().encloses(nested.get_global_rect()), "drawer: nested scroll is inside its visible owner")
+	var outer_before := outer.scroll_vertical
+	_drawer_wheel(nested_point)
+	await frames(1)
+	check(nested.scroll_vertical > 0 and outer.scroll_vertical == outer_before,
+		"drawer: descendant scroll receives the wheel before the owning boundary")
+	var point := outer.get_global_rect().get_center()
+	check(outer.get_global_rect().has_point(point) and not nested.get_global_rect().has_point(point),
+		"drawer: body wheel point belongs to the outer scroll, outside its nested child")
+	_drawer_wheel(point)
+	await frames(1)
+	check(outer.scroll_vertical > outer_before, "drawer: its body still scrolls before residual input is retained")
+	outer.scroll_vertical = int(outer.get_v_scroll_bar().max_value)
+	await frames(2)
+	for at in [point, drawer.header.get_global_rect().get_center(), Vector2(full.end.x - 1.0, full.get_center().y)]:
+		_drawer_wheel(at)
+		_drawer_gestures(at)
+	check(world.events == 4, "drawer: body end, header and scrim retain residual wheels, pan and magnify")
+	drawer.dismissable = false
+	var outside := Vector2(full.end.x - 1.0, full.get_center().y)
+	_drawer_wheel(outside)
+	_drawer_gestures(outside)
+	for down in [true, false]:
+		var tap := InputEventMouseButton.new()
+		tap.position = outside
+		tap.global_position = outside
+		tap.button_index = MOUSE_BUTTON_LEFT
+		tap.pressed = down
+		root.push_input(tap, true)
+	check(drawer.is_open() and world.events == 4, "drawer: nondismissable scrim keeps ownership without closing")
+	drawer.close()
+	var before_closed := world.events
+	_drawer_wheel(point)
+	_drawer_gestures(point)
+	check(world.events == before_closed + 4, "drawer: closing releases wheel and gesture ownership")
+	drawer.queue_free()
+	world.queue_free()
+	await frames(1)
 
 
 # ── Menu tile ─────────────────────────────────────────────────────────

@@ -1329,7 +1329,9 @@ func _release_back() -> void:
 func _focus_default() -> void:
 	if not is_top(): return
 	var quiet := GoUi.config.suppress_pointer_focus_ring and _pointer_navigation
-	if is_instance_valid(initial_focus) and initial_focus.is_visible_in_tree():
+	if is_instance_valid(initial_focus) and initial_focus.is_visible_in_tree() \
+			and initial_focus.get_focus_mode_with_override() != Control.FOCUS_NONE \
+			and not (initial_focus is BaseButton and (initial_focus as BaseButton).disabled):
 		# 🔑 The default control still takes focus (Enter answers it, Tab moves on from it) — opened with a pointer it does
 		#    so **without its ring**, the same rule as below. 🛑 Before, `initial_focus` skipped that rule, so every
 		#    dialog (`GoDialogs` names its confirm button) opened by a click wore the ring on its confirm button.
@@ -1344,20 +1346,24 @@ func _focus_default() -> void:
 		return
 	# 🔑 Under arcade_light the close button is out of the focus order (`GoSkin.control_focus_mode`): grabbing it would
 	#    only fail with an engine warning and leave focus where it was.
-	if close_button.visible and not close_button.disabled and close_button.focus_mode != Control.FOCUS_NONE:
+	if close_button.is_visible_in_tree() and not close_button.disabled and close_button.focus_mode != Control.FOCUS_NONE:
 		close_button.grab_focus()
 		return
-	if is_instance_valid(close_key) and close_key.visible and not close_key.disabled \
+	if is_instance_valid(close_key) and close_key.is_visible_in_tree() and not close_key.disabled \
 			and close_key.focus_mode != Control.FOCUS_NONE:
 		close_key.grab_focus()
 		return
 	var target := find_next_valid_focus()
-	if target != null and is_ancestor_of(target):
-		target.grab_focus()
-		return
-	# Nothing inside can take focus — the screen behind lets go of it, or Enter presses the opener again behind the window.
-	var outside := get_viewport().gui_get_focus_owner()
-	if outside != null and not is_ancestor_of(outside): get_viewport().gui_release_focus()
+	var visited: Array[Control] = []
+	while target != null and is_ancestor_of(target) and not visited.has(target):
+		visited.append(target)
+		# Focus traversal can include disabled buttons; they cannot answer Enter.
+		if target.is_visible_in_tree() and not (target is BaseButton and (target as BaseButton).disabled):
+			target.grab_focus()
+			return
+		target = target.find_next_valid_focus()
+	# Nothing inside can answer: release the opener behind the window, or a body button that just became disabled.
+	if get_viewport().gui_get_focus_owner() != null: get_viewport().gui_release_focus()
 
 
 func _focus_changed(target: Control) -> void:

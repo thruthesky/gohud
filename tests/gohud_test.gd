@@ -2294,6 +2294,49 @@ func _anchor() -> void:
 	outside.queue_free()
 	await frames(2)
 
+	# Headerless surfaces (anchor dropdowns and map overlays) must skip the hidden header's close button.
+	# A locally visible child of a hidden header cannot take focus; Enter must reach the first body action.
+	var headerless_pointer_was := GoSurface._pointer_navigation
+	GoSurface._pointer_navigation = false   # this fallback belongs to keyboard navigation, independent of the host
+	var headerless := GoSurface.new()
+	headerless.show_header = false
+	var hidden_action := GoStyle.button("Hidden action")
+	hidden_action.hide()
+	headerless.body.add_child(hidden_action)
+	var disabled_action := GoStyle.button("Disabled action")
+	disabled_action.disabled = true
+	headerless.body.add_child(disabled_action)
+	headerless.initial_focus = disabled_action
+	var body_action := GoStyle.button("Body action")
+	headerless.body.add_child(body_action)
+	root.add_child(headerless)
+	await frames(3)
+	headerless._focus_default()
+	await frames(2)
+	check(not headerless.close_button.is_visible_in_tree() and root.gui_get_focus_owner() == body_action,
+		"headerless surface skips hidden close and disabled initial/body controls")
+	body_action.disabled = true
+	headerless._focus_default()
+	await frames(2)
+	check(root.gui_get_focus_owner() == null, "all-disabled headerless surface terminates without unusable focus")
+
+	# Opening by pointer must keep body fallback quiet when there is no usable explicit initial focus.
+	headerless.hide()
+	await frames(2)
+	var headerless_suppress_was := GoUi.config.suppress_pointer_focus_ring
+	GoUi.config.suppress_pointer_focus_ring = true
+	GoSurface._pointer_navigation = true
+	body_action.disabled = false
+	headerless.show()
+	await frames(3)
+	headerless._focus_default()
+	await frames(2)
+	check(root.gui_get_focus_owner() == null, "pointer-opened headerless surface does not auto-focus a body action")
+	headerless.queue_free()
+	await frames(2)
+	GoUi.config.suppress_pointer_focus_ring = headerless_suppress_was
+	GoSurface._pointer_navigation = headerless_pointer_was
+
 	# 🛑 **Under arcade_light the close button is out of the focus order** (FOCUS_NONE, as the game's). Grabbing it anyway
 	#    failed with an engine error and returned before anything else was tried — focus stayed on the opener behind the
 	#    window, and Enter pressed it again. Nothing focusable inside: the opener lets go. Something inside: it takes it.

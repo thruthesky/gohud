@@ -132,12 +132,16 @@ func _init() -> void:
 	_scrim.name = "Scrim"
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_scrim.mouse_filter = Control.MOUSE_FILTER_STOP
+	_scrim.mouse_force_pass_scroll_events = false
 	_scrim.gui_input.connect(_scrim_input)
+	_scrim.gui_input.connect(_consume_gesture.bind(_scrim))
 	_root.add_child(_scrim)
 
 	panel = PanelContainer.new()
 	panel.name = "Drawer"
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.mouse_force_pass_scroll_events = false
+	panel.gui_input.connect(_consume_gesture.bind(panel))
 	_root.add_child(panel)
 
 	var pad := GoStyle.padding()
@@ -434,6 +438,11 @@ func _animate(shown: bool) -> void:
 func _scrim_color(shown: bool) -> Color:
 	var base := GoUi.color(GoTheme.SCRIM)
 	return base if shown else Color(base, 0.0)
+
+
+## Descendants scroll first; only gestures left over at the drawer's boundary stop here, as on GoSurface.
+func _consume_gesture(event: InputEvent, boundary: Control) -> void:
+	if event is InputEventGesture: boundary.accept_event()
 
 
 func _scrim_input(event: InputEvent) -> void:
