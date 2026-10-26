@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **arcade_light sign-in keys and marks** — `GoWhiteButton` and `GoBlackButton`: the glossy pill repainted white (ink
+  label, no outline) and black (white outlined label) by `tools/paint_arcade_sign_in.gd` (`btn_white.png`,
+  `btn_black.png`). Icons `GoIconSet.GOOGLE` (`&"google"`, the multi-colour Google G, drawn in its own colours),
+  `GoIconSet.APPLE` (`&"apple"`, the Simple Icons Apple logo, CC0, white) and `GoIconSet.MAIL` (`&"mail"`, an envelope
+  painted in the glyph style) in arcade_light's icon set. `GoGlyphButton.make("Google", GoIconSet.GOOGLE, &"GoWhiteButton")`.
+
 - **`GoPage` sub-pages** — `push(title, build)` / `push_key(key, build)` open a level **inside the page** (its own
   title, the header's back button, a body that scrolls like a tab body, a pinned `sub_footer()`); `pop()` · `pop_to()` ·
   `depth()` · `sub_body()` · signal `depth_changed(depth)`. Escape, the Android back gesture and the back button pop one

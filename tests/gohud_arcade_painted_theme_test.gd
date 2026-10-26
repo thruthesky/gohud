@@ -70,6 +70,7 @@ func _initialize() -> void:
 		_tokens(light)
 		_item_sets(light)
 		_engine_bases(light)
+		await _scoreboard(light)
 		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
@@ -149,6 +150,28 @@ func _buttons(theme: Theme) -> void:
 	_gloss(theme, &"GoInfoButton", "btn_blue.png")
 	_gloss(theme, &"GoDangerButton", "btn_red.png")
 	_gloss(theme, &"GoSuccessButton", "btn_green.png")
+	# 🔑 The sign-in keys (gohud's own): the blue pill repainted black (white outlined label, as every pill) and white
+	#    (an ink label, no outline). Neither sets an icon colour, so a glyph keeps its own colours (the Google G).
+	_gloss(theme, &"GoBlackButton", "btn_black.png")
+	for state: StringName in [&"normal", &"hover"]:
+		_sprite(theme, state, &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
+	for state: StringName in [&"pressed", &"hover_pressed"]:
+		_sprite(theme, state, &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, PRESSED_TINT, [22.0, 5.0, 22.0, 4.0])
+	_sprite(theme, &"disabled", &"GoWhiteButton", "btn_white.png", GLOSS_EDGE, 3.0, DISABLED_TINT, [22.0, 3.0, 22.0, 6.0])
+	check(theme.get_stylebox(&"focus", &"GoWhiteButton") is StyleBoxEmpty, "GoWhiteButton/focus draws nothing")
+	for slot: StringName in [&"font_color", &"font_hover_color", &"font_pressed_color", &"font_hover_pressed_color",
+			&"font_focus_color"]:
+		check(theme.get_color(slot, &"GoWhiteButton").is_equal_approx(INK), "GoWhiteButton/%s is the ink" % slot)
+	check(theme.get_constant(&"outline_size", &"GoWhiteButton") == 0, "GoWhiteButton: no outline on the white key")
+	check(theme.get_font_size(&"font_size", &"GoWhiteButton") == 22, "GoWhiteButton: the pills' 22 px label")
+	for type: StringName in [&"GoWhiteButton", &"GoBlackButton"]:
+		check(not theme.has_color(&"icon_normal_color", type), "%s leaves the icon colour white (a glyph keeps its colours)" % type)
+		var face := theme.get_stylebox(&"normal", type).get(&"face_color") as Color
+		var text := theme.get_color(&"font_color", type)
+		var lum := func(c: Color) -> float: return 0.2126 * c.srgb_to_linear().r + 0.7152 * c.srgb_to_linear().g + 0.0722 * c.srgb_to_linear().b
+		var hi := maxf(lum.call(face), lum.call(text))
+		var lo := minf(lum.call(face), lum.call(text))
+		check((hi + 0.05) / (lo + 0.05) >= 4.5, "%s: its label reads on its face (contrast %.1f)" % [type, (hi + 0.05) / (lo + 0.05)])
 	# The toggle: the grey pill, blue while it is on.
 	_sprite(theme, &"normal", &"GoToggleButton", "btn_grey.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
 	_sprite(theme, &"pressed", &"GoToggleButton", "btn_blue.png", GLOSS_EDGE, 3.0, Color.WHITE, [22.0, 3.0, 22.0, 6.0])
@@ -272,10 +295,7 @@ func _game_parts(theme: Theme) -> void:
 		check(theme.get_color(slot, &"GoChipDark") == Color.WHITE, "GoChipDark/%s is white" % slot)
 	check(theme.get_font_size(&"font_size", &"GoChipDark") == CHIP_FONT, "GoChipDark: Cfg.Menu.CHIP_FONT (15)")
 	check(theme.get_constant(&"h_separation", &"GoChipDark") == 8, "GoChipDark: 8 px between glyph and word")
-	# 🏁 The round scoreboard (`ScoreRow`, `ScoreRowWin`, `ScoreHead`): flatter notice pills with no navy edge, the
-	#    winner's cream in gold, and a head row that draws nothing but keeps the rows' side margins.
-	_chunky(theme, &"panel", &"GoScoreRow", PANEL, 14, 12.0, 1.0, 3, 5, CONTROL_BLUE, false)
-	_chunky(theme, &"panel", &"GoScoreRowGold", Color("#fff3cf"), 14, 12.0, 1.0, 3, 5, GOLD, false)
+	# 🏁 The score rows are glossy arcade plates. A transparent header keeps their column margins.
 	var head := theme.get_stylebox(&"panel", &"GoScoreHead") if theme.has_stylebox(&"panel", &"GoScoreHead") else null
 	check(head is StyleBoxEmpty, "GoScoreHead/panel draws nothing (got %s)" % head)
 	if head != null:
@@ -380,6 +400,7 @@ func _variations(theme: Theme) -> void:
 	var bases := {
 		&"GoButton": &"Button", &"GoPrimaryButton": &"Button", &"GoDangerButton": &"Button",
 		&"GoSuccessButton": &"Button", &"GoToggleButton": &"Button", &"GoKeycap": &"Button", &"GoInfoButton": &"Button",
+		&"GoWhiteButton": &"Button", &"GoBlackButton": &"Button",
 		&"GoCard": &"PanelContainer", &"GoInsetPanel": &"PanelContainer", &"GoKeycapPanel": &"PanelContainer",
 		&"GoRibbon": &"PanelContainer", &"GoRibbonRed": &"PanelContainer", &"GoNotice": &"PanelContainer",
 		&"GoTitle": &"Label", &"GoOutlineLabel": &"Label", &"GoRibbonWideTitle": &"Label",
@@ -496,7 +517,7 @@ func _item_sets(theme: Theme) -> void:
 			"font_pressed_color"], "constants": ["outline_size"], "font_sizes": ["font_size"]}
 	var want := {
 		&"GoButton": gloss, &"GoPrimaryButton": gloss, &"GoDangerButton": gloss, &"GoSuccessButton": gloss,
-		&"GoInfoButton": gloss,
+		&"GoInfoButton": gloss, &"GoWhiteButton": gloss, &"GoBlackButton": gloss,
 		&"GoToggleButton": gloss,
 		&"GoKeycap": {"styles": ["focus", "hover", "hover_pressed", "normal", "pressed"],
 			"colors": ["font_color", "font_focus_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color"],
@@ -539,8 +560,7 @@ func _engine_bases(theme: Theme) -> void:
 	# The game's theme sets none of these, and it draws them all: its tooltips (8 `tooltip_text`), the boxes and grids
 	# that keep the engine's 4 px gap, and the scroll bars of the controls card and the room list.
 	for type: StringName in [&"Button", &"TooltipPanel", &"TooltipLabel", &"BoxContainer", &"HBoxContainer",
-			&"VBoxContainer", &"GridContainer", &"HFlowContainer", &"VFlowContainer", &"ScrollContainer",
-			&"HScrollBar", &"VScrollBar"]:
+			&"VBoxContainer", &"GridContainer", &"HFlowContainer", &"VFlowContainer", &"ScrollContainer"]:
 		var items: Array[String] = []
 		for kind: int in Theme.DATA_TYPE_MAX:
 			for item: StringName in theme.get_theme_item_list(kind, type): items.append(str(item))
@@ -554,6 +574,78 @@ func _engine_bases(theme: Theme) -> void:
 		"GoChipDark's outline falls through to the engine's (none), as the game's LangChip does")
 	chip.free()
 	check(not theme.has_constant(&"outline_size", &"Button"), "no base outline under the chip's label")
+
+
+## Real scroll containers inherit painted bars even when the caller never supplies a variation or an override.
+func _scoreboard(theme: Theme) -> void:
+	var normal_font := theme.default_font as FontVariation
+	for type: StringName in [&"GoScoreLabel", &"GoScoreHeadLabel", &"GoScoreTitleLabel", &"GoScoreOutlineLabel",
+			&"GoScoreButton", &"GoScorePrimaryButton", &"GoScoreTab", &"GoScoreTabSelected", &"GoScoreGoldButton"]:
+		var font := theme.get_font(&"font", type) as FontVariation
+		check(font != null and font.variation_embolden >= 1.0 and font.base_font == normal_font,
+			"%s: heavy lettering shares the multilingual body's locale order" % type)
+		if font != null:
+			for character: String in ["한", "日", "中"]:
+				check(font.has_char(character.unicode_at(0)), "%s: the heavy face can display %s" % [type, character])
+	check(normal_font.variation_embolden == 0.0, "the heavier scoreboard does not change ordinary UI font weight")
+	check(theme.get_color(&"font_color", &"GoScoreGoldButton").b < 0.3
+		and theme.get_color(&"font_outline_color", &"GoScoreGoldButton") == Color.WHITE,
+		"the gold leaderboard menu action uses navy letters with a white outline")
+	var skin := load("res://addons/gohud/themes/skins/gohud_skin_arcade_light.tres") as GoSkinArcadePainted
+	for name: StringName in [&"medal_gold", &"medal_silver", &"medal_bronze"]:
+		var art := skin.widget_art(name)
+		check(art != null and art.get_width() > 0 and art.get_height() > art.get_width(),
+			"%s: a numbered medal with room below for its ribbon tails" % name)
+	for type: StringName in [&"GoScoreRow", &"GoScoreRowGold", &"GoScoreRowOwn", &"GoScorePanel", &"GoStagePanel"]:
+		var face := theme.get_stylebox(&"panel", type) as GoStyleBoxArcade
+		check(face != null and face.shine > 0.0 and face.bg_color != face.bottom_color,
+			"%s: glossy gradient instead of a flat engine panel" % type)
+		if face != null:
+			check(face.bg_color.a == 1.0 and face.bottom_color.a == 1.0, "%s: opaque readable face" % type)
+	var gold := theme.get_stylebox(&"panel", &"GoScoreRowGold") as GoStyleBoxArcade
+	check(gold != null and gold.bottom_color.r > 0.95 and gold.bottom_color.b < 0.3,
+		"first place has a gold fill as well as a gold rim")
+	var ribbon := theme.get_stylebox(&"panel", &"GoScoreRibbon") as GoStyleBoxArcade
+	check(ribbon != null and ribbon.radius == 36.0 and ribbon.shine > 0.9,
+		"the scoreboard title is a rounded glossy gold capsule")
+	check(ribbon != null and ribbon.bg_color.g > 0.9 and ribbon.bottom_color.g <= 0.5
+		and ribbon.bottom_color.b < 0.05,
+		"the rounded title keeps a distinct glossy gold-to-orange gradient")
+	var own := theme.get_stylebox(&"panel", &"GoScoreRowOwn") as GoStyleBoxArcade
+	check(own != null and own.border_color.is_equal_approx(CONTROL_BLUE) and own.border_width == 3.0,
+		"the player's row has a stronger blue rim")
+	var badge := theme.get_stylebox(&"panel", &"GoHardBadge")
+	check(_is_sprite(badge) and badge.get_minimum_size().y <= 26.0,
+		"the noninteractive red badge fits a compact 26dp status line")
+	var arrow := theme.get_stylebox(&"normal", &"GoArrowButton") as GoStyleBoxArcade
+	check(arrow != null and arrow.radius == 12.0 and arrow.get_minimum_size().x < 20.0,
+		"the navigation key fits a compact square without wide pill padding")
+	var gold_button := theme.get_stylebox(&"normal", &"GoGoldButton") as GoStyleBoxArcade
+	check(gold_button != null and gold_button.bottom_color.r > 0.95 and gold_button.bottom_color.b < 0.1,
+		"the gold menu action matches the gold award and title")
+	for horizontal: bool in [false, true]:
+		var scroll := ScrollContainer.new()
+		scroll.theme = theme
+		scroll.custom_minimum_size = Vector2(180, 100)
+		var content := Control.new()
+		content.custom_minimum_size = Vector2(800, 40) if horizontal else Vector2(40, 800)
+		scroll.add_child(content)
+		root.add_child(scroll)
+		await process_frame
+		await process_frame
+		var bar := scroll.get_h_scroll_bar() if horizontal else scroll.get_v_scroll_bar()
+		check(bar.visible, "the overflowing %s list has a visible scrollbar" % ("horizontal" if horizontal else "vertical"))
+		for state: StringName in [&"scroll", &"scroll_focus", &"grabber", &"grabber_highlight", &"grabber_pressed"]:
+			check(bar.get_theme_stylebox(state) is GoStyleBoxArcade,
+				"%s/%s inherits arcade chrome with no engine fallback" % [bar.get_class(), state])
+		for state: StringName in [&"increment", &"decrement", &"increment_highlight", &"decrement_highlight",
+				&"increment_pressed", &"decrement_pressed"]:
+			check(bar.get_theme_icon(state) != null and bar.get_theme_icon(state).get_width() == 18,
+				"%s/%s has a compact painted arrow cap" % [bar.get_class(), state])
+		check(bar.get_combined_minimum_size().y >= 18.0 if horizontal else bar.get_combined_minimum_size().x >= 18.0,
+			"the blue scrollbar has a visible 18dp thickness")
+		scroll.queue_free()
+		await process_frame
 
 
 func _icon(theme: Theme, name: StringName, type: StringName, file: String, size: Vector2, tint: Color) -> void:

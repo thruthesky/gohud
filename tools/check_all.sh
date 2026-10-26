@@ -155,6 +155,9 @@ python3 "$ADDON/tools/make_game_icons.py" --check || FAILED=1
 step "④-a2 do the 1,000 icon library files match their table (no name repeats another set's)?"
 python3 "$ADDON/tools/make_icon_library.py" --check || FAILED=1
 
+step "④-a3 do the arcade award medals match their vector source?"
+python3 "$ADDON/tools/make_score_medals.py" --check || FAILED=1
+
 step "④-c theme scaffolding"
 # 🛑 The promise of "more themes to come" — does one file produce a theme that passes the contrast check? It is fast, so always run it.
 bash "$ADDON/tools/check_scaffold.sh" || FAILED=1

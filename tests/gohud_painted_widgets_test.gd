@@ -429,6 +429,12 @@ func _glyph_button(look: StringName) -> void:
 	check(face is GoGlyphButton.ShiftedBox, "%s glyph: the faces shift the label right" % look)
 	var rect := button.glyph_rect()
 	check(is_equal_approx(rect.size.y, 60.0 * 0.62), "%s glyph: the glyph is 0.62 × the height" % look)
+	check(not button.glyph_flip_h and button.glyph_draw_rect() == rect, "%s glyph: art is upright by default" % look)
+	button.glyph_flip_h = true
+	var mirrored := button.glyph_draw_rect()
+	check(is_equal_approx(mirrored.position.x, rect.end.x) and is_equal_approx(mirrored.end.x, rect.position.x) and mirrored.size.y == rect.size.y
+		and button.glyph_rect() == rect, "%s glyph: mirrored art occupies the same layout rectangle" % look)
+	button.glyph_flip_h = false
 	var font := button.get_theme_font(&"font")
 	var text_w := font.get_string_size("PLAY", HORIZONTAL_ALIGNMENT_LEFT, -1, button.get_theme_font_size(&"font_size")).x
 	var group_left := rect.position.x

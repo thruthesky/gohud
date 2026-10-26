@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=163 format=3]
+[gd_resource type="Theme" load_steps=203 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -8,10 +8,12 @@
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansJP-Bold.ttf" id="font_noto_jp"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansSC-Bold.ttf" id="font_noto_sc"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansTC-Bold.ttf" id="font_noto_tc"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_black.png" id="painted_btn_black"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_blue.png" id="painted_btn_blue"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_green.png" id="painted_btn_green"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_grey.png" id="painted_btn_grey"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_red.png" id="painted_btn_red"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/btn_white.png" id="painted_btn_white"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/card.png" id="painted_card"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/inset.png" id="painted_inset"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/keycap.png" id="painted_keycap"]
@@ -24,6 +26,10 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_track.png" id="painted_slider_track"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_off.png" id="painted_toggle_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_on.png" id="painted_toggle_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_down.svg" id="score_scroll_down"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_left.svg" id="score_scroll_left"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_right.svg" id="score_scroll_right"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_up.svg" id="score_scroll_up"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_cleared.png" id="stage_card_cleared"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_current.png" id="stage_card_current"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/card_locked.png" id="stage_card_locked"]
@@ -955,6 +961,76 @@ pixels_per_unit = 3.0
 tint = Color(0.6, 0.6, 0.66, 0.85)
 face_color = Color(0.345883, 0.348235, 0.491765, 0.85)
 
+[sub_resource type="StyleBox" id="painted_GoWhiteButton_normal"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+texture = ExtResource("painted_btn_white")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+face_color = Color(0.921569, 0.933333, 0.964706, 1)
+
+[sub_resource type="StyleBox" id="painted_GoWhiteButton_pressed"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 5
+content_margin_right = 22
+content_margin_bottom = 4
+texture = ExtResource("painted_btn_white")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.8, 0.8, 0.86, 1)
+face_color = Color(0.737255, 0.746666, 0.829647, 1)
+
+[sub_resource type="StyleBox" id="painted_GoWhiteButton_disabled"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+texture = ExtResource("painted_btn_white")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.6, 0.6, 0.66, 0.85)
+face_color = Color(0.552941, 0.56, 0.636706, 0.85)
+
+[sub_resource type="StyleBox" id="painted_GoBlackButton_normal"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+texture = ExtResource("painted_btn_black")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+face_color = Color(0.141176, 0.14902, 0.176471, 1)
+
+[sub_resource type="StyleBox" id="painted_GoBlackButton_pressed"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 5
+content_margin_right = 22
+content_margin_bottom = 4
+texture = ExtResource("painted_btn_black")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.8, 0.8, 0.86, 1)
+face_color = Color(0.112941, 0.119216, 0.151765, 1)
+
+[sub_resource type="StyleBox" id="painted_GoBlackButton_disabled"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+texture = ExtResource("painted_btn_black")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 3.0
+tint = Color(0.6, 0.6, 0.66, 0.85)
+face_color = Color(0.084706, 0.089412, 0.116471, 0.85)
+
 [sub_resource type="StyleBox" id="painted_GoToggleButton_on"]
 script = ExtResource("sprite")
 content_margin_left = 22
@@ -1082,41 +1158,268 @@ shadow_color = Color(0.113725, 0.137255, 0.25098, 1)
 shadow_size = 3
 shadow_offset = Vector2(0, 2)
 
-[sub_resource type="StyleBoxFlat" id="painted_GoScoreRow"]
+[sub_resource type="StyleBox" id="painted_GoScoreRow"]
+script = ExtResource("arcade")
 content_margin_left = 12
 content_margin_top = 4
 content_margin_right = 12
 content_margin_bottom = 6
-bg_color = Color(1, 1, 1, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
-border_color = Color(0.239216, 0.419608, 1, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+bg_color = Color(0.91, 0.975, 1, 1)
+bottom_color = Color(0.7, 0.865, 0.97, 1)
+border_color = Color(0.22, 0.7, 1, 1)
+border_width = 2
+radius = 12
+lip = 0
+shine = 0.7
+band = 0
 
-[sub_resource type="StyleBoxFlat" id="painted_GoScoreRowGold"]
+[sub_resource type="StyleBox" id="painted_GoScoreRowGold"]
+script = ExtResource("arcade")
 content_margin_left = 12
 content_margin_top = 4
 content_margin_right = 12
 content_margin_bottom = 6
-bg_color = Color(1, 0.952941, 0.811765, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
+bg_color = Color(1, 0.96, 0.63, 1)
+bottom_color = Color(1, 0.81, 0.22, 1)
 border_color = Color(1, 0.788235, 0.156863, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+border_width = 2
+radius = 12
+lip = 0
+shine = 0.7
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreRowOwn"]
+script = ExtResource("arcade")
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 6
+bg_color = Color(0.91, 0.975, 1, 1)
+bottom_color = Color(0.7, 0.865, 0.97, 1)
+border_color = Color(0.239216, 0.419608, 1, 1)
+border_width = 3
+radius = 12
+lip = 0
+shine = 0.7
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScorePanel"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 5
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.86, 0.95, 1, 1)
+bottom_color = Color(0.78, 0.91, 0.99, 1)
+border_color = Color(0.22, 0.7, 1, 1)
+border_width = 2
+radius = 12
+lip = 0
+shine = 0.25
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoStagePanel"]
+script = ExtResource("arcade")
+content_margin_left = 12
+content_margin_top = 3
+content_margin_right = 12
+content_margin_bottom = 3
+bg_color = Color(0.91, 0.975, 1, 1)
+bottom_color = Color(0.7, 0.865, 0.97, 1)
+border_color = Color(0.239216, 0.419608, 1, 1)
+border_width = 2
+radius = 14
+lip = 0
+shine = 0.8
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreRibbon"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 6
+content_margin_right = 22
+content_margin_bottom = 12
+bg_color = Color(1, 0.94, 0.3, 1)
+bottom_color = Color(1, 0.5, 0.015, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 4
+radius = 36
+lip = 3
+shine = 0.95
+band = 0
 
 [sub_resource type="StyleBoxEmpty" id="painted_GoScoreHead"]
 content_margin_left = 12
 content_margin_right = 12
+
+[sub_resource type="StyleBox" id="painted_GoHardBadge"]
+script = ExtResource("sprite")
+content_margin_left = 10
+content_margin_top = 2
+content_margin_right = 10
+content_margin_bottom = 3
+texture = ExtResource("painted_btn_red")
+edge = Vector4(100, 65, 100, 66)
+pixels_per_unit = 6.0
+face_color = Color(0.964706, 0.231373, 0.219608, 1)
+
+[sub_resource type="StyleBox" id="painted_GoArrowButton_normal"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 3
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.25, 0.65, 1, 1)
+bottom_color = Color(0.02, 0.22, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 12
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoArrowButton_hover"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 3
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.25, 0.65, 1, 1)
+bottom_color = Color(0.02, 0.22, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 12
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoArrowButton_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 3
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.25, 0.65, 1, 1)
+bottom_color = Color(0.02, 0.22, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 12
+lip = 3
+shine = 0.9
+band = 0
+pressed = true
+
+[sub_resource type="StyleBox" id="painted_GoArrowButton_hover_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 3
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.25, 0.65, 1, 1)
+bottom_color = Color(0.02, 0.22, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 12
+lip = 3
+shine = 0.9
+band = 0
+pressed = true
+
+[sub_resource type="StyleBox" id="painted_GoArrowButton_disabled"]
+script = ExtResource("arcade")
+content_margin_left = 6
+content_margin_top = 3
+content_margin_right = 6
+content_margin_bottom = 5
+bg_color = Color(0.15, 0.39, 0.66, 0.85)
+bottom_color = Color(0.012, 0.132, 0.6468, 0.85)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 12
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoGoldButton_normal"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+bg_color = Color(1, 0.94, 0.38, 1)
+bottom_color = Color(1, 0.72, 0.04, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 24
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoGoldButton_hover"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+bg_color = Color(1, 0.94, 0.38, 1)
+bottom_color = Color(1, 0.72, 0.04, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 24
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoGoldButton_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+bg_color = Color(1, 0.94, 0.38, 1)
+bottom_color = Color(1, 0.72, 0.04, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 24
+lip = 3
+shine = 0.9
+band = 0
+pressed = true
+
+[sub_resource type="StyleBox" id="painted_GoGoldButton_hover_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+bg_color = Color(1, 0.94, 0.38, 1)
+bottom_color = Color(1, 0.72, 0.04, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 24
+lip = 3
+shine = 0.9
+band = 0
+pressed = true
+
+[sub_resource type="StyleBox" id="painted_GoGoldButton_disabled"]
+script = ExtResource("arcade")
+content_margin_left = 22
+content_margin_top = 3
+content_margin_right = 22
+content_margin_bottom = 6
+bg_color = Color(0.6, 0.564, 0.2508, 0.85)
+bottom_color = Color(0.6, 0.432, 0.0264, 0.85)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 3
+radius = 24
+lip = 3
+shine = 0.9
+band = 0
+
+[sub_resource type="FontVariation" id="painted_score_font"]
+base_font = SubResource("painted_font")
+variation_embolden = 1.2
 
 [sub_resource type="StyleBoxFlat" id="painted_GoTile"]
 content_margin_left = 0
@@ -1717,6 +2020,146 @@ texture = ExtResource("painted_toggle_off")
 draw_size = Vector2(76, 29)
 tint = Color(0.6, 0.6, 0.66, 0.85)
 
+[sub_resource type="StyleBox" id="painted_HScrollBar_track"]
+script = ExtResource("arcade")
+content_margin_left = 0
+content_margin_top = 9
+content_margin_right = 0
+content_margin_bottom = 9
+bg_color = Color(0.91, 0.975, 1, 1)
+bottom_color = Color(0.7, 0.865, 0.97, 1)
+border_color = Color(0.22, 0.7, 1, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.3
+band = 0
+
+[sub_resource type="StyleBox" id="painted_HScrollBar_grabber"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.18, 0.6, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_HScrollBar_grabber_highlight"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.35, 0.72, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_HScrollBar_grabber_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.35, 0.72, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="Texture2D" id="painted_HScrollBar_decrement"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_left")
+draw_size = Vector2(18, 18)
+
+[sub_resource type="Texture2D" id="painted_HScrollBar_increment"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_right")
+draw_size = Vector2(18, 18)
+
+[sub_resource type="StyleBox" id="painted_VScrollBar_track"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 0
+content_margin_right = 9
+content_margin_bottom = 0
+bg_color = Color(0.91, 0.975, 1, 1)
+bottom_color = Color(0.7, 0.865, 0.97, 1)
+border_color = Color(0.22, 0.7, 1, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.3
+band = 0
+
+[sub_resource type="StyleBox" id="painted_VScrollBar_grabber"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.18, 0.6, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_VScrollBar_grabber_highlight"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.35, 0.72, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="StyleBox" id="painted_VScrollBar_grabber_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 9
+content_margin_top = 9
+content_margin_right = 9
+content_margin_bottom = 9
+bg_color = Color(0.35, 0.72, 1, 1)
+bottom_color = Color(0.02, 0.25, 0.98, 1)
+border_color = Color(0.113725, 0.137255, 0.25098, 1)
+border_width = 2
+radius = 8
+lip = 0
+shine = 0.9
+band = 0
+
+[sub_resource type="Texture2D" id="painted_VScrollBar_decrement"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_up")
+draw_size = Vector2(18, 18)
+
+[sub_resource type="Texture2D" id="painted_VScrollBar_increment"]
+script = ExtResource("sprite_icon")
+texture = ExtResource("score_scroll_down")
+draw_size = Vector2(18, 18)
+
 [resource]
 CheckBox/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
 CheckBox/colors/font_disabled_color = Color(0.171943, 0.187373, 0.264527, 1)
@@ -1791,6 +2234,21 @@ FoldableContainer/styles/title_collapsed_hover_panel = SubResource("fold_title_c
 FoldableContainer/styles/title_collapsed_panel = SubResource("fold_title_collapsed")
 FoldableContainer/styles/title_hover_panel = SubResource("fold_title_hover")
 FoldableContainer/styles/title_panel = SubResource("fold_title")
+GoArrowButton/base_type = &"Button"
+GoArrowButton/colors/font_color = Color(1, 1, 1, 1)
+GoArrowButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoArrowButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoArrowButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoArrowButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoArrowButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoArrowButton/constants/outline_size = 4
+GoArrowButton/font_sizes/font_size = 22
+GoArrowButton/styles/disabled = SubResource("painted_GoArrowButton_disabled")
+GoArrowButton/styles/focus = SubResource("painted_empty")
+GoArrowButton/styles/hover = SubResource("painted_GoArrowButton_hover")
+GoArrowButton/styles/hover_pressed = SubResource("painted_GoArrowButton_hover_pressed")
+GoArrowButton/styles/normal = SubResource("painted_GoArrowButton_normal")
+GoArrowButton/styles/pressed = SubResource("painted_GoArrowButton_pressed")
 GoBannerGold/base_type = &"PanelContainer"
 GoBannerGold/styles/panel = SubResource("painted_GoBannerGold")
 GoBarLabel/base_type = &"Label"
@@ -1843,6 +2301,23 @@ GoBigSecondaryButton/styles/hover = SubResource("painted_GoBigSecondaryButton_ho
 GoBigSecondaryButton/styles/hover_pressed = SubResource("painted_GoBigSecondaryButton_pressed")
 GoBigSecondaryButton/styles/normal = SubResource("painted_GoBigSecondaryButton_normal")
 GoBigSecondaryButton/styles/pressed = SubResource("painted_GoBigSecondaryButton_pressed")
+GoBlackButton/base_type = &"Button"
+GoBlackButton/colors/font_color = Color(1, 1, 1, 1)
+GoBlackButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
+GoBlackButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoBlackButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoBlackButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoBlackButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoBlackButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoBlackButton/constants/h_separation = 10
+GoBlackButton/constants/outline_size = 4
+GoBlackButton/font_sizes/font_size = 22
+GoBlackButton/styles/disabled = SubResource("painted_GoBlackButton_disabled")
+GoBlackButton/styles/focus = SubResource("painted_empty")
+GoBlackButton/styles/hover = SubResource("painted_GoBlackButton_normal")
+GoBlackButton/styles/hover_pressed = SubResource("painted_GoBlackButton_pressed")
+GoBlackButton/styles/normal = SubResource("painted_GoBlackButton_normal")
+GoBlackButton/styles/pressed = SubResource("painted_GoBlackButton_pressed")
 GoButton/base_type = &"Button"
 GoButton/colors/font_color = Color(1, 1, 1, 1)
 GoButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
@@ -1960,6 +2435,24 @@ GoDangerSolidGlowButton/styles/hover = SubResource("btn_danger_solid_glow_hover"
 GoDangerSolidGlowButton/styles/hover_pressed = SubResource("btn_danger_solid_glow_pressed")
 GoDangerSolidGlowButton/styles/normal = SubResource("btn_danger_solid_glow")
 GoDangerSolidGlowButton/styles/pressed = SubResource("btn_danger_solid_glow_pressed")
+GoGoldButton/base_type = &"Button"
+GoGoldButton/colors/font_color = Color(1, 1, 1, 1)
+GoGoldButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoGoldButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoGoldButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoGoldButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoGoldButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoGoldButton/constants/h_separation = 10
+GoGoldButton/constants/outline_size = 4
+GoGoldButton/font_sizes/font_size = 22
+GoGoldButton/styles/disabled = SubResource("painted_GoGoldButton_disabled")
+GoGoldButton/styles/focus = SubResource("painted_empty")
+GoGoldButton/styles/hover = SubResource("painted_GoGoldButton_hover")
+GoGoldButton/styles/hover_pressed = SubResource("painted_GoGoldButton_hover_pressed")
+GoGoldButton/styles/normal = SubResource("painted_GoGoldButton_normal")
+GoGoldButton/styles/pressed = SubResource("painted_GoGoldButton_pressed")
+GoHardBadge/base_type = &"PanelContainer"
+GoHardBadge/styles/panel = SubResource("painted_GoHardBadge")
 GoHud/colors/accent = Color(0.103552, 0.264971, 0.639586, 1)
 GoHud/colors/accent_fill = Color(0.239216, 0.419608, 1, 1)
 GoHud/colors/accent_vivid = Color(0.239216, 0.419608, 1, 1)
@@ -2177,12 +2670,92 @@ GoRibbonWideTitle/colors/font_color = Color(1, 1, 1, 1)
 GoRibbonWideTitle/constants/line_spacing = -6
 GoRibbonWideTitle/constants/outline_size = 8
 GoRibbonWideTitle/font_sizes/font_size = 54
+GoScoreButton/base_type = &"GoInfoButton"
+GoScoreButton/colors/font_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreButton/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreButton/constants/outline_size = 6
+GoScoreButton/font_sizes/font_size = 24
+GoScoreButton/fonts/font = SubResource("painted_score_font")
+GoScoreGoldButton/base_type = &"GoGoldButton"
+GoScoreGoldButton/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/colors/font_focus_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/colors/font_hover_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/colors/font_hover_pressed_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/colors/font_outline_color = Color(1, 1, 1, 1)
+GoScoreGoldButton/colors/font_pressed_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreGoldButton/constants/outline_size = 6
+GoScoreGoldButton/font_sizes/font_size = 24
+GoScoreGoldButton/fonts/font = SubResource("painted_score_font")
 GoScoreHead/base_type = &"PanelContainer"
 GoScoreHead/styles/panel = SubResource("painted_GoScoreHead")
+GoScoreHeadLabel/base_type = &"Label"
+GoScoreHeadLabel/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreHeadLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreHeadLabel/constants/outline_size = 0
+GoScoreHeadLabel/font_sizes/font_size = 22
+GoScoreHeadLabel/fonts/font = SubResource("painted_score_font")
+GoScoreLabel/base_type = &"Label"
+GoScoreLabel/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreLabel/constants/outline_size = 0
+GoScoreLabel/font_sizes/font_size = 26
+GoScoreLabel/fonts/font = SubResource("painted_score_font")
+GoScoreOutlineLabel/base_type = &"Label"
+GoScoreOutlineLabel/colors/font_color = Color(1, 1, 1, 1)
+GoScoreOutlineLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreOutlineLabel/constants/outline_size = 4
+GoScoreOutlineLabel/font_sizes/font_size = 15
+GoScoreOutlineLabel/fonts/font = SubResource("painted_score_font")
+GoScorePanel/base_type = &"PanelContainer"
+GoScorePanel/styles/panel = SubResource("painted_GoScorePanel")
+GoScorePrimaryButton/base_type = &"GoPrimaryButton"
+GoScorePrimaryButton/colors/font_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScorePrimaryButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScorePrimaryButton/constants/outline_size = 6
+GoScorePrimaryButton/font_sizes/font_size = 24
+GoScorePrimaryButton/fonts/font = SubResource("painted_score_font")
+GoScoreRibbon/base_type = &"PanelContainer"
+GoScoreRibbon/styles/panel = SubResource("painted_GoScoreRibbon")
 GoScoreRow/base_type = &"PanelContainer"
 GoScoreRow/styles/panel = SubResource("painted_GoScoreRow")
 GoScoreRowGold/base_type = &"PanelContainer"
 GoScoreRowGold/styles/panel = SubResource("painted_GoScoreRowGold")
+GoScoreRowOwn/base_type = &"PanelContainer"
+GoScoreRowOwn/styles/panel = SubResource("painted_GoScoreRowOwn")
+GoScoreTab/base_type = &"GoButton"
+GoScoreTab/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreTab/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTab/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreTab/constants/outline_size = 4
+GoScoreTab/font_sizes/font_size = 18
+GoScoreTab/fonts/font = SubResource("painted_score_font")
+GoScoreTabSelected/base_type = &"GoInfoButton"
+GoScoreTabSelected/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_focus_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_hover_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTabSelected/colors/font_pressed_color = Color(1, 1, 1, 1)
+GoScoreTabSelected/constants/outline_size = 4
+GoScoreTabSelected/font_sizes/font_size = 18
+GoScoreTabSelected/fonts/font = SubResource("painted_score_font")
+GoScoreTitleLabel/base_type = &"Label"
+GoScoreTitleLabel/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTitleLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreTitleLabel/constants/outline_size = 6
+GoScoreTitleLabel/font_sizes/font_size = 42
+GoScoreTitleLabel/fonts/font = SubResource("painted_score_font")
 GoSliderCyan/base_type = &"HSlider"
 GoSliderCyan/styles/grabber_area = SubResource("painted_GoSliderCyan_fill")
 GoSliderCyan/styles/grabber_area_highlight = SubResource("painted_GoSliderCyan_fill")
@@ -2192,6 +2765,8 @@ GoSliderGreen/styles/grabber_area_highlight = SubResource("painted_GoSliderGreen
 GoSmallLabel/base_type = &"Label"
 GoSmallLabel/colors/font_color = Color(0.113725, 0.137255, 0.25098, 0.75)
 GoSmallLabel/font_sizes/font_size = 12
+GoStagePanel/base_type = &"PanelContainer"
+GoStagePanel/styles/panel = SubResource("painted_GoStagePanel")
 GoSubtitleLabel/base_type = &"Label"
 GoSubtitleLabel/font_sizes/font_size = 22
 GoSuccessButton/base_type = &"Button"
@@ -2241,8 +2816,36 @@ GoToggleButton/styles/normal = SubResource("painted_GoToggleButton_normal")
 GoToggleButton/styles/pressed = SubResource("painted_GoToggleButton_on")
 GoWell/base_type = &"PanelContainer"
 GoWell/styles/panel = SubResource("painted_GoWell")
+GoWhiteButton/base_type = &"Button"
+GoWhiteButton/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/colors/font_disabled_color = Color(0.113725, 0.137255, 0.25098, 0.75)
+GoWhiteButton/colors/font_focus_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/colors/font_hover_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/colors/font_hover_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/colors/font_pressed_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWhiteButton/constants/h_separation = 10
+GoWhiteButton/constants/outline_size = 0
+GoWhiteButton/font_sizes/font_size = 22
+GoWhiteButton/styles/disabled = SubResource("painted_GoWhiteButton_disabled")
+GoWhiteButton/styles/focus = SubResource("painted_empty")
+GoWhiteButton/styles/hover = SubResource("painted_GoWhiteButton_normal")
+GoWhiteButton/styles/hover_pressed = SubResource("painted_GoWhiteButton_pressed")
+GoWhiteButton/styles/normal = SubResource("painted_GoWhiteButton_normal")
+GoWhiteButton/styles/pressed = SubResource("painted_GoWhiteButton_pressed")
 GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
+HScrollBar/icons/decrement = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/decrement_highlight = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/decrement_pressed = SubResource("painted_HScrollBar_decrement")
+HScrollBar/icons/increment = SubResource("painted_HScrollBar_increment")
+HScrollBar/icons/increment_highlight = SubResource("painted_HScrollBar_increment")
+HScrollBar/icons/increment_pressed = SubResource("painted_HScrollBar_increment")
+HScrollBar/styles/grabber = SubResource("painted_HScrollBar_grabber")
+HScrollBar/styles/grabber_highlight = SubResource("painted_HScrollBar_grabber_highlight")
+HScrollBar/styles/grabber_pressed = SubResource("painted_HScrollBar_grabber_pressed")
+HScrollBar/styles/scroll = SubResource("painted_HScrollBar_track")
+HScrollBar/styles/scroll_focus = SubResource("painted_HScrollBar_track")
 HSeparator/styles/separator = SubResource("separator")
 HSlider/icons/grabber = SubResource("painted_slider_handle")
 HSlider/icons/grabber_disabled = SubResource("painted_slider_handle_disabled")
@@ -2357,6 +2960,17 @@ TextEdit/colors/selection_color = Color(0.103552, 0.264971, 0.639586, 0.35)
 TextEdit/styles/focus = SubResource("painted_field_focus")
 TextEdit/styles/normal = SubResource("painted_field")
 TextEdit/styles/read_only = SubResource("painted_field_read_only")
+VScrollBar/icons/decrement = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/decrement_highlight = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/decrement_pressed = SubResource("painted_VScrollBar_decrement")
+VScrollBar/icons/increment = SubResource("painted_VScrollBar_increment")
+VScrollBar/icons/increment_highlight = SubResource("painted_VScrollBar_increment")
+VScrollBar/icons/increment_pressed = SubResource("painted_VScrollBar_increment")
+VScrollBar/styles/grabber = SubResource("painted_VScrollBar_grabber")
+VScrollBar/styles/grabber_highlight = SubResource("painted_VScrollBar_grabber_highlight")
+VScrollBar/styles/grabber_pressed = SubResource("painted_VScrollBar_grabber_pressed")
+VScrollBar/styles/scroll = SubResource("painted_VScrollBar_track")
+VScrollBar/styles/scroll_focus = SubResource("painted_VScrollBar_track")
 VSeparator/styles/separator = SubResource("separator")
 VSlider/icons/grabber = ExtResource("grabber")
 VSlider/icons/grabber_disabled = ExtResource("grabber_disabled")

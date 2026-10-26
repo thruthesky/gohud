@@ -422,7 +422,7 @@ icons.canonical(&"gear")             # &"settings"
 `GoPrimaryGlowButton`, `GoDangerSolidGlowButton`, `GoBareButton`, `GoCompactButton`, `GoIconButton`, `GoListButton`,
 `GoTitleLabel`, `GoSubtitleLabel`, `GoCaptionLabel`, `GoCompactLabel`, `GoMicroLabel`.
 
-`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoSliderGreen` · `GoSliderCyan`
+`arcade_light` 는 Magnet Mayhem 의 페인티드 변형을 더 싣는다: `GoSuccessButton`, `GoInfoButton`(파란 알약), `GoWhiteButton` · `GoBlackButton`(흰 알약에 잉크 글자, 검은 알약에 흰 글자 — 구글·애플 로그인 키. 아이콘 색을 정하지 않아 `GoIconSet.GOOGLE` 은 제 색, 흰 `GoIconSet.APPLE` 은 검은 키 위에 그대로 보인다), `GoSliderGreen` · `GoSliderCyan`
 (초록·청록 채움의 슬라이더), `GoWindowBlue` · `GoRibbonWide` · `GoRibbonWideTitle`(스테이지 선택 창, 넓은 리본과 그 제목), `GoLevelCard` ·
 `GoLevelCardCurrent` · `GoLevelCardLocked`(세 상태의 레벨 카드), `GoWell`(맵 미리보기 우물), `GoHudPanel`(떠 있는 HUD
 판), `GoBannerGold` · `GoNoticeGold`(금색 HUD 배너와 알림 알약), `GoChipDark`(어두운 언어 칩), `GoIconOnly`(아이콘만

@@ -488,8 +488,13 @@ func title_plate_min_size() -> int:
 
 ## …with the ribbon header's ink outline.
 func dress_title(label: Label) -> void:
-	label.add_theme_color_override(&"font_outline_color", INK)
-	label.add_theme_constant_override(&"outline_size", RIBBON_TITLE_OUTLINE)
+	var variation := label.theme_type_variation
+	var look := GoUi.theme()
+	# A caller can select a typography variation while keeping the look's title plate and fit behavior.
+	var ink := look.get_color(&"font_outline_color", variation) if look.has_color(&"font_outline_color", variation) else INK
+	var outline := look.get_constant(&"outline_size", variation) if look.has_constant(&"outline_size", variation) else RIBBON_TITLE_OUTLINE
+	label.add_theme_color_override(&"font_outline_color", ink)
+	label.add_theme_constant_override(&"outline_size", outline)
 
 
 ## A scrim is the game's frosted backdrop while `arcade_scrim_blur` is above 0 (it sets the mip level read; 3 is the
@@ -519,8 +524,10 @@ const STAGE_ART := ART_ROOT + "stage/"
 ## (btn_attract, btn_repulse, btn_jump, stick_base, stick_knob) — the game's `assets/ui/hud` and `assets/ui/touch`.
 const HUD_ART := ART_ROOT + "hud/"
 const TOUCH_ART := ART_ROOT + "touch/"
+## Numbered gold, silver and bronze award medals, with ribbon tails and glossy faces.
+const SCORE_ART := ART_ROOT + "score/"
 ## The folders `widget_art` looks in, in order.
-const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART]
+const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART]
 ## The sky behind an opaque window, the game's `STAGE_SKY`.
 const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
 ## A selected stage card's gold ring.
@@ -536,10 +543,11 @@ const RIBBON_OVERHANG := Vector2(14.0, 17.0)
 ## The painted art, when the theme ships it: `assets/arcade_light/stage/<name>.png`, then `hud/`, then `touch/`.
 func widget_art(name: StringName) -> Texture2D:
 	for folder in ART_FOLDERS:
-		var path := folder + String(name) + ".png"
-		if not _textures.has(path):
-			_textures[path] = load(path) if ResourceLoader.exists(path) else null
-		if _textures[path] != null: return _textures[path]
+		for suffix: String in [".png", ".svg"]:
+			var path := folder + String(name) + suffix
+			if not _textures.has(path):
+				_textures[path] = load(path) if ResourceLoader.exists(path) else null
+			if _textures[path] != null: return _textures[path]
 	return null
 
 
