@@ -534,10 +534,18 @@ func _glyph_button_game_margins(glyph: Texture2D) -> void:
 		var face := button.get_theme_stylebox(&"normal") as GoGlyphButton.ShiftedBox
 		var shift := button.glyph_allowance() * 0.5
 		var base := face.base
-		check(is_equal_approx(face.get_margin(SIDE_LEFT), base.get_margin(SIDE_LEFT) + shift)
-			and is_equal_approx(face.get_margin(SIDE_RIGHT), maxf(base.get_margin(SIDE_RIGHT) - shift, 0.0)),
-			"glyph: the label's padding moves by the shift, as the game's (%.1f/%.1f over %.1f/%.1f)" % [
-				face.get_margin(SIDE_LEFT), face.get_margin(SIDE_RIGHT), base.get_margin(SIDE_LEFT), base.get_margin(SIDE_RIGHT)])
+		var left := face.get_margin(SIDE_LEFT)
+		var right := face.get_margin(SIDE_RIGHT)
+		if base.get_margin(SIDE_RIGHT) >= maxf(GoGlyphButton.MIN_EDGE, shift):
+			check(is_equal_approx(left, base.get_margin(SIDE_LEFT) + shift)
+				and is_equal_approx(right, base.get_margin(SIDE_RIGHT) - shift),
+				"glyph: sufficient painted padding transfers the full shift (%.1f/%.1f over %.1f/%.1f)" % [
+					left, right, base.get_margin(SIDE_LEFT), base.get_margin(SIDE_RIGHT)])
+		else:
+			# Clipping the far margin would lose half the untransferred space and move the whole group.
+			check(is_equal_approx(left - right, base.get_margin(SIDE_LEFT) - base.get_margin(SIDE_RIGHT) + 2.0 * shift)
+				and minf(left, right) >= GoGlyphButton.MIN_EDGE,
+				"glyph: insufficient painted padding grows with full centering shift and edge clearance (%.1f/%.1f, shift %.1f)" % [left, right, shift])
 	check(is_equal_approx(square.size.x, 56.0), "glyph: a glyph-only square keeps its 56 px, as the game's (%.1f)" % square.size.x)
 	holder.queue_free()
 	await frames(1)
