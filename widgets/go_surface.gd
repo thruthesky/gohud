@@ -458,6 +458,8 @@ var _previous_focus: WeakRef
 var _dragging := false
 var _touch_index := -1
 var _keyboard_px := 0
+## The control that had focus at the last relayout with the keyboard up (its instance id; 0 none).
+var _keyboard_focus_id := 0
 var _scrim_pressed := false
 var _scrim_origin := Vector2.ZERO
 var _holds_back := false
@@ -1688,10 +1690,35 @@ func _relayout_scale(area: Rect2) -> void:
 	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
 	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
 	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+	if _keyboard_px > 0: _keep_focus_above_keyboard(area, need, reach, margin)
 	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
 	#    body scrolled by one (see `relayout`).
 	card.position = card.position.round()
 	_scaled = true
+
+
+## With the virtual keyboard up, a `SCALE` window that would shrink below `fit_min_scale` of its resting size to fit
+## above the keyboard keeps that readable size instead and slides up, so the field being typed in sits just above the
+## keyboard (the top of the card may leave the screen; the rows under the field may sit behind the keyboard).
+## 🛑 Squeezing the whole card above a landscape phone's keyboard (vivo V2507A, Gboard's password keyboard with its
+##    number row, 2026-10-26) left a card so small the player could not see what they typed.
+func _keep_focus_above_keyboard(area: Rect2, need: Vector2, reach: Vector4, margin: float) -> void:
+	var focus := get_viewport().gui_get_focus_owner()
+	if focus == null or not card.is_ancestor_of(focus): return
+	var squeezed := fit_scale
+	var resting := GoFitBox.place(card, GoSafeArea.usable_rect(get_viewport()), need, reach, margin, fit_screen_share)
+	var factor := maxf(squeezed, resting * GoUi.config.fit_min_scale)
+	if factor <= squeezed + 0.001:
+		fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+		return
+	# Where the field's bottom edge is on the card, at scale 1.
+	var field_bottom := (card.get_global_transform().affine_inverse() * focus.get_global_rect().end).y
+	var x := area.position.x + floorf((area.size.x - need.x * factor) / 2.0)
+	var top := area.position.y + margin + reach.y * factor
+	var y := minf(top, area.end.y - margin - field_bottom * factor)
+	card.scale = Vector2(factor, factor)
+	card.position = Vector2(x, y)
+	fit_scale = factor
 
 
 ## The card's height under a `SCALE` fit: its content's, less what its list gives up so the card stays under
@@ -1795,6 +1822,13 @@ func _process(_delta: float) -> void:
 	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
+	# With the keyboard up, moving to another field places the card again (`_keep_focus_above_keyboard`).
+	if _keyboard_px > 0 and _scaled:
+		var focus := get_viewport().gui_get_focus_owner()
+		var focus_id := focus.get_instance_id() if focus != null else 0
+		if focus_id != _keyboard_focus_id:
+			_keyboard_focus_id = focus_id
+			relayout()
 	# 🔑 Fit to content **only when something it reads changed** (`_layout_dirty`). An anchored popover still follows
 	#    its anchor every frame — the anchor can move (a scrolled list) without telling anyone.
 	if _resize_pending or (fit_content and (_layout_dirty or placement == Placement.ANCHOR)):
