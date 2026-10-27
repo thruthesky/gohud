@@ -146,6 +146,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Fixed
 
+- **`GoForm` presses its back button once per Android Back, and never after it left the screen.** Two back
+  requests in one frame (a double tap, the gesture plus a tap) queued two deferred presses; when the first changed the
+  scene, the second ran the handler on the detached form, where `get_tree()` is null — a crash in a release export.
+  At most one press is queued now, and the form checks again at the end of the frame that it is still in the tree,
+  visible, holding Back under no open window, with an enabled button.
+
 - Fix arcade_light `GoBar` fills covering their outlines: clip the gradient and segment ticks to a separate rounded
   inner track, reserving the skin's 3 px rim at every fill level. `GoSkin.bar_fill_clip_box()` supplies the inner mask.
 

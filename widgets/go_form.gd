@@ -61,6 +61,8 @@ var _runtime: Node
 var _keyboard_px := 0
 var _back_button: Button
 var _holds_back := false
+## An Android Back press waiting for the end of the frame (`_route_back`) — at most one is ever queued.
+var _back_queued := false
 ## The HUD insets last applied (left, top, right, bottom). HUD sizes settle later, so they are compared every frame.
 var _hud_pad := Vector4.ZERO
 
@@ -228,13 +230,37 @@ func _notification(what: int) -> void:
 		GoStyle.form(self)
 		return
 	if what != NOTIFICATION_WM_GO_BACK_REQUEST: return
-	if not _holds_back or not is_visible_in_tree() or GoSurface.is_any_open(): return
+	if not _owns_back(): return
 	# 🛑 Android reports the back gesture **even during the keyboard's dismiss animation** —
 	#    leaving the screen then makes the user feel "I pressed once and went back two steps".
 	if _keyboard_px > 0:
 		DisplayServer.virtual_keyboard_hide()
-	elif is_instance_valid(_back_button) and not _back_button.disabled:
-		_back_button.pressed.emit.call_deferred()
+	elif _can_press_back() and not _back_queued:
+		# Deferred so this notification finishes its walk through the tree first — and **one per frame**:
+		# 🛑 two back requests in one frame (a double tap, the gesture plus a tap on the button) queued two presses.
+		#    The first changed the scene, which takes this form out of the tree **at once** (it is freed only later);
+		#    the second ran the button's handler on the detached form, where `get_tree()` is null — a debug build
+		#    prints a SCRIPT ERROR, a release export has no null check and dies (SIGSEGV in
+		#    `SceneTree::change_scene_to_node`, a game on Google Play, 2026-09).
+		_back_queued = true
+		_route_back.call_deferred()
+
+
+## Is this form the screen Android Back belongs to right now — in the tree, on screen, holding Back, under no open window?
+func _owns_back() -> bool:
+	return _holds_back and is_inside_tree() and is_visible_in_tree() and not GoSurface.is_any_open()
+
+
+## …and does it have a back button that can be pressed?
+func _can_press_back() -> bool:
+	return is_instance_valid(_back_button) and not _back_button.disabled
+
+
+## The deferred half of Android Back: press the back button. 🛑 Asked **again** at the end of the frame — since the
+## request the form may have left the tree (a scene change), been hidden, or locked its button.
+func _route_back() -> void:
+	_back_queued = false
+	if _owns_back() and _can_press_back(): _back_button.pressed.emit()
 
 
 func _enter_tree() -> void:

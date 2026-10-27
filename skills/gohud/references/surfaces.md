@@ -185,7 +185,7 @@ using `form_max_width_*` per breakpoint; bottom margin grows with the virtual ke
 | structure | `GoForm` → `GoScroll` (node **name "Scroll"**, which `GoScroll.new()` already sets) → `VBoxContainer` |
 | `scroll` | Found in `_ready`; when the keyboard opens the focused field scrolls into view |
 | `@export min_side_margin` (-1 → `padding`) · `min_edge_margin` (-1 → `screen_margin`) | |
-| `@export route_back_button` (true) | Android Back presses the node with unique name `%BackButton`, looked up once in `_ready`. While the keyboard is up, Back only hides it (the button is not pressed); while any `GoSurface` is open, Back is the surface's |
+| `@export route_back_button` (true) | Android Back presses the node with unique name `%BackButton`, looked up once in `_ready`. While the keyboard is up, Back only hides it (the button is not pressed); while any `GoSurface` is open, Back is the surface's. The press is deferred to the end of the frame, at most one per frame, and skipped if by then the form left the tree, was hidden or its button was disabled |
 | `@export avoid_hud` (false) | Keep content clear of visible `GoHudAnchor`s with `reserve_space`, stepping the cheapest direction |
 
 It applies `GoStyle.form()` to every descendant, now and later: labels wrap, buttons get `button_height`
