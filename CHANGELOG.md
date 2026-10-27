@@ -6,6 +6,16 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoSafeArea.obstructions(view)`** — the screen's physical obstructions in UI units, for a HUD that runs edge to edge
+  instead of keeping the whole safe area: `holes` (Android's cutouts; an iPhone's notch / Dynamic Island derived from its
+  insets — Godot 4.7 names no cutouts on iOS), `corner_radius`, `gesture` (the iOS home strip), `screen` and `bars` (the
+  insets that stay whole — a status/nav bar, an iPad's status bar, the home strip). Pure helpers `ios_holes()`,
+  `hole_insets()`, `nearest_edge()`, `bar_insets()`, `corner_shift()` (a shape into the rounded corner's arc — diagonal or
+  along one axis) and `corner_keep()` (L-shaped bars for floating layouts). `GoConfig.corner_radius_ios` (55 pt),
+  `corner_radius_ios_tablet` (18 pt), `corner_radius_android` (32 dp) and `ios_cutout_lengths`. `GoScale.simulate` /
+  `GoRuntime.simulate` take `platform`, `cutouts`, `corner_radius`, `screen_scale` and `notch_side`; a simulated Android
+  device given only `cutouts` gets them as its insets (`usable_rect`), as Android reports an immersive window.
+
 - **arcade_light sign-in keys and marks** — `GoWhiteButton` and `GoBlackButton`: the glossy pill repainted white (ink
   label, no outline) and black (white outlined label) by `tools/paint_arcade_sign_in.gd` (`btn_white.png`,
   `btn_black.png`). Icons `GoIconSet.GOOGLE` (`&"google"`, the multi-colour Google G, drawn in its own colours),

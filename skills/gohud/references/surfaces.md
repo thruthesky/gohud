@@ -368,7 +368,8 @@ makes the app bar's menu button open it.
 - `LEFT` means screen-left even in Arabic; turn on `follow_text_direction` when "the start side" is the point
   (a menu drawer), and it flips in RTL.
 - The panel reaches the screen edge but the **content stays inside the safe area** — otherwise a rounded
-  corner clips the first list row.
+  corner clips the first list row. A surface keeps the whole safe area on purpose; only an in-game HUD that runs edge to
+  edge steps off the obstructions themselves (`GoSafeArea.obstructions()` — platform.md §5).
 - It takes the Back/Escape ownership while open and releases it on close, including in `_exit_tree`. Escape
   (`ui_cancel`) closes it in `_input`, so a game's own `_unhandled_input` Esc (a pause menu) never fires under it; a
   surface opened over the drawer closes first.
