@@ -1129,6 +1129,18 @@ func _fit_surface(look: StringName) -> void:
 	await frames(4)
 	check(standings.custom_minimum_size.y > 260.0,
 		"%s scale fit: removing the cap restores the natural list request" % look)
+	# A docked strip at the bottom (an ad banner): the window lays out above it, its list giving up height first.
+	var full_list := standings.custom_minimum_size.y
+	surface.bottom_reserve = 300.0
+	await frames(4)
+	var clear_end := GoSafeArea.usable_rect(surface.get_viewport()).end.y - 300.0
+	check(surface.card.get_global_rect().end.y <= clear_end + 0.5 and standings.custom_minimum_size.y < full_list,
+		"%s scale fit: bottom_reserve keeps the card above the strip (card end %.0f, clear end %.0f, list %.0f of %.0f)"
+		% [look, surface.card.get_global_rect().end.y, clear_end, standings.custom_minimum_size.y, full_list])
+	surface.bottom_reserve = 0.0
+	await frames(4)
+	check(is_equal_approx(standings.custom_minimum_size.y, full_list),
+		"%s scale fit: bottom_reserve 0 gives the whole safe area back" % look)
 	# Back to SCROLL: the card loses its scale.
 	surface.title_width = 0.0
 	rows.custom_minimum_size.y = 2000.0

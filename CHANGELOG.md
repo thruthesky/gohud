@@ -11,6 +11,10 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   and the item keys `btn_banana`, `btn_trap` (`assets/arcade_light/touch/`, 256 px, glossy discs like `btn_attract`),
   all through `GoSkin.widget_art`. **`GoTouchButton.badge`** (`badge_size`, `badge_ink`, `badge_rect()`): a count on
   the rim, up-right, on the skin's `badge_box` plate — an item key's charges left (`"×2"`).
+- **`GoSurface.bottom_reserve`** — canvas units kept clear at the bottom of the safe area for a strip the host docks
+  there (an anchored ad banner). A centred or anchored window lays out above it; under `SCALE` its `fit_flex` list gives
+  up height first, and `fit_scale` after a `relayout()` tells the host whether the card still reads well. A `BOTTOM`
+  sheet ignores it.
 
 - **arcade_light sign-in keys and marks** — `GoWhiteButton` and `GoBlackButton`: the glossy pill repainted white (ink
   label, no outline) and black (white outlined label) by `tools/paint_arcade_sign_in.gd` (`btn_white.png`,

@@ -413,6 +413,21 @@ var fit_screen_share := 0.0:
 		_layout_dirty = true
 ## The scale the card got from a `SCALE` fit (1: its own size).
 var fit_scale := 1.0
+## 📏 Canvas units kept clear at the bottom of the safe area — a host's docked strip the window must not cover (an
+## anchored ad banner, a bar it draws itself). A centred or anchored window lays out above it; under `SCALE` its list
+## gives up height first, so read `fit_scale` after a `relayout()` to know whether the card still reads well. 0: the
+## whole safe area. 🛑 A `BOTTOM` sheet ignores it.
+## ```gdscript
+## board.bottom_reserve = banner_height + gap
+## board.relayout()
+## if board.fit_scale < GoUi.config.fit_min_scale: board.bottom_reserve = 0.0   # no room: give it back
+## ```
+var bottom_reserve := 0.0:
+	set(value):
+		value = maxf(0.0, value)
+		if is_equal_approx(bottom_reserve, value): return
+		bottom_reserve = value
+		_layout_dirty = true
 
 # ── Children ───────────────────────────────────────────────────────────
 
@@ -1452,6 +1467,10 @@ func relayout() -> void:
 	if card == null or not is_inside_tree(): return
 	var settings := GoUi.config
 	var area := GoSafeArea.usable_rect_with_keyboard(get_viewport(), _keyboard_px)
+	if bottom_reserve > 0.0 and placement != Placement.BOTTOM:
+		# Measured from the safe area's bottom, so a keyboard already over the strip takes nothing more.
+		var clear_end := GoSafeArea.usable_rect(get_viewport()).end.y - bottom_reserve
+		area.size.y = maxf(0.0, minf(area.end.y, clear_end) - area.position.y)
 	if placement == Placement.ANCHOR and is_instance_valid(anchor_control) and anchor_control.is_inside_tree():
 		_update_density()
 		_relayout_anchor(area)
