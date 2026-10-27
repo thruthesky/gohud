@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (26)
+8. [HUD and game shapes](#hud-and-game-shapes) (27)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -1024,6 +1024,18 @@ Extends `PanelContainer`. A phone-style signal meter: bars rising left to right,
 ```gdscript
 var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
 ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")
+```
+
+### `GoFoldTab`
+
+Extends `Button`. Folds a HUD panel into a small pill and back: a slim handle with a chevron, then a pill that keeps a glyph, a short text and a gauge. The host lays the HUD out again on fold_changed. Details: `hud.md` §37 (GoFoldTab).
+
+```gdscript
+var tab := GoFoldTab.new()
+tab.side = SIDE_LEFT
+tab.icon_name = GoIconSet.USERS
+tab.pill_text = "3"
+tab.fold_changed.connect(func(now_folded: bool) -> void: party.visible = not now_folded)
 ```
 
 ### `GoMapPreview`

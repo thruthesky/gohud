@@ -2184,6 +2184,28 @@ ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")""", T(
 		"Індикатор сигналу як у телефоні: стовпчики ростуть зліва направо, світяться зеленим, золотим чи червоним, поруч показник на кшталт «48 ms» — пінг у HUD матчу.",
 		"มาตรวัดสัญญาณแบบโทรศัพท์: แท่งที่สูงขึ้นจากซ้ายไปขวา สว่างเป็นสีเขียว ทอง หรือแดง พร้อมค่าอย่าง \"48 ms\" — ค่า ping บน HUD ของแมตช์",
 		"مقياس إشارة كما في الهاتف: أعمدة ترتفع من اليسار إلى اليمين، تضيء بالأخضر أو الذهبي أو الأحمر، مع قراءة مثل \"48 ms\" — زمن الاستجابة في واجهة المباراة.")),
+	("hud", "GoFoldTab", "Button", """var tab := GoFoldTab.new()
+tab.side = SIDE_LEFT
+tab.icon_name = GoIconSet.USERS
+tab.pill_text = "3"
+tab.fold_changed.connect(func(now_folded: bool) -> void: party.visible = not now_folded)""", T(
+		"Folds a HUD panel into a small pill and back: a slim handle with a chevron, then a pill that keeps a glyph, a short text and a gauge. The host lays the HUD out again on fold_changed.",
+		"HUD 패널을 작은 알약으로 접었다 펴는 탭 — 갈매기 표시가 있는 가는 손잡이, 접히면 글리프·짧은 글자·게이지를 간직한 알약. 호스트는 fold_changed 에서 HUD 를 다시 배치한다.",
+		"HUDパネルを小さなピルに折りたたみ、また開くタブ。シェブロン付きの細い取っ手が、たたむとアイコン・短い文字・ゲージを残すピルになります。ホストは fold_changed でHUDを並べ直します。",
+		"把 HUD 面板折叠成小药丸再展开：带箭头的细把手，折叠后是保留图标、短文字和量条的药丸。宿主在 fold_changed 时重新排布 HUD。",
+		"把 HUD 面板摺疊成小藥丸再展開：帶箭頭的細把手，摺疊後是保留圖示、短文字和量條的藥丸。宿主在 fold_changed 時重新排列 HUD。",
+		"Pliega un panel del HUD en una pequeña píldora y lo despliega: un asa fina con un chevrón y, plegado, una píldora que conserva un icono, un texto corto y un indicador. El anfitrión recoloca el HUD en fold_changed.",
+		"Recolhe um painel do HUD numa pequena pílula e o reabre: uma alça fina com uma seta e, recolhido, uma pílula que mantém um ícone, um texto curto e um medidor. O host reorganiza o HUD em fold_changed.",
+		"Сворачивает панель HUD в маленькую плашку и обратно: тонкий язычок со стрелкой, а в свёрнутом виде плашка со значком, коротким текстом и шкалой. Хост перестраивает HUD по fold_changed.",
+		"Replie un panneau du HUD en une petite pastille et le déplie : une languette fine avec un chevron, puis une pastille qui garde une icône, un texte court et une jauge. L'hôte réagence le HUD sur fold_changed.",
+		"Bir HUD panelini küçük bir hapa katlar ve geri açar: oklu ince bir tutamaç, katlanınca bir simge, kısa bir metin ve bir gösterge tutan bir hap. Ana uygulama HUD'u fold_changed ile yeniden yerleştirir.",
+		"Zwija panel HUD do małej pigułki i z powrotem: cienki uchwyt ze strzałką, a po zwinięciu pigułka z ikoną, krótkim tekstem i paskiem. Gospodarz układa HUD na nowo przy fold_changed.",
+		"Ripiega un pannello dell'HUD in una piccola pillola e lo riapre: una linguetta sottile con una freccia e, ripiegato, una pillola che tiene un'icona, un testo breve e un indicatore. L'host ridispone l'HUD su fold_changed.",
+		"Thu gọn một bảng HUD thành viên thuốc nhỏ rồi mở lại: một tay nắm mảnh có mũi tên, khi thu gọn là viên thuốc giữ biểu tượng, chữ ngắn và thanh đo. Ứng dụng chủ sắp xếp lại HUD khi có fold_changed.",
+		"Melipat panel HUD menjadi pil kecil dan membukanya lagi: pegangan tipis dengan panah, lalu pil yang menyimpan ikon, teks pendek, dan pengukur. Host menata ulang HUD saat fold_changed.",
+		"Згортає панель HUD у маленьку плашку й назад: тонкий язичок зі стрілкою, а згорнута — плашка зі значком, коротким текстом і шкалою. Хост перебудовує HUD за fold_changed.",
+		"พับแผง HUD ให้เป็นเม็ดยาเล็ก ๆ แล้วกางกลับ: มือจับบาง ๆ มีลูกศร เมื่อพับเป็นเม็ดยาที่ยังแสดงไอคอน ข้อความสั้น และมาตรวัด แอปโฮสต์จัด HUD ใหม่เมื่อ fold_changed",
+		"يطوي لوحة واجهة اللعب إلى حبة صغيرة ثم يفتحها: مقبض رفيع بسهم، وعند الطي حبة تحتفظ برمز ونص قصير ومقياس. يعيد التطبيق المضيف ترتيب الواجهة عند fold_changed.")),
 	("hud", "GoMapPreview", "Control", """var map := GoMapPreview.new()
 map.add_rect(Vector2(0, 0), Vector2(6, 4), Color("#f2b84b"))
 map.add_circle(Vector2(18, 0), 5.0, Color("#6fc3ff"))

@@ -6,6 +6,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoFoldTab`** (`Button`): the affordance that folds a HUD panel into a small pill and back (MIR4 / Lineage W /
+  Genshin). Unfolded, a slim handle (`tab_face`, 16×36) against the box's `side` edge (or the `tab_align` edge) with a
+  chevron toward `side`; folded, a pill (`pill_height`, 32, the box's width) reading [glyph][text][chevron] away from
+  `side` — `icon_name`, `pill_text` (as is, left to right, ellipsized) and a slim `meter` gauge (`meter_color`,
+  `success_fill` by default) — or, with neither, the handle with the chevron turned back. `fold_changed(folded)` only for
+  a press or `toggle()`, never for `folded` set from code; `locked` holds it folded and a press emits `locked_pressed`.
+  The face is `GoSkin.overlay_box` edged in `accent`, tinted on hover and press, with no frame on the rest of the touch
+  box and the theme's focus ring kept; touch widens to `GoUi.touch_size()`; `tooltip_fold_name` /
+  `tooltip_unfold_name` / `tooltip_locked_name` give the tooltip and screen-reader name per state through `GoUi.text`
+  (caller-supplied — no new kit strings). `GoFoldTab.fade_in(node, seconds)` (`FADE_SECONDS` 0.12): the short fade the
+  tab plays on its new face, for the panel a host shows again; instant under `reduce_motion`. The host owns the layout.
 - **arcade_light power-up art and item keys** — painted in the HUD's style: the power-up icons `powerup_banana`,
   `powerup_trap`, `powerup_reflect`, `powerup_bomb` (`assets/arcade_light/hud/`, 96 px, for a `GoHudCard` or a notice)
   and the item keys `btn_banana`, `btn_trap` (`assets/arcade_light/touch/`, 256 px, glossy discs like `btn_attract`),

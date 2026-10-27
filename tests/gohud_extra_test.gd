@@ -77,6 +77,7 @@ func _initialize() -> void:
 	await _safe_area_viewport()
 	await _widget_feedback()
 	_hud_style_factories()
+	await _fold_tab()
 
 	print("gohud extra tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -3059,3 +3060,203 @@ func _hud_style_factories() -> void:
 	GoStyle.text_outline(label, 0, edge)
 	check(label.get_theme_constant(&"outline_size") == 0, "empty HUD glyph clears its outline")
 	label.free()
+
+
+# ── GoFoldTab (fold a HUD panel into a pill and back) ──────────────────
+
+## The press folds and unfolds; code sets `folded` silently; a locked tab says so and stays folded; the chevron points
+## the right way on every side; the pill keeps a glyph, a text and a gauge inside its box; touch, keyboard, tooltips
+## and the fade follow the kit's rules.
+func _fold_tab() -> void:
+	var holder := Control.new()
+	holder.size = Vector2(390, 844)
+	root.add_child(holder)
+	var tab := GoFoldTab.new()
+	tab.position = Vector2(100, 200)
+	holder.add_child(tab)
+	tab.size = Vector2(48, 48)
+	await frames(2)
+	var changes: Array[bool] = []
+	var refusals := [0]
+	tab.fold_changed.connect(func(now: bool) -> void: changes.append(now))
+	tab.locked_pressed.connect(func() -> void: refusals[0] += 1)
+
+	# Unfolded: the handle hugs the side edge, the chevron points the way the panel folds.
+	check(not tab.folded and tab.chevron_name() == GoIconSet.CHEVRON_LEFT, "fold tab: unfolded, the chevron points toward the side")
+	var face := tab.face_rect()
+	check(face == Rect2(0, 6, 16, 36), "fold tab: the handle is tab_face against the left edge, centred (%s)" % face)
+	var chevron := tab.row.get_node_or_null(^"Chevron")
+	check(chevron != null and tab.row.get_child_count() == 2 and not tab.label.visible,
+		"fold tab: the unfolded handle shows only the chevron")
+	check(tab.mouse_filter == Control.MOUSE_FILTER_STOP and tab.mouse_default_cursor_shape == Control.CURSOR_POINTING_HAND,
+		"fold tab: a press stops at the tab; the pointer is a hand")
+	check(tab.get_theme_stylebox(&"normal") is StyleBoxEmpty and not tab.get_theme_stylebox(&"focus") is StyleBoxEmpty,
+		"fold tab: no frame on the touch box, the theme's focus ring kept")
+
+	# A real click on the node toggles: fold_changed(true), the face becomes the pill with glyph and text.
+	tab.icon_name = GoIconSet.USERS
+	tab.pill_text = "3"
+	await _fold_click(tab.get_global_rect().get_center())
+	check(changes == [true] and tab.folded, "fold tab: a click folds and emits fold_changed(true) (%s)" % [changes])
+	tab.size = Vector2(96, 48)
+	await frames(1)
+	check(tab.shows_pill() and tab.face_rect() == Rect2(0, 8, 96, 32), "fold tab: the pill fills the box's width, pill_height tall (%s)" % tab.face_rect())
+	var names: Array[String] = []
+	for child in tab.row.get_children(): names.append(String(child.name))
+	check(names == ["Glyph", "Text", "Chevron"] and tab.label.visible and tab.label.text == "3",
+		"fold tab: the pill reads glyph, text, chevron away from the left side (%s)" % [names])
+	check(tab.chevron_name() == GoIconSet.CHEVRON_RIGHT, "fold tab: folded, the chevron points back out")
+	check(tab.row.get_rect().position.x >= 0.0 and tab.row.get_rect().end.x <= tab.size.x, "fold tab: the row stays inside the pill")
+
+	# Code sets `folded` silently; toggle() flips and tells.
+	tab.folded = false
+	tab.folded = true
+	check(changes.size() == 1, "fold tab: setting folded from code emits nothing")
+	tab.toggle()
+	check(changes == [true, false] and not tab.folded, "fold tab: toggle() flips and emits fold_changed(false)")
+	tab.folded = true
+
+	# Locked: a press says so and stays folded.
+	tab.locked = true
+	tab.pressed.emit()
+	check(refusals[0] == 1 and tab.folded and changes.size() == 2, "fold tab: a locked press emits locked_pressed and stays folded")
+	tab.locked = false
+
+	# The chevron per side, both states.
+	var expected := {SIDE_LEFT: [GoIconSet.CHEVRON_LEFT, GoIconSet.CHEVRON_RIGHT],
+		SIDE_RIGHT: [GoIconSet.CHEVRON_RIGHT, GoIconSet.CHEVRON_LEFT],
+		SIDE_TOP: [GoIconSet.CHEVRON_UP, GoIconSet.CHEVRON_DOWN],
+		SIDE_BOTTOM: [GoIconSet.CHEVRON_DOWN, GoIconSet.CHEVRON_UP]}
+	for edge: int in expected:
+		tab.side = edge
+		for state in [false, true]:
+			tab.folded = state
+			check(tab.chevron_name() == expected[edge][int(state)],
+				"fold tab: side %d, folded %s points %s (%s)" % [edge, state, expected[edge][int(state)], tab.chevron_name()])
+	tab.side = SIDE_RIGHT
+	tab.folded = true
+	names.clear()
+	for child in tab.row.get_children(): names.append(String(child.name))
+	check(names == ["Chevron", "Text", "Glyph"], "fold tab: on the right side the order mirrors (%s)" % [names])
+	tab.folded = false
+	tab.size = Vector2(48, 48)
+	await frames(1)
+	check(tab.face_rect().position.x == 32.0, "fold tab: a right-side handle hugs the right edge (%s)" % tab.face_rect())
+	tab.tab_align = SIDE_LEFT
+	check(tab.face_rect().position == Vector2(0, 6), "fold tab: tab_align moves the handle to the chosen edge (%s)" % tab.face_rect())
+	tab.side = SIDE_TOP
+	tab.tab_align = SIDE_BOTTOM
+	tab.tab_face = Vector2(36, 16)
+	check(tab.face_rect() == Rect2(6, 32, 36, 16), "fold tab: tab_align BOTTOM hugs the bottom edge, centred across (%s)" % tab.face_rect())
+	tab.tab_align = -1
+	check(tab.face_rect().position.y == 0.0, "fold tab: tab_align -1 follows side (top)")
+	tab.side = SIDE_LEFT
+	tab.tab_face = Vector2(16, 36)
+
+	# Folded with neither glyph nor text: the handle with the chevron turned back.
+	tab.icon_name = &""
+	tab.pill_text = ""
+	tab.folded = true
+	check(not tab.shows_pill() and tab.face_rect() == Rect2(0, 6, 16, 36) and tab.chevron_name() == GoIconSet.CHEVRON_RIGHT,
+		"fold tab: folded with nothing to keep shows the handle, chevron turned back")
+	tab.icon_name = GoIconSet.HEART
+
+	# The gauge: drawn only for meter >= 0, inside the pill's bottom.
+	tab.size = Vector2(96, 48)
+	await frames(1)
+	check(tab.meter_rect() == Rect2(), "fold tab: meter < 0 draws no gauge")
+	tab.meter = 0.5
+	var track := tab.meter_rect()
+	var pill := tab.face_rect()
+	check(track.size.x > 0.0 and pill.encloses(track) and track.end.y < pill.end.y and track.position.y > pill.get_center().y,
+		"fold tab: meter 0.5 draws a gauge along the inside bottom of the pill (%s in %s)" % [track, pill])
+	tab.folded = false
+	check(tab.meter_rect() == Rect2(), "fold tab: no gauge on the unfolded handle")
+	tab.folded = true
+	tab.meter = -1.0
+
+	# Touch: a 30-wide node takes presses out to the 48 touch floor, not past it.
+	tab.size = Vector2(30, 30)
+	await frames(1)
+	var reach := (GoUi.touch_size() - 30.0) * 0.5
+	check(reach > 0.0 and tab._has_point(Vector2(-reach + 0.5, 15)) and tab._has_point(Vector2(30 + reach - 0.5, 15)),
+		"fold tab: a 30dp node takes presses across a %sdp box" % GoUi.touch_size())
+	check(not tab._has_point(Vector2(-reach - 1.0, 15)), "fold tab: nothing beyond the touch floor")
+	var before := changes.size()
+	await _fold_click(tab.get_global_rect().position + Vector2(-reach + 1.0, 15))
+	check(changes.size() == before + 1, "fold tab: a real click in the widened slack presses it")
+
+	# Ellipsis: a long text never makes the pill wider than its box.
+	tab.size = Vector2(96, 48)
+	tab.folded = true
+	tab.pill_text = "A very long text that cannot fit"
+	await frames(2)
+	var full := tab.label.get_theme_font(&"font").get_string_size(tab.pill_text, HORIZONTAL_ALIGNMENT_LEFT, -1,
+		tab.label.get_theme_font_size(&"font_size")).x
+	check(tab.size.x == 96.0 and tab.row.get_rect().end.x <= tab.size.x and tab.label.get_rect().end.x <= tab.row.size.x
+		and tab.label.size.x < full and tab.label.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS,
+		"fold tab: a long pill_text is cut with an ellipsis inside the box (label %.0f of %.0f)" % [tab.label.size.x, full])
+	check(tab.label.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED and tab.label.text_direction == Control.TEXT_DIRECTION_LTR,
+		"fold tab: pill_text is drawn as is, left to right")
+	tab.pill_text = "3"
+
+	# Tooltips and the screen-reader name follow the state.
+	tab.tooltip_fold_name = &"Hide the party"
+	tab.tooltip_unfold_name = &"Show the party"
+	tab.tooltip_locked_name = &"No room here"
+	tab.folded = false
+	check(tab.tooltip_text == "Hide the party" and tab.accessibility_name == "Hide the party",
+		"fold tab: unfolded, the tooltip and name say fold (%s / %s)" % [tab.tooltip_text, tab.accessibility_name])
+	tab.folded = true
+	check(tab.tooltip_text == "Show the party" and tab.accessibility_name == "Show the party 3",
+		"fold tab: folded, they say unfold and the pill's text (%s / %s)" % [tab.tooltip_text, tab.accessibility_name])
+	tab.locked = true
+	check(tab.tooltip_text == "No room here", "fold tab: locked, the locked tooltip")
+	tab.locked = false
+	tab.tooltip_unfold_name = &""
+	check(tab.tooltip_text == "", "fold tab: an empty name is no tooltip")
+
+	# Keyboard: Tab-reachable under the default look; ui_accept toggles the focused tab.
+	check(tab.focus_mode == Control.FOCUS_ALL, "fold tab: focus_mode ALL under the default look")
+	tab.grab_focus()
+	await frames(1)
+	before = changes.size()
+	for down in [true, false]:
+		var accept := InputEventAction.new()
+		accept.action = &"ui_accept"
+		accept.pressed = down
+		root.push_input(accept)
+	await frames(1)
+	check(tab.has_focus() and changes.size() == before + 1 and changes.back() == tab.folded,
+		"fold tab: ui_accept on the focused tab toggles it (%s)" % [changes])
+
+	# The fade: instant under reduce_motion, a ≤150 ms tween otherwise.
+	var panel := ColorRect.new()
+	holder.add_child(panel)
+	panel.modulate.a = 0.3
+	check(GoFoldTab.fade_in(panel) == null and panel.modulate.a == 1.0, "fold tab: fade_in under reduce_motion is instant")
+	GoUi.config.reduce_motion = false
+	var tween := GoFoldTab.fade_in(panel)
+	check(tween != null and panel.modulate.a == 0.0 and GoFoldTab.FADE_SECONDS <= 0.15, "fold tab: fade_in starts a short fade")
+	var outside := ColorRect.new()
+	check(GoFoldTab.fade_in(outside) == null and outside.modulate.a == 1.0, "fold tab: out of the tree, fade_in is instant")
+	outside.free()
+	await create_timer(GoFoldTab.FADE_SECONDS + 0.1).timeout
+	check(panel.modulate.a == 1.0, "fold tab: the fade ends opaque")
+	GoUi.config.reduce_motion = true
+
+	holder.queue_free()
+	await frames(1)
+	section("fold tab")
+
+
+## A left click (down and up) at [param point] in the screen's coordinates.
+func _fold_click(point: Vector2) -> void:
+	for down in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = down
+		event.position = point
+		event.global_position = point
+		root.push_input(event, true)
+		await frames(1)
