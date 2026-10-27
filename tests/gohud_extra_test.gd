@@ -3108,6 +3108,32 @@ func _fold_tab() -> void:
 	check(tab.chevron_name() == GoIconSet.CHEVRON_RIGHT, "fold tab: folded, the chevron points back out")
 	check(tab.row.get_rect().position.x >= 0.0 and tab.row.get_rect().end.x <= tab.size.x, "fold tab: the row stays inside the pill")
 
+	# ⚡ A new text is not a restyle (a folded HP share ticks several times a second in a fight): the label and the name
+	#    follow while the face's style boxes and icon nodes stay the same objects (every restyle makes new ones).
+	var calm := tab.get_theme_stylebox(&"normal")
+	var glyph := tab.row.get_node_or_null(^"Glyph")
+	tab.pill_text = "4"
+	check(tab.label.text == "4" and tab.accessibility_name.ends_with("4") and tab.get_theme_stylebox(&"normal") == calm
+		and tab.row.get_node_or_null(^"Glyph") == glyph, "fold tab: a new pill_text updates the label and the name, no restyle")
+	tab.pill_text = ""
+	check(tab.shows_pill() and not tab.label.visible and tab.get_theme_stylebox(&"normal") == calm,
+		"fold tab: an emptied text hides the label (the glyph keeps the pill), no restyle")
+	tab.pill_text = "3"
+	check(tab.label.visible and tab.label.text == "3" and tab.get_theme_stylebox(&"normal") == calm, "fold tab: the text back, no restyle")
+	tab.accent = Color.ORANGE
+	check(tab.get_theme_stylebox(&"normal") != calm, "fold tab: a style input (accent) still restyles")
+	tab.accent = Color.TRANSPARENT
+	# With no glyph the text decides the face: filling it turns the folded handle into the pill — that one restyles.
+	tab.icon_name = &""
+	tab.pill_text = ""
+	calm = tab.get_theme_stylebox(&"normal")
+	check(not tab.shows_pill() and not tab.label.visible, "fold tab: folded with no glyph and no text is the handle")
+	tab.pill_text = "3"
+	check(tab.shows_pill() and tab.label.visible and tab.face_rect() == Rect2(0, 8, 96, 32) and tab.get_theme_stylebox(&"normal") != calm,
+		"fold tab: with no glyph, a text that turns the handle into the pill restyles (%s)" % tab.face_rect())
+	tab.icon_name = GoIconSet.USERS
+	await frames(1)
+
 	# Code sets `folded` silently; toggle() flips and tells.
 	tab.folded = false
 	tab.folded = true

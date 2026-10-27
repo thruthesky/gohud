@@ -125,11 +125,16 @@ const LOCKED_ALPHA := 0.45
 
 ## The pill's short text ("3", "82%"), drawn as is (never translated), one line, left to right, cut with an ellipsis
 ## to the room the glyph and the chevron leave.
+## ⚡ Cheap to set often (a folded HP share ticks several times a second in a fight): a new text only updates the label
+## and the names that read it. The full restyle runs only when the face itself changes — a tab with no glyph turns
+## between the handle and the pill as its text empties or fills.
 @export var pill_text := "":
 	set(value):
 		if pill_text == value: return
+		var had_pill := shows_pill()
 		pill_text = value
-		_restyle()
+		if shows_pill() != had_pill: _restyle()
+		else: _apply_text()
 
 ## 0..1 draws a slim gauge along the inside bottom of the pill (a folded panel keeps its key gauge — HP, a quest's
 ## progress). Under 0: no gauge. Above 1 counts as full.
@@ -352,8 +357,7 @@ func _restyle() -> void:
 		mini(glyph_side, maxi(8, roundi(minf(tab_face.x, tab_face.y))))
 	_chevron = _icon(_chevron, _chevron_key, &"Chevron", chevron_name(), chevron_side, turned)
 	_glyph = _icon(_glyph, _glyph_key, &"Glyph", icon_name if pill else &"", glyph_side, ink())
-	label.visible = pill and not pill_text.is_empty()
-	label.text = pill_text
+	_apply_text()
 	GoStyle.typography(label, role, GoUi.color(GoTheme.TEXT))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if side == SIDE_RIGHT else HORIZONTAL_ALIGNMENT_LEFT
 	row.alignment = BoxContainer.ALIGNMENT_BEGIN if pill else BoxContainer.ALIGNMENT_CENTER
@@ -366,9 +370,17 @@ func _restyle() -> void:
 		if part == null: continue
 		row.move_child(part, at)
 		at += 1
-	_refresh_tooltip()
 	_layout()
 	queue_redraw()
+
+
+## The part of the face that `pill_text` alone decides: the label (shown on a pill with a text) and the tooltip and
+## screen-reader name, which read the text. The row re-sorts by itself when the label shows, hides or changes width.
+func _apply_text() -> void:
+	if not _built: return
+	label.visible = shows_pill() and not pill_text.is_empty()
+	label.text = pill_text
+	_refresh_tooltip()
 
 
 ## Builds (or keeps) one icon node in the row. An empty name frees it.

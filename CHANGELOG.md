@@ -17,6 +17,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `tooltip_unfold_name` / `tooltip_locked_name` give the tooltip and screen-reader name per state through `GoUi.text`
   (caller-supplied — no new kit strings). `GoFoldTab.fade_in(node, seconds)` (`FADE_SECONDS` 0.12): the short fade the
   tab plays on its new face, for the panel a host shows again; instant under `reduce_motion`. The host owns the layout.
+  `pill_text` is cheap to set often (a folded HP share ticking in a fight): a new text updates only the label, the
+  tooltip and the screen-reader name; the face restyles only when it changes (a glyph-less tab turning between the
+  handle and the pill).
 - **arcade_light power-up art and item keys** — painted in the HUD's style: the power-up icons `powerup_banana`,
   `powerup_trap`, `powerup_reflect`, `powerup_bomb` (`assets/arcade_light/hud/`, 96 px, for a `GoHudCard` or a notice)
   and the item keys `btn_banana`, `btn_trap` (`assets/arcade_light/touch/`, 256 px, glossy discs like `btn_attract`),
