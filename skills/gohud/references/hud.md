@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout and GoSignalBars.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars and GoFoldTab.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -43,6 +43,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 34. [GoTaskCard — a lesson's card](#34-gotaskcard--a-lessons-card)
 35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
 36. [GoSignalBars — a signal meter](#36-gosignalbars--a-signal-meter)
+37. [GoFoldTab — fold a HUD panel into a pill](#37-gofoldtab--fold-a-hud-panel-into-a-pill)
 
 ## 1. GoHudAnchor
 
@@ -1185,3 +1186,45 @@ ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")   # one call, one rebuild
   the arcade looks paint each as a small key with the ink outline and gloss.
 - 🛑 It ignores the mouse and never flips with the language; it follows a look change (`GoUi.watch`). A screen reader
   hears "3/4 48 ms" (`accessibility_name`).
+
+## 37. GoFoldTab — fold a HUD panel into a pill
+
+`class_name GoFoldTab extends Button`. The one affordance that folds a HUD panel (a quest list, a party frame, a chat
+card) into a small pill and back — MIR4, Lineage W and Genshin all do it. Unfolded it is a slim handle on the panel's
+edge with a chevron pointing the way the panel folds; folded it is a pill keeping the panel's key reading (a glyph, a
+short text, a slim gauge) with the chevron pointing back out. 🔑 The kit owns the affordance and its fade; the host
+owns the layout: it places and sizes the node (the node is the touch box), reads `folded`, and lays its HUD out again
+on `fold_changed`.
+
+```gdscript
+var tab := GoFoldTab.new()
+tab.side = SIDE_LEFT                       # the panel folds toward the left edge
+tab.icon_name = GoIconSet.USERS
+tab.tooltip_fold_name = &"Hide the party"  # a gohud name, your own key or plain words
+tab.tooltip_unfold_name = &"Show the party"
+hud.add_child(tab)
+tab.fold_changed.connect(func(now_folded: bool) -> void:
+	party.visible = not now_folded
+	if not now_folded: GoFoldTab.fade_in(party)   # the panel comes back with the tab's own short fade
+	_relayout())                                # the host's layout data decides the new box
+tab.pill_text = "3"                        # what the pill keeps: a count, a percentage
+tab.meter = 0.82                           # and a gauge along its bottom (under 0: none)
+```
+
+| Member | Notes |
+|---|---|
+| `signal fold_changed(folded: bool)` · `toggle()` | Only the player's press or `toggle()` — setting `folded` from code restyles and emits nothing, so a host that relays out on it never loops. `toggle()` ignores `locked` (the host decides) |
+| `folded` (false) · `locked` (false) · `signal locked_pressed` | `locked`: the host holds it folded (no room on screen). A press emits `locked_pressed`, `folded` stays, the chevron dims |
+| `side` (`SIDE_LEFT`) · `chevron_name()` | The `Side` the panel folds toward. Unfolded the chevron points toward it, folded away (`GoIconSet.CHEVRON_*`) |
+| `tab_face` (16×36) · `tab_align` (-1) · `face_rect()` | The unfolded handle, as is (give a flat size such as 36×16 for `SIDE_TOP`/`SIDE_BOTTOM`). It hugs the `side` edge of the box — the edge against the panel when the tab stands just outside it — or the `tab_align` edge (`SIDE_RIGHT` for a handle laid inside a left panel's right end); centred on the other axis |
+| `pill_height` (32) · `icon_name` · `pill_text` · `role` (`ROLE_COMPACT`) · `shows_pill()` | Folded with a glyph or a text, the face is a pill filling the box's width, centred: [glyph][text][chevron] away from `side` (mirrored for `SIDE_RIGHT`). `pill_text` is drawn as is, left to right, one line, cut with an ellipsis. Folded with neither: the handle with the chevron turned back (a header-only chat card) |
+| `meter` (-1) · `meter_color` · `meter_rect()` | 0..1 draws a slim gauge along the inside bottom of the pill (`success_fill` by default); under 0 none |
+| `accent` · `ink()` | The glyph, the chevron and the face's edge (the theme's accent by default). The face is `GoSkin.overlay_box` — readable over any 3D scene; hover and press tint it toward `accent`. No frame on the rest of the touch box |
+| `tooltip_fold_name` · `tooltip_unfold_name` · `tooltip_locked_name` | The tooltip and the screen-reader name for each state through `GoUi.text` (the pill's text is read after it). Caller-supplied on purpose — the kit adds no strings, so the host's table covers every language it ships |
+| `FADE_SECONDS` (0.12) · `static fade_in(node, seconds)` | The ≤150 ms fade a new face plays; call it on the panel the host shows again. Instant (null, `modulate.a` = 1) under `reduce_motion` or out of the tree |
+
+- Touch: the node is the hit box, widened to `GoUi.touch_size()` when the host made it smaller (as `GoIconButton`).
+  `mouse_filter` is STOP — a press never reaches the world.
+- 🛑 Keyboard: Tab-reachable in the normal looks (`GoStyle.skin_focus`), Enter / Space presses it. A clicked tab keeps
+  focus, so over gameplay where Space is a game key set `focus_mode = Control.FOCUS_NONE` (or `GoHudAnchor.keyboard_focus
+  = false`), or the next Space folds the panel.

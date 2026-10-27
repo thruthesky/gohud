@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD et formes de jeu <small>(26)</small></h2>
+  <h2>HUD et formes de jeu <small>(27)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -998,6 +998,16 @@ overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
       <p class="catalog-base">étend <code>PanelContainer</code></p>
       <pre><code>var ping := GoSignalBars.<wbr>make(<wbr>4,<wbr> GoSignalBars.<wbr>Tone.<wbr>GOOD)
 ping.<wbr>set_reading(<wbr>2,<wbr> GoSignalBars.<wbr>Tone.<wbr>FAIR,<wbr> "180 ms")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofoldtab"><code>GoFoldTab</code></h3>
+      <p>Replie un panneau du HUD en une petite pastille et le déplie : une languette fine avec un chevron, puis une pastille qui garde une icône, un texte court et une jauge. L'hôte réagence le HUD sur fold_changed.</p>
+      <p class="catalog-base">étend <code>Button</code></p>
+      <pre><code>var tab := GoFoldTab.<wbr>new(<wbr>)
+tab.<wbr>side = SIDE_LEFT
+tab.<wbr>icon_name = GoIconSet.<wbr>USERS
+tab.<wbr>pill_text = "3"
+tab.<wbr>fold_changed.<wbr>connect(<wbr>func(<wbr>now_folded: bool) -&gt; void: party.<wbr>visible = not now_folded)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>

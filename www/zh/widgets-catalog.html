@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 与游戏组件 <small>(26)</small></h2>
+  <h2>HUD 与游戏组件 <small>(27)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -998,6 +998,16 @@ overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
       <p class="catalog-base">继承 <code>PanelContainer</code></p>
       <pre><code>var ping := GoSignalBars.<wbr>make(<wbr>4,<wbr> GoSignalBars.<wbr>Tone.<wbr>GOOD)
 ping.<wbr>set_reading(<wbr>2,<wbr> GoSignalBars.<wbr>Tone.<wbr>FAIR,<wbr> "180 ms")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gofoldtab"><code>GoFoldTab</code></h3>
+      <p>把 HUD 面板折叠成小药丸再展开：带箭头的细把手，折叠后是保留图标、短文字和量条的药丸。宿主在 fold_changed 时重新排布 HUD。</p>
+      <p class="catalog-base">继承 <code>Button</code></p>
+      <pre><code>var tab := GoFoldTab.<wbr>new(<wbr>)
+tab.<wbr>side = SIDE_LEFT
+tab.<wbr>icon_name = GoIconSet.<wbr>USERS
+tab.<wbr>pill_text = "3"
+tab.<wbr>fold_changed.<wbr>connect(<wbr>func(<wbr>now_folded: bool) -&gt; void: party.<wbr>visible = not now_folded)</code></pre>
     </div>
     <div class="card">
       <h3 id="gomappreview"><code>GoMapPreview</code></h3>
