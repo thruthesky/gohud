@@ -897,6 +897,40 @@ func _touch_button(look: StringName) -> void:
 	check(not attract.is_held(), "touch: cancel lets go")
 	holder.queue_free()
 	await frames(1)
+	await _touch_item_key(look)
+
+
+## An item key: the painted banana / trap pictures under arcade_light, and the count badge on its rim.
+func _touch_item_key(look: StringName) -> void:
+	var skin := GoUi.skin()
+	for art: StringName in [&"btn_banana", &"btn_trap"]:
+		if look == GoThemePresets.ARCADE_LIGHT:
+			check(skin.widget_art(art) != null and skin.widget_art(art).get_size() == Vector2(256, 256),
+				"item key: arcade_light paints %s at 256" % art)
+		else:
+			check(skin.widget_art(art) == null, "item key: a plain look has no %s (an accent disc)" % art)
+	var drop := GoTouchButton.make(&"btn_banana", "USE", 80.0)
+	var holder := _host(drop)
+	await frames(1)
+	check(drop.badge.is_empty() and drop.badge_rect() == Rect2(), "item key: no badge by default")
+	drop.badge = "×2"
+	var plate := drop.badge_rect()
+	var rim := Vector2(40, 40) + Vector2(1, -1).normalized() * 40.0
+	check(plate.has_area() and plate.get_center().is_equal_approx(rim), "item key: the badge sits on the rim, up-right %s" % plate)
+	check(plate.size.x >= plate.size.y and plate.size.y >= 16.0, "item key: the plate holds the count %s" % plate.size)
+	check(skin.badge_box(GoUi.color(GoTheme.ACCENT)).get_minimum_size().y >= 0.0, "item key: the skin's badge plate")
+	drop.badge = "×22"
+	check(drop.badge_rect().size.x > plate.size.x - 0.01, "item key: a longer count widens the plate")
+	_press(drop, Vector2(40, 40), true)
+	check(drop.badge_rect().get_center().is_equal_approx(Vector2(40, 40) + Vector2(1, -1).normalized() * 40.0 * 0.93),
+		"item key: the badge follows the press")
+	_press(drop, Vector2(40, 40), false)
+	check(not drop.hits(drop.get_global_transform_with_canvas() * (plate.end + Vector2(30, -30))),
+		"item key: the badge adds no touch area")
+	drop.badge = ""
+	check(drop.badge_rect() == Rect2(), "item key: an empty badge draws none")
+	holder.queue_free()
+	await frames(1)
 
 
 func _joystick_art(look: StringName) -> void:

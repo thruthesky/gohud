@@ -1494,8 +1494,9 @@ const KBD_DONE := Color("#8ff0a4")
 
 
 ## A picture a widget may wear, by [param name] (`check`, `lock`, `person`, `play_tag`, `pointer`; the HUD's `avatar_head`,
-## `bolt`, `opponents_badge`, `stopwatch`, `pause_button`, `shield`; the touch keys' `btn_attract`, `btn_repulse`,
-## `btn_jump`, `stick_base`, `stick_knob`…). `null`: the widget falls back to an icon from the icon set or a drawn
+## `bolt`, `opponents_badge`, `stopwatch`, `pause_button`, `shield`, `powerup_banana`, `powerup_trap`, `powerup_reflect`,
+## `powerup_bomb`; the touch keys' `btn_attract`, `btn_repulse`, `btn_jump`, `btn_banana`, `btn_trap`, `stick_base`,
+## `stick_knob`…). `null`: the widget falls back to an icon from the icon set or a drawn
 ## plate. A look with painted art returns its own.
 func widget_art(_name: StringName) -> Texture2D:
 	return null

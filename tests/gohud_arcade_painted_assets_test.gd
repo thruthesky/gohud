@@ -43,12 +43,16 @@ const STAGE_SPRITES := {
 const HUD_SPRITES := {
 	"avatar_head": false, "bolt": false, "opponents_badge": false, "pause_button": false, "stopwatch": false,
 	"shield": false,
+	# The power-up icons, painted for gohud in the same style (image generation, keyed and cut to 96 px).
+	"powerup_banana": false, "powerup_trap": false, "powerup_reflect": false, "powerup_bomb": false,
 }
 
 ## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's
 ## base and knob. None has mipmaps.
 const TOUCH_SPRITES := {
 	"btn_attract": false, "btn_jump": false, "btn_repulse": false, "stick_base": false, "stick_knob": false,
+	# The item keys a held power-up is dropped with, painted for gohud in the same style (image generation, 256 px).
+	"btn_banana": false, "btn_trap": false,
 }
 
 ## Every glyph → its mipmap choice, as above.

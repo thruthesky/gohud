@@ -1029,6 +1029,8 @@ aim.drag_aim = true
 aim.caption = tr("HOLD + DRAG")
 aim.held_caption = tr("DRAG TO AIM")
 aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
+var drop := GoTouchButton.make(&"btn_banana", tr("USE"), 80.0)   # an item key: arcade_light paints btn_banana, btn_trap
+drop.badge = "×%d" % charges_left       # the count on its rim; empty hides it
 ```
 
 | Member | Default | Notes |
@@ -1043,6 +1045,7 @@ aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
 | `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
 | `driven` · `drive_press(at)` · `drive_drag(at)` · `drive_release(canceled)` | `false` | The owner routes the fingers (below) |
 | `hits(at)` · `button_center()` · `hit_radius()` | | For the owner's hit test: a finger within `diameter` / 2 + `hit_slop` of the centre, in canvas coordinates |
+| `badge` · `badge_size` · `badge_ink` · `badge_rect()` | `""` · `16` · transparent | A count on the rim, up-right (an item key's charges left, `"×2"`): the skin's `badge_box(badge_ink)` plate (transparent: `accent`), white over the touch edge, moving with the press; no touch area of its own |
 
 🔑 **Driven from outside.** A game that routes every finger itself — one `_input` that binds each finger to a role
 (stick, a button, look) when it lands, keys fingers by the event's index as given (a browser's touch id), leaves the

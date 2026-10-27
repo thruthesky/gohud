@@ -6,6 +6,12 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **arcade_light power-up art and item keys** — painted in the HUD's style: the power-up icons `powerup_banana`,
+  `powerup_trap`, `powerup_reflect`, `powerup_bomb` (`assets/arcade_light/hud/`, 96 px, for a `GoHudCard` or a notice)
+  and the item keys `btn_banana`, `btn_trap` (`assets/arcade_light/touch/`, 256 px, glossy discs like `btn_attract`),
+  all through `GoSkin.widget_art`. **`GoTouchButton.badge`** (`badge_size`, `badge_ink`, `badge_rect()`): a count on
+  the rim, up-right, on the skin's `badge_box` plate — an item key's charges left (`"×2"`).
+
 - **arcade_light sign-in keys and marks** — `GoWhiteButton` and `GoBlackButton`: the glossy pill repainted white (ink
   label, no outline) and black (white outlined label) by `tools/paint_arcade_sign_in.gd` (`btn_white.png`,
   `btn_black.png`). Icons `GoIconSet.GOOGLE` (`&"google"`, the multi-colour Google G, drawn in its own colours),

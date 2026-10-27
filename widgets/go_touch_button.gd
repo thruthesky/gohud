@@ -19,6 +19,14 @@
 ## aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
 ## ```
 ##
+## An item key shows what it holds and how many are left: its picture (`btn_banana`, `btn_trap` under `arcade_light`)
+## and a `badge` on the rim, the skin's round count plate (`GoSkin.badge_box`).
+##
+## ```gdscript
+## var drop := GoTouchButton.make(&"btn_banana", tr("USE"), 80.0)
+## drop.badge = "×%d" % charges_left            # the server says how many are left; empty hides it
+## ```
+##
 ## The picture is `GoSkin.widget_art(art_name)` (or `art`); a look without the art draws an `accent` disc. A held
 ## button shrinks to `press_scale` and darkens by `press_tint`. Labels are white over a `GoSkin.touch_outline_ink()`
 ## edge and shrink to fit the button (never under `min_font_size`). 🛑 Display and input only: it reports presses and
@@ -119,6 +127,26 @@ signal aimed(pull: Vector2)
 ## The aim knob's radius (dp).
 @export_range(4, 128) var aim_knob_radius := 24.0
 
+## A count on the rim, up and to the right (the charges an item key has left: "×2"). Empty draws none. It sits on the
+## skin's badge plate (`GoSkin.badge_box(badge_ink)`), white over the touch edge, and moves with the press and pulse.
+@export var badge := "":
+	set(value):
+		badge = value
+		queue_redraw()
+
+## The badge's size (dp); it never shrinks (a count is short).
+@export_range(6, 64) var badge_size := 16:
+	set(value):
+		badge_size = value
+		queue_redraw()
+
+## The colour the badge plate is asked in (`GoSkin.badge_box`). Transparent: the look's `accent`.
+@export var badge_ink := Color.TRANSPARENT:
+	set(value):
+		badge_ink = value
+		_badge_box = null
+		queue_redraw()
+
 ## The press reaches this far past the rim (dp).
 @export_range(0, 64) var hit_slop := 8.0
 
@@ -168,6 +196,7 @@ var _pulse := 1.0
 var _pulse_tween: Tween
 var _fits := {}
 var _caption_sizes: Array[int] = [0, 0]
+var _badge_box: StyleBox
 
 
 ## A button showing the skin's [param picture_name] art with [param label] under it, [param size] across.
@@ -391,6 +420,7 @@ func _set_pulse(value: float) -> void:
 
 func _restyle() -> void:
 	theme = GoUi.theme()
+	_badge_box = null
 	_fits.clear()
 	_caption_sizes = [0, 0]
 	queue_redraw()
@@ -433,6 +463,44 @@ func _draw() -> void:
 		_label(text, c + Vector2(-r, r * label_rise), r * 2.0, label_font_size())
 	if not caption.is_empty():
 		_label(caption, c + Vector2(-r0, r0 + caption_drop), r0 * 2.0, caption_font_size(false))
+	if not badge.is_empty():
+		_draw_badge(c, r)
+
+
+## The badge's plate (local), centred on the rim at 45° up-right of [param c] for the drawn radius [param r] — the
+## middle of the rim at rest. Empty `badge`: an empty rect.
+func badge_rect(c := Vector2.INF, r := -1.0) -> Rect2:
+	if badge.is_empty(): return Rect2()
+	if c == Vector2.INF: c = size / 2.0
+	if r < 0.0: r = radius()
+	var font := _font()
+	var box := _badge_plate()
+	var text_size := font.get_string_size(badge, HORIZONTAL_ALIGNMENT_LEFT, -1, badge_size) if font != null \
+			else Vector2(badge_size, badge_size)
+	var plate := box.get_minimum_size() + Vector2(text_size.x, float(badge_size))
+	plate.x = maxf(plate.x, plate.y)   # one digit reads as a disc
+	var at := c + Vector2(1.0, -1.0).normalized() * r
+	return Rect2(at - plate / 2.0, plate)
+
+
+func _badge_plate() -> StyleBox:
+	if _badge_box == null:
+		_badge_box = GoUi.skin().badge_box(badge_ink if badge_ink.a > 0.0 else GoUi.color(GoTheme.ACCENT))
+	return _badge_box
+
+
+func _draw_badge(c: Vector2, r: float) -> void:
+	var font := _font()
+	if font == null: return
+	var rect := badge_rect(c, r)
+	draw_style_box(_badge_plate(), rect)
+	var ascent := font.get_ascent(badge_size)
+	var descent := font.get_descent(badge_size)
+	var baseline := rect.position.y + (rect.size.y - ascent - descent) / 2.0 + ascent
+	var at := Vector2(rect.position.x, baseline)
+	draw_string_outline(font, at, badge, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, badge_size, 4,
+			GoUi.skin().touch_outline_ink())
+	draw_string(font, at, badge, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, badge_size, Color.WHITE)
 
 
 ## White text over the skin's edge, centred in [param width] from [param at] (the baseline's left end).
