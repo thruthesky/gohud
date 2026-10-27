@@ -2819,6 +2819,57 @@ func _form() -> void:
 			% [mode, coded_scroll.get_parent() != coded, back.owner == keeper, coded._back_button == back, coded._holds_back])
 		holder.queue_free()
 		await frames(1)
+
+	# ── Android Back presses the back button once, and only while the form is still the screen ──
+	# 🛑 Two back requests in one frame queued two deferred presses. The first changed the scene — the engine takes the
+	#    old screen out of the tree at once — and the second ran the handler on the detached form, where `get_tree()` is
+	#    null: a SCRIPT ERROR in a debug build, SIGSEGV in a release export (`SceneTree::change_scene_to_node`, a game on
+	#    Google Play, 2026-09). The handler below does what a scene change does to the form: it leaves the tree.
+	var make_routed := func() -> GoForm:
+		var screen_form := GoForm.new()
+		var back_key := Button.new()
+		back_key.name = "BackButton"
+		screen_form.add_child(back_key)
+		back_key.owner = screen_form
+		back_key.unique_name_in_owner = true
+		root.add_child(screen_form)
+		return screen_form
+	var routed: GoForm = make_routed.call()
+	await frames(2)
+	var presses: Array[bool] = []
+	var change_scene := func() -> void:
+		presses.append(routed.is_inside_tree())
+		if routed.is_inside_tree(): root.remove_child(routed)
+	routed._back_button.pressed.connect(change_scene)
+	routed.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	routed.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await frames(2)
+	check(presses.size() == 1 and presses[0], "two Android Back requests in one frame press the back button once, in the tree (presses: %s)" % [presses])
+	routed.free()
+
+	var leaving: GoForm = make_routed.call()
+	await frames(2)
+	var late_presses: Array[bool] = []
+	leaving._back_button.pressed.connect(func() -> void: late_presses.append(leaving.is_inside_tree()))
+	leaving.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	root.remove_child(leaving)          # the screen changed in the same frame (a tap on the button itself, say)
+	await frames(2)
+	check(late_presses.is_empty(), "a Back request queued before the form left the tree presses nothing afterwards (presses: %s)" % [late_presses])
+	leaving.free()
+
+	var locked: GoForm = make_routed.call()
+	await frames(2)
+	var locked_presses := [0]
+	locked._back_button.pressed.connect(func() -> void: locked_presses[0] += 1)
+	locked.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	locked._back_button.disabled = true  # the screen got busy (a request in flight) before the end of the frame
+	await frames(2)
+	locked._back_button.disabled = false
+	locked.notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await frames(2)
+	check(locked_presses[0] == 1, "a back button locked before the end of the frame is not pressed; the next Back is (presses: %d)" % locked_presses[0])
+	locked.queue_free()
+	await frames(1)
 	# ── Avoiding a floating HUD ─────────────────────────────────────────
 	# 🛑 **Overlap has only ever been caught by eye.** The scrolled body running behind the health bar and mixing the text,
 	#    and an input field hidden behind a quick slot, both only showed when a screenshot was opened (2026-09-13). Whether two rectangles
