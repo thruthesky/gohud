@@ -53,6 +53,7 @@ func _initialize() -> void:
 	_device_rules()
 	await _profile_applies()
 	await _device_simulation()
+	_obstructions()
 	GoUi.reset()
 	print("gohud game hud tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -1832,3 +1833,87 @@ func _device_simulation() -> void:
 	root.content_scale_factor = kept_factor
 	root.content_scale_aspect = kept_aspect
 	await frames(1)
+
+
+## 📷 `GoSafeArea.obstructions()` on simulated phones and the corner geometry — the HUD's edge-to-edge model: an iPhone's
+## island derived from its symmetric insets (one side when named, both when not), the home strip, an Android phone's own
+## holes, the corner radius in UI units, and `corner_shift` / `corner_keep` keeping shapes inside the rounded glass.
+func _obstructions() -> void:
+	var view := root.get_visible_rect()
+	# iPhone 15 Pro landscape: 2556 × 1179 px @3x — insets 59 / 59 / 21 pt, island 126 pt, corner 55 pt.
+	var px := Vector2(2556, 1179)
+	var k := view.size / px
+	GoScale.simulate({"handheld": true, "size": Vector2i(px), "platform": "ios", "insets": Vector4(177, 0, 177, 63),
+		"screen_scale": 3.0, "notch_side": SIDE_LEFT})
+	var obs := GoSafeArea.obstructions(root)
+	var holes: Array[Rect2] = obs["holes"]
+	check(holes.size() == 1, "obstructions ios: one island on the named side (%s)" % [holes])
+	if holes.size() == 1:
+		var island := holes[0]
+		check(is_equal_approx(island.position.x, view.position.x) and is_equal_approx(island.size.x, 177.0 * k.x)
+			and is_equal_approx(island.size.y, 378.0 * k.y) and is_equal_approx(island.get_center().y, view.get_center().y),
+			"obstructions ios: the island is 126 pt long, the inset deep, centred on the left edge (%s)" % island)
+	var strip: Rect2 = obs["gesture"]
+	check(is_equal_approx(strip.size.y, 63.0 * k.y) and is_equal_approx(strip.end.y, view.end.y) and is_equal_approx(strip.size.x, view.size.x),
+		"obstructions ios: the home strip is the bottom inset (%s)" % strip)
+	check(is_equal_approx(float(obs["corner_radius"]), 165.0 * k.x), "obstructions ios: corner 55 pt by default (%s)" % obs["corner_radius"])
+	var bars: Vector4 = obs["bars"]
+	check(bars.x == 0.0 and bars.y == 0.0 and bars.z == 0.0 and is_equal_approx(bars.w, 63.0 * k.y),
+		"obstructions ios: both side insets released (the island and its mirror), the home strip kept (%s)" % bars)
+	GoScale.simulate({"handheld": true, "size": Vector2i(px), "platform": "ios", "insets": Vector4(177, 0, 177, 63), "screen_scale": 3.0})
+	holes = GoSafeArea.obstructions(root)["holes"]
+	check(holes.size() == 2 and holes[0].size.y < view.size.y * 0.5, "obstructions ios: side unknown — the island band on both long sides, not the whole edge (%s)" % [holes])
+	# Portrait: the island on the top edge; a notch (47 pt) is the wide 210-pt cutout; an iPad's 24-pt status bar is none.
+	check(GoSafeArea.ios_holes(Vector2(1179, 2556), Vector4(0, 177, 0, 102), 3.0) == ([Rect2(400.5, 0, 378, 177)] as Array[Rect2]),
+		"ios_holes: portrait island centred on the top edge")
+	check(GoSafeArea.ios_holes(Vector2(1170, 2532), Vector4(0, 141, 0, 102), 3.0)[0].size.x == 630.0, "ios_holes: a 47-pt notch is 210 pt wide")
+	check(GoSafeArea.ios_holes(Vector2(1668, 2388), Vector4(0, 48, 0, 40), 2.0).is_empty(), "ios_holes: an iPad's status bar is no cutout")
+	GoScale.simulate({"handheld": true, "size": Vector2i(2388, 1668), "platform": "ios", "insets": Vector4(0, 48, 0, 40), "screen_scale": 2.0})
+	var pad_obs := GoSafeArea.obstructions(root)
+	check((pad_obs["holes"] as Array).is_empty() and is_equal_approx(float(pad_obs["corner_radius"]), 36.0 * view.size.x / 2388.0),
+		"obstructions iPad: no cutout, the 18-pt tablet corner (%s)" % pad_obs["corner_radius"])
+	check(is_equal_approx((pad_obs["bars"] as Vector4).y, 48.0 * view.size.y / 1668.0), "obstructions iPad: its status bar stays a bar")
+	# Android: its own holes (and they are its simulated insets), corner from dpi when not given.
+	GoScale.simulate({"handheld": true, "size": Vector2i(2400, 1080), "platform": "android", "dpi": 420.0,
+		"cutouts": [Rect2(0, 500, 90, 80)]})
+	obs = GoSafeArea.obstructions(root)
+	var ak := view.size / Vector2(2400, 1080)
+	check((obs["holes"] as Array).size() == 1 and (obs["holes"][0] as Rect2).is_equal_approx(Rect2(0, 500 * ak.y, 90 * ak.x, 80 * ak.y)),
+		"obstructions android: the platform's hole in UI units (%s)" % [obs["holes"]])
+	check((obs["gesture"] as Rect2) == Rect2(), "obstructions android: no gesture strip")
+	check((obs["bars"] as Vector4) == Vector4.ZERO, "obstructions android: the hole-only inset is released")
+	check(GoSafeArea.bar_insets(Vector4(0, 40, 0, 24), Vector4(0, 22, 0, 0)) == Vector4(0, 40, 0, 24),
+		"bar_insets: a 40-unit status bar over a 22-unit hole stays, a bottom bar stays")
+	check(GoSafeArea.bar_insets(Vector4(29.09, 0, 0, 0), Vector4(29.09, 0, 0, 0)) == Vector4.ZERO, "bar_insets: the Realme's waterdrop gutter is released")
+	check(is_equal_approx(float(obs["corner_radius"]), 32.0 * 420.0 / 160.0 * ak.x), "obstructions android: 32 dp at the device dpi")
+	check(is_equal_approx(GoSafeArea.usable_rect(root).position.x - view.position.x, 90.0 * ak.x), "usable_rect android: the holes are its insets")
+	check(GoSafeArea.hole_insets(Vector2(2400, 1080), ([Rect2(0, 500, 90, 80), Rect2(1000, 1040, 60, 40)] as Array[Rect2])) == Vector4(90, 0, 0, 40),
+		"hole_insets: each hole on its nearest edge")
+	GoUi.config.respect_safe_area = false
+	check((GoSafeArea.obstructions(root)["holes"] as Array).is_empty(), "obstructions: none with respect_safe_area off")
+	GoUi.config.respect_safe_area = true
+	GoScale.simulate({})
+	check((GoSafeArea.obstructions(root)["holes"] as Array).is_empty() and float(GoSafeArea.obstructions(root)["corner_radius"]) == 0.0,
+		"obstructions: none on a desktop")
+	# Corners: a box flush in a corner steps diagonally 0.29 r; a round control of radius ≥ r needs nothing.
+	var screen := Rect2(0, 0, 800, 400)
+	var r := 50.0
+	var step := GoSafeArea.corner_shift(Rect2(0, 0, 100, 40), screen, r)
+	check(is_equal_approx(step.x, r * (1.0 - sqrt(0.5))) and is_equal_approx(step.y, step.x), "corner_shift: top-left box steps 0.29 r diagonally (%s)" % step)
+	var moved := Rect2(Vector2(0, 0) + step, Vector2(100, 40))
+	check(GoSafeArea.corner_shift(moved, screen, r) == Vector2.ZERO, "corner_shift: once moved it is clear")
+	check(GoSafeArea.corner_shift(Rect2(720, 320, 80, 80), screen, 40.0, true) == Vector2.ZERO, "corner_shift: a round control as big as the corner fits")
+	var ball := GoSafeArea.corner_shift(Rect2(720, 320, 80, 80), screen, r, true)
+	check(ball.x < 0.0 and ball.y < 0.0 and is_equal_approx(-ball.x, (r - 40.0) * (1.0 - sqrt(0.5))), "corner_shift: a smaller round one steps (r − its r) × 0.29 up-left (%s)" % ball)
+	check(GoSafeArea.corner_shift(Rect2(300, 0, 100, 40), screen, r) == Vector2.ZERO, "corner_shift: mid-edge needs nothing")
+	var row := GoSafeArea.corner_shift(Rect2(9, 359, 30, 34), screen, r, false, Vector2.AXIS_X)
+	check(row.y == 0.0 and is_equal_approx(row.x, 41.0 - sqrt(r * r - 43.0 * 43.0)) and
+		GoSafeArea.corner_shift(Rect2(Vector2(9.0 + row.x, 359.0), Vector2(30, 34)), screen, r).is_zero_approx(),
+		"corner_shift along x: a bottom row steps right only, just enough (%s)" % row)
+	check(GoSafeArea.corner_shift(Rect2(0, 0, 100, 40), screen, 0.0) == Vector2.ZERO, "corner_shift: square glass needs nothing")
+	var keep := GoSafeArea.corner_keep(screen, r)
+	check(keep.size() == 8, "corner_keep: an L of two bars at each corner")
+	var clear_box := Rect2(Vector2.ONE * r * (1.0 - sqrt(0.5)), Vector2(60, 30))
+	var touches := false
+	for bar: Rect2 in keep: touches = touches or bar.intersects(clear_box)
+	check(not touches and GoSafeArea.corner_shift(clear_box, screen, r).is_zero_approx(), "corner_keep: a box clear of the bars is inside the arc")

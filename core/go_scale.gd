@@ -47,6 +47,10 @@ static var _device: Dictionary = {}
 ## 🧪 Stands [param device] in for the real one: `dpi` (float), `insets` (Vector4 — the safe area's left, top, right
 ## and bottom insets in window pixels), `handheld` (bool; the game's `mobile` is read too) and `size` (Vector2i, the
 ## window in pixels). A key left out reads the real device (no `insets`: none). Empty: the real device again.
+## The physical obstructions (`GoSafeArea.obstructions`) read `platform` ("android" | "ios"), `cutouts` (Array[Rect2],
+## window pixels — an Android device given only these gets them as its insets too), `corner_radius` (pixels; left out:
+## the platform's `GoConfig` default), `screen_scale` (iOS pixels per point) and `notch_side` (`SIDE_LEFT` | `SIDE_RIGHT`
+## — which long side a landscape iPhone's island is on).
 ## 🛑 This only stores it — `GoRuntime.simulate()` also resizes the window and re-applies the scale.
 static func simulate(device: Dictionary) -> void:
 	_device = device.duplicate()

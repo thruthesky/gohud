@@ -202,6 +202,26 @@ signal changed_settings
 ## stay whole. Negative: no cap (the whole inset). Magnet Mayhem's in-match HUD uses 12.
 @export_range(-1.0, 200.0) var hud_side_inset_max := -1.0
 
+## 📷 `GoSafeArea.obstructions()` — the physical data a platform does not hand Godot.
+## iOS: the display corner radius in points. 55 is the largest published iPhone radius (14 Pro … 15 Pro Max; 39 on an
+## iPhone X, 47.33 on a 12/13/14). The continuous corner curve lies outside the circle of the same radius at the
+## diagonal, so the circle is the safe model there.
+@export_range(0.0, 120.0) var corner_radius_ios := 55.0
+
+## iOS, a screen past the mobile breakpoint (an iPad): its display corner radius in points (18 on every rounded iPad).
+@export_range(0.0, 120.0) var corner_radius_ios_tablet := 18.0
+
+## Android: the display corner radius in dp — Godot does not expose `WindowInsets.getRoundedCorner` (API 31+). 32 dp is a
+## 2024 mid-range phone's (104 px at density 520, `dumpsys display`); a phone with smaller corners loses a few units
+## at its corners, never a control under the glass's edge.
+@export_range(0.0, 120.0) var corner_radius_android := 32.0
+
+## iOS: the cutout an inset edge stands for, by the inset's depth — rows of (the least inset in points, the cutout's
+## length along the edge in points), deepest first. A 59-pt inset is a Dynamic Island (126 pt); a 44–50-pt one a notch
+## (210 pt — the iPhone X's 35 mm at 458 ppi, the widest); an inset under the last row (an iPad's 20–24-pt status bar)
+## is no cutout.
+@export var ios_cutout_lengths := PackedVector2Array([Vector2(54.0, 126.0), Vector2(30.0, 210.0)])
+
 
 # ── Surfaces (popups·sheets·dialogs) ───────────────────────────────────
 
