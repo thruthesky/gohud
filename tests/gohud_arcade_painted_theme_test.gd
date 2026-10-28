@@ -71,6 +71,7 @@ func _initialize() -> void:
 		_item_sets(light)
 		_engine_bases(light)
 		await _scoreboard(light)
+		await _score_stripes(light)
 		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
@@ -413,6 +414,8 @@ func _variations(theme: Theme) -> void:
 		&"GoPanelFlat": &"PanelContainer", &"GoCardFlat": &"PanelContainer", &"GoChoiceButton": &"Button",
 		&"GoBigButton": &"Button", &"GoBigSecondaryButton": &"Button", &"GoSmallLabel": &"Label", &"GoBarLabel": &"Label",
 		&"GoMapPreview": &"Panel",
+		&"GoScoreRowStripe": &"PanelContainer", &"GoScoreRowStripeAlt": &"PanelContainer",
+		&"GoScoreRowStripeGold": &"PanelContainer", &"GoScoreRowLabel": &"Label", &"GoScoreRowMutedLabel": &"Label",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -574,6 +577,95 @@ func _engine_bases(theme: Theme) -> void:
 		"GoChipDark's outline falls through to the engine's (none), as the game's LangChip does")
 	chip.free()
 	check(not theme.has_constant(&"outline_size", &"Button"), "no base outline under the chip's label")
+
+
+## 🦓 The flat zebra rows of a long ranking: flat token fills with no rim, corner or shadow, stacked with no gap so they
+## read as stripes; the medium-weight row lettering in the scoreboard's ink and the muted ink.
+func _score_stripes(theme: Theme) -> void:
+	var surface := theme.get_color(GoTheme.SURFACE, GoTheme.TYPE)
+	var want := {&"GoScoreRowStripe": surface, &"GoScoreRowStripeAlt": theme.get_color(GoTheme.SURFACE_SOFT, GoTheme.TYPE),
+		&"GoScoreRowStripeGold": surface.lerp(theme.get_color(GoTheme.WARNING_FILL, GoTheme.TYPE), 0.28)}
+	for type: StringName in want:
+		var face := theme.get_stylebox(&"panel", type) as StyleBoxFlat
+		check(face != null, "%s: a flat box" % type)
+		if face == null: continue
+		check(face.bg_color.is_equal_approx(want[type]) and face.draw_center,
+			"%s: filled with its token (got %s, want %s)" % [type, face.bg_color.to_html(), (want[type] as Color).to_html()])
+		var rim := 0
+		var rounding := 0
+		for side: Side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]: rim += face.get_border_width(side)
+		for corner: Corner in [CORNER_TOP_LEFT, CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, CORNER_BOTTOM_LEFT]:
+			rounding += face.get_corner_radius(corner)
+		check(rim == 0 and rounding == 0 and face.shadow_size == 0 and face.skew == Vector2.ZERO,
+			"%s: no rim, no corners, no shadow — a stripe, not a pill" % type)
+		check(_margins(face) == [10.0, 0.0, 16.0, 0.0] and face.get_expand_margin(SIDE_TOP) == 0.0
+			and face.get_expand_margin(SIDE_BOTTOM) == 0.0,
+			"%s: padding 10 left, 16 right, none above or below (got %s)" % [type, _margins(face)])
+		check(theme.get_stylebox_list(type) == PackedStringArray(["panel"]) and theme.get_color_list(type).is_empty(),
+			"%s: the panel face and nothing else" % type)
+	var plain := want[&"GoScoreRowStripe"] as Color
+	var alt := want[&"GoScoreRowStripeAlt"] as Color
+	var gold := want[&"GoScoreRowStripeGold"] as Color
+	check(plain.get_luminance() > alt.get_luminance() and absf(plain.get_luminance() - alt.get_luminance()) > 0.02,
+		"the stripes alternate light and grey (%.3f / %.3f)" % [plain.get_luminance(), alt.get_luminance()])
+	check(gold.r > gold.b + 0.15 and gold.get_luminance() > 0.85, "the first row is a soft gold (%s)" % gold.to_html())
+	# Stacked with no separation they tile: each row exactly where the one above ends, every row its content's height.
+	var column := VBoxContainer.new()
+	column.theme = theme
+	column.add_theme_constant_override(&"separation", 0)
+	column.size = Vector2(400, 10)
+	root.add_child(column)
+	var rows: Array[PanelContainer] = []
+	for type: StringName in [&"GoScoreRowStripeGold", &"GoScoreRowStripe", &"GoScoreRowStripeAlt", &"GoScoreRowStripe"]:
+		var row := PanelContainer.new()
+		row.theme_type_variation = type
+		var cell := Label.new()
+		cell.theme_type_variation = &"GoScoreRowLabel"
+		cell.text = "MagnetQueen"
+		row.add_child(cell)
+		column.add_child(row)
+		rows.append(row)
+	await process_frame
+	await process_frame
+	var tiled := true
+	for i: int in range(1, rows.size()):
+		tiled = tiled and is_equal_approx(rows[i].position.y, rows[i - 1].position.y + rows[i - 1].size.y)
+	var label := rows[0].get_child(0) as Label
+	check(tiled and rows[0].size.y == label.size.y and label.position.x == 10.0,
+		"the stripes stack edge to edge, each its label's height, the label 10 in (%s)" % [rows.map(
+			func(r: Control) -> Rect2: return r.get_rect())])
+	column.free()
+	# The rows' lettering: the body font at embolden 0.5 — lighter than the scoreboard's heavy face, the same languages.
+	var body := theme.default_font as FontVariation
+	var heavy := theme.get_font(&"font", &"GoScoreLabel") as FontVariation
+	for type: StringName in [&"GoScoreRowLabel", &"GoScoreRowMutedLabel"]:
+		var font := theme.get_font(&"font", type) as FontVariation
+		check(font != null and is_equal_approx(font.variation_embolden, 0.5) and font.base_font == body,
+			"%s: the body font at a medium weight (embolden 0.5)" % type)
+		if font != null and heavy != null:
+			check(font.variation_embolden < heavy.variation_embolden and font.variation_embolden > body.variation_embolden,
+				"%s: lighter than GoScoreLabel's heavy face, heavier than the body" % type)
+			for character: String in ["한", "日", "中"]:
+				check(font.has_char(character.unicode_at(0)), "%s: the medium face can display %s" % [type, character])
+		check(theme.get_constant(&"outline_size", type) == 0, "%s: no outline" % type)
+		check(theme.get_font_size_list(type).is_empty(), "%s: no font size of its own — the caller sizes its rows" % type)
+	check(theme.get_color(&"font_color", &"GoScoreRowLabel") == theme.get_color(&"font_color", &"GoScoreLabel"),
+		"GoScoreRowLabel: GoScoreLabel's navy ink")
+	check(theme.get_color(&"font_color", &"GoScoreRowMutedLabel") == theme.get_color(GoTheme.MUTED, GoTheme.TYPE),
+		"GoScoreRowMutedLabel: the muted token's ink")
+	for type: StringName in want:
+		var face := theme.get_stylebox(&"panel", type) as StyleBoxFlat
+		if face == null: continue
+		for ink_type: StringName in [&"GoScoreRowLabel", &"GoScoreRowMutedLabel"]:
+			var ratio := _contrast(theme.get_color(&"font_color", ink_type), face.bg_color)
+			check(ratio >= 4.5, "%s on %s reads (%.2f:1)" % [ink_type, type, ratio])
+
+
+## The WCAG contrast ratio of two opaque colours.
+func _contrast(a: Color, b: Color) -> float:
+	var la := a.srgb_to_linear().get_luminance()
+	var lb := b.srgb_to_linear().get_luminance()
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
 
 
 ## Real scroll containers inherit painted bars even when the caller never supplies a variation or an override.
