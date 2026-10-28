@@ -1,5 +1,5 @@
 ## 🧪 **Checks for the match-HUD widgets** — the generic parts of Magnet Mayhem's in-match screen: the painted bar
-## (`GoBar`'s frame), and the HUD's cards, touch keys, name plates, feed, spotlight, readout and scaling as they land.
+## (`GoBar`'s frame), and the HUD's cards, touch keys, name plates, feed, spotlight, gesture hint, readout and scaling as they land.
 ## Each runs in arcade_light (the game's values) and in a plain look (the fallbacks: no art, no frame, no errors).
 ## 🛑 These widgets show what they are given and decide nothing — the checks feed them values and read the display.
 ##
@@ -42,6 +42,7 @@ func _initialize() -> void:
 		await _joystick_driven(look)
 		await _task_card(look)
 		await _spotlight(look)
+		await _gesture_hint(look)
 		await _perf_readout(look)
 		await _signal_bars(look)
 		await _slot_touch(look)
@@ -1305,6 +1306,118 @@ func _spotlight(look: StringName) -> void:
 	await frames(1)
 
 
+# ── A gesture hint (GoGestureHint) ─────────────────────────────────────
+
+func _hint_gap(hint: GoGestureHint) -> float:
+	var at := hint.finger_positions()
+	return at[0].distance_to(at[1]) if at.size() == 2 else -1.0
+
+
+## Moves [param hint] on to [param u] of its loop (from where it is now, never backwards).
+func _hint_to(hint: GoGestureHint, u: float) -> void:
+	hint.advance(maxf(0.0, u - hint.progress()) * hint.loop_seconds)
+
+
+func _gesture_hint(look: StringName) -> void:
+	var still := GoUi.config.reduce_motion
+	GoUi.config.reduce_motion = false
+	var hint := GoGestureHint.new()
+	hint.auto_advance = false
+	var holder := _host(hint, 400.0)
+	hint.size = Vector2(400, 300)
+	await frames(1)
+	check(hint.mouse_filter == Control.MOUSE_FILTER_IGNORE, "gesture hint: never takes input")
+	check(hint.gesture == GoGestureHint.Gesture.PINCH, "gesture hint: PINCH by default")
+	check(not hint.playing and hint.finger_positions().is_empty(), "gesture hint: stopped at first, no fingertips")
+	var painted := hint.paint_count
+	hint.queue_redraw()
+	await frames(2)
+	check(hint.paint_count == painted, "gesture hint: draws nothing while stopped")
+	hint.advance(1.0)
+	check(hint.progress() == 0.0, "gesture hint: advance() does nothing while stopped")
+	hint.play()
+	check(hint.playing and hint.progress() == 0.0, "gesture hint: play() starts the loop from its beginning")
+	_hint_to(hint, 0.05)
+	await frames(2)
+	check(hint.paint_count > painted, "gesture hint: draws once playing (%d)" % hint.paint_count)
+	var at := hint.finger_positions()
+	check(at.size() == 2, "gesture hint: two fingertips")
+	check(((at[0] + at[1]) * 0.5).is_equal_approx(hint.size * 0.5), "gesture hint: centred in its rect")
+	check(hint.ghost_alpha() > 0.0 and hint.ghost_alpha() < 1.0, "gesture hint: fades in (%f)" % hint.ghost_alpha())
+	var closed := _hint_gap(hint)
+	check(closed > 0.0 and hint.spread() == 0.0, "gesture hint: appears close together (%f)" % closed)
+	var last := closed
+	var widens := true
+	for step in 6:
+		_hint_to(hint, 0.10 + 0.05 * (step + 1))
+		var now := _hint_gap(hint)
+		if now < last - 0.001: widens = false
+		last = now
+	check(widens, "gesture hint: the fingertips spread apart")
+	_hint_to(hint, 0.46)
+	var open := _hint_gap(hint)
+	at = hint.finger_positions()
+	check(hint.spread() == 1.0 and hint.ghost_alpha() == 1.0, "gesture hint: holds apart, fully shown")
+	check(open > closed * 2.0, "gesture hint: apart is far wider than together (%f vs %f)" % [open, closed])
+	check(at[0].x > at[1].x and at[0].y < at[1].y, "gesture hint: along the diagonal, up-right and down-left")
+	var inside := Rect2(Vector2.ZERO, hint.size).grow(-hint.finger_radius())
+	check(inside.has_point(at[0]) and inside.has_point(at[1]), "gesture hint: apart, both fingertips stay in the rect")
+	last = open
+	var narrows := true
+	for step in 6:
+		_hint_to(hint, 0.52 + 0.05 * (step + 1))
+		var now := _hint_gap(hint)
+		if now > last + 0.001: narrows = false
+		last = now
+	check(narrows, "gesture hint: then pinch back together")
+	_hint_to(hint, 0.86)
+	check(is_equal_approx(_hint_gap(hint), closed) and hint.spread() == 0.0, "gesture hint: together again")
+	_hint_to(hint, 0.95)
+	check(hint.ghost_alpha() > 0.0 and hint.ghost_alpha() < 1.0, "gesture hint: fades out at the end of the loop")
+	hint.advance(hint.loop_seconds * 0.10)
+	check(hint.progress() < 0.1 and hint.playing, "gesture hint: loops round (%f)" % hint.progress())
+	check(hint.loop_seconds >= 2.0 and hint.loop_seconds <= 3.0, "gesture hint: a loop of 2–3 s")
+	_hint_to(hint, 0.46)
+	hint.play()
+	check(hint.progress() == 0.0, "gesture hint: play() mid-loop restarts it")
+	# It scales to its rect: a bigger rect, a wider pinch and bigger fingertips (kept in 14..30 dp).
+	_hint_to(hint, 0.46)
+	var small_radius := hint.finger_radius()
+	hint.size = Vector2(800, 600)
+	check(_hint_gap(hint) > open * 1.8, "gesture hint: travel follows the rect's size (%f)" % _hint_gap(hint))
+	check(hint.finger_radius() > small_radius and hint.finger_radius() <= 30.0, "gesture hint: fingertips grow, capped")
+	hint.size = Vector2(80, 80)
+	check(hint.finger_radius() >= 14.0, "gesture hint: fingertips never under 14 dp")
+	hint.size = Vector2(400, 300)
+	hint.stop()
+	check(not hint.playing and hint.finger_positions().is_empty(), "gesture hint: stop() hides the fingertips")
+	painted = hint.paint_count
+	hint.queue_redraw()
+	await frames(2)
+	check(hint.paint_count == painted, "gesture hint: draws nothing once stopped")
+	# Reduced motion: one still frame, apart, never moving.
+	GoUi.config.reduce_motion = true
+	hint.play()
+	hint.advance(1.3)
+	check(hint.progress() == 0.0 and hint.spread() == GoGestureHint.STILL_SPREAD and hint.ghost_alpha() == 1.0,
+		"gesture hint: reduce_motion holds a still frame")
+	check(_hint_gap(hint) > closed, "gesture hint: the still frame shows the fingertips apart")
+	await frames(2)
+	check(hint.paint_count > painted, "gesture hint: the still frame is drawn")
+	GoUi.config.reduce_motion = false
+	check(hint.ink_color() == GoUi.color(GoTheme.ACCENT), "gesture hint: rims in the look's accent")
+	hint.ink = Color.RED
+	check(hint.ink_color() == Color.RED, "gesture hint: ink overrides it")
+	check(hint.theme == GoUi.theme(), "gesture hint: built with the look's theme")
+	var skin := GoUi.skin()
+	check(skin.has_method(&"draw_gesture_touch") and skin.has_method(&"draw_gesture_arrow"),
+		"gesture hint: the skin draws the fingertip and the arrow (%s)" % look)
+	hint.stop()
+	GoUi.config.reduce_motion = still
+	holder.queue_free()
+	await frames(1)
+
+
 # ── A performance readout (GoPerfReadout) ──────────────────────────────
 
 func _perf_stats(fps: float) -> Dictionary:
@@ -1522,6 +1635,11 @@ func _look_follows() -> void:
 			spot.auto_advance = false
 			spot.light(Rect2(50, 50, 80, 60))
 			return spot,
+		"gesture hint": func() -> Control:
+			var hint := GoGestureHint.new()
+			hint.auto_advance = false
+			hint.play()
+			return hint,
 		"signal bars": func() -> Control: return GoSignalBars.make(3, GoSignalBars.Tone.GOOD),
 	}
 	for key: String in makers:
@@ -1588,6 +1706,8 @@ func _look_sig(key: String, widget: Control) -> String:
 		"spotlight":
 			var ring := widget.get(&"_ring") as StyleBoxFlat
 			return "%s" % (ring.border_color if ring != null else "none")
+		"gesture hint":
+			return "%s" % (widget as GoGestureHint).ink_color()
 		"signal bars":
 			var bars := widget as GoSignalBars
 			bars.text = "48 ms"

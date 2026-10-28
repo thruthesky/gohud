@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD e forme da gioco <small>(27)</small></h2>
+  <h2>HUD e forme da gioco <small>(28)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -973,6 +973,16 @@ skill.<wbr>cooldown = 0.4</code></pre>
       <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
 hud.<wbr>add_child(<wbr>spot)
 spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gogesturehint"><code>GoGestureHint</code></h3>
+      <p>Polpastrelli fantasma che ripetono un gesto touch: due si allargano e si richiudono per insegnare il pizzico per lo zoom. Non riceve mai input.</p>
+      <p class="catalog-base">estende <code>Control</code></p>
+      <pre><code>var hint := GoGestureHint.<wbr>new(<wbr>)
+hud.<wbr>add_child(<wbr>hint)
+hint.<wbr>position = Vector2(<wbr>480,<wbr> 0)
+hint.<wbr>size = Vector2(<wbr>480,<wbr> 540)
+hint.<wbr>play(<wbr>)</code></pre>
     </div>
     <div class="card">
       <h3 id="gotaskcard"><code>GoTaskCard</code></h3>

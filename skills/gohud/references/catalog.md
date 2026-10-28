@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (27)
+8. [HUD and game shapes](#hud-and-game-shapes) (28)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -993,6 +993,18 @@ Extends `Control`. Dims the screen round one control and rings it; the dim fades
 var spot := GoSpotlight.new()
 hud.add_child(spot)
 spot.follow(jump_button, true)
+```
+
+### `GoGestureHint`
+
+Extends `Control`. Ghost fingertips that play a touch gesture in a loop — two of them spread apart and pinch back together to teach pinch-to-zoom. Never takes input. Details: `hud.md` §38 (GoGestureHint).
+
+```gdscript
+var hint := GoGestureHint.new()
+hud.add_child(hint)
+hint.position = Vector2(480, 0)
+hint.size = Vector2(480, 540)
+hint.play()
 ```
 
 ### `GoTaskCard`

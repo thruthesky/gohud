@@ -103,6 +103,7 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoSignalBars`** a phone-style signal meter for a HUD's ping: bars rising left to right, lit in GOOD / FAIR / POOR, a readout beside them; display only | `ping.set_reading(3, GoSignalBars.Tone.GOOD, "48 ms")` | hud.md §36 |
 | **`GoPerfReadout`** always-on fps / frame time / triangles / draws / memory band that turns red as fps drops | `overlay.add_child(GoPerfReadout.new())` | hud.md §35 |
 | **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §34 |
+| **`GoGestureHint`** ghost fingertips that play a touch gesture in a loop — `PINCH` spreads and pinches two of them to teach pinch-to-zoom; never takes input | `hint.play()` | hud.md §38 |
 | **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §33 |
 | **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §32 |
 | **`GoNoticeFeed`** a feed of one-line notices (a kill feed) that fade in, stack and go on their own | `feed.push(text, own)` · `feed.push_versus(killer, picture, victim)` | hud.md §31 |

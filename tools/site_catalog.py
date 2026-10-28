@@ -2123,6 +2123,28 @@ spot.follow(jump_button, true)""", T(
 		"Затемнює екран навколо одного елемента й обводить його; затемнення згасає, рамка лишається.",
 		"หรี่หน้าจอรอบตัวควบคุมหนึ่งตัวและวาดกรอบรอบมัน ความมืดจะจางไป กรอบยังอยู่",
 		"يعتّم الشاشة حول عنصر واحد ويحيطه بإطار؛ يتلاشى التعتيم ويبقى الإطار.")),
+	("hud", "GoGestureHint", "Control", """var hint := GoGestureHint.new()
+hud.add_child(hint)
+hint.position = Vector2(480, 0)
+hint.size = Vector2(480, 540)
+hint.play()""", T(
+		"Ghost fingertips that play a touch gesture in a loop — two of them spread apart and pinch back together to teach pinch-to-zoom. Never takes input.",
+		"반투명한 손가락 끝이 터치 제스처를 반복해서 보여 준다 — 두 손가락이 벌어졌다 다시 오므라들며 핀치 줌을 가르친다. 입력을 받지 않는다.",
+		"半透明の指先がタッチ操作をくり返し見せる。二本の指が開いてまた閉じ、ピンチズームを教える。入力は受け取らない。",
+		"半透明的指尖循环演示一个触控手势——两指张开再捏合，教玩家双指缩放。不接收输入。",
+		"半透明的指尖循環示範一個觸控手勢——兩指張開再捏合，教玩家雙指縮放。不接收輸入。",
+		"Yemas de dedo fantasma que repiten un gesto táctil: dos se separan y se vuelven a juntar para enseñar a pellizcar para hacer zoom. Nunca recibe entrada.",
+		"Pontas de dedo fantasmas que repetem um gesto de toque: duas se afastam e voltam a se juntar para ensinar o gesto de pinça para zoom. Nunca recebe entrada.",
+		"Полупрозрачные кончики пальцев повторяют жест: два пальца расходятся и снова сводятся, обучая масштабированию щипком. Не принимает ввод.",
+		"Des bouts de doigts fantômes rejouent un geste tactile en boucle : deux s'écartent puis se rapprochent pour apprendre le pincement pour zoomer. Ne prend jamais l'entrée.",
+		"Bir dokunma hareketini döngüyle oynatan hayalet parmak uçları: ikisi açılıp yeniden kapanarak kıstırıp yakınlaştırmayı öğretir. Hiç girdi almaz.",
+		"Półprzezroczyste opuszki palców odgrywają gest dotykowy w pętli: dwie rozsuwają się i znów zsuwają, ucząc powiększania szczypnięciem. Nigdy nie przejmuje wejścia.",
+		"Polpastrelli fantasma che ripetono un gesto touch: due si allargano e si richiudono per insegnare il pizzico per lo zoom. Non riceve mai input.",
+		"Đầu ngón tay mờ lặp lại một cử chỉ chạm: hai ngón tách ra rồi chụm lại để dạy chụm thu phóng. Không bao giờ nhận đầu vào.",
+		"Ujung jari bayangan yang memutar gerakan sentuh berulang: dua jari merenggang lalu merapat lagi untuk mengajarkan cubit untuk zoom. Tidak pernah menerima input.",
+		"Напівпрозорі кінчики пальців повторюють жест: два пальці розходяться й знову сходяться, навчаючи масштабування щипком. Не приймає введення.",
+		"ปลายนิ้วโปร่งแสงเล่นท่าทางสัมผัสวนซ้ำ — สองนิ้วกางออกแล้วหุบเข้า เพื่อสอนการบีบนิ้วซูม ไม่รับอินพุตเลย",
+		"أطراف أصابع شبحية تكرر إيماءة لمس: إصبعان يتباعدان ثم يتقاربان لتعليم القرص للتكبير. لا تستقبل أي إدخال.")),
 	("hud", "GoTaskCard", "PanelContainer", """var card := GoTaskCard.new()
 card.caption = "TRAINING · STEP 1/12"
 card.title = "MOVE"

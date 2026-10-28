@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars and GoFoldTab.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab and GoGestureHint.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -44,6 +44,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 35. [GoPerfReadout — a performance band](#35-goperfreadout--a-performance-band)
 36. [GoSignalBars — a signal meter](#36-gosignalbars--a-signal-meter)
 37. [GoFoldTab — fold a HUD panel into a pill](#37-gofoldtab--fold-a-hud-panel-into-a-pill)
+38. [GoGestureHint — ghost fingers that play a gesture](#38-gogesturehint--ghost-fingers-that-play-a-gesture)
 
 ## 1. GoHudAnchor
 
@@ -1231,3 +1232,41 @@ tab.meter = 0.82                           # and a gauge along its bottom (under
 - 🛑 Keyboard: Tab-reachable in the normal looks (`GoStyle.skin_focus`), Enter / Space presses it. A clicked tab keeps
   focus, so over gameplay where Space is a game key set `focus_mode = Control.FOCUS_NONE` (or `GoHudAnchor.keyboard_focus
   = false`), or the next Space folds the panel.
+
+## 38. GoGestureHint — ghost fingers that play a gesture
+
+`class_name GoGestureHint extends Control` · a tutorial that teaches a touch gesture shows it played by see-through
+ghost fingertips, in a loop, over the area where the player should do it. `PINCH` (the only gesture so far): two
+fingertips appear close together near the middle, spread apart along the diagonal (zoom in), pause, pinch back together
+(zoom out), pause and fade — then again, about every 2.6 s. Short fading trails follow a moving fingertip and small
+arrows point the way it goes. 🛑 It never takes input (`MOUSE_FILTER_IGNORE`): the player pinches *through* it.
+
+```gdscript
+var hint := GoGestureHint.new()
+hud.add_child(hint)
+hint.position = Vector2(hud.size.x * 0.5, 0.0)   # the area to demonstrate in: the right half of the screen
+hint.size = Vector2(hud.size.x * 0.5, hud.size.y)
+hint.play()                                      # (re)starts the loop from its beginning
+# … the game saw the player pinch:
+hint.stop()                                      # hides it; nothing is drawn until the next play()
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `enum Gesture { PINCH }` · `gesture` | `PINCH` | Room is kept for more (a tap, a swipe) |
+| `play()` · `stop()` · `playing` | `false` | `playing` is true between the two — read it, do not set it |
+| `auto_advance` · `advance(delta)` | `true` | Runs the loop in `_process`, or drive it yourself (headless tests). Does nothing while stopped |
+| `loop_seconds` | `2.6` | One loop: fade in (to `FADE_IN_END` 0.10), spread (to `SPREAD_END` 0.40), hold apart (to `OPEN_END` 0.52), pinch (to `PINCH_END` 0.82), hold together (to `CLOSED_END` 0.90), fade out. The motion eases in and out |
+| `reach` · `near` | `0.34` · `0.08` | How far each fingertip stands from the middle when apart / together, as a share of the rect's short side (apart is held inside the rect with room for the arrows) |
+| `ink` · `ink_color()` | transparent | The fingertips' rim and the arrows; transparent uses the theme's `accent` |
+| `progress()` · `spread()` · `ghost_alpha()` · `finger_positions()` · `finger_radius()` | | Where the loop is (0 → 1); how far apart (0 together, 1 apart); how strongly it shows; the two centres in local coordinates (empty while stopped); a fingertip's radius — 7.5 % of the short side, kept in 14..30 dp |
+| `paint_count` | | How many times the ghost was painted — a stopped hint adds none |
+
+- The gesture centres itself in the node's rect and scales its travel and fingertips to the rect's short side, so it
+  reads the same on a phone and an iPad. The caller places and sizes the node; it does not cover its parent by itself.
+- Under `GoConfig.reduce_motion` it holds one still frame: the fingertips apart (`STILL_SPREAD` 0.75) with arrows out
+  and in.
+- Skin hooks: `draw_gesture_touch(canvas, at, radius, ink, strength)` (a fingertip: a soft halo and a see-through
+  `surface` disc ringed in `ink`) and `draw_gesture_arrow(canvas, at, direction, length, ink, strength)`. It follows a
+  look change (`GoUi.watch`).
+- 🛑 Display only: the game decides when the gesture was done and calls `stop()`.

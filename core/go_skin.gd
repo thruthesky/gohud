@@ -1322,6 +1322,31 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
+## 👆 One ghost fingertip of a `GoGestureHint` at [param at], [param radius] dp, [param ink] its rim, [param strength]
+## (0..1) how much of it shows — a trail copy is drawn the same way, fainter and smaller. The default is a soft halo and
+## a see-through `surface` disc ringed in [param ink].
+func draw_gesture_touch(canvas: CanvasItem, at: Vector2, radius: float, ink: Color, strength: float) -> void:
+	if strength <= 0.0 or radius <= 0.0: return
+	var fill := GoUi.color(GoTheme.SURFACE)
+	canvas.draw_circle(at, radius * 1.35, Color(fill, 0.18 * strength), true, -1.0, true)
+	canvas.draw_circle(at, radius, Color(fill, 0.55 * strength), true, -1.0, true)
+	canvas.draw_arc(at, radius, 0.0, TAU, 40, Color(ink, ink.a * 0.9 * strength), maxf(2.0, radius * 0.12), true)
+
+
+## 👆 A `GoGestureHint`'s arrow: a small triangle centred on [param at] pointing along [param direction] (unit),
+## [param length] dp long, in [param ink] with a thin `surface` edge so it reads on any scene.
+func draw_gesture_arrow(canvas: CanvasItem, at: Vector2, direction: Vector2, length: float, ink: Color,
+		strength: float) -> void:
+	if strength <= 0.0 or length <= 0.0 or direction.is_zero_approx(): return
+	var tip := at + direction * length * 0.5
+	var back := at - direction * length * 0.5
+	var wing := direction.orthogonal() * length * 0.55
+	var points := PackedVector2Array([tip, back + wing, back - wing])
+	canvas.draw_colored_polygon(points, Color(ink, ink.a * strength))
+	points.append(tip)
+	canvas.draw_polyline(points, Color(GoUi.color(GoTheme.SURFACE), 0.85 * strength), 1.5, true)
+
+
 ## 📋 A `GoTaskCard`'s title. The default is the `heading` token (the accent where a look names no heading).
 func task_title_ink() -> Color:
 	return GoUi.color(GoTheme.HEADING)
