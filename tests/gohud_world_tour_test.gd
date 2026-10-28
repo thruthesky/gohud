@@ -82,7 +82,9 @@ func _initialize() -> void:
 	check(not heading.title_label.text.contains("\n"), "a short stage title stays on one line")
 	heading.stage_label.add_theme_font_size_override(&"font_size", 96)
 	heading._layout()
+	await process_frame
 	check(heading._stage_art.get_rect().encloses(heading.stage_label.get_rect()), "stage text stays inside the blue pill")
+	check(heading.stage_label.get_combined_minimum_size().y <= heading._stage_art.size.y, "the stage text's line box and outline fit inside the pill")
 	heading.queue_free()
 	var script := load("res://addons/gohud/widgets/go_world_tour.gd")
 	if script == null:

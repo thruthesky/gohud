@@ -11,6 +11,7 @@ var title_base_size := 8
 var stage_base_size := 8
 var _stage_art: TextureRect
 var _ribbon_art: TextureRect
+var _stage_layout_pending := false
 
 
 func _init() -> void:
@@ -23,6 +24,7 @@ func _init() -> void:
 	add_child(_stage_art)
 	stage_label = _label()
 	add_child(stage_label)
+	stage_label.minimum_size_changed.connect(_queue_stage_layout)
 	resized.connect(_layout)
 
 
@@ -53,6 +55,9 @@ func _layout() -> void:
 	_stage_art.size = Vector2(size.x * 0.58, size.y * 0.44)
 	stage_label.position = _stage_art.position
 	var stage_size := _stage_art.size * Vector2(1.0, 0.9)
+	var outline := clampi(roundi(_stage_art.size.y * 0.09), 1, 8)
+	if not stage_label.has_theme_constant_override(&"outline_size") or stage_label.get_theme_constant(&"outline_size") != outline:
+		stage_label.add_theme_constant_override(&"outline_size", outline)
 	# Fit before applying the rect: a prior large font otherwise forces Label's minimum size to grow it.
 	stage_base_size = _fit(stage_label, stage_size.x * 0.82, stage_size.y * 0.62, stage_size.y)
 	stage_label.size = stage_size
@@ -70,10 +75,24 @@ func _fit(label: Label, width: float, height: float, max_height := INF) -> int:
 	var font := label.get_theme_font(&"font")
 	# Baloo's rounded letters have a taller line box than their nominal font size. Keep the base inside
 	# the actual ribbon before width-fitting, so the label cannot expand below its art.
-	while base > 8 and font.get_height(base) > max_height:
+	var outline := label.get_theme_constant(&"outline_size")
+	while base > 8 and font.get_height(base) + 2.0 * outline > max_height:
 		base -= 1
-	label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([label.text]), base, width, font))
+	var fitted := GoStyle.fit_font_size(PackedStringArray([label.text]), base, width, font)
+	if not label.has_theme_font_size_override(&"font_size") or label.get_theme_font_size(&"font_size") != fitted:
+		label.add_theme_font_size_override(&"font_size", fitted)
 	return base
+
+
+func _queue_stage_layout() -> void:
+	if _stage_layout_pending: return
+	_stage_layout_pending = true
+	_finish_stage_layout.call_deferred()
+
+
+func _finish_stage_layout() -> void:
+	_stage_layout_pending = false
+	_layout()
 
 
 ## Long translations use two lines rather than violating the floor. Prefer splitting at a word boundary; scripts
