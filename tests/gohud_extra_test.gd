@@ -3273,7 +3273,54 @@ func _fold_tab() -> void:
 
 	holder.queue_free()
 	await frames(1)
+	await _fold_touch_peers()
 	section("fold tab")
+
+
+## Packed tabs keep the target floor while dividing overlapping touch by their visible faces.
+func _fold_touch_peers() -> void:
+	var holder := Control.new()
+	holder.position = Vector2(10, 10)
+	holder.scale = Vector2(1.25, 1.25)
+	root.add_child(holder)
+	var a := GoFoldTab.new()
+	var b := GoFoldTab.new()
+	for tab: GoFoldTab in [a, b]:
+		tab.tab_face = Vector2(34, 34)
+		tab.tab_align = SIDE_TOP
+		holder.add_child(tab)
+		tab.size = Vector2(48, 48)
+	a.position = Vector2(20, 20)
+	b.position = Vector2(60, 20)
+	a.touch_peers = [b]
+	b.touch_peers = [a]
+	await frames(2)
+	for x: float in [61.0, 63.0, 64.0, 65.0, 67.0]:
+		var point := Vector2(x, 37)
+		var hit_a := a._has_point(point - a.position)
+		var hit_b := b._has_point(point - b.position)
+		check(int(hit_a) + int(hit_b) == 1, "fold peers: one owner across the shared band at %.0f" % x)
+		if x < 64.0: check(hit_a, "fold peers: left face owns the left half")
+		if x > 64.0: check(hit_b, "fold peers: right face owns the right half")
+	check(a.touch_hit(Vector2(47, 17)) and b.touch_hit(Vector2(1, 17)), "fold peers: raw shapes retain their whole target")
+	check(not a._has_point(Vector2(49, 17)), "fold peers: arbitration never grows the raw target")
+	b.visible = false
+	check(a._has_point(Vector2(47, 17)), "fold peers: a hidden neighbour cannot take a touch")
+	b.visible = true
+	b.position.x = 100.0
+	b.tab_face = Vector2(500, 500)
+	check(a._has_point(Vector2(47, 17)), "fold peers: a peer that does not hold the point cannot take it")
+	var calls := [0]
+	a.touch_owner = func(control: Control, local: Vector2, peers: Array[Control]) -> bool:
+		calls[0] += 1
+		return control == a and local.x < 24.0 and peers.has(b)
+	check(a._has_point(Vector2(8, 17)) and not a._has_point(Vector2(40, 17)) and calls[0] == 2,
+		"fold peers: optional host arbitration receives control, local point and peers")
+	a.touch_owner = Callable()
+	a.touch_peers.clear()
+	check(a._has_point(Vector2(47, 17)), "fold peers: clearing peers restores the full raw target")
+	holder.queue_free()
+	await frames(1)
 
 
 ## A left click (down and up) at [param point] in the screen's coordinates.

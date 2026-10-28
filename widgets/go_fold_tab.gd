@@ -183,6 +183,13 @@ const LOCKED_ALPHA := 0.45
 		role = value
 		_restyle()
 
+## Targets whose touch boxes may overlap this tab. Every participant must register the others.
+## Raw hit testing stays separate from ownership so arbitration never recurses through `_has_point`.
+var touch_peers: Array[Control] = []
+## Optional host arbitration `(control, local_point, peers) -> bool`. A host with round or custom faces can
+## share its existing ownership rule. Without one, the nearer visible fold face (other controls: their box) wins.
+var touch_owner: Callable
+
 ## The row laid over the face: the glyph, the text and the chevron.
 var row: HBoxContainer
 ## The pill's text.
@@ -461,11 +468,40 @@ func _make_custom_tooltip(for_text: String) -> Object:
 	return GoStyle.tooltip_node(for_text)
 
 
-## The node is the touch box; one smaller than the touch floor still takes presses out to `GoUi.touch_size()`, as
-## `GoIconButton` does.
-func _has_point(point: Vector2) -> bool:
+## The raw touch box, before peers divide it. One smaller than the touch floor still reaches `GoUi.touch_size()`.
+func touch_hit(point: Vector2) -> bool:
 	var reach := maxf(0.0, (GoUi.touch_size() - minf(size.x, size.y)) * 0.5)
 	return Rect2(Vector2.ZERO, size).grow(reach).has_point(point)
+
+
+func _has_point(point: Vector2) -> bool:
+	if not touch_hit(point): return false
+	if touch_owner.is_valid(): return bool(touch_owner.call(self, point, touch_peers))
+	if touch_peers.is_empty(): return true
+	var at := get_global_transform() * point
+	var mine := _touch_face_distance(self, at)
+	for peer: Control in touch_peers:
+		if peer == self or not is_instance_valid(peer) or not peer.is_visible_in_tree(): continue
+		# Only a peer that holds this point can take it. Asking its raw shape avoids reciprocal recursion.
+		var local := peer.get_global_transform().affine_inverse() * at
+		var holds := false
+		if peer.has_method("touch_hit"):
+			holds = bool(peer.call("touch_hit", local))
+		else:
+			var reach := maxf(0.0, (GoUi.touch_size() - minf(peer.size.x, peer.size.y)) * 0.5)
+			holds = Rect2(Vector2.ZERO, peer.size).grow(reach).has_point(local)
+		if not holds: continue
+		var theirs := _touch_face_distance(peer, at)
+		if theirs < mine or (is_equal_approx(theirs, mine) and peer.get_instance_id() < get_instance_id()): return false
+	return true
+
+
+## Signed distance to the shown rectangle: negative inside, positive outside. Fold peers use their actual face.
+static func _touch_face_distance(control: Control, at: Vector2) -> float:
+	var rect := control.get_global_rect()
+	if control is GoFoldTab: rect = control.get_global_transform() * (control as GoFoldTab).face_rect()
+	var q := (at - rect.get_center()).abs() - rect.size * 0.5
+	return q.max(Vector2.ZERO).length() + minf(maxf(q.x, q.y), 0.0)
 
 
 func _notification(what: int) -> void:
