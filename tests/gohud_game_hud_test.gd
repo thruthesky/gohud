@@ -1329,6 +1329,7 @@ func _gesture_hint(look: StringName) -> void:
 	check(hint.mouse_filter == Control.MOUSE_FILTER_IGNORE, "gesture hint: never takes input")
 	check(hint.gesture == GoGestureHint.Gesture.PINCH, "gesture hint: PINCH by default")
 	check(not hint.playing and hint.finger_positions().is_empty(), "gesture hint: stopped at first, no fingertips")
+	check(hint.arrow_direction() == 0 and hint.arrow_alpha() == 0.0, "gesture hint: no arrows while stopped")
 	var painted := hint.paint_count
 	hint.queue_redraw()
 	await frames(2)
@@ -1346,6 +1347,8 @@ func _gesture_hint(look: StringName) -> void:
 	check(hint.ghost_alpha() > 0.0 and hint.ghost_alpha() < 1.0, "gesture hint: fades in (%f)" % hint.ghost_alpha())
 	var closed := _hint_gap(hint)
 	check(closed > 0.0 and hint.spread() == 0.0, "gesture hint: appears close together (%f)" % closed)
+	check(hint.arrow_direction() == 1 and is_equal_approx(hint.arrow_alpha(), hint.ghost_alpha()),
+		"gesture hint: the arrows point outward and fade in with the fingertips")
 	var last := closed
 	var widens := true
 	for step in 6:
@@ -1354,6 +1357,8 @@ func _gesture_hint(look: StringName) -> void:
 		if now < last - 0.001: widens = false
 		last = now
 	check(widens, "gesture hint: the fingertips spread apart")
+	_hint_to(hint, 0.25)
+	check(hint.arrow_direction() == 1 and hint.arrow_alpha() == 1.0, "gesture hint: spreading, arrows out, fully shown")
 	_hint_to(hint, 0.46)
 	var open := _hint_gap(hint)
 	at = hint.finger_positions()
@@ -1362,6 +1367,13 @@ func _gesture_hint(look: StringName) -> void:
 	check(at[0].x > at[1].x and at[0].y < at[1].y, "gesture hint: along the diagonal, up-right and down-left")
 	var inside := Rect2(Vector2.ZERO, hint.size).grow(-hint.finger_radius())
 	check(inside.has_point(at[0]) and inside.has_point(at[1]), "gesture hint: apart, both fingertips stay in the rect")
+	check(hint.arrow_direction() == 1 and hint.arrow_alpha() == 1.0, "gesture hint: holding apart, arrows still out")
+	var reach_out := hint.finger_radius() * (1.0 + GoGestureHint.ARROW_GAP + GoGestureHint.ARROW_LENGTH)
+	var whole := Rect2(Vector2.ZERO, hint.size)
+	check(whole.has_point(at[0] + GoGestureHint.AXIS * reach_out) and whole.has_point(at[1] - GoGestureHint.AXIS * reach_out),
+		"gesture hint: apart, the arrows stay in the rect")
+	_hint_to(hint, GoGestureHint.OPEN_END)
+	check(hint.arrow_alpha() < 0.2, "gesture hint: the arrows dip as they turn round (%f)" % hint.arrow_alpha())
 	last = open
 	var narrows := true
 	for step in 6:
@@ -1370,10 +1382,15 @@ func _gesture_hint(look: StringName) -> void:
 		if now > last + 0.001: narrows = false
 		last = now
 	check(narrows, "gesture hint: then pinch back together")
+	_hint_to(hint, 0.70)
+	check(hint.arrow_direction() == -1 and hint.arrow_alpha() == 1.0, "gesture hint: pinching, arrows in, fully shown")
 	_hint_to(hint, 0.86)
 	check(is_equal_approx(_hint_gap(hint), closed) and hint.spread() == 0.0, "gesture hint: together again")
+	check(hint.arrow_direction() == -1 and hint.arrow_alpha() == 1.0, "gesture hint: holding together, arrows still in")
 	_hint_to(hint, 0.95)
 	check(hint.ghost_alpha() > 0.0 and hint.ghost_alpha() < 1.0, "gesture hint: fades out at the end of the loop")
+	check(hint.arrow_direction() == -1 and is_equal_approx(hint.arrow_alpha(), hint.ghost_alpha()),
+		"gesture hint: the arrows fade out with the fingertips")
 	hint.advance(hint.loop_seconds * 0.10)
 	check(hint.progress() < 0.1 and hint.playing, "gesture hint: loops round (%f)" % hint.progress())
 	check(hint.loop_seconds >= 2.0 and hint.loop_seconds <= 3.0, "gesture hint: a loop of 2–3 s")
@@ -1402,6 +1419,7 @@ func _gesture_hint(look: StringName) -> void:
 	check(hint.progress() == 0.0 and hint.spread() == GoGestureHint.STILL_SPREAD and hint.ghost_alpha() == 1.0,
 		"gesture hint: reduce_motion holds a still frame")
 	check(_hint_gap(hint) > closed, "gesture hint: the still frame shows the fingertips apart")
+	check(hint.arrow_direction() == 0 and hint.arrow_alpha() == 1.0, "gesture hint: the still frame shows both ways")
 	await frames(2)
 	check(hint.paint_count > painted, "gesture hint: the still frame is drawn")
 	GoUi.config.reduce_motion = false
@@ -1412,6 +1430,12 @@ func _gesture_hint(look: StringName) -> void:
 	var skin := GoUi.skin()
 	check(skin.has_method(&"draw_gesture_touch") and skin.has_method(&"draw_gesture_arrow"),
 		"gesture hint: the skin draws the fingertip and the arrow (%s)" % look)
+	var fill := skin.gesture_arrow_fill()
+	var outline := GoUi.color(GoTheme.SHADOW)
+	check(fill.a == 1.0 and fill.get_luminance() > outline.get_luminance() + 0.4,
+		"gesture hint: arrows are light inside a dark outline (%s: %s on %s)" % [look, fill, outline])
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(fill.get_luminance() > 0.95, "gesture hint: arcade_light arrows are white (%s)" % fill)
 	hint.stop()
 	GoUi.config.reduce_motion = still
 	holder.queue_free()

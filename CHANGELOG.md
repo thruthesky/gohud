@@ -9,12 +9,15 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 - **`GoGestureHint`** (`Control`): see-through ghost fingertips that play a touch gesture in a loop, for a tutorial
   that teaches one. `Gesture.PINCH` (the only one so far): two fingertips appear close together near the middle, spread
   apart along the diagonal (zoom in), pause, pinch back together (zoom out), pause and fade, every `loop_seconds`
-  (2.6), eased, with short fading trails and direction arrows. `play()` (re)starts the loop, `stop()` hides it (nothing
+  (2.6), eased, with short fading trails. An arrow (a shaft and a big head, 1.8 × the fingertip's radius, white —
+  `GoSkin.gesture_arrow_fill()` — in a 3 dp `shadow` outline at 0.8) stands just outside each fingertip for as long as
+  the ghost shows: outward through the spread and the hold apart, inward through the pinch and the hold together,
+  dipping briefly as it turns (`arrow_direction()`, `arrow_alpha()`). `play()` (re)starts the loop, `stop()` hides it (nothing
   drawn), `playing` tells which, `advance(delta)` drives it by hand (`auto_advance` off). It centres itself in its rect
   and scales the travel (`reach` 0.34 / `near` 0.08 of the short side) and the fingertips (9.5 %, 20..38 dp) to it;
-  `ink` (the `accent` by default) rims them. A still frame (apart, arrows out and in) under `reduce_motion`. Never takes
-  input (`MOUSE_FILTER_IGNORE`) — the player pinches through it. New skin hooks `GoSkin.draw_gesture_touch()` and
-  `GoSkin.draw_gesture_arrow()`.
+  `ink` (the `accent` by default) rims them. A still frame (apart, a two-headed arrow at each) under `reduce_motion`. Never takes
+  input (`MOUSE_FILTER_IGNORE`) — the player pinches through it. New skin hooks `GoSkin.draw_gesture_touch()`,
+  `GoSkin.draw_gesture_arrow()` and `GoSkin.gesture_arrow_fill()`.
 - **`GoFoldTab`** (`Button`): the affordance that folds a HUD panel into a small pill and back (MIR4 / Lineage W /
   Genshin). Unfolded, a slim handle (`tab_face`, 16×36) against the box's `side` edge (or the `tab_align` edge) with a
   chevron toward `side`; folded, a pill (`pill_height`, 32, the box's width) reading [glyph][text][chevron] away from

@@ -1338,18 +1338,46 @@ func draw_gesture_touch(canvas: CanvasItem, at: Vector2, radius: float, ink: Col
 	canvas.draw_arc(at, radius, 0.0, TAU, 48, Color(ink, ink.a * strength), rim, true)
 
 
-## 👆 A `GoGestureHint`'s arrow: a small triangle centred on [param at] pointing along [param direction] (unit),
-## [param length] dp long: solid [param ink] with a thin dark `shadow` edge, so it reads on any scene.
+## 👆 The fill of a `GoGestureHint`'s arrows: the lightest of the look's `surface`, `on_accent` and `text` tokens —
+## white in a light look — so, with the dark outline round it, an arrow reads on a bright sky and a dark floor alike.
+func gesture_arrow_fill() -> Color:
+	var best := GoUi.color(GoTheme.SURFACE)
+	for token in [GoTheme.ON_ACCENT, GoTheme.TEXT]:
+		var c := GoUi.color(token)
+		if c.get_luminance() > best.get_luminance(): best = c
+	return Color(best, 1.0)
+
+
+## 👆 A `GoGestureHint`'s arrow: a shaft and a big head, [param length] dp from tail to tip, starting at [param at] and
+## pointing along [param direction] (unit), filled with [param ink] (the hint passes `gesture_arrow_fill()`) inside a
+## 3 dp `shadow` outline at 0.8. [param strength] (0..1) is how much of it shows; [param thickness] is the shaft's
+## width (≤ 0 takes 17 % of the length); [param both_ends] draws a head at each end (the still frame's "out and in").
 func draw_gesture_arrow(canvas: CanvasItem, at: Vector2, direction: Vector2, length: float, ink: Color,
-		strength: float) -> void:
+		strength: float, thickness := 0.0, both_ends := false) -> void:
 	if strength <= 0.0 or length <= 0.0 or direction.is_zero_approx(): return
-	var tip := at + direction * length * 0.5
-	var back := at - direction * length * 0.5
-	var wing := direction.orthogonal() * length * 0.55
-	var points := PackedVector2Array([tip, back + wing, back - wing])
+	var d := direction.normalized()
+	var side := d.orthogonal()
+	var half_shaft := (thickness if thickness > 0.0 else length * 0.17) * 0.5
+	var head := length * (0.36 if both_ends else 0.45)
+	var half_head := maxf(length * 0.3, half_shaft * 2.2)
+	var tail := at
+	var tip := at + d * length
+	var neck := tip - d * head
+	var points := PackedVector2Array()
+	if both_ends:
+		var back_neck := tail + d * head
+		points = PackedVector2Array([tail, back_neck + side * half_head, back_neck + side * half_shaft,
+			neck + side * half_shaft, neck + side * half_head, tip, neck - side * half_head, neck - side * half_shaft,
+			back_neck - side * half_shaft, back_neck - side * half_head])
+	else:
+		points = PackedVector2Array([tail + side * half_shaft, neck + side * half_shaft, neck + side * half_head, tip,
+			neck - side * half_head, neck - side * half_shaft, tail - side * half_shaft])
+	var dark := Color(GoUi.color(GoTheme.SHADOW), 0.8 * strength)
+	for outline in Geometry2D.offset_polygon(points, 3.0, Geometry2D.JOIN_ROUND):
+		canvas.draw_colored_polygon(outline, dark)
+		outline.append(outline[0])
+		canvas.draw_polyline(outline, dark, 1.0, true)  # a soft outer edge
 	canvas.draw_colored_polygon(points, Color(ink, ink.a * strength))
-	points.append(tip)
-	canvas.draw_polyline(points, Color(GoUi.color(GoTheme.SHADOW), 0.35 * strength), 2.0, true)
 
 
 ## 📋 A `GoTaskCard`'s title. The default is the `heading` token (the accent where a look names no heading).

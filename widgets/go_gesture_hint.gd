@@ -1,7 +1,7 @@
 ## 👆 **A gesture hint** — see-through ghost fingertips that play a touch gesture in a loop, for a tutorial that teaches
 ## one ("pinch to zoom"). Two fingertips appear near the middle, spread apart diagonally (zoom in), pause, pinch back
-## together (zoom out), pause and fade — then again. Short trails follow a moving fingertip and small arrows show which
-## way it goes.
+## together (zoom out), pause and fade — then again. Short trails follow a moving fingertip, and an arrow beside each
+## fingertip shows the way: outward while they spread and hold apart, inward while they pinch and hold together.
 ##
 ## ```gdscript
 ## var hint := GoGestureHint.new()
@@ -16,7 +16,8 @@
 ## reads the same on a phone and an iPad. 🛑 It never takes input (`MOUSE_FILTER_IGNORE`): the player pinches *through*
 ## it. Display only — the game decides when the lesson is done and calls `stop()`.
 ##
-## Under `GoConfig.reduce_motion` it holds one still frame: both fingertips apart, with arrows out and in.
+## Under `GoConfig.reduce_motion` it holds one still frame: both fingertips apart, each with a two-headed arrow (out
+## and in).
 ## The shapes are the skin's: `GoSkin.draw_gesture_touch()` (a fingertip) and `GoSkin.draw_gesture_arrow()`.
 @tool
 class_name GoGestureHint
@@ -43,6 +44,15 @@ const AXIS := Vector2(0.70710678, -0.70710678)
 const TRAIL_STEPS := 3
 const TRAIL_GAP := 0.07
 
+## The arrows, in fingertip radii: tail-to-tip length, shaft width and the gap between the fingertip and the arrow.
+const ARROW_LENGTH := 1.8
+const ARROW_SHAFT := 0.3
+const ARROW_GAP := 0.25
+
+## How long (a fraction of the loop) the arrows take to fade out and back in on either side of `OPEN_END`, where they
+## turn from outward to inward.
+const ARROW_FLIP := 0.03
+
 ## The gesture to play.
 @export var gesture: Gesture = Gesture.PINCH:
 	set(value):
@@ -64,7 +74,8 @@ const TRAIL_GAP := 0.07
 		near = value
 		queue_redraw()
 
-## Colour of the fingertips' rim and the arrows. Transparent uses the theme's `accent`.
+## Colour of the fingertips' rim. Transparent uses the theme's `accent`. (The arrows are the skin's
+## `gesture_arrow_fill()` in a dark outline, so they read on any backdrop.)
 @export var ink := Color.TRANSPARENT:
 	set(value):
 		ink = value
@@ -160,9 +171,26 @@ func finger_radius() -> float:
 	return clampf(_short_side() * 0.095, 20.0, 38.0)
 
 
-## The rim and arrow colour now: `ink`, or the theme's accent.
+## The rim colour now: `ink`, or the theme's accent.
 func ink_color() -> Color:
 	return ink if ink.a > 0.0 else GoUi.color(GoTheme.ACCENT)
+
+
+## Which way the arrows point now: 1 outward (fade-in, spread, hold apart), -1 inward (pinch, hold together, fade-out),
+## 0 both ways (the `reduce_motion` still frame, a two-headed arrow). 0 while stopped too.
+func arrow_direction() -> int:
+	if not playing or _still(): return 0
+	return 1 if progress() < OPEN_END else -1
+
+
+## How strongly the arrows show now, 0 → 1: they follow `ghost_alpha()` all loop long and dip briefly as they turn
+## round at `OPEN_END`. 0 while stopped.
+func arrow_alpha() -> float:
+	if not playing: return 0.0
+	if _still(): return 1.0
+	var away := absf(progress() - OPEN_END)
+	var turn := _ease(away / ARROW_FLIP) if away < ARROW_FLIP else 1.0
+	return ghost_alpha() * turn
 
 
 func _process(delta: float) -> void:
@@ -183,7 +211,7 @@ func _closed_offset() -> float:
 
 func _open_offset() -> float:
 	# The arrows reach past a fingertip — keep both inside the rect.
-	var room := _short_side() * 0.5 - finger_radius() * 2.5
+	var room := _short_side() * 0.5 - finger_radius() * (1.0 + ARROW_GAP + ARROW_LENGTH + 0.15)
 	return maxf(_closed_offset(), minf(_short_side() * reach, room))
 
 
@@ -232,29 +260,33 @@ func _draw() -> void:
 	var skin := GoUi.skin()
 	var radius := finger_radius()
 	var colour := ink_color()
-	var arrow := radius * 0.9
 	var fingers := finger_positions()
-	var outward := [AXIS, -AXIS]
-	if _still():
-		for i in fingers.size():
-			var out: Vector2 = outward[i]
-			skin.draw_gesture_touch(self, fingers[i], radius, colour, 1.0)
-			skin.draw_gesture_arrow(self, fingers[i] + out * radius * 1.8, out, arrow, colour, 1.0)
-			skin.draw_gesture_arrow(self, fingers[i] - out * radius * 1.8, -out, arrow, colour, 1.0)
-		return
-	var u := progress()
-	var motion := _motion_at(u)
-	if absf(motion) > 0.05:
-		# The trail: fading, shrinking copies where the fingertips were a moment ago, oldest first.
-		var gap := TRAIL_GAP / maxf(loop_seconds, 0.01)
-		for k in range(TRAIL_STEPS, 0, -1):
-			var before := _fingers_at(_spread_at(maxf(u - gap * k, 0.0)))
-			var fade := alpha * 0.5 * float(TRAIL_STEPS + 1 - k) / float(TRAIL_STEPS + 1)
-			for p in before: skin.draw_gesture_touch(self, p, radius * (1.0 - 0.12 * k), colour, fade)
+	if not _still():
+		var u := progress()
+		if absf(_motion_at(u)) > 0.05:
+			# The trail: fading, shrinking copies where the fingertips were a moment ago, oldest first.
+			var gap := TRAIL_GAP / maxf(loop_seconds, 0.01)
+			for k in range(TRAIL_STEPS, 0, -1):
+				var before := _fingers_at(_spread_at(maxf(u - gap * k, 0.0)))
+				var fade := alpha * 0.5 * float(TRAIL_STEPS + 1 - k) / float(TRAIL_STEPS + 1)
+				for p in before: skin.draw_gesture_touch(self, p, radius * (1.0 - 0.12 * k), colour, fade)
 	for p in fingers: skin.draw_gesture_touch(self, p, radius, colour, alpha)
-	if absf(motion) > 0.05:
-		var way := signf(motion)
-		for i in fingers.size():
-			var out: Vector2 = outward[i]
-			skin.draw_gesture_arrow(self, fingers[i] + out * way * radius * 1.8, out * way, arrow, colour,
-				alpha * absf(motion))
+	_draw_arrows(skin, fingers, radius)
+
+
+## One arrow just outside each fingertip on the gesture's axis: it points away from the fingertip (outward) or at it
+## (inward), or both ways in the still frame.
+func _draw_arrows(skin: GoSkin, fingers: PackedVector2Array, radius: float) -> void:
+	var strength := arrow_alpha()
+	if strength <= 0.0: return
+	var way := arrow_direction()
+	var length := radius * ARROW_LENGTH
+	var fill := skin.gesture_arrow_fill()
+	var outward := [AXIS, -AXIS]
+	for i in fingers.size():
+		var out: Vector2 = outward[i]
+		var near_end := fingers[i] + out * radius * (1.0 + ARROW_GAP)
+		if way >= 0:
+			skin.draw_gesture_arrow(self, near_end, out, length, fill, strength, radius * ARROW_SHAFT, way == 0)
+		else:
+			skin.draw_gesture_arrow(self, near_end + out * length, -out, length, fill, strength, radius * ARROW_SHAFT)

@@ -1238,8 +1238,9 @@ tab.meter = 0.82                           # and a gauge along its bottom (under
 `class_name GoGestureHint extends Control` · a tutorial that teaches a touch gesture shows it played by see-through
 ghost fingertips, in a loop, over the area where the player should do it. `PINCH` (the only gesture so far): two
 fingertips appear close together near the middle, spread apart along the diagonal (zoom in), pause, pinch back together
-(zoom out), pause and fade — then again, about every 2.6 s. Short fading trails follow a moving fingertip and small
-arrows point the way it goes. 🛑 It never takes input (`MOUSE_FILTER_IGNORE`): the player pinches *through* it.
+(zoom out), pause and fade — then again, about every 2.6 s. Short fading trails follow a moving fingertip, and an arrow
+just outside each fingertip shows the way for the whole phase: outward while they spread and hold apart, inward while
+they pinch and hold together. 🛑 It never takes input (`MOUSE_FILTER_IGNORE`): the player pinches *through* it.
 
 ```gdscript
 var hint := GoGestureHint.new()
@@ -1258,15 +1259,19 @@ hint.stop()                                      # hides it; nothing is drawn un
 | `auto_advance` · `advance(delta)` | `true` | Runs the loop in `_process`, or drive it yourself (headless tests). Does nothing while stopped |
 | `loop_seconds` | `2.6` | One loop: fade in (to `FADE_IN_END` 0.10), spread (to `SPREAD_END` 0.40), hold apart (to `OPEN_END` 0.52), pinch (to `PINCH_END` 0.82), hold together (to `CLOSED_END` 0.90), fade out. The motion eases in and out |
 | `reach` · `near` | `0.34` · `0.08` | How far each fingertip stands from the middle when apart / together, as a share of the rect's short side (apart is held inside the rect with room for the arrows) |
-| `ink` · `ink_color()` | transparent | The fingertips' rim and the arrows; transparent uses the theme's `accent` |
+| `ink` · `ink_color()` | transparent | The fingertips' rim; transparent uses the theme's `accent` (the arrows are the skin's `gesture_arrow_fill()`, white in a light look, in a dark outline) |
+| `arrow_direction()` · `arrow_alpha()` | | Which way the arrows point: `1` out (fade-in, spread, hold apart), `-1` in (pinch, hold together, fade-out), `0` both (the still frame; also while stopped) · how strongly they show — `ghost_alpha()`, dipping for `ARROW_FLIP` (0.03 of the loop) each side of `OPEN_END` as they turn round |
+| `ARROW_LENGTH` · `ARROW_SHAFT` · `ARROW_GAP` | `1.8` · `0.3` · `0.25` | The arrow's tail-to-tip length, shaft width and gap from the fingertip, in fingertip radii |
 | `progress()` · `spread()` · `ghost_alpha()` · `finger_positions()` · `finger_radius()` | | Where the loop is (0 → 1); how far apart (0 together, 1 apart); how strongly it shows; the two centres in local coordinates (empty while stopped); a fingertip's radius — 9.5 % of the short side, kept in 20..38 dp |
 | `paint_count` | | How many times the ghost was painted — a stopped hint adds none |
 
 - The gesture centres itself in the node's rect and scales its travel and fingertips to the rect's short side, so it
   reads the same on a phone and an iPad. The caller places and sizes the node; it does not cover its parent by itself.
-- Under `GoConfig.reduce_motion` it holds one still frame: the fingertips apart (`STILL_SPREAD` 1) with arrows out
-  and in.
+- Under `GoConfig.reduce_motion` it holds one still frame: the fingertips apart (`STILL_SPREAD` 1), each with a
+  two-headed arrow (out and in).
 - Skin hooks: `draw_gesture_touch(canvas, at, radius, ink, strength)` (a fingertip: a soft `shadow` rim dropped 3 dp, a
-  `surface` disc at 0.62, a 3 dp `ink` rim with a thin `shadow` line) and `draw_gesture_arrow(canvas, at, direction, length, ink, strength)`. It follows a
-  look change (`GoUi.watch`).
+  `surface` disc at 0.62, a 3 dp `ink` rim with a thin `shadow` line) , `draw_gesture_arrow(canvas, at, direction, length, ink, strength,
+  thickness = 0, both_ends = false)` (a shaft and a big head from `at` to `at + direction × length`, filled with `ink`
+  inside a 3 dp `shadow` outline at 0.8; with the last argument true, a head at each end) and `gesture_arrow_fill()` (the lightest
+  of `surface`, `on_accent` and `text`). It follows a look change (`GoUi.watch`).
 - 🛑 Display only: the game decides when the gesture was done and calls `stop()`.
