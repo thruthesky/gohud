@@ -97,6 +97,7 @@ const GAUGE_PAD := Vector2(14.0, 8.0)
 
 static var _textures := {}
 static var _world_tour_pictures := {}
+static var _world_tour_stage9_detail: AtlasTexture
 static var _symbol_font: Font
 static var _painted_blur: Shader = null
 
@@ -268,6 +269,16 @@ func world_tour_picture(stage: int) -> Texture2D:
 	picture.region = regions[stage - 1]
 	_world_tour_pictures[stage] = picture
 	return picture
+
+
+func world_tour_detail_picture(stage: int) -> Texture2D:
+	if stage != 9: return null
+	if _world_tour_stage9_detail == null:
+		_world_tour_stage9_detail = AtlasTexture.new()
+		_world_tour_stage9_detail.atlas = load("res://addons/gohud/assets/arcade_light/stage/world_tour_reference.png")
+		# A clean crop of the original artwork: no baked ribbon, title, stars or other interactive chrome.
+		_world_tour_stage9_detail.region = Rect2(1209, 318, 420, 337)
+	return _world_tour_stage9_detail
 
 
 # ── Bars and the outlined button ──────────────────────────────────────

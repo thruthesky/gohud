@@ -1,9 +1,10 @@
-[gd_resource type="Theme" load_steps=207 format=3]
+[gd_resource type="Theme" load_steps=209 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_texture_sprite.gd" id="sprite_icon"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/nunito/Nunito-Bold.ttf" id="font_nunito"]
+[ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/baloo2/Baloo2.ttf" id="font_baloo2"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf" id="font_noto_kr"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansJP-Bold.ttf" id="font_noto_jp"]
 [ext_resource type="FontFile" path="res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansSC-Bold.ttf" id="font_noto_sc"]
@@ -762,6 +763,11 @@ expand_margin_bottom = -3
 [sub_resource type="FontVariation" id="painted_font"]
 base_font = ExtResource("font_nunito")
 fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"), ExtResource("font_noto_sc"), ExtResource("font_noto_tc")])
+
+[sub_resource type="FontVariation" id="world_tour_font"]
+base_font = ExtResource("font_baloo2")
+variation_opentype = {2003265652: 800.0}
+fallbacks = Array[Font]([SubResource("painted_font")])
 
 [sub_resource type="StyleBox" id="painted_GoButton_normal"]
 script = ExtResource("sprite")
@@ -2874,6 +2880,20 @@ GoWhiteButton/styles/normal = SubResource("painted_GoWhiteButton_normal")
 GoWhiteButton/styles/pressed = SubResource("painted_GoWhiteButton_pressed")
 GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
+GoWorldTourButton/base_type = &"GoPrimaryButton"
+GoWorldTourButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWorldTourButton/constants/outline_size = 5
+GoWorldTourButton/fonts/font = SubResource("world_tour_font")
+GoWorldTourCaption/base_type = &"Label"
+GoWorldTourCaption/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWorldTourCaption/font_sizes/font_size = 28
+GoWorldTourCaption/fonts/font = SubResource("world_tour_font")
+GoWorldTourTitle/base_type = &"Label"
+GoWorldTourTitle/colors/font_color = Color(1, 1, 1, 1)
+GoWorldTourTitle/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
+GoWorldTourTitle/constants/outline_size = 8
+GoWorldTourTitle/font_sizes/font_size = 54
+GoWorldTourTitle/fonts/font = SubResource("world_tour_font")
 HScrollBar/icons/decrement = SubResource("painted_HScrollBar_decrement")
 HScrollBar/icons/decrement_highlight = SubResource("painted_HScrollBar_decrement")
 HScrollBar/icons/decrement_pressed = SubResource("painted_HScrollBar_decrement")

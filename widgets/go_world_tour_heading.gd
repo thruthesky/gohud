@@ -49,11 +49,13 @@ func _layout() -> void:
 	_ribbon_art.size = Vector2(size.x, size.y * 0.65)
 	title_label.position = Vector2(size.x * 0.09, size.y * 0.38)
 	title_label.size = Vector2(size.x * 0.82, size.y * 0.5)
-	_stage_art.position = Vector2(size.x * 0.25, 0.0)
-	_stage_art.size = Vector2(size.x * 0.5, size.y * 0.44)
+	_stage_art.position = Vector2(size.x * 0.21, 0.0)
+	_stage_art.size = Vector2(size.x * 0.58, size.y * 0.44)
 	stage_label.position = _stage_art.position
-	stage_label.size = _stage_art.size * Vector2(1.0, 0.9)
-	stage_base_size = _fit(stage_label, stage_label.size.x * 0.82, stage_label.size.y * 0.62)
+	var stage_size := _stage_art.size * Vector2(1.0, 0.9)
+	# Fit before applying the rect: a prior large font otherwise forces Label's minimum size to grow it.
+	stage_base_size = _fit(stage_label, stage_size.x * 0.82, stage_size.y * 0.62, stage_size.y)
+	stage_label.size = stage_size
 	var title_height := minf(title_label.size.y * 0.68, title_label.size.x / 7.0)
 	var title_font := title_label.get_theme_font(&"font")
 	var title_base := maxi(8, roundi(title_height))
@@ -62,10 +64,14 @@ func _layout() -> void:
 	title_base_size = _fit(title_label, title_label.size.x, title_height)
 
 
-func _fit(label: Label, width: float, height: float) -> int:
+func _fit(label: Label, width: float, height: float, max_height := INF) -> int:
 	# The design base comes from the ribbon's geometry; GoStyle alone shrinks it down to the configured floor.
 	var base := maxi(8, roundi(height))
 	var font := label.get_theme_font(&"font")
+	# Baloo's rounded letters have a taller line box than their nominal font size. Keep the base inside
+	# the actual ribbon before width-fitting, so the label cannot expand below its art.
+	while base > 8 and font.get_height(base) > max_height:
+		base -= 1
 	label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([label.text]), base, width, font))
 	return base
 
@@ -100,7 +106,7 @@ func _picture() -> TextureRect:
 
 func _label() -> Label:
 	var label := Label.new()
-	label.theme_type_variation = &"GoOutlineLabel"
+	label.theme_type_variation = &"GoWorldTourTitle"
 	label.clip_text = true
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

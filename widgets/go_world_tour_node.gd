@@ -40,13 +40,13 @@ func _init() -> void:
 	_badge_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_badge.add_child(_badge_art)
 	_badge_art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	number_label = _label("Number", &"GoTitle")
+	number_label = _label("Number", &"GoWorldTourTitle")
 	_badge.add_child(number_label)
 	number_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_caption = Panel.new()
 	_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_caption)
-	title_label = _label("Caption", &"GoTitleLabel")
+	title_label = _label("Caption", &"GoWorldTourCaption")
 	_caption.add_child(title_label)
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	resized.connect(_layout)

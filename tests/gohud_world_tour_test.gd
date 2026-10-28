@@ -8,6 +8,29 @@ var chosen_count := 0
 
 func _initialize() -> void:
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var theme: Theme = GoUi.theme()
+	for variation in [&"GoWorldTourTitle", &"GoWorldTourButton", &"GoWorldTourCaption"]:
+		check(theme.get_font_list(variation).has(&"font"), "%s provides the mockup's display font" % variation)
+		if theme.get_font_list(variation).has(&"font"):
+			var face: Font = theme.get_font(&"font", variation)
+			check(face.has_char(0x4E16) and face.has_char(0xD55C), "%s retains CJK fallback coverage" % variation)
+			var display := face as FontVariation
+			check(display != null and display.variation_opentype.get(TextServerManager.get_primary_interface().name_to_tag("wght")) == 800.0, "%s uses the ExtraBold weight" % variation)
+	check(GoUi.skin().has_method(&"world_tour_detail_picture"), "the skin supplies stage-specific detail artwork")
+	if GoUi.skin().has_method(&"world_tour_detail_picture"):
+		var exact: Texture2D = GoUi.skin().call(&"world_tour_detail_picture", 9)
+		check(exact is AtlasTexture and (exact as AtlasTexture).region == Rect2(1209, 318, 420, 337), "Stage 9 uses the exact artwork from the reference")
+		check(GoUi.skin().call(&"world_tour_detail_picture", 1) == null, "stages without portraits use their regular picture")
+	var portrait := GoWorldTourPortrait.new()
+	portrait.size = Vector2(200, 150)
+	root.add_child(portrait)
+	await process_frame
+	var portrait_material := portrait.material as ShaderMaterial
+	check(portrait_material != null and portrait_material.get_shader_parameter(&"control_size") == Vector2(200, 150), "rounded portrait clip matches its initial size")
+	portrait.size = Vector2(300, 180)
+	await process_frame
+	check(portrait_material.get_shader_parameter(&"control_size") == Vector2(300, 180), "rounded portrait clip follows resizes")
+	portrait.queue_free()
 	check(GoUi.skin().widget_art(&"world_tour_badge_blue") != null, "arcade map has a blue round badge")
 	check(GoUi.skin().widget_art(&"world_tour_badge_red") != null, "arcade selected stage has a red round badge")
 	check(GoUi.skin().widget_art(&"world_tour_heading_blue") != null, "arcade detail has a blue stage heading")
@@ -57,6 +80,9 @@ func _initialize() -> void:
 	check(heading.title_label.get_theme_font_size(&"font_size") >= GoStyle.fit_floor(heading.title_base_size), "the heading honors the configured fit floor")
 	heading.configure("STAGE 9", "Sakura Smash")
 	check(not heading.title_label.text.contains("\n"), "a short stage title stays on one line")
+	heading.stage_label.add_theme_font_size_override(&"font_size", 96)
+	heading._layout()
+	check(heading._stage_art.get_rect().encloses(heading.stage_label.get_rect()), "stage text stays inside the blue pill")
 	heading.queue_free()
 	var script := load("res://addons/gohud/widgets/go_world_tour.gd")
 	if script == null:

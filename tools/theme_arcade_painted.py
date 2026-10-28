@@ -28,6 +28,7 @@ STAGE = RES + "/assets/arcade_light/stage/"
 #    game. Glyphs outside the subsets come from the system (the files import with `allow_system_fallback`).
 FONTS = RES + "/assets/fonts/"
 FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
+FONT_TOUR = ("font_baloo2", FONTS + "baloo2/Baloo2.ttf")
 FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
                   for code in ("KR", "JP", "SC", "TC")]
 # 🔤 The language each fallback leads for (`UiTheme.CJK_FONTS`): `GoUi.set_locale(code)` moves that language's font to
@@ -178,6 +179,7 @@ BASES = {
     "GoCard": "PanelContainer", "GoInsetPanel": "PanelContainer", "GoKeycapPanel": "PanelContainer",
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
     "GoTitle": "Label", "GoOutlineLabel": "Label", "GoRibbonWideTitle": "Label",
+    "GoWorldTourTitle": "Label", "GoWorldTourCaption": "Label", "GoWorldTourButton": "GoPrimaryButton",
     "GoWindowBlue": "PanelContainer", "GoRibbonWide": "PanelContainer", "GoWell": "PanelContainer",
     "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
     "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
@@ -289,6 +291,11 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     boxes["painted_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_BASE[0],
                                                "fallbacks = Array[Font]([%s])" % ", ".join(
                                                    'ExtResource("%s")' % rid for rid, _ in FONT_FALLBACKS)])
+    # A rounded, heavy display face for the world-tour art. The body font remains the fallback so
+    # GoUi.set_font_locale() continues to select the appropriate CJK glyphs.
+    boxes["world_tour_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_TOUR[0],
+                                                 'variation_opentype = {2003265652: 800.0}', # TextServer.name_to_tag("wght")
+                                                 'fallbacks = Array[Font]([SubResource("painted_font")])'])
     setT("default_font", 'SubResource("painted_font")')
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
     #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
@@ -567,6 +574,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoRibbonWideTitle/colors/font_color", C(WHITE))
     setT("GoRibbonWideTitle/constants/outline_size", 8)
     setT("GoRibbonWideTitle/constants/line_spacing", -6)
+    for variation in ("GoWorldTourTitle", "GoWorldTourButton", "GoWorldTourCaption"):
+        setT(variation + "/fonts/font", 'SubResource("world_tour_font")')
+    setT("GoWorldTourTitle/colors/font_color", C(WHITE))
+    setT("GoWorldTourTitle/colors/font_outline_color", C(INK))
+    setT("GoWorldTourTitle/constants/outline_size", 8)
+    setT("GoWorldTourTitle/font_sizes/font_size", TITLE_FONT_SIZE)
+    setT("GoWorldTourButton/constants/outline_size", 5)
+    setT("GoWorldTourButton/colors/font_outline_color", C(INK))
+    setT("GoWorldTourCaption/colors/font_color", C(INK))
+    setT("GoWorldTourCaption/font_sizes/font_size", 28)
     # The small print (12 px, ink at 75%) and a gauge's caption (11 px, the ink it inherits).
     setT("GoSmallLabel/font_sizes/font_size", SMALL_FONT_SIZE)
     setT("GoSmallLabel/colors/font_color", C(SMALL_INK))
@@ -753,7 +770,7 @@ def ext_resources(boxes):
     if 'script = ExtResource("sprite_icon")' in heads:
         lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
     if any(body[:1] == ['base_font = ExtResource("%s")' % FONT_BASE[0]] for _, body in boxes.values()):
-        for rid, path in [FONT_BASE] + FONT_FALLBACKS:
+        for rid, path in [FONT_BASE, FONT_TOUR] + FONT_FALLBACKS:
             lines.append('[ext_resource type="FontFile" path="%s" id="%s"]' % (path, rid))
     if not lines:
         return []

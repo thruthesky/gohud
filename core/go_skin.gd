@@ -1067,6 +1067,11 @@ func world_tour_picture(_stage: int) -> Texture2D:
 	return null
 
 
+## Optional stage-specific portrait for the selected World Tour detail panel.
+func world_tour_detail_picture(_stage: int) -> Texture2D:
+	return null
+
+
 ## Backdrop beneath a full-screen tour map.
 func world_tour_backdrop_color() -> Color:
 	return opaque_backdrop_color()
