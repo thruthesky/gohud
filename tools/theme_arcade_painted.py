@@ -194,7 +194,16 @@ BASES = {
     "GoScoreTab": "GoButton", "GoScoreTabSelected": "GoInfoButton", "GoScoreGoldButton": "GoGoldButton",
     "GoScoreRibbon": "PanelContainer",
     "GoWhiteButton": "Button", "GoBlackButton": "Button",
+    "GoScoreRowStripe": "PanelContainer", "GoScoreRowStripeAlt": "PanelContainer",
+    "GoScoreRowStripeGold": "PanelContainer", "GoScoreRowLabel": "Label", "GoScoreRowMutedLabel": "Label",
 }
+# 🦓 The flat zebra rows' padding (left, top, right, bottom): a slim lead-in before the rank, a little more before the
+#    right edge's value, nothing above or below — the row's height is its content's, the stripes touch.
+STRIPE_MARGINS = (10, 0, 16, 0)
+# The gold first row: `surface` this far toward `warning_fill` (the game's GOLD) — a soft gold, not a gold plate.
+STRIPE_GOLD_MIX = 0.28
+# The rows' medium weight: lighter than the scoreboard's heavy 1.2 (`painted_score_font`), heavier than the body's 0.
+ROW_EMBOLDEN = 0.5
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
 
@@ -421,6 +430,37 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if BASES[type_name] != "Label":
             for slot in FONT_STATES:
                 setT(type_name + "/colors/" + slot, C(ink))
+
+    # 🦓 **Flat zebra rows** for a long ranking list: no rim, no corners, no shadow, no gloss — rows stacked with no
+    #    gap read as alternating light and grey stripes, not a pile of pills. Every fill is a palette token as written
+    #    out above (`GoHud/colors/*`), so the stripes follow the palette: `surface`, `surface_soft`, and the first row
+    #    `surface` lerped toward `warning_fill`.
+    def token(name):
+        key = "GoHud/colors/%s" % name
+        for entry in T:
+            head, _, value = entry.partition(" = ")
+            if head == key:
+                return tuple(float(v) for v in value[len("Color("):-1].split(","))
+        raise SystemExit("theme_arcade_painted: no %s token to build the score stripes from" % key)
+
+    surface = token("surface")
+    gold_fill = token("warning_fill")
+    soft_gold = tuple(round(surface[i] + (gold_fill[i] - surface[i]) * STRIPE_GOLD_MIX, 6) for i in range(4))
+    for type_name, fill in (("GoScoreRowStripe", surface), ("GoScoreRowStripeAlt", token("surface_soft")),
+                            ("GoScoreRowStripeGold", soft_gold)):
+        bid = "painted_" + type_name
+        boxes[bid] = ("StyleBoxFlat", ["content_margin_%s = %g" % (side, margin) for side, margin in
+                                       zip(("left", "top", "right", "bottom"), STRIPE_MARGINS)]
+                      + ["bg_color = %s" % C(fill)])
+        put(type_name + "/styles/panel", bid)
+    # 🔤 The rows' lettering: the body font at a medium weight, the scoreboard's navy ink (the muted ink for ranks and
+    #    helper text), no outline. No font size: the caller sizes its rows.
+    boxes["painted_row_font"] = ("FontVariation", ['base_font = SubResource("painted_font")',
+                                                 "variation_embolden = %g" % ROW_EMBOLDEN])
+    for type_name, ink in (("GoScoreRowLabel", score_ink), ("GoScoreRowMutedLabel", token("muted"))):
+        put(type_name + "/fonts/font", "painted_row_font")
+        setT(type_name + "/colors/font_color", C(ink))
+        setT(type_name + "/constants/outline_size", 0)
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
