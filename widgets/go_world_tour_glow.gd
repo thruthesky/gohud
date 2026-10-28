@@ -20,6 +20,10 @@ func _draw() -> void:
 	if data.is_empty(): return
 	(material as ShaderMaterial).set_shader_parameter(&"island_stage", int(picture.get("stage")) if data.masked else 0)
 	var source: Texture2D = data.source
-	(material as ShaderMaterial).set_shader_parameter(&"atlas_pixel_size", Vector2.ONE / source.get_size())
+	var texel := Vector2.ONE / source.get_size()
+	var region: Rect2 = data.region
+	(material as ShaderMaterial).set_shader_parameter(&"atlas_pixel_size", texel)
+	(material as ShaderMaterial).set_shader_parameter(&"atlas_region", Vector4(region.position.x * texel.x,
+			region.position.y * texel.y, region.end.x * texel.x, region.end.y * texel.y))
 	# One textured draw; the shader samples neighboring alpha to form the halo instead of redrawing the island.
 	picture.call(&"draw_art", self, Vector2.ZERO, Color.WHITE)

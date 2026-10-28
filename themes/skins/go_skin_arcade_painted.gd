@@ -258,7 +258,7 @@ func world_tour_backdrop_color() -> Color:
 ## Atlas order follows the route (1-based); callers may replace the pictures with their own stage art.
 func world_tour_picture(stage: int) -> Texture2D:
 	var regions: Array[Rect2] = [Rect2(80, 45, 365, 280), Rect2(450, 12, 340, 280), Rect2(850, 80, 385, 275),
-			Rect2(1235, 235, 410, 305), Rect2(740, 355, 505, 305), Rect2(240, 285, 480, 300),
+			Rect2(1235, 235, 410, 305), Rect2(740, 355, 494, 305), Rect2(240, 285, 480, 300),
 			Rect2(40, 550, 385, 285), Rect2(420, 625, 495, 305), Rect2(1105, 635, 510, 300)]
 	if stage < 1 or stage > regions.size(): return null
 	if _world_tour_pictures.has(stage): return _world_tour_pictures[stage]
