@@ -842,6 +842,11 @@ banner and notice pill); `GoChipDark` (a dark language chip) and `GoIconOnly` (a
 key that stays cyan while chosen); `GoBigButton` and `GoBigSecondaryButton` (big green and grey keys with a hard
 bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoScoreRow`, `GoScoreRowGold` and
 `GoScoreHead` (a glossy blue scoreboard row, the winner's gold one, its transparent head row);
+`GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold` (flat zebra rows for a long ranking — the
+`surface` and `surface_soft` tokens and `surface` lerped 0.28 toward `warning_fill` for first place; no rim, corner or
+shadow, padded 10 left and 16 right, so rows stacked with no separation read as stripes) with `GoScoreRowLabel` and
+`GoScoreRowMutedLabel` (the body font at a medium weight, embolden 0.5, in the scoreboard's navy ink and the `muted`
+ink for ranks and helper text; no outline, no font size of their own);
 `GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
 `GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
@@ -1030,7 +1035,7 @@ mixes while running (chips, slots) are measured inside Godot by the suite's `ski
 
 | Class | Base | Purpose |
 |---|---|---|
-| `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize; corner art or a close button in the head's corner (`corner`, `corner_on_left`), and with `show_close_key` a close key in the other corner beside the art |
+| `GoSurface` | Control | Floating card shell with `CENTER`, `BOTTOM` and `ANCHOR` placement; fixed header, toolbar and footer; scrolling body; Escape/Back closes only the topmost surface; focus restore; drag-to-resize; corner art or a close button in the head's corner (`corner`, `corner_on_left`), and with `show_close_key` a close key in the other corner beside the art; with `show_corner_close` a big close key (`corner_close`, `corner_close_size` dp, 72 by default) centred on the card's own top-right corner, half of it hanging past the card |
 | `GoSheet` | CanvasLayer | Bottom-sheet pages with back navigation, sticky toolbar and footer; `max_height_ratio` lets one sheet grow past the global 0.72 ceiling (a debug build warns when a ratio is cut) |
 | `GoPage` | CanvasLayer | A full-screen page: title with back and close, a category rail (left in landscape, tabs on top in portrait) built from `{id, label, icon, badge}` data, an optional preview beside the content, opaque ground; Escape/Back closes only the topmost page |
 | `GoDialogs` | Node | `await confirm()` and `await alert()`, with plain-text and translation-key variants; `destructive` draws a filled danger confirm button; `action_layout` stacks the buttons, puts them on one row or picks automatically; `await choose()` returns the index of one of a few options |
