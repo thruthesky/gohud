@@ -25,6 +25,8 @@ func _initialize() -> void:
 		await _corner(look)
 		await _close_key(look)
 		await _close_key_fit(look)
+		await _corner_close(look)
+		await _corner_close_fit(look)
 		await _ribbon(look)
 		await _backdrop(look)
 		await _helpers(look)
@@ -362,6 +364,145 @@ func _close_key_fit(look: StringName) -> void:
 			check(absf(key.get_global_transform().get_scale().x - surface.card.scale.x) < 0.001,
 				"%s: it scales with the card (%.3f)" % [tag, surface.card.scale.x])
 			check(box.end.x > _card_rect(surface.card).end.x, "%s: past the card's right edge" % tag)
+		view.queue_free()
+		await frames(1)
+
+
+# ── The corner close key: a big key on the card's own top-right corner ─
+
+func _corner_close(look: StringName) -> void:
+	var painted := look == GoThemePresets.ARCADE_LIGHT
+	var surface := _dialog()
+	var closed := [0]
+	surface.close_requested.connect(func() -> void: closed[0] += 1)
+	if painted: surface.show_close_key = true
+	await frames(3)
+	# Off (the default): nothing built, the window is what it always was.
+	check(not surface.show_corner_close and surface.corner_close == null and surface.corner_close_size == 72.0,
+		"%s corner close: off by default (72 dp), nothing built" % look)
+	var card_before := surface.card.get_rect()
+	var overhang_before := surface.fit_overhang()
+	var head_close := surface.close_button.visible
+	var ribbon_key := surface.close_key
+	check(not painted or (ribbon_key != null and ribbon_key.visible), "%s corner close: the ribbon-end key shows first" % look)
+	surface.show_corner_close = true
+	await frames(3)
+	var key := surface.corner_close
+	check(key != null and key.is_visible_in_tree() and key.get_parent() != null
+			and key.get_parent().get_parent() == surface.card and surface.card.get_children().find(key.get_parent()) == -1,
+		"%s corner close: on, the key shows — on an internal mount of the card, outside its layout" % look)
+	if key == null:
+		surface.queue_free()
+		await frames(1)
+		return
+	# 🔑 A plain look's head loses its close button (one close key per window), so only its height may change there.
+	var card_now := surface.card.get_rect()
+	check(card_now == card_before if painted else card_now.size.x == card_before.size.x,
+		"%s corner close: the card does not move or grow for it (%s, was %s)" % [look, card_now, card_before])
+	check(key.size == Vector2(72, 72) and key.visual_size == 72, "%s corner close: 72 dp across (%s)" % [look, key.size])
+	var corner := Vector2(surface.card.size.x, 0.0)
+	check(_centre_on_card(surface, key).is_equal_approx(corner + Vector2(-6, 6)),
+		"%s corner close: centred on the card's top-right corner, 6 dp in (%s, corner %s)"
+			% [look, _centre_on_card(surface, key), corner])
+	var card_box := _card_rect(surface.card)
+	var box := _key_rect(key)
+	check(box.end.x > card_box.end.x and box.position.y < card_box.position.y and card_box.has_point(box.get_center()),
+		"%s corner close: half of it hangs past the corner (key %s card %s)" % [look, box, card_box])
+	check(not surface.close_button.visible and (ribbon_key == null or not ribbon_key.visible),
+		"%s corner close: the one close key — the head's close button and the ribbon-end key stand aside" % look)
+	check(key.focus_mode == surface.close_button.focus_mode and key.icon_name == GoIconSet.CLOSE
+			and key.tooltip_text_name == &"close",
+		"%s corner close: the close button's key — its glyph, tooltip and focus mode" % look)
+	if painted:
+		var face := key.get_theme_stylebox(&"normal") as GoStyleBoxSprite
+		check(face != null and face.texture != null and face.texture.resource_path.ends_with("close_key.png"),
+			"%s corner close: the painted red disc" % look)
+		check(key.icon_tint == Color.WHITE, "%s corner close: a white cross" % look)
+	var hang := 72.0 * 0.5 - 6.0
+	var reach := surface.fit_overhang()
+	check(reach.y >= hang and reach.x >= hang and reach.z >= hang and reach.w == overhang_before.w,
+		"%s corner close: a SCALE fit reserves its reach (%s)" % [look, reach])
+	# A press on the half past the card asks to close — the close button's own path.
+	await _click(Vector2(box.end.x - 8.0, box.position.y + 8.0))
+	check(closed[0] == 1, "%s corner close: a tap on the overhang asks to close (got %d)" % [look, closed[0]])
+	await _click(box.get_center())
+	check(closed[0] == 2, "%s corner close: a tap on its centre too (got %d)" % [look, closed[0]])
+	surface.close_enabled = false
+	await frames(2)
+	check(key.disabled, "%s corner close: close_enabled off disables it" % look)
+	await _click(box.get_center())
+	check(closed[0] == 2, "%s corner close: disabled, a tap does nothing" % look)
+	surface.close_enabled = true
+	await frames(2)
+	# A new size: re-dressed and re-centred.
+	surface.corner_close_size = 56.0
+	await frames(2)
+	check(key.size == Vector2(56, 56) and key.visual_size == 56
+			and _centre_on_card(surface, key).is_equal_approx(Vector2(surface.card.size.x, 0.0) + Vector2(-6, 6)),
+		"%s corner close: corner_close_size 56 — smaller, still on the corner (%s)" % [look, _centre_on_card(surface, key)])
+	surface.corner_close_size = 72.0
+	# It follows the card when the card resizes.
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(surface.card.size.x + 120.0, 10)
+	surface.body.add_child(block)
+	await frames(4)
+	check(_centre_on_card(surface, key).is_equal_approx(Vector2(surface.card.size.x, 0.0) + Vector2(-6, 6)),
+		"%s corner close: follows the card's corner when it grows (%s, card %s)"
+			% [look, _centre_on_card(surface, key), surface.card.size])
+	block.queue_free()
+	await frames(3)
+	surface.show_corner_close = false
+	await frames(2)
+	check(not key.visible and surface.close_button.visible == head_close and (ribbon_key == null or ribbon_key.visible),
+		"%s corner close: off again, the key goes and the head's close keys come back" % look)
+	check(surface.fit_overhang() == overhang_before, "%s corner close: off, the fit overhang is what it was" % look)
+	surface.queue_free()
+	await frames(1)
+	# Set before the window enters the tree: built on the way in.
+	var early := GoSurface.new()
+	early.show_corner_close = true
+	early.corner_close_size = 64.0
+	early.set_title("RANKINGS")
+	root.add_child(early)
+	await frames(3)
+	check(early.corner_close != null and early.corner_close.is_visible_in_tree() and early.corner_close.size == Vector2(64, 64),
+		"%s corner close: set before add_child, it shows at its size" % look)
+	early.queue_free()
+	await frames(1)
+
+
+## The key's centre in the card's own units.
+func _centre_on_card(surface: GoSurface, key: Control) -> Vector2:
+	return surface.card.get_global_transform().affine_inverse() * _key_rect(key).get_center()
+
+
+## Under a `SCALE` fit the corner key scales with the card and stays on the screen.
+func _corner_close_fit(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	for view_size: Vector2i in [Vector2i(390, 844), Vector2i(844, 390), Vector2i(1280, 720)]:
+		var view := SubViewport.new()
+		view.size = view_size
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.show_corner_close = true
+		surface.set_title("RANKINGS")
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 900)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		await frames(4)
+		var tag := "%s corner close fit %dx%d" % [look, view_size.x, view_size.y]
+		var key := surface.corner_close
+		check(key != null and key.visible, "%s: the key shows" % tag)
+		if key != null:
+			var box := _key_rect(key)
+			var card := _card_rect(surface.card)
+			check(Rect2(Vector2.ZERO, Vector2(view_size)).encloses(box), "%s: the key stays on the screen (%s)" % [tag, box])
+			check(absf(key.get_global_transform().get_scale().x - surface.card.scale.x) < 0.001,
+				"%s: it scales with the card (%.3f)" % [tag, surface.card.scale.x])
+			check(box.end.x > card.end.x and box.position.y < card.position.y and card.has_point(box.get_center()),
+				"%s: centred near the card's top-right corner, half past it (key %s card %s)" % [tag, box, card])
 		view.queue_free()
 		await frames(1)
 
