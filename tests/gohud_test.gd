@@ -1222,6 +1222,63 @@ func _scale() -> void:
 	var logical := GoScale.logical_size_for(Vector2i(720, 1600), 1.875, 1.10)
 	check(near(logical.x, 349.09, 0.1), "logical width 349 on a 720px·300dpi phone (%.2f)" % logical.x)
 	check(GoScale.form_width_for(GoScale.Bp.DESKTOP) == 480 and GoScale.form_width_for(GoScale.Bp.MOBILE) == 0, "form maximum width")
+	_scale_curve()
+
+
+## The scale curve: off by default (pure dp), the desktop window term once a reference is set, the OS scale as a floor, the
+## player's size and the limits; `reported_scale` and `device_inputs` under a simulated monitor.
+func _scale_curve() -> void:
+	var settings := GoUi.config
+	var saved := [settings.reference_short_side, settings.max_window_scale, settings.min_canvas_short, settings.user_scale]
+	var desk := func(px: Vector2i, dpi: float, raw := 0.0) -> Dictionary:
+		return GoScale.curve({"window": px, "screen": px, "dpi": dpi, "raw_scale": raw, "native": false, "desktop": true})
+	var phone := {"window": Vector2i(720, 1600), "screen": Vector2i(720, 1600), "dpi": 300.0, "raw_scale": 0.9, "native": true}
+	check(near(desk.call(Vector2i(3840, 2160), 96.0)["factor"], 1.0, 0.001), "curve: no reference — a 4K monitor at 100 % is pure dp")
+	check(is_zero_approx(GoScale.reported_scale("Windows", 1.0)) and is_zero_approx(GoScale.reported_scale("X11", 1.0)),
+		"curve: Windows and X11 report no OS scale (the engine's constant 1.0 is dropped)")
+	check(near(GoScale.reported_scale("macOS", 2.0), 2.0, 0.001), "curve: macOS reports its backing scale")
+	settings.reference_short_side = 1080.0
+	var fhd: Dictionary = desk.call(Vector2i(1920, 1080), 96.0)
+	var uhd: Dictionary = desk.call(Vector2i(3840, 2160), 96.0)
+	check(near(float(uhd["factor"]) / float(fhd["factor"]), 2.0, 0.001), "curve: 4K draws the 1080p canvas twice as large")
+	check(uhd["bp"] == GoScale.Bp.DESKTOP and fhd["bp"] == GoScale.Bp.DESKTOP, "curve: the window term never changes the breakpoint")
+	check(near(float(desk.call(Vector2i(3840, 2160), 192.0)["factor"]), 2.0, 0.001), "curve: 4K at 200 % is the 1080p look too")
+	var tablet := GoScale.gain_for(GoScale.Bp.TABLET, false)
+	check(near(float(desk.call(Vector2i(1920, 1080), 144.0)["factor"]), 1.5 * tablet, 0.001),
+		"curve: the OS scale is a floor (1080p at 150 % — 720 dp, the tablet gain)")
+	check(near(float(desk.call(Vector2i(1366, 768), 96.0)["factor"]), tablet, 0.001), "curve: a window under the reference keeps pure dp")
+	for d: Array in [[Vector2i(1366, 768), 144.0], [Vector2i(1366, 768), 192.0], [Vector2i(1920, 1080), 192.0]]:
+		var scaled: Dictionary = desk.call(d[0], d[1])
+		check(not bool(scaled["handheld"]) and near(float(scaled["os_scale"]), d[1] / 96.0, 0.001),
+			"curve: effective Windows DPI never reclassifies a known desktop as handheld")
+	var eight: Dictionary = desk.call(Vector2i(7680, 4320), 96.0)
+	check(near(float(eight["window_scale"]), 4.0, 0.001) and str(eight["clamp"]) == "", "curve: 8K reaches max_window_scale 4")
+	check(str(desk.call(Vector2i(15360, 8640), 96.0)["clamp"]) == "max_window", "curve: 16K stops at max_window_scale")
+	var hand := GoScale.curve(phone)
+	check(near(float(hand["factor"]), 1.875 * 1.10, 0.001) and near(float(hand["window_scale"]), 1.0, 0.001),
+		"curve: a handheld stays dp (no window term)")
+	var unknown := phone.duplicate()
+	unknown.erase("native")
+	check(bool(GoScale.curve(unknown)["handheld"]), "curve: an unknown device retains the physical-diagonal fallback")
+	settings.user_scale = 0.9
+	var small := GoScale.curve(phone)
+	check(near(float(small["factor"]), 1.875, 0.001) and str(small["clamp"]) == "dp_floor", "curve: a small UI stops at 1 unit = 1 dp")
+	settings.user_scale = 1.3
+	settings.min_canvas_short = 320.0
+	var large := GoScale.curve(phone)
+	check(near(float(large["logical"].x), 320.0, 0.01) and str(large["clamp"]) == "min_canvas", "curve: a large UI stops at min_canvas_short")
+	settings.user_scale = 1.0
+	GoScale.simulate({"size": Vector2i(3840, 2160), "handheld": false, "screen_scale": 2.0})
+	var sim := GoScale.device_inputs(Vector2i(640, 480))
+	check(sim["window"] == Vector2i(3840, 2160) and near(float(sim["raw_scale"]), 2.0, 0.001) and not bool(sim["native"]) and bool(sim["desktop"]),
+		"curve: device_inputs reads a simulated monitor")
+	var serial := GoScale.simulation_serial()
+	GoScale.simulate({})
+	check(GoScale.simulation_serial() == serial + 1, "curve: every simulate() bumps simulation_serial")
+	settings.reference_short_side = saved[0]
+	settings.max_window_scale = saved[1]
+	settings.min_canvas_short = saved[2]
+	settings.user_scale = saved[3]
 
 
 # ── Factory functions ────────────────────────────────────────────────

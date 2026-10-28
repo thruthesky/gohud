@@ -178,6 +178,40 @@ signal changed_settings
 ## Extra multiplier that enlarges the UI on desktop (correcting for the longer viewing distance). 1.0 means none.
 @export_range(1.0, 1.6, 0.01) var desktop_ui_gain := 1.0
 
+## 🖥 The desktop window short side (px) the UI is designed at — a desktop window taller than this draws the same canvas
+## larger, so the UI keeps its share of the screen (`GoScale.window_scale_for` · Unity "Scale With Screen Size"). 1080
+## sizes a 4K monitor like a 1080p one. 0 is off: pure dp, the UI a fixed number of OS points on every monitor (the default
+## — switching it on changes how large a desktop UI is drawn, so the project decides).
+@export_range(0.0, 4320.0) var reference_short_side := 0.0:
+	set(value):
+		if is_equal_approx(reference_short_side, value): return
+		reference_short_side = value
+		_rescale()
+
+## The most `reference_short_side` may enlarge a desktop window (4.0 = an 8K screen against a 1080 reference). Beyond it
+## the canvas grows instead.
+@export_range(1.0, 8.0, 0.05) var max_window_scale := 4.0:
+	set(value):
+		if is_equal_approx(max_window_scale, value): return
+		max_window_scale = value
+		_rescale()
+
+## The shortest the canvas may get (units) — the narrowest layout the project supports. A large `user_scale` on a small
+## phone stops here. 0 is no limit. The 1-dp floor (`GoScale.curve`) still wins over it.
+@export_range(0.0, 2000.0) var min_canvas_short := 0.0:
+	set(value):
+		if is_equal_approx(min_canvas_short, value): return
+		min_canvas_short = value
+		_rescale()
+
+## ♿ The player's UI size — one multiplier on the whole curve (`GoScale.curve`), inside its limits: 0.9 small, 1.0 normal,
+## 1.15 large are the usual steps. Changing it re-applies the scale at once (through `GoRuntime`, when it owns the scale).
+@export_range(0.5, 2.0, 0.01) var user_scale := 1.0:
+	set(value):
+		if is_equal_approx(user_scale, value): return
+		user_scale = value
+		_rescale()
+
 ## Maximum content width of a form (a vertical list such as login·settings) in dp. 0 is no limit.
 @export_range(0, 1200) var form_max_width_mobile := 0
 @export_range(0, 1200) var form_max_width_tablet := 440
