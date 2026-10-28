@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=203 format=3]
+[gd_resource type="Theme" load_steps=207 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1421,6 +1421,31 @@ band = 0
 base_font = SubResource("painted_font")
 variation_embolden = 1.2
 
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreRowStripe"]
+content_margin_left = 10
+content_margin_top = 0
+content_margin_right = 16
+content_margin_bottom = 0
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreRowStripeAlt"]
+content_margin_left = 10
+content_margin_top = 0
+content_margin_right = 16
+content_margin_bottom = 0
+bg_color = Color(0.933333, 0.945098, 0.984314, 1)
+
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreRowStripeGold"]
+content_margin_left = 10
+content_margin_top = 0
+content_margin_right = 16
+content_margin_bottom = 0
+bg_color = Color(1, 0.940706, 0.763922, 1)
+
+[sub_resource type="FontVariation" id="painted_row_font"]
+base_font = SubResource("painted_font")
+variation_embolden = 0.5
+
 [sub_resource type="StyleBoxFlat" id="painted_GoTile"]
 content_margin_left = 0
 content_margin_top = 3
@@ -2728,8 +2753,22 @@ GoScoreRow/base_type = &"PanelContainer"
 GoScoreRow/styles/panel = SubResource("painted_GoScoreRow")
 GoScoreRowGold/base_type = &"PanelContainer"
 GoScoreRowGold/styles/panel = SubResource("painted_GoScoreRowGold")
+GoScoreRowLabel/base_type = &"Label"
+GoScoreRowLabel/colors/font_color = Color(0.025, 0.035, 0.22, 1)
+GoScoreRowLabel/constants/outline_size = 0
+GoScoreRowLabel/fonts/font = SubResource("painted_row_font")
+GoScoreRowMutedLabel/base_type = &"Label"
+GoScoreRowMutedLabel/colors/font_color = Color(0.171943, 0.187373, 0.264527, 1)
+GoScoreRowMutedLabel/constants/outline_size = 0
+GoScoreRowMutedLabel/fonts/font = SubResource("painted_row_font")
 GoScoreRowOwn/base_type = &"PanelContainer"
 GoScoreRowOwn/styles/panel = SubResource("painted_GoScoreRowOwn")
+GoScoreRowStripe/base_type = &"PanelContainer"
+GoScoreRowStripe/styles/panel = SubResource("painted_GoScoreRowStripe")
+GoScoreRowStripeAlt/base_type = &"PanelContainer"
+GoScoreRowStripeAlt/styles/panel = SubResource("painted_GoScoreRowStripeAlt")
+GoScoreRowStripeGold/base_type = &"PanelContainer"
+GoScoreRowStripeGold/styles/panel = SubResource("painted_GoScoreRowStripeGold")
 GoScoreTab/base_type = &"GoButton"
 GoScoreTab/colors/font_color = Color(1, 1, 1, 1)
 GoScoreTab/colors/font_focus_color = Color(1, 1, 1, 1)
