@@ -130,6 +130,7 @@ func _outline(n: int, region: Rect2, masked: bool) -> PackedVector2Array:
 	if not masked: return PackedVector2Array([Vector2.ZERO, Vector2(region.size.x, 0), region.size, Vector2(0, region.size.y)])
 	var atlas_points := PackedVector2Array()
 	match n:
+		5: atlas_points = PackedVector2Array([Vector2(740, 355), Vector2(1234, 355), Vector2(1234, 647), Vector2(1220, 647), Vector2(1220, 660), Vector2(740, 660)])
 		6: atlas_points = PackedVector2Array([Vector2(435, 293), Vector2(713, 293), Vector2(713, 582), Vector2(425, 582), Vector2(425, 560), Vector2(250, 560), Vector2(250, 385), Vector2(335, 345), Vector2(435, 325)])
 		7: atlas_points = PackedVector2Array([Vector2(40, 558), Vector2(250, 558), Vector2(250, 580), Vector2(424, 580), Vector2(424, 835), Vector2(40, 835)])
 		8: atlas_points = PackedVector2Array([Vector2(427, 626), Vector2(750, 626), Vector2(750, 657), Vector2(911, 657), Vector2(911, 920), Vector2(427, 920)])

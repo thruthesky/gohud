@@ -42,5 +42,12 @@ func _initialize() -> void:
 			if color.r > 0.5 and color.g > 0.4 and color.b < 0.4:
 				stage5_clear = false
 	if not stage5_clear: printerr("FAIL stage 5 selection illuminates an unrelated atlas fragment")
-	print("gohud world tour glow render tests: %d/3 passed" % (int(glow_visible) + int(neighbour_clear) + int(stage5_clear)))
-	quit(0 if glow_visible and neighbour_clear and stage5_clear else 1)
+	picture.set_selected(false)
+	for i in 4:
+		await process_frame
+	await RenderingServer.frame_post_draw
+	var unselected := root.get_texture().get_image()
+	var stage5_background_clear := unselected.get_pixel(315, 265).r < 0.001
+	if not stage5_background_clear: printerr("FAIL stage 5 exposes stray pixels from neighbouring art when unselected")
+	print("gohud world tour glow render tests: %d/4 passed" % (int(glow_visible) + int(neighbour_clear) + int(stage5_clear) + int(stage5_background_clear)))
+	quit(0 if glow_visible and neighbour_clear and stage5_clear and stage5_background_clear else 1)

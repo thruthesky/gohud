@@ -11,6 +11,7 @@ float island_mask(vec2 coordinate) {
 	if (coordinate.x < atlas_region.x || coordinate.y < atlas_region.y || coordinate.x >= atlas_region.z || coordinate.y >= atlas_region.w) return 0.0;
 	vec2 pixel = coordinate / atlas_pixel_size;
 	// The source atlas rectangles overlap at their corners. Do not draw a halo from a neighbouring island.
+	if (island_stage == 5 && pixel.x >= 1220.0 && pixel.y >= 647.0) return 0.0;
 	if (island_stage == 6 && pixel.x < 435.0 && pixel.y < 325.0) return 0.0;
 	if (island_stage == 7 && pixel.x > 250.0 && pixel.y < 580.0) return 0.0;
 	if (island_stage == 8 && pixel.x > 750.0 && pixel.y < 657.0) return 0.0;
