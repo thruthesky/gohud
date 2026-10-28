@@ -3177,7 +3177,17 @@ func _fold_tab() -> void:
 	tab.tab_align = -1
 	check(tab.face_rect().position.y == 0.0, "fold tab: tab_align -1 follows side (top)")
 	tab.side = SIDE_LEFT
+	tab.tab_face = Vector2(34, 34)
+	tab.tab_centered = true
+	check(tab.face_rect() == Rect2(7, 7, 34, 34), "fold tab: a standalone handle centres its small face in the full target")
+	check(tab.touch_hit(Vector2(0.5, 0.5)) and tab.touch_hit(Vector2(47.5, 47.5))
+		and not tab.touch_hit(Vector2(48.5, 24)), "fold tab: centring the face preserves the 48dp raw touch box")
+	tab.folded = true
+	check(tab.face_rect() == Rect2(0, 8, 48, 32), "fold tab: centring the handle leaves the folded pill unchanged")
+	tab.folded = false
+	tab.tab_centered = false
 	tab.tab_face = Vector2(16, 36)
+	check(tab.face_rect() == Rect2(0, 6, 16, 36), "fold tab: disabling centring restores its panel-edge handle")
 
 	# Folded with neither glyph nor text: the handle with the chevron turned back.
 	tab.icon_name = &""

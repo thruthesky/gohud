@@ -109,6 +109,14 @@ const LOCKED_ALPHA := 0.45
 		tab_align = value
 		_restyle()
 
+## Centre a standalone handle in its touch box instead of hugging an edge. The fold direction still comes from
+## `side`; panel-edge handles keep the default false. Folded pills already centre vertically and are unchanged.
+@export var tab_centered := false:
+	set(value):
+		if tab_centered == value: return
+		tab_centered = value
+		_restyle()
+
 ## The pill face's height while folded (dp). The pill fills the box's width and is centred in its height.
 @export var pill_height := 32.0:
 	set(value):
@@ -314,6 +322,7 @@ func face_rect() -> Rect2:
 		return Rect2(0.0, roundf((size.y - high) * 0.5), size.x, high)
 	var face := tab_face.min(size)
 	var spot := ((size - face) * 0.5).round()
+	if tab_centered: return Rect2(spot, face)
 	match side if tab_align < 0 else tab_align:
 		SIDE_LEFT: spot.x = 0.0
 		SIDE_RIGHT: spot.x = size.x - face.x
