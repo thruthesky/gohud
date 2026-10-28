@@ -272,6 +272,36 @@ var show_close_key := false:
 		if show_close_key == value: return
 		show_close_key = value
 		if is_inside_tree(): _dress_corner()
+## ✖ **A big close key on the card's own corner** (off by default: a window is what it always was). On, `corner_close`
+## — the same key the close button and `show_close_key` show, dressed by the look (`GoSkin.dress_close_button`: the
+## painted red disc in arcade_light), `corner_close_size` dp across — is centred on the card's top-right corner,
+## nudged `CORNER_CLOSE_NUDGE` inward, so about half of it hangs past the card. It lives on the card outside its clip
+## and its layout: it moves and scales with the card (a `SCALE` fit reserves its reach, `fit_overhang()`), and the
+## card, title and body do not move for it. A press calls `request_close()` (`close_requested`), as the close button
+## does; `close_enabled` off disables it. While it shows, the head's close button and the ribbon-end key
+## (`show_close_key`) stay hidden — one close key per window. It stays on the right in a right-to-left language, as
+## the ribbon-end key does.
+## ```gdscript
+## board.show_corner_close = true     # a 72 dp red key on the card's top-right corner
+## board.corner_close_size = 64.0     # a little smaller
+## ```
+@export var show_corner_close := false:
+	set(value):
+		if show_corner_close == value: return
+		show_corner_close = value
+		if is_inside_tree():
+			_dress_corner()
+			relayout()
+## The corner close key's side (dp, at scale 1). Its glyph follows the look's ratio for the size.
+@export var corner_close_size := 72.0:
+	set(value):
+		value = maxf(8.0, value)
+		if is_equal_approx(corner_close_size, value): return
+		corner_close_size = value
+		_dress_corner_close()
+		if is_inside_tree() and show_corner_close: relayout()
+## How far the corner close key's centre sits inside the card's top-right corner (dp, at scale 1).
+const CORNER_CLOSE_NUDGE := Vector2(-6.0, 6.0)
 var title_glyph_size := 0:
 	set(value):
 		title_glyph_size = value
@@ -437,6 +467,11 @@ var title_label: Label
 var close_button: GoIconButton
 ## The close key `show_close_key` shows — null until it is first shown. Built by `_make_close_button()` too.
 var close_key: GoIconButton
+## The big close key `show_corner_close` hangs on the card's top-right corner — null until it is first shown. Built by
+## `_make_close_button()` too; an internal child of `card`, so the card's layout never sees it.
+var corner_close: GoIconButton
+## The bare control the corner close key hangs on (`_show_corner_close`).
+var _corner_close_mount: Control
 var back_button: Button
 var scroll: GoScroll
 ## The scrolling body. Most content goes in here.
@@ -727,6 +762,7 @@ func _dress_chrome() -> void:
 	GoSkin.undress_close_button(close_button)
 	skin.dress_close_button(close_button)
 	_dress_close_key()
+	_dress_corner_close()
 
 
 ## The plate `title_variation` names, a copy of the theme's (a paint may go on it) — null when unset or undefined.
@@ -1124,15 +1160,17 @@ func _corner_texture() -> Texture2D:
 func _dress_corner() -> void:
 	if close_button == null: return
 	var now := corner_now()
-	if now == HeadCorner.CLOSE:
+	# The corner close key is the window's one close key: the head's close button stands aside for it.
+	if now == HeadCorner.CLOSE and not show_corner_close:
 		if close_button.has_meta(&"go_corner_hid"):
 			close_button.remove_meta(&"go_corner_hid")
 			close_button.visible = true
 	elif close_button.visible:
 		close_button.set_meta(&"go_corner_hid", true)
 		close_button.visible = false
+	_show_corner_close(show_corner_close)
 	var art := _corner_texture() if now == HeadCorner.ART and show_header else null
-	_show_close_key(show_close_key and art != null)
+	_show_close_key(show_close_key and art != null and not show_corner_close)
 	if art == null:
 		if is_instance_valid(_corner_rect): _corner_rect.visible = false
 		return
@@ -1211,6 +1249,62 @@ func _place_close_key() -> void:
 			else -left + spot.position.x
 	close_key.position = Vector2(x, spot.position.y)
 	close_key.size = spot.size
+
+
+## Shows or hides the corner close key — built (and dressed) the first time it shows.
+## 🔑 On a bare mount — an internal child of the card, after its content — not on the card itself: the card is a
+##    container and would lay the key out inside its padding. The mount draws and takes nothing, has no minimum size,
+##    and the card fits it to its content rect like the padding; the key sits on the mount where it likes. So the card's
+##    size and layout never see the key, while the key draws over the card (and takes a tap before it), moves with it
+##    and takes its `SCALE` fit's scale. The clip is one level in (`_margin`), so the half past the card shows and is
+##    pressable.
+func _show_corner_close(on: bool) -> void:
+	if not on:
+		if is_instance_valid(corner_close): corner_close.visible = false
+		return
+	if not is_instance_valid(corner_close):
+		_corner_close_mount = Control.new()
+		_corner_close_mount.name = "CornerCloseMount"
+		_corner_close_mount.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_corner_close_mount.focus_mode = Control.FOCUS_NONE
+		card.add_child(_corner_close_mount, false, Node.INTERNAL_MODE_BACK)
+		_corner_close_mount.item_rect_changed.connect(_place_corner_close)
+		corner_close = _make_close_button()
+		corner_close.name = "CornerClose"
+		corner_close.icon_name = GoIconSet.CLOSE
+		corner_close.tooltip_text_name = &"close"
+		corner_close.pressed.connect(request_close)
+		_corner_close_mount.add_child(corner_close)
+		_dress_corner_close()
+	corner_close.disabled = not close_enabled
+	corner_close.visible = true
+	_place_corner_close()
+
+
+## The look's dress on the corner close key — the close button's (`GoSkin.dress_close_button`), `corner_close_size` across.
+func _dress_corner_close() -> void:
+	if not is_instance_valid(corner_close): return
+	GoSkin.undress_close_button(corner_close)
+	corner_close.visual_size = roundi(corner_close_size)
+	GoUi.skin().dress_close_button(corner_close)
+	_place_corner_close()
+
+
+## Centres the corner close key on the card's top-right corner, `CORNER_CLOSE_NUDGE` inward (card units: it scales
+## with the card).
+func _place_corner_close() -> void:
+	if not is_instance_valid(corner_close) or not corner_close.visible: return
+	var side := Vector2.ONE * corner_close_size
+	corner_close.size = side
+	# In card units: the mount starts where the card's padding does.
+	corner_close.position = Vector2(card.size.x, 0.0) - _corner_close_mount.position - side * 0.5 + CORNER_CLOSE_NUDGE
+
+
+## How far the corner close key reaches past the card's top and right edges (dp, at scale 1; 0 while it is off).
+func _corner_close_reach() -> float:
+	if not show_corner_close: return 0.0
+	var half := corner_close_size * 0.5
+	return maxf(0.0, maxf(half - CORNER_CLOSE_NUDGE.y, half + CORNER_CLOSE_NUDGE.x))
 
 
 # ── Title ──────────────────────────────────────────────────────────────
@@ -1396,6 +1490,10 @@ func _focus_default() -> void:
 	if is_instance_valid(close_key) and close_key.is_visible_in_tree() and not close_key.disabled \
 			and close_key.focus_mode != Control.FOCUS_NONE:
 		close_key.grab_focus()
+		return
+	if is_instance_valid(corner_close) and corner_close.is_visible_in_tree() and not corner_close.disabled \
+			and corner_close.focus_mode != Control.FOCUS_NONE:
+		corner_close.grab_focus()
 		return
 	var target := find_next_valid_focus()
 	var visited: Array[Control] = []
@@ -1767,12 +1865,17 @@ func _fit_height(most: float) -> float:
 
 
 ## How far the window draws past its card under a `SCALE` fit (left, top, right, bottom, dp at scale 1): the title
-## plate hanging over the card and the corner art on it (`GoRibbonHeader.card_overhang`), nothing when the title sits
-## inside the card.
+## plate hanging over the card and the corner art on it (`GoRibbonHeader.card_overhang`), and the corner close key
+## (`show_corner_close`); nothing when the title sits inside the card and the corner key is off.
 func fit_overhang() -> Vector4:
-	if _overhang.y <= 0.0 and _overhang.x <= 0.0: return Vector4.ZERO
-	var art := show_header and corner_now() == HeadCorner.ART
-	return GoRibbonHeader.card_overhang(card, art, art and show_close_key)
+	var reach := Vector4.ZERO
+	if _overhang.y > 0.0 or _overhang.x > 0.0:
+		var art := show_header and corner_now() == HeadCorner.ART
+		reach = GoRibbonHeader.card_overhang(card, art, art and show_close_key and not show_corner_close)
+	# The corner close key (`show_corner_close`) past the card's top-right corner — both sides, so the card stays centred.
+	var key := _corner_close_reach()
+	if key > 0.0: reach = Vector4(maxf(reach.x, key), maxf(reach.y, key), maxf(reach.z, key), reach.w)
+	return reach
 
 
 ## Takes a `SCALE` fit's scale off the card (and the height it gave `fit_flex`) once the fit stops.
@@ -1844,6 +1947,7 @@ func _process(_delta: float) -> void:
 	if not _active: return
 	close_button.disabled = not close_enabled
 	if is_instance_valid(close_key): close_key.disabled = not close_enabled
+	if is_instance_valid(corner_close): corner_close.disabled = not close_enabled
 	# Without the autoload the keyboard is polled here (with it, it arrives as a signal).
 	if _runtime == null and DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 		_on_keyboard(DisplayServer.virtual_keyboard_get_height())
