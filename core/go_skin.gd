@@ -1057,6 +1057,21 @@ func badge_box(ink: Color) -> StyleBox:
 	return style
 
 
+## Caption plate on a world-tour map node. Skins may provide a smaller pill suited to the map artwork.
+func world_tour_caption_box() -> StyleBox:
+	return surface_box(GoTheme.BOX_CARD)
+
+
+## A skin's optional tour-stage picture; null when the skin has no stage artwork.
+func world_tour_picture(_stage: int) -> Texture2D:
+	return null
+
+
+## Backdrop beneath a full-screen tour map.
+func world_tour_backdrop_color() -> Color:
+	return opaque_backdrop_color()
+
+
 ## 🏷 Face of a **sticker** — a badge painted solid in [param ink] (`GoBadge.solid`): the "PLAY!" tag slapped on the
 ## stage you play next, the check on a cleared one. Unlike `badge_box` (a faint plate that whispers a count) it is the
 ## loudest thing on its card, so it is filled with its colour. Round enough that one glyph or icon reads as a disc.

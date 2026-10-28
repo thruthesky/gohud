@@ -96,6 +96,7 @@ const GAUGE_OUTLINE := 3
 const GAUGE_PAD := Vector2(14.0, 8.0)
 
 static var _textures := {}
+static var _world_tour_pictures := {}
 static var _symbol_font: Font
 static var _painted_blur: Shader = null
 
@@ -234,6 +235,39 @@ func badge_box(ink_color: Color) -> StyleBox:
 	face.content_margin_top = badge_pad_y
 	face.content_margin_bottom = badge_pad_y
 	return face
+
+
+## The light, ink-rimmed country pill under a world-tour badge.
+func world_tour_caption_box() -> StyleBox:
+	var face := StyleBoxFlat.new()
+	face.bg_color = Color("#f4fbff")
+	face.border_color = INK
+	face.set_border_width_all(2)
+	face.border_width_bottom = 3
+	face.set_corner_radius_all(22)
+	face.anti_aliasing = true
+	return face
+
+
+func world_tour_backdrop_color() -> Color:
+	return Color("#4bb6f4")
+
+
+## The nine islands share one imported atlas, keeping the mobile texture footprint independent of image count.
+## Atlas order follows the route (1-based); callers may replace the pictures with their own stage art.
+func world_tour_picture(stage: int) -> Texture2D:
+	var regions: Array[Rect2] = [Rect2(80, 45, 365, 280), Rect2(450, 12, 340, 280), Rect2(850, 80, 385, 275),
+			Rect2(1235, 235, 410, 305), Rect2(740, 355, 505, 305), Rect2(240, 285, 480, 300),
+			Rect2(40, 550, 385, 285), Rect2(420, 625, 495, 305), Rect2(1105, 635, 510, 300)]
+	if stage < 1 or stage > regions.size(): return null
+	if _world_tour_pictures.has(stage): return _world_tour_pictures[stage]
+	var source := widget_art(&"world_tour_islands")
+	if source == null: return null
+	var picture := AtlasTexture.new()
+	picture.atlas = source
+	picture.region = regions[stage - 1]
+	_world_tour_pictures[stage] = picture
+	return picture
 
 
 # ── Bars and the outlined button ──────────────────────────────────────

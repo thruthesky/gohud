@@ -33,6 +33,14 @@ const DISABLED_ALPHA := 0.6
 ## The faces that place the label (focus is drawn over them and places nothing).
 const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]
 
+## Glyph height as a share of the button height; changing it also reserves the matching space beside the label.
+@export_range(0.1, 1.0, 0.01) var glyph_share := GLYPH_SHARE:
+	set(value):
+		glyph_share = clampf(value, 0.1, 1.0)
+		_update_shift()
+		_queue_fit()
+		queue_redraw()
+
 ## The glyph. Empty: the icon set's [member glyph_icon].
 @export var glyph: Texture2D:
 	set(value):
@@ -156,7 +164,7 @@ func glyph_texture() -> Texture2D:
 func glyph_allowance(height := -1.0) -> float:
 	var art := glyph_texture()
 	if art == null: return 0.0
-	var tall := (size.y if height < 0.0 else height) * GLYPH_SHARE
+	var tall := (size.y if height < 0.0 else height) * glyph_share
 	return tall * art.get_width() / maxf(1.0, maxf(art.get_width(), art.get_height())) + GAP
 
 
@@ -167,7 +175,7 @@ func glyph_rect() -> Rect2:
 	var font := get_theme_font(&"font")
 	var font_size := get_theme_font_size(&"font_size")
 	var text_width := font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x if font != null else 0.0
-	var box := size.y * GLYPH_SHARE
+	var box := size.y * glyph_share
 	var ratio := box / maxf(1.0, maxf(art.get_width(), art.get_height()))
 	var drawn := Vector2(art.get_width(), art.get_height()) * ratio
 	# The button centres the label in the state face's content rect; the glyph goes just left of it.
