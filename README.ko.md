@@ -429,7 +429,10 @@ icons.canonical(&"gear")             # &"settings"
 있는 동그란 버튼). 평평한 부품도 있다: `GoPanelFlat` · `GoCardFlat`(잉크 테두리의 반투명 판과 흰 카드),
 `GoChoiceButton`(고르면 청록으로 남는 밝은 선택 키), `GoBigButton` · `GoBigSecondaryButton`(아래 테두리가 두꺼운 큰
 초록·회색 키), `GoSmallLabel`(12 px, 75% 잉크) · `GoBarLabel`(11 px), `GoScoreRow` · `GoScoreRowGold` · `GoScoreHead`(점수판 줄,
-우승자의 금색 줄, 머리줄), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
+우승자의 금색 줄, 머리줄), `GoScoreRowStripe` · `GoScoreRowStripeAlt` · `GoScoreRowStripeGold`(긴 순위표의 평평한 줄무늬 줄 —
+`surface` · `surface_soft` 토큰, 1위는 `surface` 를 `warning_fill` 쪽으로 0.28 섞은 연한 금색; 테두리·모서리·그림자 없이 왼쪽 10,
+오른쪽 16 여백이라 간격 0 으로 쌓으면 줄무늬로 읽힌다) · `GoScoreRowLabel` · `GoScoreRowMutedLabel`(본문 글꼴을 중간 굵기, embolden
+0.5 로 — 점수판의 남색 잉크와 순위·도움말용 `muted` 잉크; 외곽선과 글자 크기는 두지 않는다), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
 플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키, 번개와 같은 화풍으로 gohud 가 그린 안정도 방패)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
 REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
 룩은 모두 `null` 을 돌려준다.
@@ -597,7 +600,7 @@ func slot_box(accent: Color, lit: bool) -> StyleBox:
 
 | 클래스 | 바탕 | 하는 일 |
 |---|---|---|
-| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절, 머리 모서리의 그림 또는 닫기 버튼(`corner`, `corner_on_left`), `show_close_key`면 그림 반대쪽 모서리에 닫기 키 |
+| `GoSurface` | Control | 떠 있는 카드 껍데기 — `CENTER`·`BOTTOM`·`ANCHOR` 배치, 고정 머리말·툴바·바닥, 스크롤 본문, Escape/뒤로 가기는 가장 위 창만, 포커스 복원, 끌어서 크기 조절, 머리 모서리의 그림 또는 닫기 버튼(`corner`, `corner_on_left`), `show_close_key`면 그림 반대쪽 모서리에 닫기 키, `show_corner_close`면 카드 오른쪽 위 모서리 한가운데에 반쯤 걸친 큰 닫기 키(`corner_close`, 지름 `corner_close_size` dp, 기본 72) |
 | `GoSheet` | CanvasLayer | 뒤로 가기가 있는 바텀 시트 페이지, 고정 툴바·푸터. `max_height_ratio` 로 그 시트만 전역 상한 0.72 를 넘겨 키운다(비율이 깎이면 디버그 빌드에서 경고) |
 | `GoDialogs` | Node | `await confirm()`·`await alert()` — 문구·번역 키 두 방식, `destructive` 면 채워진 위험 버튼, `action_layout` 으로 버튼 세로·한 줄·자동. `await choose()` 는 몇 가지 중 고른 것의 번호 |
 | `GoForm` | MarginContainer | 브레이크포인트마다 폭을 제한하고 가상 키보드를(`avoid_hud` 면 HUD 까지) 피하며 라벨 줄바꿈을 보장하는 폼 |

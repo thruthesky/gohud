@@ -6,6 +6,19 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **arcade_light flat zebra rows** — `GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold`
+  (`PanelContainer`): a flat fill of the `surface` token, of `surface_soft`, and of `surface` lerped 0.28 toward
+  `warning_fill` (a soft gold first place); no border, corner radius or shadow, content margins 10 left, 16 right, 0
+  above and below — rows stacked with no separation read as alternating light and grey stripes, not pills. With them
+  **`GoScoreRowLabel`** and **`GoScoreRowMutedLabel`** (`Label`): the body font (Nunito Bold and its CJK fallbacks) as
+  a `FontVariation` at `variation_embolden` 0.5 — lighter than `GoScoreLabel`'s 1.2 — in `GoScoreLabel`'s navy ink and
+  in the `muted` token, no outline; the caller sets the font size.
+- **`GoSurface.show_corner_close`** (off) and **`corner_close_size`** (72 dp): a big close key, `corner_close`, centred
+  on the card's own top-right corner and nudged `CORNER_CLOSE_NUDGE` (-6, +6) inward, so about half of it hangs past
+  the card. The close button's key (dressed by `GoSkin.dress_close_button`: arcade_light's painted red disc); a press
+  calls `request_close()` (`close_requested`), `close_enabled` off disables it. It hangs on a bare internal mount of the
+  card, so the card's layout never sees it, and it moves and scales with the card; a `SCALE` fit reserves its reach
+  (`fit_overhang()`). While it shows, the head's close button and the ribbon-end key (`show_close_key`) stay hidden.
 - **`GoGestureHint`** (`Control`): see-through ghost fingertips that play a touch gesture in a loop, for a tutorial
   that teaches one. `Gesture.PINCH` (the only one so far): two fingertips appear close together near the middle, spread
   apart along the diagonal (zoom in), pause, pinch back together (zoom out), pause and fade, every `loop_seconds`
