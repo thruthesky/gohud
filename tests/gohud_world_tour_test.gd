@@ -30,6 +30,13 @@ func _initialize() -> void:
 	portrait.size = Vector2(300, 180)
 	await process_frame
 	check(portrait_material.get_shader_parameter(&"control_size") == Vector2(300, 180), "rounded portrait clip follows resizes")
+	check("edge_fade" in portrait, "portrait supports optional vertical edge blending")
+	if "edge_fade" in portrait:
+		check(is_equal_approx(float(portrait.get("edge_fade")), 0.0), "edge blending is off by default")
+		portrait.set("edge_fade", 0.1)
+		check(is_equal_approx(float(portrait_material.get_shader_parameter(&"edge_fade")), 0.1), "edge fade reaches the shader")
+		portrait.set("edge_fade", 1.0)
+		check(is_equal_approx(float(portrait.get("edge_fade")), 0.15), "edge fade is bounded")
 	portrait.queue_free()
 	check(GoUi.skin().widget_art(&"world_tour_badge_blue") != null, "arcade map has a blue round badge")
 	check(GoUi.skin().widget_art(&"world_tour_badge_red") != null, "arcade selected stage has a red round badge")
