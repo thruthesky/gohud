@@ -34,7 +34,7 @@ const PINCH_END := 0.82
 const CLOSED_END := 0.90
 
 ## How far apart the fingertips stand in the still frame under `reduce_motion` (0 together, 1 fully apart).
-const STILL_SPREAD := 0.75
+const STILL_SPREAD := 1.0
 
 ## The diagonal the fingertips travel along — the first one up and right, the second down and left (thumb and index).
 const AXIS := Vector2(0.70710678, -0.70710678)
@@ -155,9 +155,9 @@ func finger_positions() -> PackedVector2Array:
 	return _fingers_at(spread())
 
 
-## A fingertip's radius (dp) — a share of the rect's short side, kept between 14 and 30.
+## A fingertip's radius (dp) — a share of the rect's short side, kept between 20 and 38.
 func finger_radius() -> float:
-	return clampf(_short_side() * 0.075, 14.0, 30.0)
+	return clampf(_short_side() * 0.095, 20.0, 38.0)
 
 
 ## The rim and arrow colour now: `ink`, or the theme's accent.
@@ -183,7 +183,7 @@ func _closed_offset() -> float:
 
 func _open_offset() -> float:
 	# The arrows reach past a fingertip — keep both inside the rect.
-	var room := _short_side() * 0.5 - finger_radius() * 2.3
+	var room := _short_side() * 0.5 - finger_radius() * 2.5
 	return maxf(_closed_offset(), minf(_short_side() * reach, room))
 
 
@@ -232,7 +232,7 @@ func _draw() -> void:
 	var skin := GoUi.skin()
 	var radius := finger_radius()
 	var colour := ink_color()
-	var arrow := radius * 0.7
+	var arrow := radius * 0.9
 	var fingers := finger_positions()
 	var outward := [AXIS, -AXIS]
 	if _still():
@@ -249,7 +249,7 @@ func _draw() -> void:
 		var gap := TRAIL_GAP / maxf(loop_seconds, 0.01)
 		for k in range(TRAIL_STEPS, 0, -1):
 			var before := _fingers_at(_spread_at(maxf(u - gap * k, 0.0)))
-			var fade := alpha * 0.3 * float(TRAIL_STEPS + 1 - k) / float(TRAIL_STEPS + 1)
+			var fade := alpha * 0.5 * float(TRAIL_STEPS + 1 - k) / float(TRAIL_STEPS + 1)
 			for p in before: skin.draw_gesture_touch(self, p, radius * (1.0 - 0.12 * k), colour, fade)
 	for p in fingers: skin.draw_gesture_touch(self, p, radius, colour, alpha)
 	if absf(motion) > 0.05:

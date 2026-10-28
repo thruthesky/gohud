@@ -11,7 +11,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   apart along the diagonal (zoom in), pause, pinch back together (zoom out), pause and fade, every `loop_seconds`
   (2.6), eased, with short fading trails and direction arrows. `play()` (re)starts the loop, `stop()` hides it (nothing
   drawn), `playing` tells which, `advance(delta)` drives it by hand (`auto_advance` off). It centres itself in its rect
-  and scales the travel (`reach` 0.34 / `near` 0.08 of the short side) and the fingertips (7.5 %, 14..30 dp) to it;
+  and scales the travel (`reach` 0.34 / `near` 0.08 of the short side) and the fingertips (9.5 %, 20..38 dp) to it;
   `ink` (the `accent` by default) rims them. A still frame (apart, arrows out and in) under `reduce_motion`. Never takes
   input (`MOUSE_FILTER_IGNORE`) — the player pinches through it. New skin hooks `GoSkin.draw_gesture_touch()` and
   `GoSkin.draw_gesture_arrow()`.

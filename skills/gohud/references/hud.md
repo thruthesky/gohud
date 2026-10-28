@@ -1259,14 +1259,14 @@ hint.stop()                                      # hides it; nothing is drawn un
 | `loop_seconds` | `2.6` | One loop: fade in (to `FADE_IN_END` 0.10), spread (to `SPREAD_END` 0.40), hold apart (to `OPEN_END` 0.52), pinch (to `PINCH_END` 0.82), hold together (to `CLOSED_END` 0.90), fade out. The motion eases in and out |
 | `reach` · `near` | `0.34` · `0.08` | How far each fingertip stands from the middle when apart / together, as a share of the rect's short side (apart is held inside the rect with room for the arrows) |
 | `ink` · `ink_color()` | transparent | The fingertips' rim and the arrows; transparent uses the theme's `accent` |
-| `progress()` · `spread()` · `ghost_alpha()` · `finger_positions()` · `finger_radius()` | | Where the loop is (0 → 1); how far apart (0 together, 1 apart); how strongly it shows; the two centres in local coordinates (empty while stopped); a fingertip's radius — 7.5 % of the short side, kept in 14..30 dp |
+| `progress()` · `spread()` · `ghost_alpha()` · `finger_positions()` · `finger_radius()` | | Where the loop is (0 → 1); how far apart (0 together, 1 apart); how strongly it shows; the two centres in local coordinates (empty while stopped); a fingertip's radius — 9.5 % of the short side, kept in 20..38 dp |
 | `paint_count` | | How many times the ghost was painted — a stopped hint adds none |
 
 - The gesture centres itself in the node's rect and scales its travel and fingertips to the rect's short side, so it
   reads the same on a phone and an iPad. The caller places and sizes the node; it does not cover its parent by itself.
-- Under `GoConfig.reduce_motion` it holds one still frame: the fingertips apart (`STILL_SPREAD` 0.75) with arrows out
+- Under `GoConfig.reduce_motion` it holds one still frame: the fingertips apart (`STILL_SPREAD` 1) with arrows out
   and in.
-- Skin hooks: `draw_gesture_touch(canvas, at, radius, ink, strength)` (a fingertip: a soft halo and a see-through
-  `surface` disc ringed in `ink`) and `draw_gesture_arrow(canvas, at, direction, length, ink, strength)`. It follows a
+- Skin hooks: `draw_gesture_touch(canvas, at, radius, ink, strength)` (a fingertip: a soft `shadow` rim dropped 3 dp, a
+  `surface` disc at 0.62, a 3 dp `ink` rim with a thin `shadow` line) and `draw_gesture_arrow(canvas, at, direction, length, ink, strength)`. It follows a
   look change (`GoUi.watch`).
 - 🛑 Display only: the game decides when the gesture was done and calls `stop()`.
