@@ -47,10 +47,11 @@ func refresh() -> void:
 
 func _layout() -> void:
 	if size.x <= 0.0 or size.y <= 0.0: return
-	_ribbon_art.position = Vector2(0.0, size.y * 0.37)
-	_ribbon_art.size = Vector2(size.x, size.y * 0.63)
-	title_label.position = Vector2(size.x * 0.1, size.y * 0.42)
-	title_label.size = Vector2(size.x * 0.8, size.y * 0.42)
+	# The ribbon's arched top rises behind the badge; its tails hang a little below the heading.
+	_ribbon_art.position = Vector2(0.0, size.y * 0.28)
+	_ribbon_art.size = Vector2(size.x, size.y * 0.76)
+	title_label.position = Vector2(size.x * 0.1, size.y * 0.44)
+	title_label.size = Vector2(size.x * 0.8, size.y * 0.40)
 	_stage_art.position = Vector2(size.x * 0.248, 0.0)
 	_stage_art.size = Vector2(size.x * 0.504, size.y * 0.40)
 	stage_label.position = _stage_art.position
