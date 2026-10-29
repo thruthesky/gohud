@@ -12,6 +12,9 @@ var stage_base_size := 8
 var _stage_art: TextureRect
 var _ribbon_art: TextureRect
 var _stage_layout_pending := false
+## The title's band (shares of the heading) and the share of the band's height its base font size takes.
+const TITLE_BAND := Rect2(0.15, 0.47, 0.70, 0.35)
+const TITLE_FILL := 1.0
 
 
 func _init() -> void:
@@ -50,8 +53,6 @@ func _layout() -> void:
 	# The ribbon's arched top rises behind the badge; its tails hang a little below the heading.
 	_ribbon_art.position = Vector2(0.0, size.y * 0.28)
 	_ribbon_art.size = Vector2(size.x, size.y * 0.76)
-	title_label.position = Vector2(size.x * 0.1, size.y * 0.44)
-	title_label.size = Vector2(size.x * 0.8, size.y * 0.40)
 	_stage_art.position = Vector2(size.x * 0.248, 0.0)
 	_stage_art.size = Vector2(size.x * 0.504, size.y * 0.40)
 	stage_label.position = _stage_art.position
@@ -65,12 +66,35 @@ func _layout() -> void:
 	var line_h := maxf(stage_size.y, stage_label.get_theme_font(&"font").get_height(stage_label.get_theme_font_size(&"font_size")))
 	stage_label.position.y = (stage_size.y - line_h) * 0.5
 	stage_label.size = Vector2(stage_size.x, line_h)
-	var title_height := minf(title_label.size.y * 0.68, title_label.size.x / 7.0)
-	var title_font := title_label.get_theme_font(&"font")
-	var title_base := maxi(8, roundi(title_height))
-	title_label.text = _wrap_if_needed(_title, title_font, title_label.size.x, title_base)
-	if title_label.text.contains("\n"): title_height = minf(title_height * 0.45, title_label.size.y * 0.29)
-	title_base_size = _fit(title_label, title_label.size.x, title_height)
+	_layout_title()
+
+
+## The title stays inside the ribbon's flat centre band — clear of the arched edges and the folded tails, with padding
+## on every side. Too long for the band: GoStyle shrinks it (never below the fit floor), then it takes two lines.
+func _layout_title() -> void:
+	var band := title_band()
+	var font := title_label.get_theme_font(&"font")
+	var outline := title_label.get_theme_constant(&"outline_size")
+	var width := maxf(1.0, band.size.x - outline)
+	# Baloo's capitals stand about 0.7 em tall: this base fills about three quarters of the band with lettering.
+	var base := maxi(8, roundi(band.size.y * TITLE_FILL))
+	title_label.text = _wrap_if_needed(_title, font, width, base)
+	var lines := title_label.text.count("\n") + 1
+	if lines > 1: base = maxi(8, roundi(base * 0.5))
+	var fitted := GoStyle.fit_font_size(PackedStringArray([title_label.text]), base, width, font)
+	if not title_label.has_theme_font_size_override(&"font_size") or title_label.get_theme_font_size(&"font_size") != fitted:
+		title_label.add_theme_font_size_override(&"font_size", fitted)
+	title_base_size = base
+	# The line box is taller than the lettering: centre it on the band rather than letting it grow the band.
+	var line_h := maxf(band.size.y, font.get_height(fitted) * lines)
+	title_label.position = Vector2(band.position.x, band.get_center().y - line_h * 0.5)
+	title_label.size = Vector2(band.size.x, line_h)
+
+
+## The ribbon's flat centre band in the heading's space: inside the body's slanted ends and its arched top and foot.
+func title_band() -> Rect2:
+	return Rect2(size.x * TITLE_BAND.position.x, size.y * TITLE_BAND.position.y,
+		size.x * TITLE_BAND.size.x, size.y * TITLE_BAND.size.y)
 
 
 func _fit(label: Label, width: float, height: float, max_height := INF) -> int:
