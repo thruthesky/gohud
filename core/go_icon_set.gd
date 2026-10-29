@@ -155,6 +155,8 @@ const MAGNET_ARROW := &"magnet_arrow"
 const FALL := &"fall"
 # A main menu's multiplayer button: three people — painted for arcade_light only (tools/paint_arcade_multiplayer.gd).
 const MULTIPLAYER := &"multiplayer"
+# A play-together key (the World Tour's PLAY MULTIPLAYER): two people, one a step behind — arcade_light only.
+const DUO := &"duo"
 # Sign-in marks — arcade_light only. GOOGLE is the multi-colour Google "G", drawn in its own colours: draw it with no
 # ink (white) or it is tinted. APPLE is the Apple logo in white (ink it for a dark one). MAIL is an envelope glyph
 # for an e-mail sign-in (tools/paint_arcade_sign_in.gd).

@@ -1,8 +1,9 @@
 ## 🎨 **Paints arcade_light's rating stars** (`assets/arcade_light/stage/star.png` and `star_empty.png`), which Magnet
 ## Mayhem's stage art never had, in the style of its painted check: a chubby rounded star with a thick navy (#010a36)
-## rim, a face lit from the top with a darker lip under its lower edges, and a white gloss on the upper left. `star` is
+## rim, a face lit from the top with a darker lip under its lower edges — no white gloss or glint (owner's request,
+## 2026-10-29: clean gold / grey fills in the dark rim). `star` is
 ## the earned star (the game's GOLD #ffc928), `star_empty` the slot of one still to earn (the grey-lavender of a locked
-## card, no gloss) — `GoStarRow` and `GoLevelCard.stars` draw them.
+## card) — `GoStarRow` and `GoLevelCard.stars` draw them.
 ##
 ##   godot --headless -s addons/gohud/tools/paint_arcade_stars.gd -- addons/gohud/assets/arcade_light/stage
 ##
@@ -27,7 +28,7 @@ func _init() -> void:
 		quit(1)
 		return
 	var out: String = args[0]
-	_save(out + "/star.png", GOLD, true)
+	_save(out + "/star.png", GOLD, false)
 	_save(out + "/star_empty.png", EMPTY, false)
 	quit()
 

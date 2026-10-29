@@ -127,6 +127,7 @@ FACES = {
     "ribbon_gold.png": (0.996078, 0.737255, 0.141176, 1.0),  # #febc24
     "ribbon_red.png": (0.917647, 0.184314, 0.172549, 1.0),   # #ea2f2c
     "stage/window.png": (0.815686, 0.909804, 0.988235, 1.0),        # #d0e8fc
+    "stage/world_tour_window.svg": (0.937255, 0.980392, 0.992157, 1.0),  # #eff9fd
     "stage/ribbon_title.png": (0.992157, 0.741176, 0.086275, 1.0),  # #fdbd16
     "stage/card_cleared.png": (0.862745, 0.92549, 0.984314, 1.0),   # #dcecfb
     "stage/card_current.png": (0.384314, 0.945098, 0.454902, 1.0),  # #62f174
@@ -180,7 +181,7 @@ BASES = {
     "GoRibbon": "PanelContainer", "GoRibbonRed": "PanelContainer", "GoNotice": "PanelContainer",
     "GoTitle": "Label", "GoOutlineLabel": "Label", "GoRibbonWideTitle": "Label",
     "GoWorldTourTitle": "Label", "GoWorldTourCaption": "Label", "GoWorldTourButton": "GoPrimaryButton",
-    "GoWindowBlue": "PanelContainer", "GoRibbonWide": "PanelContainer", "GoWell": "PanelContainer",
+    "GoWindowBlue": "PanelContainer", "GoWorldTourWindow": "PanelContainer", "GoRibbonWide": "PanelContainer", "GoWell": "PanelContainer",
     "GoLevelCard": "Button", "GoLevelCardCurrent": "Button", "GoLevelCardLocked": "Button",
     "GoHudPanel": "PanelContainer", "GoBannerGold": "PanelContainer", "GoNoticeGold": "PanelContainer",
     "GoChipDark": "Button", "GoIconOnly": "Button",
@@ -295,6 +296,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # GoUi.set_font_locale() continues to select the appropriate CJK glyphs.
     boxes["world_tour_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_TOUR[0],
                                                  'variation_opentype = {2003265652: 800.0}', # TextServer.name_to_tag("wght")
+                                                 'variation_embolden = 0.6', # the reference's extra-heavy lettering
                                                  'fallbacks = Array[Font]([SubResource("painted_font")])'])
     setT("default_font", 'SubResource("painted_font")')
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
@@ -487,6 +489,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     #    them stretches), the map preview's dark well (`MapPreview.set_well()`). ──
     put("GoWindowBlue/styles/panel", sprite("painted_GoWindowBlue", "stage/window.png", WINDOW_EDGE, PAINT_PPU, 24.0,
                                             20.0, 22.0))
+    # The World Tour's detail card: a near-white body in a thin light rim, a navy edge and a sky-blue lip below.
+    put("GoWorldTourWindow/styles/panel", sprite("painted_GoWorldTourWindow", "stage/world_tour_window.svg",
+                                                 (90, 90, 90, 120), PAINT_PPU, 22.0, 20.0, 24.0))
     put("GoRibbonWide/styles/panel", sprite("painted_GoRibbonWide", "stage/ribbon_title.png", STAGE_RIBBON_EDGE,
                                             STAGE_RIBBON_PPU, 70.0, 6.0, 12.0))
     put("GoWell/styles/panel", sprite("painted_GoWell", "stage/well.png", STAGE_WELL_EDGE, STAGE_WELL_PPU, 0.0, 0.0,
@@ -578,9 +583,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         setT(variation + "/fonts/font", 'SubResource("world_tour_font")')
     setT("GoWorldTourTitle/colors/font_color", C(WHITE))
     setT("GoWorldTourTitle/colors/font_outline_color", C(INK))
-    setT("GoWorldTourTitle/constants/outline_size", 8)
+    setT("GoWorldTourTitle/constants/outline_size", 12)
     setT("GoWorldTourTitle/font_sizes/font_size", TITLE_FONT_SIZE)
-    setT("GoWorldTourButton/constants/outline_size", 5)
+    setT("GoWorldTourButton/constants/outline_size", 10)
     setT("GoWorldTourButton/colors/font_outline_color", C(INK))
     setT("GoWorldTourCaption/colors/font_color", C(INK))
     setT("GoWorldTourCaption/font_sizes/font_size", 28)
@@ -740,6 +745,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
 
 def texture_id(file):
     """"btn_blue.png" → `painted_btn_blue`; "stage/window.png" → `stage_window`."""
+    if file.startswith("stage/") and file.endswith(".svg"):
+        return "stagesvg_" + file[len("stage/"):-len(".svg")]
     if file.startswith("stage/"):
         return "stage_" + file[len("stage/"):-len(".png")]
     if file.startswith("score/"):
@@ -748,6 +755,8 @@ def texture_id(file):
 
 
 def texture_path(rid):
+    if rid.startswith("stagesvg_"):
+        return STAGE + rid[len("stagesvg_"):] + ".svg"
     if rid.startswith("stage_"):
         return STAGE + rid[len("stage_"):] + ".png"
     if rid.startswith("score_"):
@@ -775,7 +784,7 @@ def ext_resources(boxes):
     if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
-                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_", "texture = ExtResource(\"score_"))})
+                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_", "texture = ExtResource(\"stagesvg_", "texture = ExtResource(\"score_"))})
     for rid in files:
         lines.append('[ext_resource type="Texture2D" path="%s" id="%s"]' % (texture_path(rid), rid))
     return lines
