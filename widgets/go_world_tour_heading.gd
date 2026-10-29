@@ -90,7 +90,8 @@ func _layout_title() -> void:
 		title_label.add_theme_font_size_override(&"font_size", fitted)
 	# Baloo's line box is much taller than its capitals: pull a second line up so both stay inside the band.
 	var spacing := 0 if lines == 1 else roundi(fitted * TITLE_LINE_PITCH - font.get_height(fitted))
-	title_label.add_theme_constant_override(&"line_spacing", spacing)
+	if not title_label.has_theme_constant_override(&"line_spacing") or title_label.get_theme_constant(&"line_spacing") != spacing:
+		title_label.add_theme_constant_override(&"line_spacing", spacing)
 	title_base_size = base
 	# The line box is taller than the lettering: centre it on the band rather than letting it grow the band.
 	var block_h := font.get_height(fitted) * lines + spacing * (lines - 1)
