@@ -38,6 +38,7 @@ func _initialize() -> void:
 	await _glyph_menu()
 	await _glyph_plate_scale()
 	await _glyph_fit_regrows()
+	await _glyph_press_anim()
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -1096,4 +1097,84 @@ func _surface(look: StringName) -> void:
 	check(scrim.color == veil and (scrim.material != null) == (frost != null),
 		"%s surface: opaque off brings the veil and the blur back" % look)
 	surface.queue_free()
+	await frames(1)
+
+
+## 🎬 The menu plates' press: it squashes held, springs past rest on release and settles at scale 1, a drag off (no
+## `pressed`) eases back with no overshoot and no flash, a container's sort keeps the squash and never moves a
+## neighbour, and reduced motion runs no tween at all.
+func _glyph_press_anim() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var reduced := GoUi.config.reduce_motion
+	GoUi.config.reduce_motion = false
+	await frames(1)
+	var box := HBoxContainer.new()
+	box.theme = GoUi.theme()
+	root.add_child(box)
+	var plain := GoGlyphButton.make("BACK", GoIconSet.BACK, GoTheme.VAR_PRIMARY_BUTTON)
+	box.add_child(plain)
+	for variation: StringName in [GoTheme.VAR_HERO_BUTTON, GoTheme.VAR_GLASS_BUTTON]:
+		var button := GoGlyphButton.make("PLAY", GoIconSet.PLAY, variation)
+		button.subtitle = "BATTLE NOW"
+		button.feedback = &""
+		var neighbour := GoGlyphButton.make("SETTINGS", GoIconSet.SETTINGS, variation)
+		box.add_child(button)
+		box.add_child(neighbour)
+		await frames(6)
+		check(button.press_animates(), "%s press: the arcade plate animates its press" % variation)
+		check(button.pivot_offset_ratio == Vector2(0.5, 0.5), "%s press: it scales about its centre" % variation)
+		var at := neighbour.position
+		var rect := Rect2(button.position, button.size)
+		button.button_down.emit()
+		await create_timer(0.15).timeout
+		check(button.scale.x < 0.97 and button.scale.x > 0.9, "%s press: held, the plate squashes (%.3f)" % [variation,
+			button.scale.x])
+		box.queue_sort()
+		await frames(2)
+		check(button.scale.x < 0.97, "%s press: a container's sort keeps the squash (%.3f)" % [variation, button.scale.x])
+		check(neighbour.position == at and Rect2(button.position, button.size) == rect,
+			"%s press: the squash never moves the plate's slot or its neighbour (%s %s → %s %s)" % [variation, at, rect,
+				neighbour.position, Rect2(button.position, button.size)])
+		button.pressed.emit()
+		button.button_up.emit()
+		var peak := 0.0
+		var flashed := false
+		for i in 40:
+			await process_frame
+			peak = maxf(peak, button.scale.x)
+			flashed = flashed or button._flash > 0.0
+		await create_timer(0.3).timeout
+		check(peak > 1.01, "%s press: released, it springs past rest (%.3f)" % [variation, peak])
+		check(flashed, "%s press: released, the flash runs" % variation)
+		check(button.scale == Vector2.ONE and button._flash == 0.0 and button._disc_k == 1.0,
+			"%s press: released, it settles back at rest (%s)" % [variation, button.scale])
+		# Dragged off: down and up with no `pressed`.
+		button.button_down.emit()
+		await create_timer(0.1).timeout
+		button.button_up.emit()
+		peak = 0.0
+		flashed = false
+		for i in 30:
+			await process_frame
+			peak = maxf(peak, button.scale.x)
+			flashed = flashed or button._flash > 0.0
+		await create_timer(0.2).timeout
+		check(peak <= 1.0 and not flashed, "%s press: a cancel eases back with no pop (%.3f)" % [variation, peak])
+		check(button.scale == Vector2.ONE, "%s press: a cancel ends at rest" % variation)
+		# Reduced motion: nothing tweens, nothing scales.
+		GoUi.config.reduce_motion = true
+		button.button_down.emit()
+		check(button._tw == null and button.scale == Vector2.ONE, "%s press: reduced motion runs no tween" % variation)
+		button.pressed.emit()
+		button.button_up.emit()
+		await frames(2)
+		check(button._tw == null and button.scale == Vector2.ONE and button._flash == 0.0,
+			"%s press: reduced motion, the release stays at rest" % variation)
+		GoUi.config.reduce_motion = false
+		button.queue_free()
+		neighbour.queue_free()
+		await frames(1)
+	check(not plain.press_animates(), "press: a look without press_anim does not animate")
+	GoUi.config.reduce_motion = reduced
+	box.queue_free()
 	await frames(1)

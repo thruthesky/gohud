@@ -31,6 +31,13 @@
 ##    `fit_label` follows [member fit_base_size] in the look's title-to-subtitle ratio; with `fit_label` the title
 ##    starts no bigger than the look's size × `plate_scale()` (the picture's size on that plate). `glyph_flat` draws the glyph
 ##    without its dark outline (`flat_glyph()`).
+## 🎬 A look with `press_anim` (the menu plates) animates the press: held, the plate squashes to `press_scale` ‰ about
+##    its centre in `press_in_ms` while the disc and glyph dip deeper (`press_disc_scale` ‰, `press_disc_dip` px);
+##    released, it springs past rest to `press_overshoot` ‰ and settles in `press_release_ms`, the disc pops to
+##    `press_disc_pop` ‰, and `press_flash` sweeps a sheen across (1) or brightens the rim (2) in `press_flash_color`.
+##    Hovered, or focused from the keyboard or a pad, it lifts to `press_hover_scale` ‰ in `press_hover_ms`. Dragged
+##    off while held it eases back to rest with no pop. It is only drawn — `scale` about `pivot_offset_ratio` (0.5,
+##    0.5), never the layout, and `pressed` is never delayed — and [member GoConfig.reduce_motion] turns it off.
 ##
 ## ```gdscript
 ## var play := GoGlyphButton.make("PLAY", GoIconSet.PLAY, GoTheme.VAR_HERO_BUTTON)
@@ -48,6 +55,9 @@ const GAP := 8.0
 const MIN_EDGE := 12.0
 ## How far the glyph drops while pressed (the face's press travel).
 const PRESS_DROP := 2.0
+## [member press_flash] kinds: a sheen sweeps across the plate, or its rim brightens.
+const FLASH_SHEEN := 1
+const FLASH_RIM := 2
 ## The glyph's opacity on a disabled button (the game's GlossButton), over the normal icon colour.
 const DISABLED_ALPHA := 0.6
 ## The disc's diameter as a share of the button's height when the look names no `glyph_disc_size`.
@@ -147,6 +157,33 @@ var _fit_queued := false
 var _peeking := false
 ## What the last fit change was made for (text, subtitle, size, bases) and the sizes it left (see `fit_now()`).
 var _fit_key := ""
+## 🎬 The press animation (see the class doc): the tween running now, whether a press is held and whether it fired.
+var _tw: Tween
+var _held := false
+var _fired := false
+## The face the rim flash redraws, brightened (a copy of the drawn sprite, made when the flash starts), and the canvas
+## item it is added onto the plate in (light added, so the title and the glyph stay readable under it).
+var _rim: GoStyleBoxSprite
+var _glow := RID()
+static var _glow_material: CanvasItemMaterial
+## The plate's scale about its centre (applied as `scale`), the disc's and glyph's scale and extra drop, and the
+## release flash's progress (0: none; 0 → 1 while it runs).
+var _plate_k := 1.0:
+	set(value):
+		_plate_k = value
+		scale = Vector2(value, value)
+var _disc_k := 1.0:
+	set(value):
+		_disc_k = value
+		queue_redraw()
+var _disc_dy := 0.0:
+	set(value):
+		_disc_dy = value
+		queue_redraw()
+var _flash := 0.0:
+	set(value):
+		_flash = value
+		queue_redraw()
 var _fit_prev := Vector2i(-1, -1)
 ## The tracked title font the button put on as its `font` override (see [method title_font_at]), else null.
 var _title_set: Font = null
@@ -223,6 +260,13 @@ func _init() -> void:
 	# A new text changes the minimum size — the one notice a `Button.text` change gives.
 	minimum_size_changed.connect(_on_minimum_size_changed)
 	pressed.connect(_on_feedback_pressed)
+	button_down.connect(_on_press_down)
+	button_up.connect(_on_press_up)
+	pressed.connect(func() -> void: _fired = true)
+	mouse_entered.connect(_on_pointer.bind(true))
+	mouse_exited.connect(_on_pointer.bind(false))
+	focus_entered.connect(_on_focus_moved)
+	focus_exited.connect(_on_focus_moved)
 
 
 ## A new text (or anything else that changes the minimum size): a plate look's lone glyph loses or gains its room.
@@ -385,13 +429,191 @@ func _press_drop() -> float:
 	return PRESS_DROP * plate_scale() if pressed else 0.0
 
 
+## 🎬 Does this button animate its press now: the look's `press_anim`, and motion not reduced ([member
+## GoConfig.reduce_motion]).
+func press_animates() -> bool:
+	if Engine.is_editor_hint() or GoUi.config.reduce_motion: return false
+	return has_theme_constant(&"press_anim") and get_theme_constant(&"press_anim") > 0
+
+
+## The look's press constant [param name] (thousandths for a scale, ms for a time, px for a dip), else [param fallback].
+func _press_const(name: StringName, fallback: float) -> float:
+	return float(get_theme_constant(name)) if has_theme_constant(name) else fallback
+
+
+## The scale the plate rests at: lifted while hovered (a pointer that hovers) or focused from the keyboard or a pad.
+func _rest_scale() -> float:
+	var lifted := (is_hovered() and _hovers()) or has_focus(true)
+	return _press_const(&"press_hover_scale", 1000.0) / 1000.0 if lifted and not disabled else 1.0
+
+
+## A pointer that hovers: a phone's tap leaves the emulated mouse over the button, which is no hover.
+func _hovers() -> bool:
+	return not (OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios"))
+
+
+func _new_press_tween() -> Tween:
+	if _tw != null and _tw.is_valid(): _tw.kill()
+	_tw = create_tween().set_parallel(true)
+	return _tw
+
+
+## Every press value at rest at once, no tween (motion reduced, the look has no animation, or the button left).
+func _press_snap() -> void:
+	if _tw != null and _tw.is_valid(): _tw.kill()
+	_tw = null
+	_plate_k = 1.0
+	_disc_k = 1.0
+	_disc_dy = 0.0
+	_flash = 0.0
+
+
+func _on_press_down() -> void:
+	_held = true
+	_fired = false
+	_press_in()
+
+
+func _on_press_up() -> void:
+	_held = false
+	if _fired: _press_release()
+	else: _press_rest()
+
+
+## The pointer came onto the button or left it: held, it presses in again or eases back (a drag off cancels cleanly).
+func _on_pointer(inside: bool) -> void:
+	if _held and inside: _press_in()
+	else: _press_rest()
+
+
+func _on_focus_moved() -> void:
+	if not _held: _press_rest()
+
+
+func _press_in() -> void:
+	if not press_animates():
+		_press_snap()
+		return
+	var time := _press_const(&"press_in_ms", 70.0) / 1000.0
+	var tween := _new_press_tween()
+	_flash = 0.0
+	tween.tween_property(self, ^"_plate_k", _press_const(&"press_scale", 945.0) / 1000.0, time) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_k", _press_const(&"press_disc_scale", 900.0) / 1000.0, time) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_dy", _press_const(&"press_disc_dip", 3.0) * plate_scale(), time) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
+## Back to rest (or the hover lift) with no pop: a drag off, a cancel, a hover change.
+func _press_rest() -> void:
+	if not press_animates():
+		_press_snap()
+		return
+	var time := _press_const(&"press_hover_ms", 120.0) / 1000.0
+	var tween := _new_press_tween()
+	tween.tween_property(self, ^"_plate_k", _rest_scale(), time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_k", 1.0, time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_dy", 0.0, time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
+## Released on the button: spring past rest and settle, pop the disc, run the flash.
+func _press_release() -> void:
+	if not press_animates():
+		_press_snap()
+		return
+	var time := _press_const(&"press_release_ms", 220.0) / 1000.0
+	var rest := _rest_scale()
+	var over := maxf(rest, _press_const(&"press_overshoot", 1040.0) / 1000.0)
+	var pop := _press_const(&"press_disc_pop", 1120.0) / 1000.0
+	var tween := _new_press_tween()
+	tween.tween_property(self, ^"_plate_k", over, time * 0.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_plate_k", rest, time * 0.6).set_delay(time * 0.4) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_k", pop, time * 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_k", 1.0, time * 0.65).set_delay(time * 0.35) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"_disc_dy", 0.0, time * 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	var kind := int(_press_const(&"press_flash", 0.0))
+	if kind == FLASH_RIM:
+		var face := get_theme_stylebox(&"normal")
+		var drawn: StyleBox = (face as ShiftedBox).drawn if face is ShiftedBox else face
+		_rim = (drawn as GoStyleBoxSprite).duplicate() as GoStyleBoxSprite if drawn is GoStyleBoxSprite else null
+	if kind > 0:
+		_flash = 0.001
+		tween.tween_property(self, ^"_flash", 1.0, time)
+		tween.chain().tween_property(self, ^"_flash", 0.0, 0.0)
+
+
+## [param rect] (the disc's or the glyph's) as the press draws it: scaled by the disc's factor about [param centre] and
+## dipped.
+func _press_rect(rect: Rect2, centre: Vector2) -> Rect2:
+	if is_equal_approx(_disc_k, 1.0) and is_zero_approx(_disc_dy): return rect
+	var at := centre + (rect.position - centre) * _disc_k + Vector2(0.0, _disc_dy)
+	return Rect2(at, rect.size * _disc_k)
+
+
+## The canvas item the rim flash adds its light in: over the button, blended additively.
+func _glow_canvas() -> RID:
+	if not _glow.is_valid():
+		if _glow_material == null:
+			_glow_material = CanvasItemMaterial.new()
+			_glow_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		_glow = RenderingServer.canvas_item_create()
+		RenderingServer.canvas_item_set_parent(_glow, get_canvas_item())
+		RenderingServer.canvas_item_set_material(_glow, _glow_material.get_rid())
+	return _glow
+
+
+## The release flash over everything drawn: a light band sweeping across, or the plate's face added on in light.
+func _draw_flash() -> void:
+	if _glow.is_valid(): RenderingServer.canvas_item_clear(_glow)
+	if _flash <= 0.0 or _flash >= 1.0: return
+	var color := get_theme_color(&"press_flash_color") if has_theme_color(&"press_flash_color") else Color(1, 1, 1, 0.5)
+	var kind := int(_press_const(&"press_flash", 0.0))
+	if kind == FLASH_RIM and _rim != null:
+		_rim.tint = Color(color, color.a * sin(PI * _flash))
+		_rim.draw(_glow_canvas(), Rect2(Vector2.ZERO, size))
+		return
+	if kind != FLASH_SHEEN: return
+	# A slanted band, clear at its edges, crossing the plate's body (inset off the painted rim) left to right.
+	var inset := 6.0 * plate_scale()
+	var top := inset
+	var bottom := size.y - inset
+	var band := size.y * 0.45
+	var slant := size.y * 0.35
+	var x := lerpf(inset - band - slant, size.x - inset + band, ease(_flash, 0.8))
+	var clear := Color(color, 0.0)
+	var lo := inset
+	var hi := size.x - inset
+	for half in [[x - band * 0.5, x, clear, color], [x, x + band * 0.5, color, clear]]:
+		var a: float = half[0]
+		var b: float = half[1]
+		var points := PackedVector2Array([Vector2(clampf(a + slant, lo, hi), top), Vector2(clampf(b + slant, lo, hi), top),
+			Vector2(clampf(b, lo, hi), bottom), Vector2(clampf(a, lo, hi), bottom)])
+		if points[1].x - points[0].x < 0.5 and points[2].x - points[3].x < 0.5: continue
+		draw_polygon(points, PackedColorArray([half[2], half[3], half[3], half[2]]))
+
+
+## A container lays its children out at scale 1: the press's scale goes back on after every sort.
+func _on_parent_sorted() -> void:
+	if not is_equal_approx(scale.x, _plate_k): scale = Vector2(_plate_k, _plate_k)
+
+
 func _enter_tree() -> void:
 	GoUi.watch(_on_ui_changed)
+	pivot_offset_ratio = Vector2(0.5, 0.5)
+	var box := get_parent() as Container
+	if box != null and not box.sort_children.is_connected(_on_parent_sorted): box.sort_children.connect(_on_parent_sorted)
 	if is_node_ready(): _on_ui_changed()
 
 
 func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
+	var box := get_parent() as Container
+	if box != null and box.sort_children.is_connected(_on_parent_sorted): box.sort_children.disconnect(_on_parent_sorted)
+	_held = false
+	_press_snap()
 
 
 ## The look or the icon set changed: the glyph may be another size, so the shift is measured again.
@@ -419,6 +641,13 @@ func _notification(what: int) -> void:
 			_draw_disc()
 			_draw_glyph()
 			_draw_subtitle()
+			_draw_flash()
+		NOTIFICATION_PREDELETE:
+			if _glow.is_valid(): RenderingServer.free_rid(_glow)
+		NOTIFICATION_VISIBILITY_CHANGED:
+			if not is_visible_in_tree():
+				_held = false
+				_press_snap()
 
 
 ## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
@@ -745,7 +974,8 @@ func _update_shift() -> void:
 
 func _draw_disc() -> void:
 	if not has_glyph_disc(): return
-	draw_style_box(get_theme_stylebox(&"glyph_disc"), glyph_disc_rect())
+	var disc := glyph_disc_rect()
+	draw_style_box(get_theme_stylebox(&"glyph_disc"), _press_rect(disc, disc.get_center()))
 
 
 func _draw_glyph() -> void:
@@ -753,6 +983,7 @@ func _draw_glyph() -> void:
 	if art == null: return
 	if has_theme_constant(&"glyph_flat") and get_theme_constant(&"glyph_flat") > 0: art = flat_glyph(art)
 	var rect := glyph_rect()
+	rect = _press_rect(rect, glyph_disc_rect().get_center() if has_glyph_disc() else rect.get_center())
 	# Custom textures (GoTextureSprite) draw their own destination rectangle and need not preserve the engine's
 	# negative-width convention. Mirror the canvas instead, leaving every texture a normal positive rectangle.
 	if glyph_flip_h:

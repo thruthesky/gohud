@@ -233,6 +233,14 @@ MENU_GLASS = dict(file="glass_navy.png", disc="glass_disc.png", ppu=1.5, edge=(3
                   disc_drop=1, disc_glyph=78, disc_gap=45)
 MENU_KEY = dict(file="glass_key.png", ppu=1.5, edge=(58, 58, 58, 58), bleed=(18, 18, 18, 18), plate=83,
                 margins=(20.0, 9.0, 26.0, 5.0), title=25, bold=1.2, glyph=57, glyph_gap=10)
+# 🎬 The plates' press (`GoGlyphButton`'s press animation): held, the plate squashes to `scale` ‰ in `in_ms` and the disc
+#    and glyph dip deeper (`disc_scale` ‰, `disc_dip` px of the plate's height); released, it springs to `overshoot` ‰
+#    and settles in `release_ms`, the disc pops to `disc_pop` ‰ and the flash runs (1: a sheen sweeps the gold plate,
+#    2: the glass rim brightens) in `flash_color`; hovered or focused it lifts to `hover_scale` ‰ in `hover_ms`.
+MENU_PRESS = dict(scale=945, in_ms=70, release_ms=220, overshoot=1040, hover_scale=1020, hover_ms=120, disc_scale=900,
+                  disc_dip=3, disc_pop=1120)
+HERO_PRESS_FLASH = (1, (1.0, 0.988235, 0.878431, 0.6))   # a warm white sheen
+GLASS_PRESS_FLASH = (2, (0.2, 0.75, 1.0, 0.5))           # a cyan glow added on the glass
 # The top bar's thin cyan rule between the keys: 8 units wide, its 20 art px ends fading out.
 MENU_DIVIDER = dict(file="glass_divider.png", ppu=1.5, edge=(0, 20, 0, 20), width=8)
 HERO_INK = (0.007843, 0.070588, 0.235294, 1.0)         # #02123c — the gold plate's navy title and glyph
@@ -575,6 +583,13 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         for key in ("disc_left", "disc_size", "disc_drop", "disc_glyph", "disc_gap"):
             setT("%s/constants/glyph_%s" % (type_name, key), art[key])
 
+    def menu_press(type_name, flash):
+        setT(type_name + "/constants/press_anim", 1)
+        for key, value in MENU_PRESS.items():
+            setT("%s/constants/press_%s" % (type_name, key), value)
+        setT(type_name + "/constants/press_flash", flash[0])
+        setT(type_name + "/colors/press_flash_color", C(flash[1]))
+
     # The faded gold plate already says "off"; its navy title stays solid to read on it.
     menu_plate("GoHeroButton", MENU_HERO, HERO_INK, HERO_INK)
     menu_subtitle("GoHeroButton", MENU_HERO, HERO_SUB_INK)
@@ -587,6 +602,9 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     menu_plate("GoGlassKey", MENU_KEY, WHITE, FADED_WHITE)
     setT("GoGlassKey/constants/glyph_share", MENU_KEY["glyph"])
     setT("GoGlassKey/constants/glyph_gap", MENU_KEY["glyph_gap"])
+    menu_press("GoHeroButton", HERO_PRESS_FLASH)
+    menu_press("GoGlassButton", GLASS_PRESS_FLASH)
+    menu_press("GoGlassKey", GLASS_PRESS_FLASH)
     # The top bar's rule: the separator draws its art the face's minimum width (the margins) and its full height.
     half = MENU_DIVIDER["width"] / 2.0
     put("GoGlassDivider/styles/separator", sprite("painted_GoGlassDivider", MENU_DIVIDER["file"], MENU_DIVIDER["edge"],
