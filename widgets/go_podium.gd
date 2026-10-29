@@ -36,8 +36,8 @@ const DESIGN_SIZE := Vector2(1035.0, 256.0)
 const BLOCKS: Array[Rect2] = [Rect2(313, 106, 418, 150), Rect2(3, 142, 334, 114), Rect2(710, 142, 321, 114)]
 const LAURELS: Array[Rect2] = [Rect2(423, 0, 202, 168), Rect2(93, 32, 174, 132), Rect2(778, 43, 164, 123)]
 ## The name plate inside each block, as shares of the block (x, y, width, height).
-const PLATES: Array[Rect2] = [Rect2(0.148, 0.347, 0.718, 0.567), Rect2(0.162, 0.333, 0.749, 0.561),
-		Rect2(0.097, 0.333, 0.776, 0.561)]
+const PLATES: Array[Rect2] = [Rect2(0.128, 0.360, 0.743, 0.497), Rect2(0.127, 0.368, 0.746, 0.482),
+		Rect2(0.109, 0.325, 0.780, 0.509)]
 ## The sunburst behind the gold block and the confetti over the whole podium, in design units.
 const SUNBURST := Rect2(262, -40, 520, 208)
 const CONFETTI := Rect2(-40, 0, 1115, 218)
