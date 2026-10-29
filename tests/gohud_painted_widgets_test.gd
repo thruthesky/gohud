@@ -36,6 +36,7 @@ func _initialize() -> void:
 		await _glyph_fit(look)
 		await _glyph_subtitle(look)
 	await _glyph_menu()
+	await _glyph_plate_scale()
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -603,14 +604,17 @@ func _glyph_menu() -> void:
 		var share := button.get_theme_constant(&"glyph_disc_size") / 100.0
 		check(is_equal_approx(disc.size.y, button.size.y * share) and is_equal_approx(disc.size.x, disc.size.y),
 			"%s: the disc is %d%% of the height, round (%s)" % [variation, roundi(share * 100), disc])
-		check(is_equal_approx(disc.position.x, button.get_theme_constant(&"glyph_disc_left")),
-			"%s: the disc stands glyph_disc_left in" % variation)
+		var k := button.plate_scale()
+		check(is_equal_approx(k, snappedf(168.0 / button.get_theme_constant(&"plate_height"), 0.01)),
+			"%s: drawn at the button's height over the look's plate_height (%.2f)" % [variation, k])
+		check(is_equal_approx(disc.position.x, button.get_theme_constant(&"glyph_disc_left") * k),
+			"%s: the disc stands glyph_disc_left in, at the plate's scale" % variation)
 		var glyph := button.glyph_rect()
 		check(glyph.get_center().distance_to(disc.get_center()) < 0.6, "%s: the glyph is centred on the disc" % variation)
 		check(maxf(glyph.size.x, glyph.size.y) <= disc.size.y, "%s: the glyph fits the disc" % variation)
 		check(button.alignment == HORIZONTAL_ALIGNMENT_LEFT, "%s: the text stands at the start side" % variation)
 		var lead := button.get_theme_stylebox(&"normal").get_margin(SIDE_LEFT)
-		check(is_equal_approx(lead, disc.end.x + button.get_theme_constant(&"glyph_disc_gap")),
+		check(is_equal_approx(lead, disc.end.x + button.get_theme_constant(&"glyph_disc_gap") * k),
 			"%s: the text starts glyph_disc_gap after the disc (%.1f)" % [variation, lead])
 		check(is_equal_approx(button.subtitle_rect().position.x, lead), "%s: the subtitle lines up with the title" % variation)
 		check(button.subtitle_color() == button.get_theme_color(&"subtitle_color"), "%s: the subtitle's own colour" % variation)
@@ -627,7 +631,7 @@ func _glyph_menu() -> void:
 		button.layout_direction = Control.LAYOUT_DIRECTION_RTL
 		await frames(2)
 		var flipped := button.glyph_disc_rect()
-		check(is_equal_approx(flipped.end.x, button.size.x - button.get_theme_constant(&"glyph_disc_left")),
+		check(is_equal_approx(flipped.end.x, button.size.x - button.get_theme_constant(&"glyph_disc_left") * k),
 			"%s: right to left, the disc at the right" % variation)
 		check(is_equal_approx(button.get_theme_stylebox(&"normal").get_margin(SIDE_RIGHT), lead),
 			"%s: right to left, the text ends before the disc" % variation)
@@ -651,6 +655,97 @@ func _glyph_menu() -> void:
 		key.glyph_share = 0.4
 		check(is_equal_approx(maxf(key.glyph_rect().size.x, key.glyph_rect().size.y) / key.size.y, 0.4),
 			"GoGlassKey: an explicit glyph_share wins over the look's")
+	holder.queue_free()
+	await frames(1)
+
+
+## 📏 The menu plates at a phone's size: the art, padding, disc and gaps scale with the height, a square key stays
+## square, a pill hugs its label, the subtitle follows the title's base, and the glyphs are flat.
+func _glyph_plate_scale() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	var hero := GoGlyphButton.make("PLAY", GoIconSet.PLAY, GoTheme.VAR_HERO_BUTTON)
+	hero.subtitle = "CAMPAIGN"
+	holder.add_child(hero)
+	var native := float(hero.get_theme_constant(&"plate_height"))
+	var look_title := hero.get_theme_font_size(&"font_size")
+	var look_sub := hero.get_theme_font_size(&"subtitle_font_size")
+	var plate := holder.theme.get_stylebox(&"normal", GoTheme.VAR_HERO_BUTTON) as GoStyleBoxSprite
+	var pad_left := plate.get_margin(SIDE_LEFT)
+	# The game's phone plate: 0.64 of the art's size, the title's base 0.64 of the look's.
+	var k := 0.64
+	hero.custom_minimum_size = Vector2(708, native) * k
+	hero.fit_label = true
+	hero.fit_base_size = roundi(look_title * k)
+	await frames(4)
+	check(is_equal_approx(hero.plate_scale(), k), "plate scale: the height over plate_height (%.2f)" % hero.plate_scale())
+	var face := hero.get_theme_stylebox(&"normal")
+	check(face is GoGlyphButton.ShiftedBox and is_equal_approx(face.get_margin(SIDE_RIGHT), plate.get_margin(SIDE_RIGHT) * k),
+		"plate scale: the padding scales (%.1f)" % face.get_margin(SIDE_RIGHT))
+	var drawn := (face as GoGlyphButton.ShiftedBox).drawn as GoStyleBoxSprite
+	check(drawn != null and is_equal_approx(drawn.pixels_per_unit, plate.pixels_per_unit / k),
+		"plate scale: the painted edges and halo are drawn %.2f times as big" % k)
+	check(is_equal_approx(hero.disc_lead(), (hero.get_theme_constant(&"glyph_disc_left")
+		+ hero.get_theme_constant(&"glyph_disc_gap")) * k + hero.glyph_disc_size()), "plate scale: the disc's inset and gap scale")
+	check(hero._text_room() > 0.0, "plate scale: the title has room after the disc (%.0f)" % hero._text_room())
+	check(hero.get_theme_font_size(&"font_size") == hero.fit_base_size,
+		"plate scale: PLAY keeps its scaled base (%d)" % hero.get_theme_font_size(&"font_size"))
+	check(hero.subtitle_font_size() == roundi(look_sub * float(hero.fit_base_size) / look_title),
+		"plate scale: the subtitle follows the title's base (%d)" % hero.subtitle_font_size())
+	check(is_equal_approx(hero.size.y, native * k), "plate scale: the plate keeps its height (%.1f)" % hero.size.y)
+	var tracked := hero.subtitle_font() as FontVariation
+	check(tracked != null and tracked.spacing_glyph == roundi(hero.subtitle_font_size()
+		* hero.get_theme_constant(&"subtitle_tracking") / 1000.0), "plate scale: the subtitle's spacing scales with its size")
+	check(hero.subtitle_font_at(look_sub * 2).spacing_glyph > tracked.spacing_glyph, "plate scale: a bigger line, wider spacing")
+	# The stretched title gets its advances back at the size it is drawn: the button's own `font` is the tracked one.
+	var drawn_title := hero.get_theme_font_size(&"font_size")
+	var title_font := hero.get_theme_font(&"font") as FontVariation
+	check(hero.has_theme_constant(&"title_tracking") and title_font != null and title_font == hero.title_font_at(drawn_title)
+		and title_font.spacing_glyph == roundi(drawn_title * hero.get_theme_constant(&"title_tracking") / 1000.0),
+		"plate scale: the title is drawn with its tracking at its size (%d)" % drawn_title)
+	check(hero.title_font_at(drawn_title * 2).spacing_glyph > title_font.spacing_glyph,
+		"plate scale: a bigger title, more room between its wider letters")
+	check(hero.title_font_at(drawn_title * 2).get_meta(&"go_tracked_from") == title_font.get_meta(&"go_tracked_from"),
+		"plate scale: every tracked title comes from the look's font, not from the one put on")
+	hero.add_theme_font_size_override(&"subtitle_font_size", 11)
+	await frames(2)
+	check(hero.subtitle_font_size() <= 11, "plate scale: a subtitle_font_size override is taken as it is")
+	# Square keys stay square at any size.
+	for side in [83.0, 56.0, 44.0]:
+		var key := GoGlyphButton.make("", GoIconSet.SETTINGS, GoTheme.VAR_GLASS_KEY)
+		key.custom_minimum_size = Vector2(side, side)
+		holder.add_child(key)
+		await frames(3)
+		check(key.size == Vector2(side, side), "plate scale: a %d key stays square (%s)" % [side, key.size])
+		if key.glyph_texture() != null:
+			check(absf(key.glyph_rect().get_center().x - side * 0.5) < 0.6, "plate scale: a lone glyph is centred")
+	# A pill hugs its label: padding, glyph, gap, label, padding.
+	var pill := GoGlyphButton.make("SIGN IN", GoIconSet.USER, GoTheme.VAR_GLASS_KEY)
+	holder.add_child(pill)
+	pill.fit_label = true
+	pill.fit_base_size = 17
+	var hug := pill.hug_width(56.0)
+	pill.custom_minimum_size = Vector2(hug, 56.0)
+	await frames(4)
+	check(is_equal_approx(pill.size.x, hug), "plate scale: the pill is its hug width (%.0f)" % pill.size.x)
+	check(pill.get_theme_font_size(&"font_size") == 17, "plate scale: the hugged label keeps its size")
+	if pill.glyph_texture() != null:
+		var near := (pill._base_face(&"normal").get_margin(SIDE_LEFT)) * pill.plate_scale()
+		check(absf(pill.glyph_rect().position.x - near) < 1.0,
+			"plate scale: the glyph stands the padding in (%.1f, %.1f)" % [pill.glyph_rect().position.x, near])
+	# Flat glyphs: the outline goes clear, the grey-white body is white.
+	var art := Image.create(4, 1, false, Image.FORMAT_RGBA8)
+	art.set_pixel(0, 0, Color(0.02, 0.05, 0.2, 1.0))
+	art.set_pixel(1, 0, Color(0.9, 0.9, 0.92, 1.0))
+	art.set_pixel(2, 0, Color(1.0, 0.75, 0.1, 1.0))
+	art.set_pixel(3, 0, Color(0, 0, 0, 0))
+	var flat := GoGlyphButton.flat_glyph(ImageTexture.create_from_image(art)).get_image()
+	check(flat.get_pixel(0, 0).a < 0.01, "flat glyph: the dark outline goes clear")
+	check(flat.get_pixel(1, 0).is_equal_approx(Color.WHITE), "flat glyph: the grey-white body turns white")
+	check(flat.get_pixel(2, 0).r > 0.95 and flat.get_pixel(2, 0).b < 0.2, "flat glyph: a gold body keeps its hue")
 	holder.queue_free()
 	await frames(1)
 
