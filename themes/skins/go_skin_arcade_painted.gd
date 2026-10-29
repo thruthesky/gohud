@@ -273,6 +273,11 @@ func world_tour_picture(stage: int) -> Texture2D:
 	return picture
 
 
+## The island a locked stage shows on the map: clouded over, with a padlock.
+func world_tour_locked_picture() -> Texture2D:
+	return widget_art(&"world_tour_locked")
+
+
 func world_tour_detail_picture(stage: int) -> Texture2D:
 	if stage != 9: return null
 	if _world_tour_stage9_detail == null:

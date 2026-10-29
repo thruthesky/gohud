@@ -1067,6 +1067,11 @@ func world_tour_picture(_stage: int) -> Texture2D:
 	return null
 
 
+## A skin's optional picture for a locked stage on the map; null keeps the stage's own picture, dimmed.
+func world_tour_locked_picture() -> Texture2D:
+	return null
+
+
 ## Optional stage-specific portrait for the selected World Tour detail panel.
 func world_tour_detail_picture(_stage: int) -> Texture2D:
 	return null

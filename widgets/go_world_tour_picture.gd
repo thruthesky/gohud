@@ -116,6 +116,10 @@ func draw_art(canvas: CanvasItem, offset: Vector2, tint: Color) -> void:
 
 func _picture_data() -> Dictionary:
 	var picture: Texture2D = texture_override if texture_override != null else GoUi.skin().world_tour_picture(stage)
+	# A locked stage on the map hides its island under the skin's clouded, padlocked one.
+	if _stage_node != null and _stage_node.disabled:
+		var locked := GoUi.skin().world_tour_locked_picture()
+		if locked != null: picture = locked
 	if picture == null: return {}
 	var atlas := picture as AtlasTexture
 	if atlas != null:

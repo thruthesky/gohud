@@ -96,6 +96,7 @@ func refresh() -> void:
 	thumbnail_slot.modulate = Color(0.62, 0.64, 0.7) if disabled else Color.WHITE
 	for child in thumbnail_slot.get_children():
 		if child.has_method(&"set_selected"): child.set_selected(selected)
+		if child is CanvasItem: (child as CanvasItem).queue_redraw()
 	_layout()
 
 
