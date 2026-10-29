@@ -779,6 +779,13 @@ save.fit_label = true                      # a long translation shrinks to fit b
   centre when the disc goes). Mirrored right to left. `has_glyph_disc()` · `glyph_disc_rect()`. A look's `glyph_share`
   constant (percent) sets the plain glyph's share while the export stays at its default, its `glyph_gap` the space
   between glyph and label (`glyph_gap()`, else `GAP` 8).
+- 📏 A variation with a `plate_height` constant (the menu plates) is drawn for that height: `plate_scale()` = height /
+  `plate_height` scales its painted edges and halo, padding, disc inset and gap, glyph gap and subtitle gap, so a
+  phone's plate is the same picture smaller. It hugs its content (`hug_width(height, font_size)` for a pill), a lone
+  glyph stays centred (square keys stay square), `fit_label` also fits the lines into `custom_minimum_size.y`, the
+  subtitle is spaced `subtitle_tracking` ‰ of its size, a wide-stretched title gets `title_tracking` ‰ of its size
+  back between its letters (`title_font_at()`), and `fit_base_size` scales the subtitle's start size in the
+  look's ratio. `glyph_flat` draws the glyph without its dark outline (`flat_glyph()`).
 
 ```gdscript
 var play := GoGlyphButton.make(tr("PLAY"), GoIconSet.PLAY, GoTheme.VAR_HERO_BUTTON)   # arcade_light's gold plate

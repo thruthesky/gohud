@@ -848,8 +848,9 @@ shadow, padded 10 left and 16 right, so rows stacked with no separation read as 
 `GoScoreRowMutedLabel` (the body font at a medium weight, embolden 0.5, in the scoreboard's navy ink and the `muted`
 ink for ranks and helper text; no outline, no font size of their own);
 the main menu's `GoHeroButton` and `GoGlassButton` (`GoTheme.VAR_HERO_BUTTON` / `VAR_GLASS_BUTTON`: a painted gold
-plate and a navy glass plate with a cyan rim for a `GoGlyphButton` — a heavy title, a letter-spaced `subtitle` in
-brown-gold or cyan, the glyph on a `glyph_disc`), `GoGlassKey` (`VAR_GLASS_KEY`: a small glass key of the top bar,
+plate and a navy glass plate with a cyan rim for a `GoGlyphButton` — a heavy tight title, a letter-spaced `subtitle` in
+brown-gold or cyan, the flat glyph on a `glyph_disc`; every part scales with the button's height over the look's
+`plate_height`), `GoGlassKey` (`VAR_GLASS_KEY`: a small glass key of the top bar,
 glyph-only or glyph and a short label) and `GoGlassDivider` (`VAR_GLASS_DIVIDER`: the painted 8-unit cyan `VSeparator` rule);
 `GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,

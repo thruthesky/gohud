@@ -14,8 +14,19 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   left-aligned `glyph_disc_gap` after it; a look's `glyph_share` constant (%) sets the plain glyph's share and its
   `glyph_gap` the space beside it. New `subtitle_rect()`, `subtitle_font_size()`, `subtitle_color()`,
   `has_glyph_disc()`, `glyph_disc_rect()`, `glyph_gap()`.
+- **Plate looks scale with their height** — a `GoGlyphButton` variation with a `plate_height` constant is drawn for
+  that height: on a shorter (a phone's) or taller button its painted edges and halo, padding, disc inset and gap,
+  glyph gap, subtitle gap and press travel all scale by the ratio (`plate_scale()`, to 0.01). Such a look hugs its
+  content (padding, glyph, gap, label, padding — `hug_width(height, font_size)` sizes a pill to it), a lone glyph
+  stands centred with no room beside it (a square key stays square), `fit_label` also keeps both lines inside the
+  given `custom_minimum_size.y`, the subtitle is letter-spaced by `subtitle_tracking` thousandths of its size
+  (`subtitle_font_at(size)`), a look whose title font is stretched wide (`variation_transform`) gets the advance back
+  with `title_tracking` thousandths of the size (`title_font_at(size)`, put on as the button's `font` at the size it
+  draws, so the letters stay tight at any size), and with `fit_label` a `fit_base_size` scales the subtitle's start size in the look's
+  ratio (a `subtitle_font_size` override is still taken as it is). `glyph_flat` draws the glyph without its dark
+  outline (`GoGlyphButton.flat_glyph()`: the outline clear, a grey-white body white, a coloured one at full hue).
 - **arcade_light main-menu keys** — `GoHeroButton` (`GoTheme.VAR_HERO_BUTTON`: the painted gold plate, navy heavy
-  title and glyph on a pale disc, brown-gold letter-spaced subtitle), `GoGlassButton` (`VAR_GLASS_BUTTON`: the navy
+  tight title and flat glyph on a pale disc, brown-gold letter-spaced subtitle), `GoGlassButton` (`VAR_GLASS_BUTTON`: the navy
   glass plate with a cyan rim, white title, cyan subtitle, a dark disc), `GoGlassKey` (`VAR_GLASS_KEY`: a small glass
   top-bar key; with a glyph and a label it is the SIGN IN pill) and `GoGlassDivider` (`VAR_GLASS_DIVIDER`: the
   painted 8-unit cyan `VSeparator` rule). The art is cut at 1.5 × a 1920 × 1080 design
