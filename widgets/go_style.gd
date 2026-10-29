@@ -1442,6 +1442,66 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 	return flat
 
 
+## 🖼 The state faces of a **framed** control from its normal face (`GoStyleBoxFrame`) — the dictionary
+## `style_frame()` takes: `normal`, `hover`, `pressed`, `focus`, `disabled`.
+## - `hover` lightens the body by [param hover_shift]; `pressed` darkens it by [param press_shift] and dims the frame a
+##   little — the same frame art for both, so the control never changes size.
+## - `focus` is the frame alone (no body, no shadow) — drawn **over** the current face by the engine, so a keyboard
+##   ring never repaints the body. Give [param focus] (another frame, e.g. a brighter cut) to replace it.
+## - `disabled` is [param disabled] when given (a greyed cut with its own body), else the normal face, desaturated.
+## Pass any of them in [param overrides] to use your own face for that state.
+static func frame_states(normal: GoStyleBoxFrame, overrides := {}, disabled: GoStyleBoxFrame = null,
+		focus: GoStyleBoxFrame = null, hover_shift := 0.06, press_shift := 0.16) -> Dictionary:
+	var hover := normal.duplicate() as GoStyleBoxFrame
+	hover.bg_color = normal.bg_color.lightened(hover_shift)
+	var pressed := normal.duplicate() as GoStyleBoxFrame
+	pressed.bg_color = normal.bg_color.darkened(press_shift)
+	pressed.tint = normal.tint.darkened(0.12)
+	var ring := (focus if focus != null else normal).duplicate() as GoStyleBoxFrame
+	ring.bg_color = Color(ring.bg_color, 0.0)
+	ring.draw_center = false
+	ring.shadow_color = Color(0, 0, 0, 0)
+	var off := disabled
+	if off == null:
+		off = normal.duplicate() as GoStyleBoxFrame
+		var grey := normal.bg_color.get_luminance()
+		off.bg_color = normal.bg_color.lerp(Color(grey, grey, grey, normal.bg_color.a), 0.6)
+		off.tint = Color(normal.tint, normal.tint.a * 0.55)
+	var out := {&"normal": normal, &"hover": hover, &"pressed": pressed, &"focus": ring, &"disabled": off}
+	for key in overrides:
+		out[StringName(key)] = overrides[key]
+	return out
+
+
+## 🖼 Puts state faces (`frame_states()`, or any `StyleBox`es keyed by state) on a control by its own state names:
+## - `Button` (and `OptionButton`, `MenuButton`): `normal` · `hover` · `pressed` · `hover_pressed` (= pressed) ·
+##   `focus` · `disabled`;
+## - `LineEdit` / `TextEdit`: `normal` · `focus` · `read_only` (= disabled);
+## - `PanelContainer` / `Panel`: `panel` (= normal).
+## Only face overrides change — sizes, text, colours and the node's own theme stay as they are. Calling it again with
+## other faces swaps them (a field showing an error, a card being selected).
+static func style_frame(node: Control, states: Dictionary) -> void:
+	var normal: StyleBox = states.get(&"normal")
+	if normal == null: return
+	var pick := func(state: StringName, fallback: StyleBox) -> StyleBox:
+		var face: StyleBox = states.get(state)
+		return face if face != null else fallback
+	if node is BaseButton:
+		var pressed: StyleBox = pick.call(&"pressed", normal)
+		node.add_theme_stylebox_override(&"normal", normal)
+		node.add_theme_stylebox_override(&"hover", pick.call(&"hover", normal))
+		node.add_theme_stylebox_override(&"pressed", pressed)
+		node.add_theme_stylebox_override(&"hover_pressed", pick.call(&"hover_pressed", pressed))
+		node.add_theme_stylebox_override(&"disabled", pick.call(&"disabled", normal))
+		node.add_theme_stylebox_override(&"focus", pick.call(&"focus", StyleBoxEmpty.new()))
+	elif node is LineEdit or node is TextEdit:
+		node.add_theme_stylebox_override(&"normal", normal)
+		node.add_theme_stylebox_override(&"focus", pick.call(&"focus", StyleBoxEmpty.new()))
+		node.add_theme_stylebox_override(&"read_only", pick.call(&"disabled", normal))
+	else:
+		node.add_theme_stylebox_override(&"panel", normal)
+
+
 ## A surface **floating** above the game screen — the same card with a shallow shadow. The same contract as `box()` above.
 ## [param opaque] **fills the face solid** with the background color — for places where the world shows through and the text cannot be read (a notice row over the HUD).
 ## [param pad] is the face's inner padding (negative: the skin's value · as in `face_padding`).

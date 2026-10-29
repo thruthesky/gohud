@@ -8,6 +8,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoStyleBoxFrame`** (extends `GoStyleBoxSprite`): a framed face — a flat body drawn as a chamfered polygon (`bg_color`, `fill_inset`, `fill_cut`, radius 0) with an optional soft drop shadow (`shadow_color`, `shadow_size`, `shadow_offset`), under a transparent painted 9-slice frame drawn exactly as `GoStyleBoxSprite` draws it. One frame PNG serves every state. **`GoStyle.frame_states(normal, overrides, disabled, focus)`** derives `hover` (lighter body), `pressed` (darker body, dimmer frame), `focus` (the frame alone, drawn over the face) and `disabled` (a given cut, else a desaturated body); **`GoStyle.style_frame(control, states)`** puts them on a `Button`, `LineEdit` / `TextEdit` or `PanelContainer` under that control's own state names. Tests: `tests/gohud_stylebox_frame_test.gd`.
+
 - **The scale curve — `GoScale.curve(inputs)`**: one decision from `GoScale.device_inputs(window_px)`
   (window, screen, dpi, reported OS scale, native/desktop identity, or a simulated device) to the scale factor,
   breakpoint, gain, `dp_per_unit` and applied limit. `GoRuntime.scale_curve()` exposes the decision;

@@ -59,6 +59,10 @@ step "①-s unit tests — the painted 9-slice box (GoStyleBoxSprite: the slices
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_stylebox_sprite_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-f unit tests — the framed face (GoStyleBoxFrame: the chamfered body, the shadow, frame_states, style_frame)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_stylebox_frame_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-u unit tests — the painted icon (GoTextureSprite: the drawn size, regions, tiles, tint, pixels, get_image, a .tres round trip)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_texture_sprite_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
