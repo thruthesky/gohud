@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=209 format=3]
+[gd_resource type="Theme" load_steps=219 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -1452,6 +1452,159 @@ bg_color = Color(1, 0.940706, 0.763922, 1)
 base_font = SubResource("painted_font")
 variation_embolden = 0.5
 
+[sub_resource type="StyleBoxFlat" id="painted_GoScoreTable"]
+content_margin_left = 19
+content_margin_top = 10
+content_margin_right = 19
+content_margin_bottom = 12
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 6
+border_color = Color(0.035, 0.153, 0.42, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBox" id="painted_GoScoreTableHead"]
+script = ExtResource("arcade")
+content_margin_left = 0
+content_margin_top = 4
+content_margin_right = 0
+content_margin_bottom = 4
+bg_color = Color(0.137, 0.545, 0.96, 1)
+bottom_color = Color(0.063, 0.416, 0.8, 1)
+border_color = Color(0.1, 0.45, 0.88, 1)
+border_width = 1
+radius = 9
+lip = 0
+shine = 0.45
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreTableRow"]
+script = ExtResource("arcade")
+content_margin_left = 8
+content_margin_top = 0
+content_margin_right = 8
+content_margin_bottom = 0
+bg_color = Color(0.95, 0.975, 0.99, 1)
+bottom_color = Color(0.83, 0.895, 0.955, 1)
+border_color = Color(0.64, 0.76, 0.87, 1)
+border_width = 2
+radius = 9
+lip = 0
+shine = 0.35
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreTableRowGold"]
+script = ExtResource("arcade")
+content_margin_left = 8
+content_margin_top = 0
+content_margin_right = 8
+content_margin_bottom = 0
+bg_color = Color(0.995, 0.96, 0.55, 1)
+bottom_color = Color(0.995, 0.8, 0.14, 1)
+border_color = Color(0.99, 0.68, 0.07, 1)
+border_width = 2
+radius = 9
+lip = 0
+shine = 0.35
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoScoreTableRowOwn"]
+script = ExtResource("arcade")
+content_margin_left = 8
+content_margin_top = 0
+content_margin_right = 8
+content_margin_bottom = 0
+bg_color = Color(0.84, 0.95, 1, 1)
+bottom_color = Color(0.66, 0.89, 0.995, 1)
+border_color = Color(0.18, 0.78, 0.99, 1)
+border_width = 3
+radius = 9
+lip = 0
+shine = 0.35
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoBestBar"]
+script = ExtResource("arcade")
+content_margin_left = 40
+content_margin_top = 3
+content_margin_right = 14
+content_margin_bottom = 3
+bg_color = Color(0.95, 0.99, 1, 1)
+bottom_color = Color(0.66, 0.92, 0.99, 1)
+border_color = Color(0, 0.17, 0.48, 1)
+border_width = 3
+radius = 16
+lip = 0
+shine = 0.8
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoBestBarEntry_normal"]
+script = ExtResource("arcade")
+content_margin_left = 10
+content_margin_top = 2
+content_margin_right = 10
+content_margin_bottom = 2
+bg_color = Color(0.955, 0.98, 0.995, 1)
+bottom_color = Color(0.74, 0.89, 0.99, 1)
+border_color = Color(0.34, 0.75, 0.98, 1)
+border_width = 2
+radius = 10
+lip = 0
+shine = 0.5
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoBestBarEntry_hover"]
+script = ExtResource("arcade")
+content_margin_left = 10
+content_margin_top = 2
+content_margin_right = 10
+content_margin_bottom = 2
+bg_color = Color(0.955, 0.98, 0.995, 1)
+bottom_color = Color(0.74, 0.89, 0.99, 1)
+border_color = Color(0.34, 0.75, 0.98, 1)
+border_width = 2
+radius = 10
+lip = 0
+shine = 0.5
+band = 0
+
+[sub_resource type="StyleBox" id="painted_GoBestBarEntry_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 10
+content_margin_top = 2
+content_margin_right = 10
+content_margin_bottom = 2
+bg_color = Color(0.955, 0.98, 0.995, 1)
+bottom_color = Color(0.74, 0.89, 0.99, 1)
+border_color = Color(0.34, 0.75, 0.98, 1)
+border_width = 2
+radius = 10
+lip = 0
+shine = 0.5
+band = 0
+pressed = true
+
+[sub_resource type="StyleBox" id="painted_GoBestBarEntry_hover_pressed"]
+script = ExtResource("arcade")
+content_margin_left = 10
+content_margin_top = 2
+content_margin_right = 10
+content_margin_bottom = 2
+bg_color = Color(0.955, 0.98, 0.995, 1)
+bottom_color = Color(0.74, 0.89, 0.99, 1)
+border_color = Color(0.34, 0.75, 0.98, 1)
+border_width = 2
+radius = 10
+lip = 0
+shine = 0.5
+band = 0
+pressed = true
+
 [sub_resource type="StyleBoxFlat" id="painted_GoTile"]
 content_margin_left = 0
 content_margin_top = 3
@@ -2304,6 +2457,30 @@ GoBareButton/styles/hover = SubResource("empty")
 GoBareButton/styles/hover_pressed = SubResource("empty")
 GoBareButton/styles/normal = SubResource("empty")
 GoBareButton/styles/pressed = SubResource("empty")
+GoBestBar/base_type = &"PanelContainer"
+GoBestBar/styles/panel = SubResource("painted_GoBestBar")
+GoBestBarEntry/base_type = &"Button"
+GoBestBarEntry/colors/font_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarEntry/colors/font_focus_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarEntry/colors/font_hover_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarEntry/colors/font_hover_pressed_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarEntry/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoBestBarEntry/colors/font_pressed_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarEntry/constants/outline_size = 0
+GoBestBarEntry/font_sizes/font_size = 25
+GoBestBarEntry/fonts/font = SubResource("painted_score_font")
+GoBestBarEntry/styles/disabled = SubResource("painted_GoBestBarEntry_normal")
+GoBestBarEntry/styles/focus = SubResource("painted_empty")
+GoBestBarEntry/styles/hover = SubResource("painted_GoBestBarEntry_hover")
+GoBestBarEntry/styles/hover_pressed = SubResource("painted_GoBestBarEntry_hover_pressed")
+GoBestBarEntry/styles/normal = SubResource("painted_GoBestBarEntry_normal")
+GoBestBarEntry/styles/pressed = SubResource("painted_GoBestBarEntry_pressed")
+GoBestBarLabel/base_type = &"Label"
+GoBestBarLabel/colors/font_color = Color(0.004, 0.012, 0.224, 1)
+GoBestBarLabel/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoBestBarLabel/constants/outline_size = 0
+GoBestBarLabel/font_sizes/font_size = 23
+GoBestBarLabel/fonts/font = SubResource("painted_score_font")
 GoBigButton/base_type = &"Button"
 GoBigButton/colors/font_color = Color(1, 1, 1, 1)
 GoBigButton/colors/font_focus_color = Color(1, 1, 1, 1)
@@ -2668,6 +2845,18 @@ GoPanel/base_type = &"PanelContainer"
 GoPanel/styles/panel = SubResource("panel")
 GoPanelFlat/base_type = &"PanelContainer"
 GoPanelFlat/styles/panel = SubResource("painted_GoPanelFlat")
+GoPodiumName/base_type = &"Label"
+GoPodiumName/colors/font_color = Color(0.004, 0.012, 0.224, 1)
+GoPodiumName/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoPodiumName/constants/outline_size = 0
+GoPodiumName/font_sizes/font_size = 19
+GoPodiumName/fonts/font = SubResource("painted_row_font")
+GoPodiumValue/base_type = &"Label"
+GoPodiumValue/colors/font_color = Color(0.004, 0.012, 0.224, 1)
+GoPodiumValue/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoPodiumValue/constants/outline_size = 0
+GoPodiumValue/font_sizes/font_size = 24
+GoPodiumValue/fonts/font = SubResource("painted_score_font")
 GoPrimaryButton/base_type = &"Button"
 GoPrimaryButton/colors/font_color = Color(1, 1, 1, 1)
 GoPrimaryButton/colors/font_disabled_color = Color(1, 1, 1, 0.6)
@@ -2795,6 +2984,29 @@ GoScoreTabSelected/colors/font_pressed_color = Color(1, 1, 1, 1)
 GoScoreTabSelected/constants/outline_size = 4
 GoScoreTabSelected/font_sizes/font_size = 18
 GoScoreTabSelected/fonts/font = SubResource("painted_score_font")
+GoScoreTable/base_type = &"PanelContainer"
+GoScoreTable/styles/panel = SubResource("painted_GoScoreTable")
+GoScoreTableHead/base_type = &"PanelContainer"
+GoScoreTableHead/colors/separator_color = Color(0.33, 0.7, 0.99, 1)
+GoScoreTableHead/styles/panel = SubResource("painted_GoScoreTableHead")
+GoScoreTableHeadLabel/base_type = &"Label"
+GoScoreTableHeadLabel/colors/font_color = Color(1, 1, 1, 1)
+GoScoreTableHeadLabel/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoScoreTableHeadLabel/constants/outline_size = 3
+GoScoreTableHeadLabel/font_sizes/font_size = 19
+GoScoreTableHeadLabel/fonts/font = SubResource("painted_score_font")
+GoScoreTableLabel/base_type = &"Label"
+GoScoreTableLabel/colors/font_color = Color(0.004, 0.012, 0.224, 1)
+GoScoreTableLabel/colors/font_outline_color = Color(0.035, 0.153, 0.42, 1)
+GoScoreTableLabel/constants/outline_size = 0
+GoScoreTableLabel/font_sizes/font_size = 22
+GoScoreTableLabel/fonts/font = SubResource("painted_score_font")
+GoScoreTableRow/base_type = &"PanelContainer"
+GoScoreTableRow/styles/panel = SubResource("painted_GoScoreTableRow")
+GoScoreTableRowGold/base_type = &"PanelContainer"
+GoScoreTableRowGold/styles/panel = SubResource("painted_GoScoreTableRowGold")
+GoScoreTableRowOwn/base_type = &"PanelContainer"
+GoScoreTableRowOwn/styles/panel = SubResource("painted_GoScoreTableRowOwn")
 GoScoreTitleLabel/base_type = &"Label"
 GoScoreTitleLabel/colors/font_color = Color(1, 1, 1, 1)
 GoScoreTitleLabel/colors/font_outline_color = Color(0.025, 0.035, 0.22, 1)

@@ -847,6 +847,10 @@ bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoSc
 shadow, padded 10 left and 16 right, so rows stacked with no separation read as stripes) with `GoScoreRowLabel` and
 `GoScoreRowMutedLabel` (the body font at a medium weight, embolden 0.5, in the scoreboard's navy ink and the `muted`
 ink for ranks and helper text; no outline, no font size of their own);
+`GoScoreTable`, `GoScoreTableHead`, `GoScoreTableHeadLabel`, `GoScoreTableRow`, `GoScoreTableRowGold`,
+`GoScoreTableRowOwn` and `GoScoreTableLabel` (the `GoScoreTable` ranking card: white, navy-rimmed, a blue head bar,
+glossy pale rows, a gold first row and a cyan own row), `GoBestBar`, `GoBestBarLabel` and `GoBestBarEntry` (the
+`GoBestBar` strip: a pale glossy bar and its inset pill) and `GoPodiumName` / `GoPodiumValue` (`GoPodium`'s plate text);
 `GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
 `GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
