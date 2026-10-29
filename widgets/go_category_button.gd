@@ -24,8 +24,8 @@ extends Button
 const VAR_CATEGORY := &"GoCategoryButton"
 const VAR_SELECTED := &"GoCategoryButtonSelected"
 ## The icon's height as a share of the button's height, and its distance from the near edge (share of the height).
-const ICON_SHARE := 0.74
-const ICON_INSET := 0.1
+const ICON_SHARE := 0.62
+const ICON_INSET := 0.16
 ## The space between the icon and the words.
 const GAP := 6.0
 ## The chevron's height as a share of the button's height, and its distance from the far edge.

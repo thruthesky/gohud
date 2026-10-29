@@ -44,6 +44,9 @@ func _category_button(host: Control) -> void:
 	check(button.theme_type_variation == GoCategoryButton.VAR_CATEGORY, "an unselected category is blue")
 	check(button.chevron_rect() == Rect2(), "an unselected category has no chevron")
 	check(button.icon_rect().size.x > 0.0, "the icon has its room")
+	var icon := button.icon_rect()
+	check(icon.position.y >= 100 * 0.18 and icon.end.y <= 100 * 0.82 and icon.position.x >= 100 * 0.14,
+			"the icon stays inside the plate's rim")
 	button.selected = true
 	await process_frame
 	check(button.theme_type_variation == GoCategoryButton.VAR_SELECTED, "selecting turns it gold")
