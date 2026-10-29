@@ -1,5 +1,7 @@
 ## 🧪 **Checks for the framed face** — `GoStyleBoxFrame` (a flat chamfered body under a painted 9-slice frame) and the
-## two helpers that put its states on a control, `GoStyle.frame_states()` and `GoStyle.style_frame()`.
+## two helpers that put its states on a control, `GoStyle.frame_states()` and `GoStyle.style_frame()` — plus the
+## helpers around them: `frame_face()`, `pad_faces()`, `bare_button()`, `tint_button(…, disabled)`, `tint_field()`,
+## `recolor_text()`.
 ## Its own file, so it never clashes with the widgets other people are adding to the other test files.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_stylebox_frame_test.gd" bash addons/gohud/tools/run_tests.sh
@@ -18,6 +20,7 @@ func _initialize() -> void:
 	_draw_rect()
 	_states()
 	_style_frame()
+	_helpers()
 	_round_trip()
 	print("gohud frame tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -150,11 +153,70 @@ func _style_frame() -> void:
 	check(field.get_theme_stylebox(&"focus") is StyleBoxEmpty, "field: a state not given falls back (focus → empty)")
 	GoStyle.style_frame(button, {})
 	check(button.get_theme_stylebox(&"normal") == states[&"normal"], "button: no normal face → nothing changes")
-	var minimum := button.get_minimum_size()
-	check(minimum.x >= 24.0 and minimum.y >= 24.0, "button: content margins reach the minimum size (%s)" % minimum)
+	# The face's own minimum size is what a control adds up (`Button._get_largest_stylebox_size`): the content margins,
+	# since a GDScript StyleBox's `_get_style_margin` is never called. 🛑 Not `button.get_minimum_size()` here — the
+	# button's theme cache is filled only once it is in a running tree, so a detached button reports the default theme's
+	# face (32 × 16 on the office-windows runner, 2026-10-30).
+	var minimum := (states[&"normal"] as StyleBox).get_minimum_size()
+	check(minimum.x >= 24.0 and minimum.y >= 24.0, "face: content margins are its minimum size (%s)" % minimum)
 	button.free()
 	field.free()
 	panel.free()
+
+
+func _helpers() -> void:
+	var art := ImageTexture.create_from_image(Image.create(120, 120, false, Image.FORMAT_RGBA8))
+	var face := GoStyle.frame_face(art, 30.0, 3.0, Color("#10283B"), Vector2(16, 4), 3.0, 7.0, Color(0, 0, 0.04, 0.59),
+		Vector2(3, 3), 4.0)
+	check(face.texture == art and face.edge == Vector4(30, 30, 30, 30) and face.pixels_per_unit == 3.0,
+		"frame_face: art and slices")
+	check(face.bg_color == Color("#10283B") and face.fill_inset == 3.0 and face.fill_cut == 7.0, "frame_face: body")
+	check(face.shadow_size == 4.0 and face.shadow_offset == Vector2(3, 3) and face.shadow_color.a > 0.5, "frame_face: shadow")
+	check(face.content_margin_left == 16.0 and face.content_margin_right == 16.0 and face.content_margin_top == 4.0
+		and face.content_margin_bottom == 4.0, "frame_face: padding x / y")
+	check(GoStyle.frame_face(art, 30.0, 3.0, Color.BLACK) != GoStyle.frame_face(art, 30.0, 3.0, Color.BLACK),
+		"frame_face: a new face every call")
+	var deep := GoStyle.frame_states(_box(), {}, null, null, -0.06)
+	check((deep[&"hover"] as GoStyleBoxFrame).bg_color.get_luminance() < _box().bg_color.get_luminance(),
+		"frame_states: a negative hover shift deepens the body")
+	# pad_faces: the button's own copies change; the shared face does not.
+	var states := GoStyle.frame_states(face)
+	var button := Button.new()
+	GoStyle.style_frame(button, states)
+	GoStyle.pad_faces(button, 40.0, 10.0)
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		var own := button.get_theme_stylebox(state)
+		check(own.content_margin_left == 40.0 and own.content_margin_right == 10.0 and own.content_margin_top == 4.0,
+			"pad_faces: %s gets left 40 · right 10 · top kept" % state)
+	check(button.get_theme_stylebox(&"normal") != face and face.content_margin_left == 16.0,
+		"pad_faces: the shared face is untouched (copies)")
+	var field := LineEdit.new()
+	GoStyle.style_frame(field, states)
+	GoStyle.pad_faces(field, -1.0, 50.0)
+	check(field.get_theme_stylebox(&"normal").content_margin_right == 50.0
+		and field.get_theme_stylebox(&"normal").content_margin_left == 16.0, "pad_faces: a field's right side only")
+	var bare := Button.new()
+	GoStyle.bare_button(bare, 4.0)
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		var box := bare.get_theme_stylebox(state)
+		check(box is StyleBoxEmpty and box.content_margin_left == 4.0 and box.content_margin_right == 4.0,
+			"bare_button: %s is empty with 4 beside the label" % state)
+	GoStyle.tint_button(bare, Color.WHITE, Color.CYAN, Color.GRAY)
+	check(bare.get_theme_color(&"font_disabled_color") == Color.GRAY and bare.get_theme_color(&"icon_disabled_color") == Color.GRAY,
+		"tint_button: the disabled ink (trailing argument)")
+	check(bare.get_theme_color(&"font_hover_color") == Color.CYAN, "tint_button: the active ink still applies")
+	GoStyle.tint_field(field, Color.WHITE, Color.GRAY, Color.CYAN)
+	check(field.get_theme_color(&"font_color") == Color.WHITE and field.get_theme_color(&"font_placeholder_color") == Color.GRAY
+		and field.get_theme_color(&"caret_color") == Color.CYAN, "tint_field: text · placeholder · caret")
+	var label := Label.new()
+	label.theme_type_variation = &"GoCaptionLabel"
+	GoStyle.recolor_text(label, Color.RED)
+	check(label.get_theme_color(&"font_color") == Color.RED and label.theme_type_variation == &"GoCaptionLabel",
+		"recolor_text: the ink changes, the variation stays")
+	button.free()
+	field.free()
+	bare.free()
+	label.free()
 
 
 func _round_trip() -> void:

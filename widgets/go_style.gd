@@ -943,7 +943,8 @@ static func center_button_content(node: Button, min_inset := -1.0) -> float:
 ## in color alone (link rows, quiet menus).
 ## [param ink] is the resting color, [param active] the hover, pressed and focus color. A transparent one is
 ## left alone — a button already given its resting color by `typography()` takes [param active] only.
-static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.TRANSPARENT) -> void:
+static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.TRANSPARENT,
+		disabled := Color.TRANSPARENT) -> void:
 	if ink.a > 0:
 		node.add_theme_color_override(&"font_color", ink)
 		node.add_theme_color_override(&"icon_normal_color", ink)
@@ -951,6 +952,25 @@ static func tint_button(node: Button, ink := Color.TRANSPARENT, active := Color.
 		for key in [&"font_hover_color", &"font_pressed_color", &"font_focus_color",
 				&"icon_hover_color", &"icon_pressed_color", &"icon_focus_color"]:
 			node.add_theme_color_override(key, active)
+	# [param disabled] — the label and icon while the button is disabled (transparent: the theme's).
+	if disabled.a > 0:
+		node.add_theme_color_override(&"font_disabled_color", disabled)
+		node.add_theme_color_override(&"icon_disabled_color", disabled)
+
+
+## ✍ Colours a text field: [param ink] the typed text, [param placeholder] the hint, [param caret] the cursor
+## (transparent: leave the theme's).
+static func tint_field(node: LineEdit, ink := Color.TRANSPARENT, placeholder := Color.TRANSPARENT,
+		caret := Color.TRANSPARENT) -> void:
+	if ink.a > 0: node.add_theme_color_override(&"font_color", ink)
+	if placeholder.a > 0: node.add_theme_color_override(&"font_placeholder_color", placeholder)
+	if caret.a > 0: node.add_theme_color_override(&"caret_color", caret)
+
+
+## 🎨 Recolours a label's (or a button's) text and nothing else — its role, size and variation stay. For a title that
+## already has its role and only needs another ink.
+static func recolor_text(node: Control, color: Color) -> void:
+	node.add_theme_color_override(&"font_color", color)
 
 
 ## 🛑 **Pins the font size in pixels** — only where the spec comes from outside (an official sign-in button
@@ -1444,8 +1464,9 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 
 ## 🖼 The state faces of a **framed** control from its normal face (`GoStyleBoxFrame`) — the dictionary
 ## `style_frame()` takes: `normal`, `hover`, `pressed`, `focus`, `disabled`.
-## - `hover` lightens the body by [param hover_shift]; `pressed` darkens it by [param press_shift] and dims the frame a
-##   little — the same frame art for both, so the control never changes size.
+## - `hover` lightens the body by [param hover_shift] — a **negative** shift deepens it instead (lightening a mid-tone
+##   body under white text can drop the label under 4.5:1); `pressed` darkens it by [param press_shift] and dims the
+##   frame a little — the same frame art for both, so the control never changes size.
 ## - `focus` is the frame alone (no body, no shadow) — drawn **over** the current face by the engine, so a keyboard
 ##   ring never repaints the body. Give [param focus] (another frame, e.g. a brighter cut) to replace it.
 ## - `disabled` is [param disabled] when given (a greyed cut with its own body), else the normal face, desaturated.
@@ -1453,7 +1474,7 @@ static func _flat_like(source: StyleBox) -> StyleBoxFlat:
 static func frame_states(normal: GoStyleBoxFrame, overrides := {}, disabled: GoStyleBoxFrame = null,
 		focus: GoStyleBoxFrame = null, hover_shift := 0.06, press_shift := 0.16) -> Dictionary:
 	var hover := normal.duplicate() as GoStyleBoxFrame
-	hover.bg_color = normal.bg_color.lightened(hover_shift)
+	hover.bg_color = normal.bg_color.lightened(hover_shift) if hover_shift >= 0.0 else normal.bg_color.darkened(-hover_shift)
 	var pressed := normal.duplicate() as GoStyleBoxFrame
 	pressed.bg_color = normal.bg_color.darkened(press_shift)
 	pressed.tint = normal.tint.darkened(0.12)
@@ -1471,6 +1492,61 @@ static func frame_states(normal: GoStyleBoxFrame, overrides := {}, disabled: GoS
 	for key in overrides:
 		out[StringName(key)] = overrides[key]
 	return out
+
+
+## 🖼 A framed face (`GoStyleBoxFrame`) in one call — [param texture] the transparent frame art, [param edge_px] its slice
+## width in texture pixels (all four sides), drawn at [param pixels_per_unit] texture pixels per unit; [param body] the
+## flat fill; [param pad] the content padding (x = left/right, y = top/bottom); the body's [param fill_inset] and
+## [param fill_cut]; an optional drop shadow. A new face every call — cache it yourself if many controls share it.
+static func frame_face(texture: Texture2D, edge_px: float, pixels_per_unit: float, body: Color, pad := Vector2.ZERO,
+		fill_inset := 3.0, fill_cut := 7.0, shadow := Color(0, 0, 0, 0), shadow_offset := Vector2.ZERO,
+		shadow_size := 0.0) -> GoStyleBoxFrame:
+	var face := GoStyleBoxFrame.new()
+	face.texture = texture
+	face.edge = Vector4(edge_px, edge_px, edge_px, edge_px)
+	face.pixels_per_unit = pixels_per_unit
+	face.bg_color = body
+	face.fill_inset = fill_inset
+	face.fill_cut = fill_cut
+	face.shadow_color = shadow
+	face.shadow_offset = shadow_offset
+	face.shadow_size = shadow_size
+	face.content_margin_left = pad.x
+	face.content_margin_right = pad.x
+	face.content_margin_top = pad.y
+	face.content_margin_bottom = pad.y
+	return face
+
+
+## ↔ Gives a control's **own** state faces new padding — each face it wears now is duplicated (faces are often shared
+## by every control of a kind, so they are never changed in place) and gets [param left] / [param right] / [param top] /
+## [param bottom] (negative: keep that side). Works on whatever `style_frame()` put on it (`Button` states,
+## `LineEdit` normal · focus · read_only, `panel`). Call it again after `style_frame()` swaps the faces.
+static func pad_faces(node: Control, left := -1.0, right := -1.0, top := -1.0, bottom := -1.0) -> void:
+	var states: Array[StringName] = [&"panel"]
+	if node is BaseButton: states = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled", &"focus"]
+	elif node is LineEdit or node is TextEdit: states = [&"normal", &"focus", &"read_only"]
+	for state in states:
+		if not node.has_theme_stylebox_override(state): continue
+		var current := node.get_theme_stylebox(state)
+		if current == null or current is StyleBoxEmpty: continue
+		var own := current.duplicate() as StyleBox
+		if left >= 0.0: own.content_margin_left = left
+		if right >= 0.0: own.content_margin_right = right
+		if top >= 0.0: own.content_margin_top = top
+		if bottom >= 0.0: own.content_margin_bottom = bottom
+		node.add_theme_stylebox_override(state, own)
+
+
+## 👻 A button with **no face at all** in every state — words (and an icon) laid on another control, such as a
+## [Show] toggle inside a text field — keeping [param pad_x] units beside its label so the tap area is not the bare
+## glyphs.
+static func bare_button(node: Button, pad_x := 4.0) -> void:
+	var bare := StyleBoxEmpty.new()
+	bare.content_margin_left = pad_x
+	bare.content_margin_right = pad_x
+	for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus", &"disabled"]:
+		node.add_theme_stylebox_override(state, bare)
 
 
 ## 🖼 Puts state faces (`frame_states()`, or any `StyleBox`es keyed by state) on a control by its own state names:
