@@ -1998,12 +1998,27 @@ func _obstructions() -> void:
 			and is_equal_approx(island.size.y, 378.0 * k.y) and is_equal_approx(island.get_center().y, view.get_center().y),
 			"obstructions ios: the island is 126 pt long, the inset deep, centred on the left edge (%s)" % island)
 	var strip: Rect2 = obs["gesture"]
-	check(is_equal_approx(strip.size.y, 63.0 * k.y) and is_equal_approx(strip.end.y, view.end.y) and is_equal_approx(strip.size.x, view.size.x),
-		"obstructions ios: the home strip is the bottom inset (%s)" % strip)
+	check(is_equal_approx(strip.size.y, 48.0 * k.y) and is_equal_approx(strip.end.y, view.end.y) and is_equal_approx(strip.size.x, view.size.x),
+		"obstructions ios: deferred gestures use the 16-point touch band (%s)" % strip)
 	check(is_equal_approx(float(obs["corner_radius"]), 165.0 * k.x), "obstructions ios: corner 55 pt by default (%s)" % obs["corner_radius"])
 	var bars: Vector4 = obs["bars"]
-	check(bars.x == 0.0 and bars.y == 0.0 and bars.z == 0.0 and is_equal_approx(bars.w, 63.0 * k.y),
-		"obstructions ios: both side insets released (the island and its mirror), the home strip kept (%s)" % bars)
+	check(bars.x == 0.0 and bars.y == 0.0 and bars.z == 0.0 and is_equal_approx(bars.w, 48.0 * k.y),
+		"obstructions ios: both side insets released (the island and its mirror), the thin home band kept (%s)" % bars)
+	check(is_equal_approx(GoUi.config.ios_home_keep_pt, 16.0), "obstructions ios: the default keep-out is 16 UIKit points")
+	check(is_equal_approx(view.end.y - GoSafeArea.usable_rect(root).end.y, 63.0 * k.y),
+		"usable_rect ios: forms retain the full 21-point safe inset")
+	var deferred: bool = ProjectSettings.get_setting("display/window/ios/suppress_ui_gesture", true)
+	ProjectSettings.set_setting("display/window/ios/suppress_ui_gesture", false)
+	var full := GoSafeArea.obstructions(root)
+	check(not full["home_deferred"] and is_equal_approx((full["bars"] as Vector4).w, 63.0 * k.y)
+		and is_equal_approx((full["gesture"] as Rect2).size.y, 63.0 * k.y),
+		"obstructions ios: gestures not deferred retain the full safe inset")
+	ProjectSettings.set_setting("display/window/ios/suppress_ui_gesture", deferred)
+	var keep_pt := GoUi.config.ios_home_keep_pt
+	GoUi.config.ios_home_keep_pt = 100.0
+	check(is_equal_approx((GoSafeArea.obstructions(root)["bars"] as Vector4).w, 63.0 * k.y),
+		"obstructions ios: configured keep-out is bounded by the actual safe inset")
+	GoUi.config.ios_home_keep_pt = keep_pt
 	GoScale.simulate({"handheld": true, "size": Vector2i(px), "platform": "ios", "insets": Vector4(177, 0, 177, 63), "screen_scale": 3.0})
 	holes = GoSafeArea.obstructions(root)["holes"]
 	check(holes.size() == 2 and holes[0].size.y < view.size.y * 0.5, "obstructions ios: side unknown — the island band on both long sides, not the whole edge (%s)" % [holes])
@@ -2017,6 +2032,8 @@ func _obstructions() -> void:
 	check((pad_obs["holes"] as Array).is_empty() and is_equal_approx(float(pad_obs["corner_radius"]), 36.0 * view.size.x / 2388.0),
 		"obstructions iPad: no cutout, the 18-pt tablet corner (%s)" % pad_obs["corner_radius"])
 	check(is_equal_approx((pad_obs["bars"] as Vector4).y, 48.0 * view.size.y / 1668.0), "obstructions iPad: its status bar stays a bar")
+	check(not pad_obs["home_deferred"] and is_equal_approx((pad_obs["bars"] as Vector4).w, 40.0 * view.size.y / 1668.0),
+		"obstructions iPad: its bottom safe inset stays whole")
 	# Android: its own holes (and they are its simulated insets), corner from dpi when not given.
 	GoScale.simulate({"handheld": true, "size": Vector2i(2400, 1080), "platform": "android", "dpi": 420.0,
 		"cutouts": [Rect2(0, 500, 90, 80)]})

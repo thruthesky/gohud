@@ -236,6 +236,11 @@ signal changed_settings
 ## stay whole. Negative: no cap (the whole inset). Magnet Mayhem's in-match HUD uses 12.
 @export_range(-1.0, 200.0) var hud_side_inset_max := -1.0
 
+## Deferred-gesture iPhone HUDs keep only this bottom band clear of touch, in UIKit points.
+## 16 = the indicator's 8-point edge offset + 5-point height + a 3-point guard. Forms keep the full safe area.
+## Used only with display/window/ios/suppress_ui_gesture; tablets retain their full inset.
+@export_range(0.0, 34.0) var ios_home_keep_pt := 16.0
+
 ## 📷 `GoSafeArea.obstructions()` — the physical data a platform does not hand Godot.
 ## iOS: the display corner radius in points. 55 is the largest published iPhone radius (14 Pro … 15 Pro Max; 39 on an
 ## iPhone X, 47.33 on a 12/13/14). The continuous corner curve lies outside the circle of the same radius at the

@@ -138,16 +138,18 @@ static func px_to_units(window: Viewport, px: float) -> float:
 ## {
 ##     "holes": Array[Rect2],   # camera cutouts — no control or text over them
 ##     "corner_radius": float,  # the rounded display corners (0: square or unknown)
-##     "gesture": Rect2,        # the iOS home-indicator strip along the bottom — no tap target in it; art may run under
+##     "gesture": Rect2,        # iOS touch keep-out: capped with deferred gestures, otherwise full inset; no taps
 ##     "screen": Rect2,         # the whole screen, which the corners are measured from
+##     "home_deferred": bool,   # phone with deferred system gestures; compact bottom composition may use it
 ##     "bars": Vector4,         # the safe-area insets that stay whole (left, top, right, bottom) — `bar_insets`
 ## }
 ## [/codeblock]
 ## · Android names its holes (`DisplayServer.get_display_cutouts`) and has no gesture strip in an immersive window; its
 ##   corner radius is `GoConfig.corner_radius_android` (dp) — Godot does not expose `WindowInsets.getRoundedCorner`.
 ## · iOS names none (Godot 4.7: `get_display_cutouts` is Android-only), so the holes are derived from the safe-area
-##   insets (`ios_holes`): the notch / Dynamic Island centred on each inset edge but the bottom; the bottom inset is the
-##   gesture strip; the radius is `GoConfig.corner_radius_ios` (pt; `corner_radius_ios_tablet` past the mobile
+##   insets (`ios_holes`): the notch / Dynamic Island centred on each inset edge but the bottom. With deferred gestures
+##   on a phone the bottom touch keep-out is capped by `GoConfig.ios_home_keep_pt`; otherwise it is the full bottom
+##   inset. The radius is `GoConfig.corner_radius_ios` (pt; `corner_radius_ios_tablet` past the mobile
 ##   breakpoint). 🛑 In landscape the insets are symmetric and Godot 4.7 reports no interface orientation
 ##   (`screen_get_orientation` returns the requested one), so a real iPhone gets the island on BOTH long sides — a band
 ##   the island's length, not the inset's whole edge. A simulated device names the side (`notch_side`).
@@ -157,7 +159,7 @@ static func px_to_units(window: Viewport, px: float) -> float:
 ## Empty (no holes, radius 0, no strip) off handhelds, in a SubViewport and with `GoConfig.respect_safe_area` off.
 static func obstructions(view: Viewport) -> Dictionary:
 	var holes: Array[Rect2] = []
-	var out := {"holes": holes, "corner_radius": 0.0, "gesture": Rect2(), "screen": Rect2(), "bars": Vector4.ZERO}
+	var out := {"holes": holes, "corner_radius": 0.0, "gesture": Rect2(), "screen": Rect2(), "bars": Vector4.ZERO, "home_deferred": false}
 	if view == null: return out
 	var area := view.get_visible_rect()
 	out["screen"] = area
@@ -206,11 +208,18 @@ static func obstructions(view: Viewport) -> Dictionary:
 	if platform == "ios":
 		holes_px = ios_holes(px, insets, scale, side)
 		explained = ios_holes(px, insets, scale)
-		if insets.w > 0.0: out["gesture"] = to_units * Rect2(0.0, px.y - insets.w, px.x, insets.w)
+		if insets.w > 0.0:
+			var phone := scale > 0.0 and GoScale.breakpoint_for_dp(minf(px.x, px.y) / scale) == GoScale.Bp.MOBILE
+			out["home_deferred"] = phone and bool(ProjectSettings.get_setting("display/window/ios/suppress_ui_gesture", true))
+			var keep := minf(insets.w, maxf(0.0, GoUi.config.ios_home_keep_pt) * scale) if out["home_deferred"] else insets.w
+			out["gesture"] = to_units * Rect2(0.0, px.y - keep, px.x, keep)
 	for r: Rect2 in holes_px: holes.append(to_units * r)
 	var k := to_units.get_scale().abs()
 	var per_edge := Vector4(k.x, k.y, k.x, k.y)
 	out["bars"] = bar_insets(insets * per_edge, hole_insets(px, explained) * per_edge)
+	# Reserve the same thin band in the canvas and the obstruction data: existing bottom-anchored
+	# consumers then share one coordinate space. usable_rect/hud_rect still keep the full inset.
+	if out["home_deferred"]: out["bars"].w = (out["gesture"] as Rect2).size.y
 	out["corner_radius"] = maxf(0.0, radius_px) * absf(to_units.get_scale().x)
 	return out
 
@@ -241,8 +250,8 @@ static func _cutout_length(depth_pt: float) -> float:
 ## The safe-area insets an edge-to-edge HUD keeps whole — left, top, right, bottom, in the units of [param insets]: an
 ## edge whose inset is no deeper than what explains it ([param explained] — the holes' depth on that edge, `hole_insets`)
 ## + [param tolerance] is only those holes and is released (0); a deeper one is a bar and stays — a status or
-## navigation bar (a non-immersive Android window), the iOS home strip (no cutout explains the bottom inset), an iPad's
-## status bar. HF-1's rule: the Realme's 29-unit waterdrop gutter is released, a 40-unit bar over a 22-unit hole stays.
+## navigation bar (a non-immersive Android window), the iOS bottom inset (obstructions caps it only for deferred-gesture
+## phones), an iPad's status bar. HF-1's rule: the Realme's 29-unit waterdrop gutter is released, a 40-unit bar over a 22-unit hole stays.
 static func bar_insets(insets: Vector4, explained: Vector4, tolerance := 1.0) -> Vector4:
 	var out := Vector4.ZERO
 	for i in 4:

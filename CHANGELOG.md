@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+- Deferred-gesture iPhone edge HUDs now expose a configurable 16-point bottom touch keep-out; form safe areas and non-deferred gestures keep their full inset.
+
 ### Added
 
 - **The scale curve — `GoScale.curve(inputs)`**: one decision from `GoScale.device_inputs(window_px)`
