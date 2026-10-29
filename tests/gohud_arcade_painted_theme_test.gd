@@ -691,8 +691,18 @@ func _menu_hero(theme: Theme) -> void:
 		check(theme.get_stylebox(&"focus", type) is StyleBoxEmpty, "%s/focus draws nothing" % type)
 		var title := theme.get_font(&"font", type) as FontVariation
 		check(title == heavy or (title != null and title.base_font == theme.default_font
-			and is_equal_approx(title.variation_embolden, heavy.variation_embolden)),
-			"%s: the heavy display face (or the same weight, set wider)" % type)
+			and title.variation_embolden >= heavy.variation_embolden),
+			"%s: the heavy display face (or heavier)" % type)
+		# The plates' titles are set wide (each letter stretched) but tight: the widget adds back exactly the advance
+		# the stretch takes (`title_tracking`, a share of the size), never a spacing of its own in the font.
+		var stretch := title.variation_transform.x.x if title != null else 1.0
+		check(title != null and title.spacing_glyph == 0 and stretch >= 1.0
+			and is_equal_approx(title.variation_transform.y.y, 1.0) and title.variation_transform.origin == Vector2.ZERO,
+			"%s: the title is set tight (no letter spacing in the font, only a wider letter)" % type)
+		check(is_equal_approx(stretch, 1.0) or theme.get_constant(&"title_tracking", type) > 0,
+			"%s: a stretched title gets its advances back (`title_tracking`)" % type)
+		check(theme.get_constant(&"plate_height", type) > 0, "%s: the height its art is drawn for" % type)
+		check(theme.get_constant(&"glyph_flat", type) == 1, "%s: flat glyphs, no dark outline" % type)
 		check(normal.face_color.a > 0.0, "%s names its plate colour" % type)
 		var ink := theme.get_color(&"font_color", type)
 		var ratio := _contrast(ink, normal.face_color)
@@ -705,8 +715,9 @@ func _menu_hero(theme: Theme) -> void:
 		check(_contrast(sub, face) >= 4.5, "%s: its subtitle reads on the plate (%.2f:1)" % [type, _contrast(sub, face)])
 		check(sub != theme.get_color(&"font_color", type), "%s: the subtitle in its own colour" % type)
 		var font := theme.get_font(&"subtitle_font", type) as FontVariation
-		check(font != null and font.spacing_glyph > 0 and font.base_font == theme.default_font,
-			"%s: the subtitle is the body font, letter-spaced" % type)
+		check(font != null and font.spacing_glyph == 0 and font.base_font == theme.default_font
+			and theme.get_constant(&"subtitle_tracking", type) > 0,
+			"%s: the subtitle is the body font, letter-spaced in proportion to its size" % type)
 		check(theme.get_font_size(&"subtitle_font_size", type) < theme.get_font_size(&"font_size", type),
 			"%s: the subtitle is smaller than the title" % type)
 		var disc := theme.get_stylebox(&"glyph_disc", type) as GoStyleBoxSprite

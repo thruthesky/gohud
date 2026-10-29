@@ -217,16 +217,22 @@ ROW_EMBOLDEN = 0.5
 #    the game's UiTheme): a gold plate for the one big action, navy glass plates for the rest, small glass keys in the
 #    top bar. Each art's halo (a glow or a shadow outside the plate) is its `bleed`: drawn past the button, never laid
 #    out. The art is cut at 1.5 × the menu's 1920 × 1080 design (`assets/arcade_light/painted/menu_art.json`), so a
-#    canvas unit is 1.5 art px: the hero plate 708 × 174, a glass plate 689 × 143, a top-bar key 86 × 83. Edges and
-#    bleeds are art px; margins, gaps, the disc's inset and drop are canvas units; sizes are font sizes; shares are %.
+#    canvas unit is 1.5 art px: the hero plate 708 × 174, a glass plate 689 × 143, a top-bar key 86 × 83 — each its
+#    `plate` height (`plate_height`): `GoGlyphButton` scales the art, padding, gaps and disc inset by the button's
+#    height over it, so a phone's smaller plate is the same picture smaller. Edges and bleeds are art px; margins,
+#    gaps, the disc's inset and drop are canvas units at that height; sizes are font sizes; shares are %; `bold` is the
+#    title's embolden, `stretch` its letters' width (the picture's titles are set wider than the font) and
+#    `title_tracking` the advance that stretch needs back, in thousandths of the size; `tracking` the subtitle's letter
+#    spacing in thousandths of its size.
 MENU_HERO = dict(file="hero_gold.png", disc="hero_disc.png", ppu=1.5, edge=(320, 80, 324, 80), bleed=(30, 30, 30, 30),
-                 margins=(36.0, 11.0, 36.0, 8.0), title=79, title_spacing=13, title_wide=1.18, subtitle=28, spacing=8,
-                 gap=-12, disc_left=66, disc_size=74, disc_drop=7, disc_glyph=64, disc_gap=41)
+                 plate=174, margins=(36.0, 14.0, 36.0, 5.0), title=74, bold=1.8, stretch=1.29, title_tracking=185,
+                 subtitle=31, tracking=150, gap=-12, disc_left=66, disc_size=74, disc_drop=7, disc_glyph=75, disc_gap=41)
 MENU_GLASS = dict(file="glass_navy.png", disc="glass_disc.png", ppu=1.5, edge=(313, 70, 181, 70),
-                  bleed=(24.5, 24.5, 24.5, 24.5), margins=(32.0, 7.0, 32.0, 6.0), title=41, title_spacing=3, title_wide=1.0,
-                  subtitle=23, spacing=5, gap=1, disc_left=55, disc_size=95, disc_drop=1, disc_glyph=78, disc_gap=45)
-MENU_KEY = dict(file="glass_key.png", ppu=1.5, edge=(58, 58, 58, 58), bleed=(18, 18, 18, 18),
-                margins=(16.0, 9.0, 16.0, 5.0), title=25, glyph=57, glyph_gap=14)
+                  bleed=(24.5, 24.5, 24.5, 24.5), plate=143, margins=(32.0, 7.0, 32.0, 6.0), title=40, bold=1.5,
+                  stretch=1.11, title_tracking=70, subtitle=25, tracking=110, gap=1, disc_left=55, disc_size=95,
+                  disc_drop=1, disc_glyph=78, disc_gap=45)
+MENU_KEY = dict(file="glass_key.png", ppu=1.5, edge=(58, 58, 58, 58), bleed=(18, 18, 18, 18), plate=83,
+                margins=(20.0, 9.0, 26.0, 5.0), title=25, bold=1.2, glyph=57, glyph_gap=10)
 # The top bar's thin cyan rule between the keys: 8 units wide, its 20 art px ends fading out.
 MENU_DIVIDER = dict(file="glass_divider.png", ppu=1.5, edge=(0, 20, 0, 20), width=8)
 HERO_INK = (0.007843, 0.070588, 0.235294, 1.0)         # #02123c — the gold plate's navy title and glyph
@@ -531,14 +537,20 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                            ("disabled", disabled), ("focus", "painted_empty")):
             put("%s/styles/%s" % (type_name, state), bid)
         title_font = "painted_score_font"
-        if art.get("title_spacing") or art.get("title_wide", 1.0) != 1.0:
-            # The picture's titles are set wider than the body font: letter-spaced, the hero's also drawn wider.
+        if art.get("bold", 1.2) != 1.2 or art.get("stretch", 1.0) != 1.0:
+            # The picture's titles are heavier than the scoreboard's 1.2 and wider set: each letter `stretch` wide
+            # (`variation_transform`), and `GoGlyphButton` adds `title_tracking` (thousandths of the size) to every
+            # advance so the wider letters keep the tight gaps at any size.
             title_font = "painted_%s_title_font" % type_name
-            boxes[title_font] = ("FontVariation", ['base_font = SubResource("painted_font")', "variation_embolden = 1.2",
-                                                   "variation_transform = Transform2D(%g, 0, 0, 1, 0, 0)"
-                                                   % art.get("title_wide", 1.0),
-                                                   "spacing_glyph = %d" % art.get("title_spacing", 0)])
+            props = ['base_font = SubResource("painted_font")', "variation_embolden = %g" % art["bold"]]
+            if art.get("stretch", 1.0) != 1.0:
+                props.append("variation_transform = Transform2D(%g, 0, 0, 1, 0, 0)" % art["stretch"])
+                setT(type_name + "/constants/title_tracking", art["title_tracking"])
+            boxes[title_font] = ("FontVariation", props)
         put(type_name + "/fonts/font", title_font)
+        # 📏 The height the art and every unit above are drawn for; the flat glyphs of the picture (no dark outline).
+        setT(type_name + "/constants/plate_height", art["plate"])
+        setT(type_name + "/constants/glyph_flat", 1)
         setT(type_name + "/font_sizes/font_size", art["title"])
         for slot in FONT_STATES:
             setT("%s/colors/%s" % (type_name, slot), C(ink))
@@ -551,10 +563,10 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     def menu_subtitle(type_name, art, ink):
         font = "painted_%s_subtitle_font" % type_name
         boxes[font] = ("FontVariation", ['base_font = SubResource("painted_font")',
-                                         "variation_embolden = %g" % MENU_SUB_EMBOLDEN,
-                                         "spacing_glyph = %d" % art["spacing"]])
+                                         "variation_embolden = %g" % MENU_SUB_EMBOLDEN])
         put(type_name + "/fonts/subtitle_font", font)
         setT(type_name + "/font_sizes/subtitle_font_size", art["subtitle"])
+        setT(type_name + "/constants/subtitle_tracking", art["tracking"])
         setT(type_name + "/constants/subtitle_gap", art["gap"])
 
     def menu_disc(type_name, art):
