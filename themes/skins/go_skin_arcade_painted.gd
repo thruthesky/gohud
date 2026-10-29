@@ -573,8 +573,8 @@ const HUD_ART := ART_ROOT + "hud/"
 const TOUCH_ART := ART_ROOT + "touch/"
 ## Numbered gold, silver and bronze award medals, with ribbon tails and glossy faces.
 const SCORE_ART := ART_ROOT + "score/"
-## The podium leaderboard's art (`GoPodium`, `GoScoreTable`): podium_gold/silver/bronze, laurel_gold/silver/bronze,
-## medal_row_1/2/3, sunburst, confetti.
+## The podium leaderboard's art: podium_gold/silver/bronze, laurel_gold/silver/bronze, medal_row_1/2/3, sunburst,
+## confetti, the category plates and icons, check badges, the stepper plate and the empty-board pictures.
 const LEADERBOARD_ART := ART_ROOT + "leaderboard/"
 ## The folders `widget_art` looks in, in order.
 const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART, LEADERBOARD_ART]
@@ -599,6 +599,60 @@ func widget_art(name: StringName) -> Texture2D:
 				_textures[path] = load(path) if ResourceLoader.exists(path) else null
 			if _textures[path] != null: return _textures[path]
 	return null
+
+
+# ── 🏆 Leaderboard controls ─────────────────────────────────────────────
+
+## The art's height at the reference size (dp): a category plate, the stepper's plate. The art may come at any scale —
+## it is drawn at `texture height / these`.
+const CATEGORY_ART_HEIGHT := 100.0
+const PAGE_PLATE_ART_HEIGHT := 72.0
+## Of the art's height, how much of each end is its rounded cap (the 9-slice keeps it) — the middle is flat.
+const PLATE_ART_CAP := 0.42
+## The page dots: the current page in ink, the others the stepper's light blue.
+const PAGE_DOT_LIGHT := Color("#3aa0ff")
+## The loading ring's head dash (the game's control blue, deepened).
+const LOADING_RING := Color("#1f6fe5")
+## The light round the picked difficulty pill.
+const BUTTON_GLOW := Color(1.0, 0.98, 0.82, 0.85)
+
+
+## The category plate (`category_blue` / `category_gold`) as a 9-slice, pressed darker and faded off as the pills are.
+func category_button_art(selected: bool, state: StringName) -> StyleBox:
+	var art := widget_art(&"category_gold" if selected else &"category_blue")
+	if art == null: return null
+	return _plate_art(art, CATEGORY_ART_HEIGHT, state)
+
+
+func page_plate_art() -> StyleBox:
+	var art := widget_art(&"stage_plate")
+	if art == null: return null
+	return _plate_art(art, PAGE_PLATE_ART_HEIGHT, &"normal")
+
+
+func page_dot_colors() -> PackedColorArray:
+	return PackedColorArray([INK, PAGE_DOT_LIGHT])
+
+
+func loading_ring_color() -> Color:
+	return LOADING_RING
+
+
+func button_glow_color() -> Color:
+	return BUTTON_GLOW
+
+
+## A plate picture [param height] dp tall at the reference size, cut so its rounded ends keep their shape.
+func _plate_art(art: Texture2D, height: float, state: StringName) -> GoStyleBoxSprite:
+	var cap := art.get_height() * PLATE_ART_CAP
+	var face := GoStyleBoxSprite.new()
+	face.texture = art
+	face.edge = Vector4(cap, cap, cap, cap)
+	face.pixels_per_unit = art.get_height() / height
+	match state:
+		&"pressed", &"hover_pressed": face.tint = Color(0.86, 0.86, 0.9)
+		&"disabled": face.tint = Color(0.6, 0.6, 0.66, 0.85)
+	return face
 
 
 ## The game's gold ring round the selected stage card.
