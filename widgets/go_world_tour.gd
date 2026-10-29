@@ -20,6 +20,12 @@ const BADGES := [Vector2(0.079, 0.223), Vector2(0.312, 0.077), Vector2(0.626, 0.
 static var POSITIONS: Array[Vector2] = _centres()
 
 var nodes: Array[GoWorldTourNode] = []
+## Off: the stops show their names only, without numbered badges.
+var show_numbers := true:
+	set(value):
+		show_numbers = value
+		for node in nodes: node.show_number = value
+var _labels: Control # every stop's badge and caption, drawn after all islands; a sibling, never a z_index
 
 
 func _init() -> void:
@@ -32,6 +38,13 @@ func _init() -> void:
 		nodes.append(node)
 		node.configure(i + 1, "", true, false)
 		node.pressed.connect(_on_pressed.bind(i + 1))
+	_labels = Control.new()
+	_labels.name = "Labels"
+	_labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_labels)
+	for node in nodes:
+		node.remove_child(node.labels)
+		_labels.add_child(node.labels)
 	resized.connect(_layout)
 
 
@@ -64,6 +77,7 @@ func _layout() -> void:
 		nodes[i].badge_side = badge
 		nodes[i].position = rect.position
 		nodes[i].size = rect.size
+		nodes[i].labels.position = rect.position
 		nodes[i].call(&"_layout")
 	queue_redraw()
 

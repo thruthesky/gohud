@@ -14,10 +14,18 @@ var title_base_size := 8
 ## Set by the map: the badge centre (local) and diameter. The island art then fills the node's own rect.
 var badge_center := Vector2.INF
 var badge_side := 0.0
+## Off: no numbered badge; the caption alone sits at the foot of the island, and focus rings the caption.
+var show_number := true:
+	set(value):
+		show_number = value
+		if _badge != null: refresh()
 var _badge: Panel
 var _badge_art: TextureRect
 var _caption: Panel
 var _ring: Panel
+## Holds the badge, caption and focus ring. A map moves it into its own label layer, drawn after every island, so the
+## labels sit above the art without a z_index (which would also lift them above dialogs opened over the map).
+var labels: Control
 
 
 func _init() -> void:
@@ -31,12 +39,16 @@ func _init() -> void:
 	thumbnail_slot.clip_contents = false
 	add_child(thumbnail_slot)
 	thumbnail_slot.child_entered_tree.connect(_place_thumbnail)
+	labels = Control.new()
+	labels.name = "Labels"
+	labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(labels)
 	_ring = Panel.new()
 	_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_ring)
+	labels.add_child(_ring)
 	_badge = Panel.new()
 	_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_badge)
+	labels.add_child(_badge)
 	_badge_art = TextureRect.new()
 	_badge_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_badge_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -48,7 +60,7 @@ func _init() -> void:
 	number_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_caption = Panel.new()
 	_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_caption)
+	labels.add_child(_caption)
 	title_label = _label("Caption", &"GoWorldTourCaption")
 	_caption.add_child(title_label)
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -134,11 +146,12 @@ func _layout_on_map() -> void:
 	var caption_w := clampf(text_w + caption_h * 1.2, side * 1.45, side * 2.4)
 	_caption.size = Vector2(caption_w, caption_h)
 	_caption.position = Vector2(badge_center.x - caption_w * 0.5, badge_center.y + side * 0.6 - caption_h * 0.5)
+	if not show_number: # the name alone, centred under the island and overlapping its foot
+		_caption.position = Vector2((size.x - caption_w) * 0.5, thumbnail_slot.position.y + thumbnail_slot.size.y - caption_h * 1.15)
+		_ring.position = _caption.position - Vector2.ONE * 3.0
+		_ring.size = _caption.size + Vector2.ONE * 6.0
 	title_base_size = base
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_w - caption_h * 0.8, font))
-	# The caption and badge sit over the island art; keep them drawn above it.
-	_caption.z_index = 1
-	_badge.z_index = 2
 
 
 func _place_thumbnail(child: Node) -> void:
@@ -148,6 +161,7 @@ func _place_thumbnail(child: Node) -> void:
 
 
 func _sync_focus() -> void:
+	_badge.visible = show_number
 	_ring.visible = has_focus() or (selected and not _badge_art.visible)
 
 
