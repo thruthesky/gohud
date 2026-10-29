@@ -432,7 +432,10 @@ icons.canonical(&"gear")             # &"settings"
 우승자의 금색 줄, 머리줄), `GoScoreRowStripe` · `GoScoreRowStripeAlt` · `GoScoreRowStripeGold`(긴 순위표의 평평한 줄무늬 줄 —
 `surface` · `surface_soft` 토큰, 1위는 `surface` 를 `warning_fill` 쪽으로 0.28 섞은 연한 금색; 테두리·모서리·그림자 없이 왼쪽 10,
 오른쪽 16 여백이라 간격 0 으로 쌓으면 줄무늬로 읽힌다) · `GoScoreRowLabel` · `GoScoreRowMutedLabel`(본문 글꼴을 중간 굵기, embolden
-0.5 로 — 점수판의 남색 잉크와 순위·도움말용 `muted` 잉크; 외곽선과 글자 크기는 두지 않는다), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
+0.5 로 — 점수판의 남색 잉크와 순위·도움말용 `muted` 잉크; 외곽선과 글자 크기는 두지 않는다), 메인 메뉴의 `GoHeroButton` · `GoGlassButton`(`GoTheme.VAR_HERO_BUTTON` ·
+`VAR_GLASS_BUTTON`: `GoGlyphButton` 용 금색 판과 청록 테두리의 남색 유리 판 — 굵은 제목, 자간을 넓힌 갈색·청록 `subtitle`, 원판(`glyph_disc`) 위의 글리프),
+`GoGlassKey`(`VAR_GLASS_KEY`: 상단 바의 작은 유리 키, 글리프만 또는 글리프와 짧은 글자), `GoGlassDivider`(`VAR_GLASS_DIVIDER`: 그려 둔 8 단위 청록
+`VSeparator` 줄), `GoTile` · `GoTileLit`(로딩 블록, 꺼진 것과 켜진 것). 이 변형이 없는 테마는 기본 타입으로 돌아간다. 게임의 페인티드 HUD 그림(`assets/arcade_light/hud/`:
 플레이어 얼굴, 파워 번개, 상대 배지, 스톱워치, 동그란 일시정지 키, 번개와 같은 화풍으로 gohud 가 그린 안정도 방패)과 터치 그림(`assets/arcade_light/touch/`: ATTRACT ·
 REPULSE · JUMP 키, 스틱 바탕과 손잡이)도 싣는다. 위젯은 `GoUi.skin().widget_art(&"stopwatch")` 처럼 이름으로 꺼내고, 다른
 룩은 모두 `null` 을 돌려준다.

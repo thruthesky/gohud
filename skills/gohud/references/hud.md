@@ -747,7 +747,8 @@ var own := GoGlyphButton.make("Shop", &"", GoTheme.VAR_BUTTON, preload("res://ui
 ```
 
 `glyph` (a texture) · `glyph_icon` (an icon-set name used when `glyph` is empty) · `glyph_texture()` · `glyph_allowance()` ·
-`glyph_rect()` · `fit_label` (`false`) · `fit_base_size` (`0`) · `fitted_font_size()` · `fit_now()`.
+`glyph_rect()` · `subtitle` (`""`) · `subtitle_rect()` · `has_glyph_disc()` · `glyph_disc_rect()` · `fit_label`
+(`false`) · `fit_base_size` (`0`) · `fitted_font_size()` · `fit_now()`.
 
 ```gdscript
 var save := GoGlyphButton.make(tr("SAVE"), GoIconSet.CHECK, GoTheme.VAR_PRIMARY_BUTTON)
@@ -766,6 +767,27 @@ save.fit_label = true                      # a long translation shrinks to fit b
   painted pills) that much padding goes from the far side to the near one, exactly as Magnet Mayhem's `GlossButton` —
   the button grows only past the far padding, so a 56 × 56 glyph-only pill stays 56 wide. A thinner face keeps the
   group centred and the glyph `MIN_EDGE` off its side.
+- 🔤 `subtitle` (`""`) puts a smaller second line under the label: the variation's `subtitle_color` (else the label's),
+  `subtitle_font`, `subtitle_font_size`, `subtitle_gap` (px between the lines; may be negative) and
+  `subtitle_outline_size`. Translated with `atr()` like `text`; the faces grow by its line at the bottom
+  (`subtitle_rect()`, `subtitle_font_size()`, `subtitle_color()`). `fit_label` shrinks both lines by one ratio until
+  both fit. Empty, the button is exactly the one-line key.
+- 🔵 A variation with a `glyph_disc` stylebox draws the glyph centred on that disc at the start side — `glyph_disc_left`
+  px in, `glyph_disc_size` % of the height across (`DISC_SHARE` 0.74), `glyph_disc_drop` px below the middle, the
+  glyph `glyph_disc_glyph` % of the disc
+  (`DISC_GLYPH_SHARE` 0.62) — and starts the text `glyph_disc_gap` px after it, left-aligned (`alignment` goes back to
+  centre when the disc goes). Mirrored right to left. `has_glyph_disc()` · `glyph_disc_rect()`. A look's `glyph_share`
+  constant (percent) sets the plain glyph's share while the export stays at its default, its `glyph_gap` the space
+  between glyph and label (`glyph_gap()`, else `GAP` 8).
+
+```gdscript
+var play := GoGlyphButton.make(tr("PLAY"), GoIconSet.PLAY, GoTheme.VAR_HERO_BUTTON)   # arcade_light's gold plate
+play.subtitle = tr("CAMPAIGN")
+var online := GoGlyphButton.make(tr("MULTIPLAYER"), GoIconSet.MULTIPLAYER, GoTheme.VAR_GLASS_BUTTON)
+online.subtitle = tr("ONLINE BATTLE")
+var gear := GoGlyphButton.make("", GoIconSet.SETTINGS, GoTheme.VAR_GLASS_KEY)        # a top-bar key
+var rule := VSeparator.new(); rule.theme_type_variation = GoTheme.VAR_GLASS_DIVIDER
+```
 
 ## 24. GoSlider — a slider drawn the painted way
 

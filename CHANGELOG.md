@@ -6,6 +6,23 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoGlyphButton.subtitle`** (`""`): a smaller second line under the label, in the variation's `subtitle_color`
+  (else the label's colour), `subtitle_font`, `subtitle_font_size`, `subtitle_gap` and `subtitle_outline_size`;
+  translated with `atr()`, the faces grow by its line, and `fit_label` shrinks both lines by one ratio. Empty, the
+  button is exactly as before. A variation with a **`glyph_disc`** stylebox draws the glyph centred on that disc at the
+  start side (`glyph_disc_left`, `glyph_disc_size` %, `glyph_disc_drop`, `glyph_disc_glyph` %) with the text
+  left-aligned `glyph_disc_gap` after it; a look's `glyph_share` constant (%) sets the plain glyph's share and its
+  `glyph_gap` the space beside it. New `subtitle_rect()`, `subtitle_font_size()`, `subtitle_color()`,
+  `has_glyph_disc()`, `glyph_disc_rect()`, `glyph_gap()`.
+- **arcade_light main-menu keys** — `GoHeroButton` (`GoTheme.VAR_HERO_BUTTON`: the painted gold plate, navy heavy
+  title and glyph on a pale disc, brown-gold letter-spaced subtitle), `GoGlassButton` (`VAR_GLASS_BUTTON`: the navy
+  glass plate with a cyan rim, white title, cyan subtitle, a dark disc), `GoGlassKey` (`VAR_GLASS_KEY`: a small glass
+  top-bar key; with a glyph and a label it is the SIGN IN pill) and `GoGlassDivider` (`VAR_GLASS_DIVIDER`: the
+  painted 8-unit cyan `VSeparator` rule). The art is cut at 1.5 × a 1920 × 1080 design
+  (`assets/arcade_light/painted/menu_art.json`): `hero_gold.png`, `hero_disc.png`, `glass_navy.png`,
+  `glass_disc.png`, `glass_key.png`, `glass_divider.png`.
+- **`GoStyleBoxSprite.bleed`** (`Vector4.ZERO`, texture px): art drawn outside the box — a glow or shadow around a
+  plate stays out of the layout.
 - **arcade_light flat zebra rows** — `GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold`
   (`PanelContainer`): a flat fill of the `surface` token, of `surface_soft`, and of `surface` lerped 0.28 toward
   `warning_fill` (a soft gold first place); no border, corner radius or shadow, content margins 10 left, 16 right, 0

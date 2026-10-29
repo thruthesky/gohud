@@ -847,6 +847,10 @@ bottom edge); `GoSmallLabel` (12 px, ink at 75%) and `GoBarLabel` (11 px); `GoSc
 shadow, padded 10 left and 16 right, so rows stacked with no separation read as stripes) with `GoScoreRowLabel` and
 `GoScoreRowMutedLabel` (the body font at a medium weight, embolden 0.5, in the scoreboard's navy ink and the `muted`
 ink for ranks and helper text; no outline, no font size of their own);
+the main menu's `GoHeroButton` and `GoGlassButton` (`GoTheme.VAR_HERO_BUTTON` / `VAR_GLASS_BUTTON`: a painted gold
+plate and a navy glass plate with a cyan rim for a `GoGlyphButton` — a heavy title, a letter-spaced `subtitle` in
+brown-gold or cyan, the glyph on a `glyph_disc`), `GoGlassKey` (`VAR_GLASS_KEY`: a small glass key of the top bar,
+glyph-only or glyph and a short label) and `GoGlassDivider` (`VAR_GLASS_DIVIDER`: the painted 8-unit cyan `VSeparator` rule);
 `GoScoreLabel` and `GoScoreHeadLabel` (heavy navy text), `GoScoreTitleLabel` and `GoScoreOutlineLabel`
 (heavy white outlined title and badge text), `GoScoreButton`, `GoScorePrimaryButton`, `GoScoreTab`,
 `GoScoreTabSelected` and `GoScoreGoldButton` (the same heavy lettering on blue, green, grey, selected blue and gold keys);
@@ -854,7 +858,9 @@ ink for ranks and helper text; no outline, no font size of their own);
 stage selector plate), `GoArrowButton` (a compact square blue navigation key), `GoGoldButton` (a glossy gold menu action), `GoWhiteButton` and `GoBlackButton` (the pill painted white with an ink label and black with a white one — a "Sign in with Google" / "Sign in with Apple" key; no icon colour, so `GoIconSet.GOOGLE` keeps its colours and the white `GoIconSet.APPLE` reads on black) and `GoHardBadge` (a short red status
 PanelContainer; use a `GoOutlineLabel` inside). `GoSurface.fit_flex_max_height` caps its scrolling list's natural
 height in dp (0: unlimited). `GoSurface.title_width` centres a narrower floating ribbon (0 fills the header),
-`title_height` sets its natural height, and `title_font_size` sets its starting size while preserving the fit floor. `GoGlyphButton.glyph_flip_h` mirrors its glyph without changing its label or layout; `GoTile` and `GoTileLit` (a loading block, unlit
+`title_height` sets its natural height, and `title_font_size` sets its starting size while preserving the fit floor. `GoGlyphButton.glyph_flip_h` mirrors its glyph without changing its label or layout; `GoGlyphButton.subtitle` adds a
+smaller second line (the variation's `subtitle_color` / `subtitle_font` / `subtitle_font_size` / `subtitle_gap`), and a
+variation with a `glyph_disc` stylebox draws the glyph on that disc at the start side with the text left-aligned after it; `GoTile` and `GoTileLit` (a loading block, unlit
 and lit). A theme without them falls back to the base type. It also ships the game's painted HUD art (`assets/arcade_light/hud/`: the
 player's head, the power bolt, the opponents badge, the stopwatch, the round pause key, and a stability shield painted
 for gohud in the bolt's style) and touch art
