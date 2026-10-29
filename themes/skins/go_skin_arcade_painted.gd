@@ -573,8 +573,11 @@ const HUD_ART := ART_ROOT + "hud/"
 const TOUCH_ART := ART_ROOT + "touch/"
 ## Numbered gold, silver and bronze award medals, with ribbon tails and glossy faces.
 const SCORE_ART := ART_ROOT + "score/"
+## The podium leaderboard's art (`GoPodium`, `GoScoreTable`): podium_gold/silver/bronze, laurel_gold/silver/bronze,
+## medal_row_1/2/3, sunburst, confetti.
+const LEADERBOARD_ART := ART_ROOT + "leaderboard/"
 ## The folders `widget_art` looks in, in order.
-const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART]
+const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART, LEADERBOARD_ART]
 ## The sky behind an opaque window, the game's `STAGE_SKY`.
 const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
 ## A selected stage card's gold ring.

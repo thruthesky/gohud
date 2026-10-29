@@ -198,6 +198,12 @@ BASES = {
     "GoWhiteButton": "Button", "GoBlackButton": "Button",
     "GoScoreRowStripe": "PanelContainer", "GoScoreRowStripeAlt": "PanelContainer",
     "GoScoreRowStripeGold": "PanelContainer", "GoScoreRowLabel": "Label", "GoScoreRowMutedLabel": "Label",
+    # 🏆 The podium leaderboard (GoScoreTable, GoBestBar, GoPodium).
+    "GoScoreTable": "PanelContainer", "GoScoreTableHead": "PanelContainer", "GoScoreTableHeadLabel": "Label",
+    "GoScoreTableRow": "PanelContainer", "GoScoreTableRowGold": "PanelContainer",
+    "GoScoreTableRowOwn": "PanelContainer", "GoScoreTableLabel": "Label",
+    "GoBestBar": "PanelContainer", "GoBestBarLabel": "Label", "GoBestBarEntry": "Button",
+    "GoPodiumName": "Label", "GoPodiumValue": "Label",
 }
 # 🦓 The flat zebra rows' padding (left, top, right, bottom): a slim lead-in before the rank, a little more before the
 #    right edge's value, nothing above or below — the row's height is its content's, the stripes touch.
@@ -468,6 +474,43 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         put(type_name + "/fonts/font", "painted_row_font")
         setT(type_name + "/colors/font_color", C(ink))
         setT(type_name + "/constants/outline_size", 0)
+    # 🏆 **The podium leaderboard** (`GoScoreTable`, `GoBestBar`, `GoPodium`): a white card with a navy rim and a deep
+    #    blue lip, a glossy blue head bar (white lettering, light-blue column rules), glossy pale rows — gold for the
+    #    first place, cyan in a cyan rim for the player's own — and a glossy pale-blue bar for the player's best with a
+    #    white-blue inset pill. Every text is the scoreboard's heavy navy face; the widgets size it.
+    board_ink = (0.004, 0.012, 0.224, 1.0)                                   # #010339 (the rows' lettering)
+    board_rim = (0.035, 0.153, 0.42, 1.0)                                    # #09276b
+    put("GoScoreTable/styles/panel", box("painted_GoScoreTable", WHITE, 14, 3, board_rim, margin_h=19.0,
+                                         margin_v=(10.0, 12.0), bottom=6))
+    put("GoScoreTableHead/styles/panel", arcade("painted_GoScoreTableHead", (0.137, 0.545, 0.96, 1.0),
+        (0.063, 0.416, 0.80, 1.0), (0.10, 0.45, 0.88, 1.0), radius=9, edge=1, margins=(0, 4, 0, 4), shine=0.45))
+    setT("GoScoreTableHead/colors/separator_color", C((0.33, 0.70, 0.99, 1.0)))
+    for type_name, top, bottom, rim, edge in (
+            ("GoScoreTableRow", (0.95, 0.975, 0.99, 1.0), (0.83, 0.895, 0.955, 1.0), (0.64, 0.76, 0.87, 1.0), 2),
+            ("GoScoreTableRowGold", (0.995, 0.96, 0.55, 1.0), (0.995, 0.80, 0.14, 1.0), (0.99, 0.68, 0.07, 1.0), 2),
+            ("GoScoreTableRowOwn", (0.84, 0.95, 1.0, 1.0), (0.66, 0.89, 0.995, 1.0), (0.18, 0.78, 0.99, 1.0), 3)):
+        put(type_name + "/styles/panel", arcade("painted_" + type_name, top, bottom, rim, radius=9, edge=edge,
+                                                margins=(8, 0, 8, 0), shine=0.35))
+    put("GoBestBar/styles/panel", arcade("painted_GoBestBar", (0.95, 0.99, 1.0, 1.0), (0.66, 0.92, 0.99, 1.0),
+        (0.0, 0.17, 0.48, 1.0), radius=16, edge=3, margins=(40, 3, 14, 3), shine=0.8))
+    for state in ("normal", "hover", "pressed", "hover_pressed"):
+        down = state in ("pressed", "hover_pressed")
+        put("GoBestBarEntry/styles/" + state, arcade("painted_GoBestBarEntry_" + state, (0.955, 0.98, 0.995, 1.0),
+            (0.74, 0.89, 0.99, 1.0), (0.34, 0.75, 0.98, 1.0), radius=10, edge=2, margins=(10, 2, 10, 2),
+            shine=0.5, pressed=down))
+    put("GoBestBarEntry/styles/disabled", "painted_GoBestBarEntry_normal")
+    put("GoBestBarEntry/styles/focus", "painted_empty")
+    for type_name, size in (("GoScoreTableHeadLabel", 19), ("GoScoreTableLabel", 22), ("GoBestBarLabel", 23),
+                            ("GoBestBarEntry", 25), ("GoPodiumName", 19), ("GoPodiumValue", 24)):
+        put(type_name + "/fonts/font", "painted_score_font")
+        setT(type_name + "/font_sizes/font_size", size)
+        head = type_name == "GoScoreTableHeadLabel"
+        setT(type_name + "/colors/font_color", C(WHITE if head else board_ink))
+        setT(type_name + "/colors/font_outline_color", C(board_rim))
+        setT(type_name + "/constants/outline_size", 3 if head else 0)
+    setT("GoPodiumName/fonts/font", 'SubResource("painted_row_font")')
+    for slot in FONT_STATES:
+        setT("GoBestBarEntry/colors/" + slot, C(board_ink))
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,

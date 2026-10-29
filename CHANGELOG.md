@@ -6,6 +6,25 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **`GoPodium`** (`Control`): a leaderboard's top three on painted blocks — gold in the middle and tallest, silver
+  left, bronze right — a laurel medal over each, a name plate per block (`GoPodiumName` over `GoPodiumValue`), and a
+  sunburst and confetti behind (`show_decor`). `set_places([{name, value}, …])`, index 0 = 1st; a missing, `null` or
+  `{}` entry hides that place. It draws its design canvas (`DESIGN_SIZE` 1035 × 256) as large as fits, standing on its
+  bottom edge; the minimum size is `DESIGN_SIZE × minimum_scale` (0.75). Texts fit their plate
+  (`GoStyle.fit_font_size`), then ellipsize. Art by `widget_art`: `podium_gold/silver/bronze`,
+  `laurel_gold/silver/bronze`, `sunburst`, `confetti`; without it, token-coloured blocks and numbered discs.
+- **`GoScoreTable`** (`PanelContainer`, `GoScoreTable`): a white, navy-rimmed ranking card — a blue head bar
+  (`GoScoreTableHead`, `GoScoreTableHeadLabel`, two column rules) over rows it scrolls itself (`scroll: GoScroll`,
+  vertical only; `rows: VBoxContainer`). `set_columns(rank, player, value)`, `add_row(rank, name, value, own) ->
+  Control`, `clear_rows()`, `row_count()`, `row_height` (44), `row_gap` (4), `font_size`, `head_font_size`,
+  `medal_size`. Rows are `GoScoreTableRow`, rank 1 `GoScoreTableRowGold`, the player's own `GoScoreTableRowOwn` (wins
+  over gold), text `GoScoreTableLabel`; ranks 1–3 show `medal_row_1/2/3` left of "#n". Texts fit their column.
+- **`GoBestBar`** (`PanelContainer`, `GoBestBar`): the player's best pinned under a board — "YOUR BEST"
+  (`label_text`, `GoBestBarLabel`), a pill tap target (`entry_button`, `GoBestBarEntry`, signal `entry_pressed`)
+  holding rank, name and value (`set_entry`) or "—  text  —" (`set_empty`, `is_empty()`), and a green PLAY
+  `GoGlyphButton` (`play_button`, primary with the play glyph, signal `play_pressed`).
+- **arcade_light leaderboard art folder**: `GoSkinArcadePainted.ART_FOLDERS` gains `assets/arcade_light/leaderboard/`.
+
 - **arcade_light flat zebra rows** — `GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold`
   (`PanelContainer`): a flat fill of the `surface` token, of `surface_soft`, and of `surface` lerped 0.28 toward
   `warning_fill` (a soft gold first place); no border, corner radius or shadow, content margins 10 left, 16 right, 0
