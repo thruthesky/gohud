@@ -40,13 +40,18 @@ var _poll_left := 0.0
 ## The window before the first `simulate()` with a `size` (zero: not resized), put back by `clear_simulation()`.
 var _real_size := Vector2i.ZERO
 var _real_min_size := Vector2i.ZERO
+var _curve: Dictionary = {}
+## The monitor the window was last on (`window_get_current_screen`), to notice a move to another one.
+var _screen := -1
 
 
 func _ready() -> void:
 	if Engine.is_editor_hint(): return
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_screen = DisplayServer.window_get_current_screen()
 	_apply(true)
 	get_tree().root.size_changed.connect(_on_size_changed)
+	get_tree().root.dpi_changed.connect(_on_size_changed)
 
 
 ## 🔤 A `TranslationServer.set_locale()` from anywhere puts the new language's CJK font first (`GoUi.set_font_locale`,
@@ -54,10 +59,20 @@ func _ready() -> void:
 ## hears this notification. It also registers the new language's built-in translation (`GoUi.add_locale_translations`:
 ## only the current language's is loaded) — this autoload sits above the game's screens, so it is in before they
 ## re-translate.
+##
+## 🖥 A window moved to another monitor keeps its size, so no resize says the dpi or the OS scale changed: a move that lands
+## on another screen (`window_get_current_screen`) re-applies the scale. `Window.dpi_changed` covers scale changes on the
+## same monitor on macOS and Wayland too. Events, not frames — nothing is read while the window stays put.
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_TRANSLATION_CHANGED and not Engine.is_editor_hint():
+	if Engine.is_editor_hint(): return
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		GoUi.add_locale_translations(TranslationServer.get_locale())
 		GoUi.set_font_locale(TranslationServer.get_locale())
+	elif what == NOTIFICATION_WM_POSITION_CHANGED and is_inside_tree():
+		var screen := DisplayServer.window_get_current_screen()
+		if screen != _screen:
+			_screen = screen
+			_apply(false)
 
 
 ## The current breakpoint.
@@ -74,9 +89,16 @@ func short_dp() -> float:
 	return _short_dp
 
 
-## How many dp one unit is (= the current readability gain).
+## How many OS dp one unit is (`GoScale.curve`'s `dp_per_unit`: the readability gain, × the player's `user_scale`, × a
+## big desktop window's `GoConfig.reference_short_side` term).
 func dp_per_unit() -> float:
-	return GoScale.gain_for(_bp, GoUi.is_handheld_platform(), _last_px.x < _last_px.y)
+	return float(_curve.get("dp_per_unit", 1.0))
+
+
+## The last scale decision (`GoScale.curve()`'s result: the factor, the OS scale, the breakpoint, which limit applied) —
+## for logs and checks. Worked out whether or not `GoConfig.scale_enabled` lets it set the window's factor.
+func scale_curve() -> Dictionary:
+	return _curve
 
 
 ## The maximum form width of the current breakpoint (dp). 0 is no limit.
@@ -196,15 +218,14 @@ func _apply(force: bool) -> void:
 	var window := get_tree().root
 	# A run with no window, headless and the like — the project's base resolution is used.
 	var px := _window_px()
-	var scale := GoScale.display_scale(
-		DisplayServer.screen_get_scale(), DisplayServer.screen_get_dpi(), DisplayServer.screen_get_size())
-	# A simulated device's dpi decides its breakpoint too, its window standing for the whole screen.
-	var device := GoScale.simulated()
-	if device.has("dpi"): scale = GoScale.display_scale(0.0, roundi(float(device["dpi"])), px)
+	# One decision for the breakpoint and the factor (`GoScale.curve`); a simulated device's keys stand in, its window
+	# standing for the whole screen.
+	var factor_before := float(_curve.get("factor", 0.0))
+	_curve = GoScale.curve(GoScale.device_inputs(px))
 	var resized := px != _last_px
-	_short_dp = float(mini(px.x, px.y)) / scale
+	_short_dp = float(_curve["short_dp"])
 	_last_px = px
-	var bp := GoScale.breakpoint_for_dp(_short_dp)
+	var bp: GoScale.Bp = _curve["bp"]
 	var changed := bp != _bp
 	_bp = bp
 	GoUi.set_mobile_type(bp == GoScale.Bp.MOBILE)
@@ -222,12 +243,12 @@ func _apply(force: bool) -> void:
 			window.content_scale_factor = per_inch
 			_applying = false
 	elif GoUi.config.scale_enabled:
-		var gain := GoScale.gain_for(bp, GoUi.is_handheld_platform(), px.x < px.y)
-		var factor := GoScale.scale_factor_for(scale, gain)
-			# No boundary crossed and the window size unchanged: leave it alone — the font atlas gets re-baked every time.
-		if force or changed or px != window.content_scale_size:
+		var factor := float(_curve["factor"])
+		# No boundary crossed, the window size and the curve's factor unchanged (a new monitor or `user_scale` changes it
+		# with no resize): leave it alone — the font atlas gets re-baked every time.
+		if force or changed or px != window.content_scale_size or not is_equal_approx(factor_before, factor):
 			_applying = true
-				# Keeping base equal to the window pixels makes the stretch ratio 1, so the shrinking is left to factor alone.
+			# Keeping base equal to the window pixels makes the stretch ratio 1, so the shrinking is left to factor alone.
 			window.content_scale_size = px
 			window.content_scale_factor = factor
 			_applying = false

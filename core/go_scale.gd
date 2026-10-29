@@ -8,6 +8,13 @@
 ## So the numbers written into scenes and themes **are dp** — the recommended figures from Material, Apple HIG
 ## and the web can be used without converting. A body size of 16 shows as 17.6sp on a phone.
 ##
+## ## 🖥 Desktop: the viewing distance (opt in — `GoConfig.reference_short_side`)
+## Pure dp makes a desktop UI a fixed number of OS points: on a 27" 4K monitor at 100 % that is half the size a 1080p
+## monitor shows at the same distance. With a reference short side (1080 for a 1920×1080 design) a desktop window taller
+## than it draws the same canvas larger — the UI keeps its share of the screen, the OS scale stays a floor and the
+## breakpoint stays the OS-dp one. Handhelds never take this term: their dp is already the physical size in the hand.
+## The whole decision is one function, `curve()`, and `GoRuntime` and any app that owns its own scale call it.
+##
 ## ## 🛑 It is off by default
 ## This changes the window's `content_scale_factor` — it affects the coordinate space of the whole project.
 ## Switched on silently in someone else's project it throws their entire existing layout off. Whoever turns
@@ -38,8 +45,17 @@ const HANDHELD_MAX_INCHES := 13.0
 const HANDHELD_BASE_DPI := 160.0
 const DESKTOP_BASE_DPI := 96.0
 
+## The display servers (`DisplayServer.get_name()`) whose `screen_get_scale()` is the OS display scale of a desktop window.
+## Everywhere else the engine returns a constant 1.0 (Windows, X11 — it is not implemented there), so the scale is read
+## from the dpi instead (`display_scale` with a raw scale of 0): Windows reports its effective dpi, 96 × the scale the user
+## picked. Android and iOS are left out on purpose — there it is no UI scale (a phone at density 300 reports 0.90), and a
+## handheld is sized by its dpi anyway.
+const SCALE_REPORTING_SERVERS: Array[String] = ["macOS", "Wayland", "web"]
+
 ## The device `GoRuntime.simulate()` stands in (empty: the real one).
 static var _device: Dictionary = {}
+## How many times `simulate()` has run — a scale owner compares one int per frame to notice a new simulated device.
+static var _serial := 0
 
 
 # ── The device — real, or simulated for tests and screenshots ──
@@ -49,16 +65,26 @@ static var _device: Dictionary = {}
 ## window in pixels). A key left out reads the real device (no `insets`: none). Empty: the real device again.
 ## The physical obstructions (`GoSafeArea.obstructions`) read `platform` ("android" | "ios"), `cutouts` (Array[Rect2],
 ## window pixels — an Android device given only these gets them as its insets too), `corner_radius` (pixels; left out:
-## the platform's `GoConfig` default), `screen_scale` (iOS pixels per point) and `notch_side` (`SIDE_LEFT` | `SIDE_RIGHT`
-## — which long side a landscape iPhone's island is on).
+## the platform's `GoConfig` default), `screen_scale` (pixels per point: iOS's UIKit scale, and on a desktop the OS
+## display scale — 2.0 for "200 %" or a retina screen) and `notch_side` (`SIDE_LEFT` | `SIDE_RIGHT` — which long side a
+## landscape iPhone's island is on).
+## The scale curve (`device_inputs`, `curve`) reads `size`, `dpi`, `handheld` and `screen_scale`; a simulated window
+## stands for its whole screen. A 4K desktop monitor at 200 %:
+## `{"size": Vector2i(3840, 2160), "handheld": false, "screen_scale": 2.0}`.
 ## 🛑 This only stores it — `GoRuntime.simulate()` also resizes the window and re-applies the scale.
 static func simulate(device: Dictionary) -> void:
 	_device = device.duplicate()
+	_serial += 1
 
 
 ## The simulated device (empty when it is the real one).
 static func simulated() -> Dictionary:
 	return _device
+
+
+## Bumped by every `simulate()` call: a scale owner that polls compares this one int instead of the dictionary.
+static func simulation_serial() -> int:
+	return _serial
 
 
 ## Whether the screen is sized as a handheld's (`PER_INCH`) and keeps a safe area: a simulated device's `handheld`,
@@ -137,13 +163,123 @@ static func is_handheld_size(screen_px: Vector2i, dpi: int) -> bool:
 ##    reports 0.90 (expected 1.875). Use that value and a 384dp phone is judged an 800dp tablet, shrinking body
 ##    text down to 8sp. So handhelds are computed **from DPI alone**.
 ##
-## 🛑 On desktop it is the other way round: `screen_get_scale()` is accurate (macOS retina 2.0). Windows·X11 have
-##    it unimplemented and return 0, and only then does it fall back to DPI.
-static func display_scale(raw_scale: float, dpi: int, screen_px := Vector2i.ZERO) -> float:
-	if is_handheld_size(screen_px, dpi): return maxf(1.0, float(dpi) / HANDHELD_BASE_DPI)
+## 🛑 On desktop it is the other way round: `screen_get_scale()` is accurate where the engine implements it (macOS
+##    retina 2.0, Wayland, the web — `SCALE_REPORTING_SERVERS`). On Windows and X11 the engine returns a constant 1.0, so
+##    a caller passes [param raw_scale] through `reported_scale()` first: 0 there, and the scale comes from the dpi (Windows'
+##    effective dpi is 96 × the OS scale).
+## [param native] (an Android or iOS app) is a handheld whatever its diagonal — a 14.6" Android tablet is sized by its
+## dpi too, never by the engine's Android `screen_get_scale()`.
+static func display_scale(raw_scale: float, dpi: int, screen_px := Vector2i.ZERO, native := false) -> float:
+	if native or is_handheld_size(screen_px, dpi): return maxf(1.0, float(dpi) / HANDHELD_BASE_DPI)
 	if raw_scale > 0.0: return raw_scale
 	if dpi > 0: return maxf(1.0, float(dpi) / DESKTOP_BASE_DPI)
 	return 1.0
+
+
+## [param raw_scale] (`screen_get_scale()`) where [param server] (`DisplayServer.get_name()`) reports the OS scale
+## (`SCALE_REPORTING_SERVERS`), else 0 — "unknown, read the dpi" for `display_scale`.
+static func reported_scale(server: String, raw_scale: float) -> float:
+	return raw_scale if server in SCALE_REPORTING_SERVERS else 0.0
+
+
+# ── The scale curve — one function from what the device reports to the content scale factor ──
+
+## 🧪 What `curve()` reads, from the simulated device where it names a value (`simulate`), else the real one:
+## `window` (Vector2i, px — a simulated `size`, else [param window_px]), `screen` (Vector2i, px — a simulated window stands
+## for its whole screen), `dpi` (float), `raw_scale` (float — the OS scale as reported: a simulated `screen_scale`, else
+## `reported_scale()` of the engine's; 0 = not reported, read the dpi), `server` (`DisplayServer.get_name()`, for logs) and
+## `native` (bool — a simulated `handheld`/`mobile`, else an Android or iOS app), and `desktop` (bool — an explicit
+## desktop platform/device, whose effective OS DPI must never be mistaken for physical panel DPI).
+## [param window_px] is the real window (the caller knows its fallback for a run with no window).
+static func device_inputs(window_px: Vector2i) -> Dictionary:
+	var d := _device
+	var window: Vector2i = d.get("size", window_px)
+	var inputs := {
+		"window": window,
+		"screen": window if d.has("size") else DisplayServer.screen_get_size(),
+		"dpi": float(d.get("dpi", DisplayServer.screen_get_dpi())),
+		"raw_scale": reported_scale(DisplayServer.get_name(), DisplayServer.screen_get_scale()),
+		"server": DisplayServer.get_name(),
+		"native": GoUi.is_handheld_platform(),
+		"desktop": OS.has_feature("pc"),
+	}
+	if d.has("screen_scale"):
+		inputs["raw_scale"] = float(d["screen_scale"])
+	elif d.has("dpi"):
+		# A simulated dpi with no scale is a Windows-style report: the scale is read from the dpi.
+		inputs["raw_scale"] = 0.0
+	if d.has("handheld"):
+		inputs["native"] = bool(d["handheld"])
+		inputs["desktop"] = not bool(d["handheld"])
+	elif d.has("mobile"):
+		inputs["native"] = bool(d["mobile"])
+		inputs["desktop"] = not bool(d["mobile"])
+	return inputs
+
+
+## 🖥 The viewing-distance term of a desktop window: its short side over `GoConfig.reference_short_side` (px), never below
+## 1 and never above `GoConfig.max_window_scale`. 1 when the reference is 0 (off — pure dp, the default).
+##
+## Unity's CanvasScaler "Scale With Screen Size" (match the short side), Unreal's DPI curve on the short side: a window
+## twice the reference's height shows the UI twice as many pixels tall, so the UI keeps its share of the screen — a 27"
+## 4K monitor at arm's length shows the HUD the size a 1080p one does, instead of half of it.
+static func window_scale_for(short_px: float) -> float:
+	var settings := GoUi.config
+	if settings.reference_short_side <= 0.0 or short_px <= 0.0: return 1.0
+	return clampf(short_px / settings.reference_short_side, 1.0, maxf(1.0, settings.max_window_scale))
+
+
+## 📏 **The scale curve** — the whole decision, from [param inputs] (`device_inputs()`: `window`, `screen`, `dpi`,
+## `raw_scale` — the REPORTED OS scale, 0 when the platform reports none — `native`, and optionally `desktop`) to the
+## content scale factor. Returns `os_scale` (px per dp), `short_dp`, `bp`,
+## `handheld`, `gain`, `window_scale`, `user_scale`, `factor` (`Window.content_scale_factor`, with `content_scale_size` =
+## the window), `logical` (Vector2, the canvas in units), `dp_per_unit` (= factor ÷ os_scale) and `clamp` ("" or which
+## limit set the factor: "max_window", "min_canvas", "dp_floor").
+##
+##   handheld (native, or unknown device under 13")  factor = dpi/160 × gain × user        — dp: the size in the hand
+##   desktop / laptop / TV                            factor = max(OS scale, window short side ÷ reference) × gain × user
+##
+## · The breakpoint is decided in **OS dp** (the window's short side ÷ the OS scale) before the viewing-distance term, so a
+##   bigger monitor never changes the layout class — only how large the same canvas is drawn.
+## · The OS scale is a floor, not a multiplier: a user who picked 200 % on a 4K screen gets at least the size they asked
+##   for, and the window term gets them at least the reference look.
+## · `GoConfig.user_scale` (the player's UI size) multiplies the result, inside the same limits.
+## · Limits, in order: the canvas short side never below `GoConfig.min_canvas_short` units (the narrowest layout the app
+##   supports); then one unit never below one OS dp (`gain × user ≥ 1` — a 48-unit button stays a 48 dp touch target),
+##   which wins over the first.
+static func curve(inputs: Dictionary) -> Dictionary:
+	var settings := GoUi.config
+	var window: Vector2i = inputs.get("window", Vector2i.ZERO)
+	var screen: Vector2i = inputs.get("screen", window)
+	var dpi := roundi(float(inputs.get("dpi", 0.0)))
+	var native := bool(inputs.get("native", false))
+	var raw := float(inputs.get("raw_scale", 0.0))
+	# Windows' dpi is effective OS DPI, not panel ppi: a 15.6-inch laptop at 200% can look <13 inches by this math.
+	# Explicit desktop identity wins over the diagonal heuristic; unknown devices retain the historical fallback.
+	var desktop := bool(inputs.get("desktop", false)) and not native
+	var density_screen := Vector2i.ZERO if desktop else screen
+	var handheld := native or (not desktop and is_handheld_size(screen, dpi))
+	var os_scale := display_scale(raw, dpi, density_screen, native)
+	var short_px := float(maxi(1, mini(window.x, window.y)))
+	var short_dp := short_px / os_scale
+	var bp := breakpoint_for_dp(short_dp)
+	var gain := gain_for(bp, native, window.x < window.y)
+	var user := maxf(0.01, settings.user_scale)
+	var window_scale := 1.0 if handheld else window_scale_for(short_px)
+	var limit := ""
+	if not handheld and settings.reference_short_side > 0.0 \
+			and short_px / settings.reference_short_side > maxf(1.0, settings.max_window_scale):
+		limit = "max_window"
+	var factor := maxf(os_scale, window_scale) * gain * user
+	if settings.min_canvas_short > 0.0 and short_px / factor < settings.min_canvas_short:
+		factor = short_px / settings.min_canvas_short
+		limit = "min_canvas"
+	if factor < os_scale:
+		factor = os_scale
+		limit = "dp_floor"
+	return {"os_scale": os_scale, "short_dp": short_dp, "bp": bp, "handheld": handheld, "gain": gain,
+		"window_scale": window_scale, "user_scale": user, "factor": factor, "logical": Vector2(window) / factor,
+		"dp_per_unit": factor / os_scale, "clamp": limit}
 
 
 ## The scale that lines the UI coordinate space up with dp. Feed it straight into `Window.content_scale_factor`.
