@@ -44,10 +44,33 @@ const VAR_PILL_LABEL := &"GoBoardPillLabel"
 ## The heading's size while loading, as a share of its size otherwise ("LOADING..." is a caption, not a headline).
 const LOADING_HEADING_SHARE := 0.6
 ## The header title's size as a share of the board title's, and the header icon's height as a share of the title's.
-const HEADER_TITLE_SHARE := 0.75
-const HEADER_ICON_SHARE := 1.2
+const HEADER_TITLE_SHARE := 0.92
+const HEADER_ICON_SHARE := 1.25
+## The header pill's clock as a share of the pill's words.
+const PILL_ICON_SHARE := 2.0
+## The background decor ([member show_decor]): each mark's centre as shares of the card's width and height, its size
+## as a share of the card's height, and whether it is a trophy (else a star). Kept to the card's left and right
+## edges so it never sits behind the words.
+const DECOR := [
+	[0.074, 0.11, 0.072, false], [0.168, 0.19, 0.123, true], [0.117, 0.37, 0.036, false],
+	[0.074, 0.65, 0.065, false], [0.132, 0.87, 0.043, false], [0.806, 0.2, 0.058, false],
+	[0.929, 0.096, 0.043, false], [0.893, 0.42, 0.138, true], [0.9, 0.795, 0.043, false],
+	[0.82, 0.9, 0.058, false],
+]
+## The decor's ink: the info token at this opacity (a faint pale blue on the card).
+const DECOR_ALPHA := 0.13
+## A `GoBoardTitle` heading's size as a share of the board title's (the empty weekly card's NO WINS YET stands a
+## little bigger than the board's own title).
+const BOARD_HEADING_SHARE := 1.12
 ## The button's words as a share of its height (they shrink from there to fit).
 const BUTTON_FONT_SHARE := 0.42
+## How far the body tucks up under the heading, as a share of the heading's font size (the display face has a
+## deep descent; the painted cards set the body right under the heading's letters).
+const HEADING_TUCK_SHARE := 0.44
+## How far the heading rises into the space over its letters (the display face's tall line), as a share of its size.
+const HEADING_LIFT_SHARE := 0.4
+## How much of the header title's line box is trimmed above and below its letters, as a share of its size.
+const HEADER_TITLE_TRIM_SHARE := 0.25
 
 ## The picture in the middle. Null: none (the heading moves up).
 @export var illustration: Texture2D:
@@ -111,8 +134,21 @@ const BUTTON_FONT_SHARE := 0.42
 		button_size = value
 		_sync()
 
+## Faint stars and trophies scattered over the card's background, as on the painted empty-board cards. Off by default.
+@export var show_decor := false:
+	set(value):
+		show_decor = value
+		queue_redraw()
+
+## The heading's size as a share of its look's (a long line, such as an error, reads smaller than a short headline;
+## it still shrinks and then wraps to fit the card).
+@export_range(0.3, 1.5, 0.01) var heading_scale := 1.0:
+	set(value):
+		heading_scale = value
+		_queue_fit()
+
 ## The space between the card's rim and its content, dp.
-@export var padding := 32.0:
+@export var padding := 20.0:
 	set(value):
 		padding = value
 		_sync()
@@ -126,6 +162,8 @@ var header_pill_label: Label
 var picture: TextureRect
 var ring: Ring
 var heading_label: Label
+var _heading_box: MarginContainer
+var _header_title_box: MarginContainer
 var body_label: Label
 var button: GoGlyphButton
 var _content: MarginContainer
@@ -221,8 +259,15 @@ func _init() -> void:
 	ring.name = "Ring"
 	ring.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	stack.add_child(ring)
+	# The heading sits in a box whose bottom margin pulls the body up under the display face's deep descent.
+	_heading_box = MarginContainer.new()
+	_heading_box.name = "HeadingBox"
+	_heading_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stack.add_child(_heading_box)
 	heading_label = _label("Heading", VAR_HEADING)
-	stack.add_child(heading_label)
+	# A heading too long for the card at the fit floor wraps instead of widening the card.
+	heading_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_heading_box.add_child(heading_label)
 	body_label = _label("Body", VAR_BODY)
 	body_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	stack.add_child(body_label)
@@ -268,6 +313,43 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_queue_fit)
 
 
+func _draw() -> void:
+	if not show_decor: return
+	var ink := GoUi.color(GoTheme.INFO)
+	ink.a *= DECOR_ALPHA
+	for mark in DECOR:
+		var at := Vector2(size.x * mark[0], size.y * mark[1])
+		var mark_size: float = size.y * mark[2]
+		if mark[3]: _draw_trophy(at, mark_size, ink)
+		else: _draw_star(at, mark_size, ink)
+
+
+func _draw_star(at: Vector2, mark_size: float, ink: Color) -> void:
+	var points := PackedVector2Array()
+	for index in 10:
+		var radius := mark_size * (0.5 if index % 2 == 0 else 0.23)
+		points.append(at + Vector2.from_angle(-PI * 0.5 + PI * index / 5.0) * radius)
+	draw_colored_polygon(points, ink)
+
+
+## A plain trophy silhouette: a bowl, two handles, a stem and a foot. The parts never overlap, so the faint ink stays
+## even.
+func _draw_trophy(at: Vector2, mark_size: float, ink: Color) -> void:
+	var s := mark_size
+	var bowl := PackedVector2Array()
+	const ARC := 10
+	for step in ARC + 1:
+		var angle := PI * step / ARC
+		bowl.append(at + Vector2(0.3 * cos(angle), -0.5 + 0.52 * sin(angle)) * s)
+	draw_colored_polygon(bowl, ink)
+	for side in [-1.0, 1.0]:
+		var centre := at + Vector2(0.3 * side, -0.32) * s
+		var start := -PI * 0.5 if side > 0.0 else PI * 0.5
+		draw_arc(centre, 0.14 * s, start, start + PI, 12, ink, 0.07 * s, true)
+	draw_rect(Rect2(at + Vector2(-0.06, 0.02) * s, Vector2(0.12, 0.26) * s), ink)
+	draw_rect(Rect2(at + Vector2(-0.24, 0.28) * s, Vector2(0.48, 0.16) * s), ink)
+
+
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_RESIZED, NOTIFICATION_TRANSLATION_CHANGED, NOTIFICATION_THEME_CHANGED: _queue_fit()
@@ -283,6 +365,7 @@ func _sync() -> void:
 	heading_label.text = heading
 	heading_label.theme_type_variation = heading_variation
 	heading_label.visible = not heading.is_empty()
+	_heading_box.visible = heading_label.visible
 	body_label.text = body
 	body_label.visible = not body.is_empty()
 	button.text = button_text
@@ -309,8 +392,12 @@ func fit_now() -> void:
 	if not is_inside_tree() or size.x <= 0.0: return
 	var face := get_theme_stylebox(&"panel")
 	var inner := size.x - (face.get_minimum_size().x if face != null else 0.0)
-	var base := float(_base_size(heading_label)) * (LOADING_HEADING_SHARE if loading else 1.0)
+	var base := float(_base_size(heading_label)) * (LOADING_HEADING_SHARE if loading else 1.0) * heading_scale
+	if heading_variation == VAR_TITLE: base *= BOARD_HEADING_SHARE
 	_fit_to(heading_label, int(base), inner - padding * 2.0)
+	var heading_size := heading_label.get_theme_font_size(&"font_size")
+	_heading_box.add_theme_constant_override(&"margin_top", -roundi(heading_size * HEADING_LIFT_SHARE))
+	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(heading_size * HEADING_TUCK_SHARE))
 	if not header.visible: return
 	var title_base := int(_base_size(header_title) * HEADER_TITLE_SHARE)
 	var strip := header.get_theme_stylebox(&"panel")
@@ -318,9 +405,12 @@ func fit_now() -> void:
 	if header_icon.visible: room -= title_base * (HEADER_ICON_SHARE + 0.2)
 	if header_pill.visible: room -= header_pill.get_combined_minimum_size().x + 16
 	_fit_to(header_title, title_base, room)
-	header_icon.custom_minimum_size = Vector2.ONE * header_title.get_theme_font_size(&"font_size") * HEADER_ICON_SHARE
+	var title_size := header_title.get_theme_font_size(&"font_size")
+	header_icon.custom_minimum_size = Vector2.ONE * title_size * HEADER_ICON_SHARE
+	for side in [&"margin_top", &"margin_bottom"]:
+		_header_title_box.add_theme_constant_override(side, -roundi(title_size * HEADER_TITLE_TRIM_SHARE))
 	var pill_size := header_pill_label.get_theme_font_size(&"font_size")
-	header_pill_icon.custom_minimum_size = Vector2.ONE * pill_size * 1.1
+	header_pill_icon.custom_minimum_size = Vector2.ONE * pill_size * PILL_ICON_SHARE
 
 
 func _base_size(label: Label) -> int:
@@ -370,8 +460,15 @@ func _make_header() -> PanelContainer:
 	header_title.theme_type_variation = VAR_TITLE
 	header_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	header_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(header_title)
+	# The title's line box is far taller than its letters; the box trims it so the strip hugs the icon.
+	_header_title_box = MarginContainer.new()
+	_header_title_box.name = "TitleBox"
+	_header_title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_header_title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(_header_title_box)
+	_header_title_box.add_child(header_title)
 	header_pill = PanelContainer.new()
 	header_pill.name = "Pill"
 	header_pill.theme_type_variation = VAR_PILL

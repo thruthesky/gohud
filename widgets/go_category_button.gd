@@ -31,9 +31,10 @@ const GAP := 6.0
 ## The chevron's height as a share of the button's height, and its distance from the far edge.
 const CHEVRON_SHARE := 0.4
 const CHEVRON_INSET := 0.1
-## The words break onto two lines when one line would have to shrink below this share of the look's size (1.0: as
-## soon as one line would shrink at all — FASTEST / CLEARS stands as big as WEEKLY WINS, as on the painted board).
-const WRAP_BELOW := 1.0
+## The words break onto two lines when one line would have to shrink below this share of the look's size, or would
+## overflow even at the fit floor. Above it one line shrinks to fit, as on the painted board (WEEKLY WINS and
+## ELIMINATIONS stand on one line, FASTEST / CLEARS breaks).
+const WRAP_BELOW := 0.78
 ## The faces that place the words.
 const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]
 
@@ -234,7 +235,8 @@ func _fit_words() -> void:
 		return
 	var single := GoStyle.fit_font_size(PackedStringArray([words]), base, room, font)
 	var size_now := single
-	if single < floori(base * WRAP_BELOW) and words.strip_edges().contains(" "):
+	var spills := GoStyle.row_width(font, PackedStringArray([words]), single) > room
+	if (single < floori(base * WRAP_BELOW) or spills) and words.strip_edges().contains(" "):
 		var two := GoStyle.fit_font_size(PackedStringArray([_balanced_split(words, font, base)]), base, room, font)
 		# Two lines must also stand in the plate's height.
 		var face := get_theme_stylebox(&"normal")

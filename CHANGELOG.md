@@ -12,7 +12,9 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `{}` entry hides that place. It draws its design canvas (`DESIGN_SIZE` 1035 × 256) as large as fits, standing on its
   bottom edge; the minimum size is `DESIGN_SIZE × minimum_scale` (0.75). Texts fit their plate
   (`GoStyle.fit_font_size`), then ellipsize. Art by `widget_art`: `podium_gold/silver/bronze`,
-  `laurel_gold/silver/bronze`, `sunburst`, `confetti`; without it, token-coloured blocks and numbered discs.
+  `laurel_gold/silver/bronze`, `sunburst`, `confetti`; without it, token-coloured blocks and numbered discs. Blocks
+  stretch in three bands (`BLOCK_BANDS`) and reach `BLOCK_TUCK` below the canvas, so a table placed right under the
+  podium hides their bottom lip; name and value stand on `TEXT_MIDDLES` of the plate (gold `GOLD_TEXT`/`GOLD_VALUE`).
 - **`GoScoreTable`** (`PanelContainer`, `GoScoreTable`): a white, navy-rimmed ranking card — a blue head bar
   (`GoScoreTableHead`, `GoScoreTableHeadLabel`, two column rules) over rows it scrolls itself (`scroll: GoScroll`,
   vertical only; `rows: VBoxContainer`). `set_columns(rank, player, value)`, `add_row(rank, name, value, own) ->
@@ -39,7 +41,13 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   (a round badge over the top-right corner, `badge_rect()`) and **`glow`** (a soft light behind the face). Skin hooks
   `category_button_art()`, `page_plate_art()`, `page_dot_colors()`, `loading_ring_color()`, `button_glow_color()`;
   arcade_light reads painted art from `assets/arcade_light/leaderboard/` when present and falls back to the
-  code-drawn faces.
+  code-drawn faces. Sized to the reference board in the 1280 × 720 dp space: a category's words stay on one line and
+  shrink (`WRAP_BELOW` 0.78: they break only below 78 % or past the fit floor); the stepper's keys stand
+  `KEY_GAP_SHARE` off a full-height plate; the panel's heading wraps instead of widening the card, tucks the body up
+  under it (`HEADING_TUCK_SHARE`), takes `heading_scale` (1.0) and, as a `GoBoardTitle`, `BOARD_HEADING_SHARE`;
+  `padding` defaults to 20; `show_decor` (off) scatters faint stars and trophies over the card; the header pill's
+  clock is `PILL_ICON_SHARE` of its words. `GoBoardTitle`'s pill rides up into the title's descent
+  (`TITLE_TUCK_SHARE`); the title has a deep ink shadow.
 
 - **arcade_light flat zebra rows** — `GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold`
   (`PanelContainer`): a flat fill of the `surface` token, of `surface_soft`, and of `surface` lerped 0.28 toward

@@ -55,7 +55,8 @@ func _category_button(host: Control) -> void:
 	button.text = "AN EXTREMELY LONG CATEGORY NAME FOR TESTING"
 	await process_frame
 	await process_frame
-	var floor_size := int(26 * GoUi.config.fit_min_scale)
+	var base := GoUi.theme().get_font_size(&"font_size", GoCategoryButton.VAR_CATEGORY)
+	var floor_size := int(base * GoUi.config.fit_min_scale)
 	check(button.get_theme_font_size(&"font_size") >= floor_size, "a long name never shrinks under the floor")
 	check(button.is_wrapped(), "a long name breaks into two lines")
 	button.queue_free()
@@ -118,6 +119,11 @@ func _state_panel(host: Control) -> void:
 	panel.button_pressed.connect(func() -> void: state_presses += 1)
 	await process_frame
 	check(not panel.header.visible, "the header is hidden by default")
+	panel.heading = "COULD NOT LOAD THE RANKINGS OF THIS VERY LONG LEADERBOARD NAME"
+	panel.fit_now()
+	await process_frame
+	check(panel.get_combined_minimum_size().x <= 1100.5, "a long heading wraps instead of widening the card")
+	panel.heading = "NO TIMES YET"
 	check(panel.picture.visible and not panel.ring.visible, "the illustration shows when not loading")
 	check(panel.button.visible, "a button with words shows")
 	check(panel.button.theme_type_variation == &"GoPillGreen", "the button is a green pill by default")

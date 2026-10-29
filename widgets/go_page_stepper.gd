@@ -29,8 +29,10 @@ signal previous_pressed
 signal next_pressed
 
 ## The page dots' diameter and the space from one dot's centre to the next, as shares of the name's font size.
-const DOT_SHARE := 0.32
-const DOT_STEP := 0.7
+const DOT_SHARE := 0.3
+const DOT_STEP := 0.61
+## The gap between each key and the plate, as a share of [member key_size].
+const KEY_GAP_SHARE := 0.07
 ## The glyph's height on a key, as a share of the key's height.
 const KEY_GLYPH_SHARE := 0.5
 const VAR_KEY := &"GoArrowButton"
@@ -91,7 +93,7 @@ func _init() -> void:
 	plate.name = "Plate"
 	plate.theme_type_variation = VAR_PLATE
 	plate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	plate.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	plate.size_flags_vertical = Control.SIZE_FILL
 	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(plate)
 	var column := VBoxContainer.new()
@@ -203,6 +205,7 @@ func _draw_dots() -> void:
 
 
 func _size_keys() -> void:
+	add_theme_constant_override(&"separation", roundi(key_size * KEY_GAP_SHARE))
 	for key in [previous_button, next_button]:
 		if key != null: key.custom_minimum_size = Vector2.ONE * key_size
 

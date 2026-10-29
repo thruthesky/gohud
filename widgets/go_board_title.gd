@@ -25,6 +25,9 @@ const VAR_PILL_LABEL := &"GoBoardPillLabel"
 ## The icon's height as a share of the title's font size, and the gap between them (same share).
 const ICON_SHARE := 1.25
 const ICON_GAP := 0.15
+## How far the pill also rides up into the title line's empty descent, as a share of the title's font size (the display
+## face sits high in its line; the painted pill hangs right under the letters).
+const TITLE_TUCK_SHARE := 0.3
 
 ## The title.
 @export var text := "":
@@ -160,7 +163,7 @@ func fit_now() -> void:
 	pill_size = float(pill_label.get_theme_font_size(&"font_size"))
 	pill_icon_rect.custom_minimum_size = Vector2.ONE * pill_size * 1.1
 	var pill_tall := pill_label.get_minimum_size().y + (face.get_minimum_size().y if face != null else 0.0)
-	add_theme_constant_override(&"separation", -int(pill_tall * pill_overlap))
+	add_theme_constant_override(&"separation", -int(pill_tall * pill_overlap + title_size * TITLE_TUCK_SHARE))
 
 
 func _icon_room(base: int) -> float:
