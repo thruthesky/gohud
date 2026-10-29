@@ -226,7 +226,7 @@ ROW_EMBOLDEN = 0.5
 #    spacing in thousandths of its size.
 MENU_HERO = dict(file="hero_gold.png", disc="hero_disc.png", ppu=1.5, edge=(320, 80, 324, 80), bleed=(30, 30, 30, 30),
                  plate=174, margins=(36.0, 14.0, 36.0, 5.0), title=74, bold=1.8, stretch=1.29, title_tracking=185,
-                 subtitle=31, tracking=150, gap=-12, disc_left=66, disc_size=74, disc_drop=7, disc_glyph=75, disc_gap=41)
+                 subtitle=31, tracking=150, gap=-12, disc_left=66, disc_size=74, disc_drop=7, disc_glyph=76, disc_gap=41)
 MENU_GLASS = dict(file="glass_navy.png", disc="glass_disc.png", ppu=1.5, edge=(313, 70, 181, 70),
                   bleed=(24.5, 24.5, 24.5, 24.5), plate=143, margins=(32.0, 7.0, 32.0, 6.0), title=40, bold=1.5,
                   stretch=1.11, title_tracking=70, subtitle=25, tracking=110, gap=1, disc_left=55, disc_size=95,
