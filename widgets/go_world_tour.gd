@@ -56,7 +56,7 @@ static func _centres() -> Array[Vector2]:
 
 
 func _layout() -> void:
-	var badge := minf(size.y * 0.09, size.x * 0.066)
+	var badge := minf(size.y * 0.10, size.x * 0.072)
 	for i in nodes.size():
 		var r: Rect2 = ISLANDS[i]
 		var rect := Rect2(r.position * size, r.size * size)

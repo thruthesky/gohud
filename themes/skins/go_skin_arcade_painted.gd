@@ -238,11 +238,11 @@ func badge_box(ink_color: Color) -> StyleBox:
 	return face
 
 
-## The white country pill under a world-tour badge: a thin cool-grey rim and a soft drop shadow.
+## The white country pill under a world-tour badge: a thin navy rim and a soft drop shadow.
 func world_tour_caption_box() -> StyleBox:
 	var face := StyleBoxFlat.new()
 	face.bg_color = Color("#ffffff")
-	face.border_color = Color("#aec4da")
+	face.border_color = Color("#3a4c74")
 	face.set_border_width_all(2)
 	face.set_corner_radius_all(64)
 	face.shadow_color = Color(0.04, 0.16, 0.36, 0.28)

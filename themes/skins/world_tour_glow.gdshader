@@ -4,8 +4,8 @@ varying float vertex_alpha;
 uniform int island_stage = 0;
 uniform vec2 atlas_pixel_size = vec2(0.000598, 0.001063);
 uniform vec4 atlas_region = vec4(0.0, 0.0, 1.0, 1.0);
-// The halo's reach in atlas pixels (matches GoWorldTourGlow.HALO_REACH of a ~300 px tall island).
-uniform float reach = 34.0;
+// The halo's reach in atlas pixels; GoWorldTourGlow sets it from HALO_REACH.
+uniform float reach = 44.0;
 
 float island_mask(vec2 coordinate) {
 	// A shared atlas can contain other pictures immediately outside this island's region. Sampling those pixels
@@ -38,7 +38,7 @@ void fragment() {
 			near = max(near, texture(TEXTURE, p).a * island_mask(p) * weight);
 		}
 	}
-	float glow = smoothstep(0.0, 1.0, near);
-	vec3 colour = mix(vec3(1.0, 0.86, 0.12), vec3(1.0, 0.97, 0.55), smoothstep(0.7, 1.0, near));
-	COLOR = vec4(colour, glow * (1.0 - center) * vertex_alpha * 0.95);
+	float glow = pow(near, 0.7);
+	vec3 colour = mix(vec3(1.0, 0.82, 0.05), vec3(1.0, 0.96, 0.45), smoothstep(0.6, 1.0, near));
+	COLOR = vec4(colour, glow * (1.0 - center) * vertex_alpha);
 }

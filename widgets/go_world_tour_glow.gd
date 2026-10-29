@@ -4,7 +4,7 @@ class_name GoWorldTourGlow
 extends Control
 
 ## The halo's reach beyond the island, as a share of the picture's height.
-const HALO_REACH := 0.12
+const HALO_REACH := 0.15
 
 
 func _init() -> void:
@@ -34,4 +34,5 @@ func _draw() -> void:
 	var origin := (size - region.size * scale_factor) * 0.5
 	var reach := region.size.y * HALO_REACH
 	var src := region.grow(reach)
+	(material as ShaderMaterial).set_shader_parameter(&"reach", reach)
 	draw_texture_rect_region(source, Rect2(origin - Vector2.ONE * reach * scale_factor, src.size * scale_factor), src)

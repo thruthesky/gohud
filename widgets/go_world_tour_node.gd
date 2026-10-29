@@ -125,14 +125,14 @@ func _layout_on_map() -> void:
 	_badge.position = badge_center - _badge.size * 0.5
 	_ring.position = _badge.position - Vector2.ONE * 3.0
 	_ring.size = _badge.size + Vector2.ONE * 6.0
-	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.6)))
-	var caption_h := side * 0.53
-	var base := maxi(8, roundi(caption_h * 0.62))
+	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.58)))
+	var caption_h := side * 0.47
+	var base := maxi(8, roundi(caption_h * 0.66))
 	var font := title_label.get_theme_font(&"font")
 	var text_w := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, base).x if font != null else 0.0
-	var caption_w := clampf(text_w + caption_h * 1.1, side * 1.55, side * 2.6)
+	var caption_w := clampf(text_w + caption_h * 1.2, side * 1.45, side * 2.4)
 	_caption.size = Vector2(caption_w, caption_h)
-	_caption.position = Vector2(badge_center.x - caption_w * 0.5, badge_center.y + side * 0.62 - caption_h * 0.5)
+	_caption.position = Vector2(badge_center.x - caption_w * 0.5, badge_center.y + side * 0.6 - caption_h * 0.5)
 	title_base_size = base
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_w - caption_h * 0.8, font))
 	# The caption and badge sit over the island art; keep them drawn above it.
