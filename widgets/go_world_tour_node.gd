@@ -93,7 +93,9 @@ func refresh() -> void:
 	_ring.add_theme_stylebox_override(&"panel", GoUi.skin().selection_ring_box())
 	title_label.add_theme_color_override(&"font_color", GoUi.color(GoTheme.TEXT))
 	_sync_focus()
-	thumbnail_slot.modulate = Color(0.62, 0.64, 0.7) if disabled else Color.WHITE
+	# A skin with a locked picture already shows the lock; others dim the stage's own picture.
+	var dim := disabled and GoUi.skin().world_tour_locked_picture() == null
+	thumbnail_slot.modulate = Color(0.62, 0.64, 0.7) if dim else Color.WHITE
 	for child in thumbnail_slot.get_children():
 		if child.has_method(&"set_selected"): child.set_selected(selected)
 		if child is CanvasItem: (child as CanvasItem).queue_redraw()
