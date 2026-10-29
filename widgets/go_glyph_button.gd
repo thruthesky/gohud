@@ -161,6 +161,8 @@ var _fit_key := ""
 var _tw: Tween
 var _held := false
 var _fired := false
+## A release is springing back: a hover or focus change waits for it (and then settles) instead of cutting it short.
+var _releasing := false
 ## The face the rim flash redraws, brightened (a copy of the drawn sprite, made when the flash starts), and the canvas
 ## item it is added onto the plate in (light added, so the title and the glyph stay readable under it).
 var _rim: GoStyleBoxSprite
@@ -454,6 +456,7 @@ func _hovers() -> bool:
 
 func _new_press_tween() -> Tween:
 	if _tw != null and _tw.is_valid(): _tw.kill()
+	_releasing = false
 	_tw = create_tween().set_parallel(true)
 	return _tw
 
@@ -462,6 +465,7 @@ func _new_press_tween() -> Tween:
 func _press_snap() -> void:
 	if _tw != null and _tw.is_valid(): _tw.kill()
 	_tw = null
+	_releasing = false
 	_plate_k = 1.0
 	_disc_k = 1.0
 	_disc_dy = 0.0
@@ -483,11 +487,18 @@ func _on_press_up() -> void:
 ## The pointer came onto the button or left it: held, it presses in again or eases back (a drag off cancels cleanly).
 func _on_pointer(inside: bool) -> void:
 	if _held and inside: _press_in()
-	else: _press_rest()
+	elif _held or not _releasing: _press_rest()
 
 
+## Focus moved (a card the key opened took it, or a pad moved on): the lift follows, after any release has played out.
 func _on_focus_moved() -> void:
-	if not _held: _press_rest()
+	if not _held and not _releasing: _press_rest()
+
+
+## The release played out: settle to where the plate rests now (the pointer or the focus may have gone meanwhile).
+func _on_release_done() -> void:
+	_releasing = false
+	if not _held and not is_equal_approx(_plate_k, _rest_scale()): _press_rest()
 
 
 func _press_in() -> void:
@@ -512,6 +523,7 @@ func _press_rest() -> void:
 		return
 	var time := _press_const(&"press_hover_ms", 120.0) / 1000.0
 	var tween := _new_press_tween()
+	_flash = 0.0
 	tween.tween_property(self, ^"_plate_k", _rest_scale(), time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, ^"_disc_k", 1.0, time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, ^"_disc_dy", 0.0, time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -543,6 +555,8 @@ func _press_release() -> void:
 		_flash = 0.001
 		tween.tween_property(self, ^"_flash", 1.0, time)
 		tween.chain().tween_property(self, ^"_flash", 0.0, 0.0)
+	_releasing = true
+	tween.finished.connect(_on_release_done)
 
 
 ## [param rect] (the disc's or the glyph's) as the press draws it: scaled by the disc's factor about [param centre] and

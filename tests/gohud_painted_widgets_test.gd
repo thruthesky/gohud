@@ -39,6 +39,7 @@ func _initialize() -> void:
 	await _glyph_plate_scale()
 	await _glyph_fit_regrows()
 	await _glyph_press_anim()
+	await _glyph_press_popover()
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -1177,4 +1178,63 @@ func _glyph_press_anim() -> void:
 	check(not plain.press_animates(), "press: a look without press_anim does not animate")
 	GoUi.config.reduce_motion = reduced
 	box.queue_free()
+	await frames(1)
+
+
+## 🎬 A top-bar key that opens a card on release (the menu's flag, sound and SIGN IN keys): the card anchored to it
+## stays put while the key squashes, springs and lifts (`GoSurface.layout_rect`), and the card taking the focus
+## mid-release neither cuts the spring short nor leaves the flash on.
+func _glyph_press_popover() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	var reduced := GoUi.config.reduce_motion
+	GoUi.config.reduce_motion = false
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	holder.size = Vector2(1280, 720)
+	root.add_child(holder)
+	var bar := HBoxContainer.new()
+	bar.position = Vector2(800, 16)
+	holder.add_child(bar)
+	var key := GoGlyphButton.make("SIGN IN", GoIconSet.USER, GoTheme.VAR_GLASS_KEY)
+	key.feedback = &""
+	key.custom_minimum_size = Vector2(170, 56)
+	bar.add_child(key)
+	var flag := GoGlyphButton.make("", GoIconSet.SETTINGS, GoTheme.VAR_GLASS_KEY)
+	flag.custom_minimum_size = Vector2(56, 56)
+	bar.add_child(flag)
+	await frames(4)
+	var rest := GoSurface.layout_rect(key)
+	key.button_down.emit()
+	await create_timer(0.1).timeout
+	check(key.scale.x < 0.97 and GoSurface.layout_rect(key) == rest and key.get_global_rect() != rest,
+		"press popover: layout_rect is the key's laid-out rect, not its squashed one")
+	var content := VBoxContainer.new()
+	var line := Label.new()
+	line.text = "Sign in with Google"
+	content.add_child(line)
+	key.pressed.emit()
+	var card := GoPopover.open(key, content, {"width": 0, "min_width": 300.0, "align": &"end", "gap": 8.0, "edge": 0,
+		"fit": true, "pass_anchor_taps": true})
+	key.button_up.emit()
+	await frames(2)
+	var at := card.card.get_global_rect()
+	var moved := 0.0
+	var peak := 0.0
+	var flashed := false
+	for i in 30:
+		if i == 3: key.focus_exited.emit() # the card takes the focus mid-release
+		await process_frame
+		moved = maxf(moved, card.card.get_global_rect().position.distance_to(at.position) + absf(
+			card.card.get_global_rect().size.x - at.size.x))
+		peak = maxf(peak, key.scale.x)
+		flashed = flashed or key._flash > 0.0
+	check(moved == 0.0, "press popover: the card stays still while its key springs (moved %.2f)" % moved)
+	check(peak > 1.01 and flashed, "press popover: the focus moving mid-release does not cut the spring (%.3f)" % peak)
+	await create_timer(0.3).timeout
+	check(key._flash == 0.0 and not key._releasing and key.scale == Vector2.ONE,
+		"press popover: the release settles at rest with the flash off (%s)" % key.scale)
+	GoPopover.close()
+	await frames(2)
+	GoUi.config.reduce_motion = reduced
+	holder.queue_free()
 	await frames(1)

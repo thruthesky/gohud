@@ -1716,11 +1716,19 @@ func _desired_height() -> float:
 	return desired
 
 
+## [param control]'s rect on the screen as its container laid it out: [method Control.get_global_rect] without the
+## control's own `scale` and `rotation` (a key's press squash or hover lift, `GoGlyphButton`), so a card anchored to a
+## key that is animating stays still instead of following it every frame.
+static func layout_rect(control: Control) -> Rect2:
+	var parent := control.get_global_transform() * control.get_transform().affine_inverse()
+	return parent * Rect2(control.position, control.size)
+
+
 ## Attaches beside the given control — to the right if the minimum width fits there, otherwise to the wider side, and if
 ## neither fits, pulled inside the screen (`anchor_align` `AUTO`; `START` / `END` line an edge up with the anchor's).
 ## Opens upward when there is less room below than above.
 func _relayout_anchor(area: Rect2) -> void:
-	var anchor := anchor_control.get_global_rect()
+	var anchor := layout_rect(anchor_control)
 	if fit_mode == FitMode.SCALE:
 		_relayout_anchor_scale(area, anchor)
 		return
