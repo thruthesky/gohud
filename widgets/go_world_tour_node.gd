@@ -11,6 +11,9 @@ var selected := false
 var title := ""
 var number := 1
 var title_base_size := 8
+## Set by the map: the badge centre (local) and diameter. The island art then fills the node's own rect.
+var badge_center := Vector2.INF
+var badge_side := 0.0
 var _badge: Panel
 var _badge_art: TextureRect
 var _caption: Panel
@@ -88,6 +91,9 @@ func _layout() -> void:
 	if thumbnail_slot == null or size.x <= 0.0 or size.y <= 0.0: return
 	# Pictures may spread beyond the touch target, like scenery islands on the world map. Their controls ignore input;
 	# the button keeps its own bounds so adjacent islands remain independently selectable.
+	if badge_center != Vector2.INF:
+		_layout_on_map()
+		return
 	var stage_scales := [0.91, 0.92, 0.96, 0.94, 1.00, 0.96, 0.91, 0.98, 1.04]
 	var art_scale: float = stage_scales[clampi(number - 1, 0, stage_scales.size() - 1)]
 	if selected: art_scale = maxf(art_scale, 1.10)
@@ -109,6 +115,29 @@ func _layout() -> void:
 	var font := title_label.get_theme_font(&"font")
 	title_base_size = base
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_size.x * 0.85, font))
+
+
+func _layout_on_map() -> void:
+	thumbnail_slot.position = Vector2.ZERO
+	thumbnail_slot.size = size
+	var side := badge_side
+	_badge.size = Vector2.ONE * side
+	_badge.position = badge_center - _badge.size * 0.5
+	_ring.position = _badge.position - Vector2.ONE * 3.0
+	_ring.size = _badge.size + Vector2.ONE * 6.0
+	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.6)))
+	var caption_h := side * 0.53
+	var base := maxi(8, roundi(caption_h * 0.62))
+	var font := title_label.get_theme_font(&"font")
+	var text_w := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, base).x if font != null else 0.0
+	var caption_w := clampf(text_w + caption_h * 1.1, side * 1.55, side * 2.6)
+	_caption.size = Vector2(caption_w, caption_h)
+	_caption.position = Vector2(badge_center.x - caption_w * 0.5, badge_center.y + side * 0.62 - caption_h * 0.5)
+	title_base_size = base
+	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_w - caption_h * 0.8, font))
+	# The caption and badge sit over the island art; keep them drawn above it.
+	_caption.z_index = 1
+	_badge.z_index = 2
 
 
 func _place_thumbnail(child: Node) -> void:

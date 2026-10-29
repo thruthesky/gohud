@@ -4,6 +4,8 @@ varying float vertex_alpha;
 uniform int island_stage = 0;
 uniform vec2 atlas_pixel_size = vec2(0.000598, 0.001063);
 uniform vec4 atlas_region = vec4(0.0, 0.0, 1.0, 1.0);
+// The halo's reach in atlas pixels (matches GoWorldTourGlow.HALO_REACH of a ~300 px tall island).
+uniform float reach = 34.0;
 
 float island_mask(vec2 coordinate) {
 	// A shared atlas can contain other pictures immediately outside this island's region. Sampling those pixels
@@ -24,16 +26,19 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 step_size = atlas_pixel_size * 14.0;
+	// Nearest island pixel within reach, sampled on 16 rays x 4 rings: a soft, wide warm-yellow halo.
 	float center = texture(TEXTURE, UV).a * island_mask(UV);
-	float halo = 0.0;
-	vec2 p = UV + vec2(step_size.x, 0.0); halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV - vec2(step_size.x, 0.0); halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV + vec2(0.0, step_size.y); halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV - vec2(0.0, step_size.y); halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV + step_size * 0.707; halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV - step_size * 0.707; halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV + vec2(step_size.x, -step_size.y) * 0.707; halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	p = UV + vec2(-step_size.x, step_size.y) * 0.707; halo = max(halo, texture(TEXTURE, p).a * island_mask(p));
-	COLOR = vec4(1.0, 0.92, 0.28, max(0.0, halo - center) * vertex_alpha * 0.8);
+	float near = 0.0;
+	for (int ring = 1; ring <= 4; ring++) {
+		float r = reach * float(ring) / 4.0;
+		float weight = 1.0 - (float(ring) - 1.0) / 4.0;
+		for (int k = 0; k < 16; k++) {
+			float a = float(k) * 0.392699 + float(ring) * 0.19;
+			vec2 p = UV + vec2(cos(a), sin(a)) * r * atlas_pixel_size;
+			near = max(near, texture(TEXTURE, p).a * island_mask(p) * weight);
+		}
+	}
+	float glow = smoothstep(0.0, 1.0, near);
+	vec3 colour = mix(vec3(1.0, 0.86, 0.12), vec3(1.0, 0.97, 0.55), smoothstep(0.7, 1.0, near));
+	COLOR = vec4(colour, glow * (1.0 - center) * vertex_alpha * 0.95);
 }

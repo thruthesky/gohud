@@ -238,14 +238,16 @@ func badge_box(ink_color: Color) -> StyleBox:
 	return face
 
 
-## The light, ink-rimmed country pill under a world-tour badge.
+## The white country pill under a world-tour badge: a thin cool-grey rim and a soft drop shadow.
 func world_tour_caption_box() -> StyleBox:
 	var face := StyleBoxFlat.new()
-	face.bg_color = Color("#f4fbff")
-	face.border_color = INK
+	face.bg_color = Color("#ffffff")
+	face.border_color = Color("#aec4da")
 	face.set_border_width_all(2)
-	face.border_width_bottom = 3
-	face.set_corner_radius_all(22)
+	face.set_corner_radius_all(64)
+	face.shadow_color = Color(0.04, 0.16, 0.36, 0.28)
+	face.shadow_size = 3
+	face.shadow_offset = Vector2(0, 2)
 	face.anti_aliasing = true
 	return face
 
