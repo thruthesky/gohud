@@ -28,7 +28,8 @@
 ##    a phone's plate is the same picture smaller. Its glyph is part of the content — padding, glyph, gap, label,
 ##    padding (`hug_width()` sizes a pill to it) — and a lone glyph stands centred with nothing beside it (a square
 ##    key stays square). Its subtitle is letter-spaced by `subtitle_tracking` thousandths of its size, and with
-##    `fit_label` follows [member fit_base_size] in the look's title-to-subtitle ratio. `glyph_flat` draws the glyph
+##    `fit_label` follows [member fit_base_size] in the look's title-to-subtitle ratio; with `fit_label` the title
+##    starts no bigger than the look's size × `plate_scale()` (the picture's size on that plate). `glyph_flat` draws the glyph
 ##    without its dark outline (`flat_glyph()`).
 ##
 ## ```gdscript
@@ -117,6 +118,7 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 
 ## The size [member fit_label] shrinks from. 0 takes the look's `font_size` for this button's variation. The subtitle
 ## starts from the look's `subtitle_font_size` in the same ratio (unless the button overrides `subtitle_font_size`).
+## A plate look (`plate_height`) caps it at the look's size × `plate_scale()`.
 @export_range(0, 128) var fit_base_size := 0:
 	set(value):
 		fit_base_size = value
@@ -336,11 +338,11 @@ func hug_width(height := -1.0, font_size := 0) -> float:
 	var face := _base_face(&"normal")
 	var k := plate_scale(height)
 	var pad := face.get_minimum_size().x * k if face != null else 0.0
-	var title := font_size if font_size > 0 else _fit_base()
+	var title := font_size if font_size > 0 else _fit_base(height)
 	var font := title_font_at(title)
 	var line := font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, title).x if font != null else 0.0
 	if not subtitle.is_empty():
-		var sub := _sub_for(title, _fit_base(), _subtitle_base())
+		var sub := _sub_for(title, _fit_base(height), _subtitle_base(height))
 		line = maxf(line, GoStyle.row_width(subtitle_font_at(sub), PackedStringArray([atr(subtitle)]), sub))
 	var room := glyph_allowance(height) if not text.is_empty() or has_glyph_disc() else 0.0
 	return ceilf(pad + room + line)
@@ -435,10 +437,10 @@ func subtitle_font_size() -> int:
 ## The subtitle's size before `fit_label` shrinks it: the look's `subtitle_font_size` for this variation, and with
 ## `fit_label` and a [member fit_base_size] that size in the same ratio to the look's `font_size` (a screen that scales
 ## the title's base scales the subtitle with it). A `subtitle_font_size` override on the button is taken as it is.
-func _subtitle_base() -> int:
+func _subtitle_base(height := -1.0) -> int:
 	var look := maxi(1, get_theme_font_size(&"subtitle_font_size"))
-	if not fit_label or fit_base_size <= 0 or has_theme_font_size_override(&"subtitle_font_size"): return look
-	return maxi(1, roundi(look * float(fit_base_size) / maxf(1.0, _look_font_size())))
+	if not fit_label or has_theme_font_size_override(&"subtitle_font_size"): return look
+	return maxi(1, roundi(look * float(_fit_base(height)) / maxf(1.0, _look_font_size())))
 
 
 ## The subtitle's font at its size now (see [method subtitle_font_at]).
@@ -608,9 +610,14 @@ func _queue_fit() -> void:
 
 
 ## The size the fit starts from: [member fit_base_size], else the look's — read under the override the fit put on.
-func _fit_base() -> int:
-	if fit_base_size > 0: return fit_base_size
-	return _look_font_size()
+## 📏 A plate look's title is drawn for its plate: it starts no bigger than the look's size × [method plate_scale] (on
+## a button [param height] tall; negative: its height now), so a base given in some other scale (a column's) cannot
+## draw it bigger than the picture — and the fit then only shrinks it when the text really runs over.
+func _fit_base(height := -1.0) -> int:
+	var look := _look_font_size()
+	var base := fit_base_size if fit_base_size > 0 else look
+	if _hugs(): base = mini(base, maxi(1, roundi(look * plate_scale(height))))
+	return base
 
 
 ## The look's `font_size` for this variation (or a size the caller put on), read under the override the fit put on.
@@ -811,13 +818,17 @@ static func flat_glyph(art: Texture2D) -> Texture2D:
 			var bright := maxf(c.r, maxf(c.g, c.b))
 			var keep := smoothstep(FLAT_DARK, FLAT_LIGHT, bright)
 			if keep <= 0.0:
-				image.set_pixel(x, y, Color(0, 0, 0, 0))
+				image.set_pixel(x, y, Color(1, 1, 1, 0))
 				continue
 			var low := minf(c.r, minf(c.g, c.b))
 			var body := Color.WHITE if bright - low < FLAT_GREY * bright else Color(c.r / bright, c.g / bright, c.b / bright)
 			if body != Color.WHITE and bright >= FLAT_LIGHT: body = c
 			body.a = c.a * keep
 			image.set_pixel(x, y, body)
+	# 🛑 A cleared pixel keeps a light colour and the copy carries its own mipmaps: drawn smaller under a mipmapped
+	#    filter (Magnet Mayhem's menu), a mipmap-less copy shows the art's dark outline again as a ring round the body.
+	image.fix_alpha_edges()
+	image.generate_mipmaps()
 	var flat := ImageTexture.create_from_image(image)
 	_flat[key] = flat
 	return flat

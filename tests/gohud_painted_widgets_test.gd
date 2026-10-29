@@ -710,6 +710,13 @@ func _glyph_plate_scale() -> void:
 		"plate scale: a bigger title, more room between its wider letters")
 	check(hero.title_font_at(drawn_title * 2).get_meta(&"go_tracked_from") == title_font.get_meta(&"go_tracked_from"),
 		"plate scale: every tracked title comes from the look's font, not from the one put on")
+	# A base given in another scale (a column's, near 1) cannot draw the title bigger than the plate's picture.
+	hero.fit_base_size = look_title
+	await frames(4)
+	check(hero.get_theme_font_size(&"font_size") == roundi(look_title * k),
+		"plate scale: a bigger base is capped at the look × plate_scale (%d)" % hero.get_theme_font_size(&"font_size"))
+	check(hero.subtitle_font_size() == roundi(look_sub * float(roundi(look_title * k)) / look_title),
+		"plate scale: the subtitle follows the capped title (%d)" % hero.subtitle_font_size())
 	hero.add_theme_font_size_override(&"subtitle_font_size", 11)
 	await frames(2)
 	check(hero.subtitle_font_size() <= 11, "plate scale: a subtitle_font_size override is taken as it is")
@@ -746,6 +753,8 @@ func _glyph_plate_scale() -> void:
 	check(flat.get_pixel(0, 0).a < 0.01, "flat glyph: the dark outline goes clear")
 	check(flat.get_pixel(1, 0).is_equal_approx(Color.WHITE), "flat glyph: the grey-white body turns white")
 	check(flat.get_pixel(2, 0).r > 0.95 and flat.get_pixel(2, 0).b < 0.2, "flat glyph: a gold body keeps its hue")
+	check(flat.has_mipmaps(), "flat glyph: the copy has mipmaps (a mipmapped filter shows no outline ring)")
+	check(flat.get_pixel(0, 0).r > 0.5, "flat glyph: a cleared pixel keeps a light colour, no dark fringe")
 	holder.queue_free()
 	await frames(1)
 
