@@ -291,8 +291,13 @@ PLACEHOLDER_TYPES = ["LineEdit", "TextEdit"]
 TEXT_TYPES = [
     "Button", "OptionButton", "GoButton", "GoPrimaryButton", "GoDangerButton", "GoDangerSolidButton",
     "GoPrimaryGlowButton", "GoDangerSolidGlowButton", "GoCompactButton", "GoListButton", "LineEdit", "TextEdit", "PopupMenu",
-    "FoldableContainer", "CheckBox", "CheckButton",
+    "FoldableContainer", "CheckBox", "CheckButton", "GoHeroButton", "GoGlassButton", "GoGlassKey",
 ]
+
+# 🔤 `GoGlyphButton.subtitle`: the second line is drawn in the variation's `subtitle_color` on the same face, in every
+#    state (a disabled one at 0.6 opacity, like the glyph — not measured, as no disabled text is).
+SUBTITLE_TYPES = ["GoHeroButton", "GoGlassButton"]
+SUBTITLE_FACES = {state: ["subtitle_color"] for state in ("normal", "hover", "pressed", "hover_pressed")}
 
 # 🛑 **A tab names its faces and its colours differently** — `tab_selected` with `font_selected_color` and so on — so the
 #    `normal`/`pressed` table above finds no row for it at all. Each tab face is paired with its own colour here.
@@ -517,6 +522,7 @@ def surface_rows(path, colors):
     rows = []
     checks = [(name, STATE_FONTS, "button and input field text") for name in TEXT_TYPES]
     checks += [(name, TAB_FACES, "tab label") for name in TAB_TYPES]
+    checks += [(name, SUBTITLE_FACES, "button subtitle") for name in SUBTITLE_TYPES]
     checks += [(name, {"placeholder": ["font_placeholder_color"]}, "input placeholder") for name in PLACEHOLDER_TYPES]
     for type_name, faces, note in checks:
         table = styles.get(type_name)

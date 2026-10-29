@@ -136,6 +136,12 @@ FACES = {
     "slider_blue.png": (0.086275, 0.509804, 0.996078, 1.0),   # #1682fe
     "slider_green.png": (0.129412, 0.862745, 0.466667, 1.0),  # #21dc77
     "slider_cyan.png": (0.156863, 0.831373, 0.968627, 1.0),   # #28d4f7
+    "hero_gold.png": (0.988235, 0.92549, 0.407843, 1.0),      # #fcec68 (the plate under the title)
+    "hero_disc.png": (0.992157, 0.980392, 0.337255, 1.0),     # #fdfa56
+    "glass_navy.png": (0.011765, 0.121569, 0.329412, 1.0),    # #031f54
+    "glass_disc.png": (0.011765, 0.12549, 0.329412, 1.0),     # #032054
+    "glass_key.png": (0.05098, 0.25098, 0.564706, 1.0),       # #0d4090
+    "glass_divider.png": (0.470588, 0.882353, 1.0, 1.0),      # #78e1ff (a faint rule; nothing reads on it)
 }
 
 # Game variation → its gohud name. The values are what the game aliases; `GAME_ONLY` stays in the game.
@@ -198,6 +204,7 @@ BASES = {
     "GoWhiteButton": "Button", "GoBlackButton": "Button",
     "GoScoreRowStripe": "PanelContainer", "GoScoreRowStripeAlt": "PanelContainer",
     "GoScoreRowStripeGold": "PanelContainer", "GoScoreRowLabel": "Label", "GoScoreRowMutedLabel": "Label",
+    "GoHeroButton": "Button", "GoGlassButton": "Button", "GoGlassKey": "Button", "GoGlassDivider": "VSeparator",
 }
 # 🦓 The flat zebra rows' padding (left, top, right, bottom): a slim lead-in before the rank, a little more before the
 #    right edge's value, nothing above or below — the row's height is its content's, the stripes touch.
@@ -206,6 +213,28 @@ STRIPE_MARGINS = (10, 0, 16, 0)
 STRIPE_GOLD_MIX = 0.28
 # The rows' medium weight: lighter than the scoreboard's heavy 1.2 (`painted_score_font`), heavier than the body's 0.
 ROW_EMBOLDEN = 0.5
+# 🎮 **The main menu's hero keys** (`GoHeroButton`, `GoGlassButton`, `GoGlassKey`, `GoGlassDivider`; gohud's own, not
+#    the game's UiTheme): a gold plate for the one big action, navy glass plates for the rest, small glass keys in the
+#    top bar. Each art's halo (a glow or a shadow outside the plate) is its `bleed`: drawn past the button, never laid
+#    out. The art is cut at 1.5 × the menu's 1920 × 1080 design (`assets/arcade_light/painted/menu_art.json`), so a
+#    canvas unit is 1.5 art px: the hero plate 708 × 174, a glass plate 689 × 143, a top-bar key 86 × 83. Edges and
+#    bleeds are art px; margins, gaps, the disc's inset and drop are canvas units; sizes are font sizes; shares are %.
+MENU_HERO = dict(file="hero_gold.png", disc="hero_disc.png", ppu=1.5, edge=(320, 80, 324, 80), bleed=(30, 30, 30, 30),
+                 margins=(36.0, 11.0, 36.0, 8.0), title=79, title_spacing=13, title_wide=1.18, subtitle=28, spacing=8,
+                 gap=-12, disc_left=66, disc_size=74, disc_drop=7, disc_glyph=64, disc_gap=41)
+MENU_GLASS = dict(file="glass_navy.png", disc="glass_disc.png", ppu=1.5, edge=(313, 70, 181, 70),
+                  bleed=(24.5, 24.5, 24.5, 24.5), margins=(32.0, 7.0, 32.0, 6.0), title=41, title_spacing=3, title_wide=1.0,
+                  subtitle=23, spacing=5, gap=1, disc_left=55, disc_size=95, disc_drop=1, disc_glyph=78, disc_gap=45)
+MENU_KEY = dict(file="glass_key.png", ppu=1.5, edge=(58, 58, 58, 58), bleed=(18, 18, 18, 18),
+                margins=(16.0, 9.0, 16.0, 5.0), title=25, glyph=57, glyph_gap=14)
+# The top bar's thin cyan rule between the keys: 8 units wide, its 20 art px ends fading out.
+MENU_DIVIDER = dict(file="glass_divider.png", ppu=1.5, edge=(0, 20, 0, 20), width=8)
+HERO_INK = (0.007843, 0.070588, 0.235294, 1.0)         # #02123c — the gold plate's navy title and glyph
+# Its brown-gold subtitle: the picture's #8f4c02 a shade darker, so it still reads on the pressed (darker) plate.
+HERO_SUB_INK = (0.439216, 0.211765, 0.0, 1.0)          # #703600
+GLASS_INK = (0.960784, 0.964706, 0.976471, 1.0)        # #f5f6f9 — the glass plates' white title
+GLASS_SUB_INK = (0.015686, 0.858824, 0.960784, 1.0)    # #04dbf5 — the glass plates' cyan subtitle
+MENU_SUB_EMBOLDEN = 0.6
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
 
@@ -226,14 +255,17 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     def put(key, bid):
         setT(key, 'SubResource("%s")' % bid)
 
-    def sprite(bid, file, edge, ppu, margin_h, margin_top, margin_bottom, tint=WHITE):
+    def sprite(bid, file, edge, ppu, margin_h, margin_top, margin_bottom, tint=WHITE, bleed=None, margin_right=None):
         """`UiTheme.sprite_box()` as a `GoStyleBoxSprite` sub-resource."""
         lines = ['script = ExtResource("sprite")',
                  "content_margin_left = %g" % margin_h, "content_margin_top = %g" % margin_top,
-                 "content_margin_right = %g" % margin_h, "content_margin_bottom = %g" % margin_bottom,
+                 "content_margin_right = %g" % (margin_h if margin_right is None else margin_right),
+                 "content_margin_bottom = %g" % margin_bottom,
                  'texture = ExtResource("%s")' % texture_id(file),
                  "edge = Vector4(%g, %g, %g, %g)" % edge,
                  "pixels_per_unit = %r" % float(ppu)]
+        if bleed and any(bleed):
+            lines.append("bleed = Vector4(%g, %g, %g, %g)" % tuple(bleed))
         if tint != WHITE:
             lines.append("tint = %s" % C(tint))
         lines.append("face_color = %s" % C(_times(FACES[file], tint)))
@@ -482,6 +514,72 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     pad = HUD_BANNER_PADDING
     put("GoBannerGold/styles/panel", box("painted_GoBannerGold", GOLD, 12, 3, INK, margin_h=pad + 3.0,
                                          margin_v=(pad + 3, pad + 5), bottom=5))
+
+    # ── 🎮 The main menu's hero keys (`MENU_HERO`, `MENU_GLASS`, `MENU_KEY`): one painted plate in every state (darker
+    #    and 2 lower pressed, faded off), a heavy title, and on the plates a letter-spaced `subtitle` and a glyph disc
+    #    (`GoGlyphButton`'s `glyph_disc`). ──
+    def menu_plate(type_name, art, ink, disabled_ink):
+        stem = "painted_%s" % type_name
+        left, top, right, bottom = art["margins"]
+        common = dict(bleed=art["bleed"], margin_right=right)
+        normal = sprite(stem + "_normal", art["file"], art["edge"], art["ppu"], left, top, bottom, **common)
+        pressed = sprite(stem + "_pressed", art["file"], art["edge"], art["ppu"], left, top + 2.0, bottom - 2.0,
+                         PRESSED_TINT, **common)
+        disabled = sprite(stem + "_disabled", art["file"], art["edge"], art["ppu"], left, top, bottom, DISABLED_TINT,
+                          **common)
+        for state, bid in (("normal", normal), ("hover", normal), ("pressed", pressed), ("hover_pressed", pressed),
+                           ("disabled", disabled), ("focus", "painted_empty")):
+            put("%s/styles/%s" % (type_name, state), bid)
+        title_font = "painted_score_font"
+        if art.get("title_spacing") or art.get("title_wide", 1.0) != 1.0:
+            # The picture's titles are set wider than the body font: letter-spaced, the hero's also drawn wider.
+            title_font = "painted_%s_title_font" % type_name
+            boxes[title_font] = ("FontVariation", ['base_font = SubResource("painted_font")', "variation_embolden = 1.2",
+                                                   "variation_transform = Transform2D(%g, 0, 0, 1, 0, 0)"
+                                                   % art.get("title_wide", 1.0),
+                                                   "spacing_glyph = %d" % art.get("title_spacing", 0)])
+        put(type_name + "/fonts/font", title_font)
+        setT(type_name + "/font_sizes/font_size", art["title"])
+        for slot in FONT_STATES:
+            setT("%s/colors/%s" % (type_name, slot), C(ink))
+        setT(type_name + "/colors/font_disabled_color", C(disabled_ink))
+        for slot in ("icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color"):
+            setT("%s/colors/%s" % (type_name, slot), C(ink))
+        setT(type_name + "/constants/outline_size", 0)
+        setT(type_name + "/constants/h_separation", 10)
+
+    def menu_subtitle(type_name, art, ink):
+        font = "painted_%s_subtitle_font" % type_name
+        boxes[font] = ("FontVariation", ['base_font = SubResource("painted_font")',
+                                         "variation_embolden = %g" % MENU_SUB_EMBOLDEN,
+                                         "spacing_glyph = %d" % art["spacing"]])
+        put(type_name + "/fonts/subtitle_font", font)
+        setT(type_name + "/font_sizes/subtitle_font_size", art["subtitle"])
+        setT(type_name + "/constants/subtitle_gap", art["gap"])
+
+    def menu_disc(type_name, art):
+        put(type_name + "/styles/glyph_disc", sprite("painted_%s_disc" % type_name, art["disc"], (0, 0, 0, 0), 1.0,
+                                                     0.0, 0.0, 0.0))
+        for key in ("disc_left", "disc_size", "disc_drop", "disc_glyph", "disc_gap"):
+            setT("%s/constants/glyph_%s" % (type_name, key), art[key])
+
+    # The faded gold plate already says "off"; its navy title stays solid to read on it.
+    menu_plate("GoHeroButton", MENU_HERO, HERO_INK, HERO_INK)
+    menu_subtitle("GoHeroButton", MENU_HERO, HERO_SUB_INK)
+    setT("GoHeroButton/colors/subtitle_color", C(HERO_SUB_INK))
+    menu_disc("GoHeroButton", MENU_HERO)
+    menu_plate("GoGlassButton", MENU_GLASS, GLASS_INK, FADED_WHITE)
+    menu_subtitle("GoGlassButton", MENU_GLASS, GLASS_SUB_INK)
+    setT("GoGlassButton/colors/subtitle_color", C(GLASS_SUB_INK))
+    menu_disc("GoGlassButton", MENU_GLASS)
+    menu_plate("GoGlassKey", MENU_KEY, WHITE, FADED_WHITE)
+    setT("GoGlassKey/constants/glyph_share", MENU_KEY["glyph"])
+    setT("GoGlassKey/constants/glyph_gap", MENU_KEY["glyph_gap"])
+    # The top bar's rule: the separator draws its art the face's minimum width (the margins) and its full height.
+    half = MENU_DIVIDER["width"] / 2.0
+    put("GoGlassDivider/styles/separator", sprite("painted_GoGlassDivider", MENU_DIVIDER["file"], MENU_DIVIDER["edge"],
+                                                  MENU_DIVIDER["ppu"], half, 0.0, 0.0))
+    setT("GoGlassDivider/constants/separation", MENU_DIVIDER["width"])
 
     # ── 🗺 The stage select: the light-blue window, its swallow-tail ribbon (the 200 px tails stay, the plate between
     #    them stretches), the map preview's dark well (`MapPreview.set_well()`). ──

@@ -72,6 +72,7 @@ func _initialize() -> void:
 		_engine_bases(light)
 		await _scoreboard(light)
 		await _score_stripes(light)
+		_menu_hero(light)
 		_no_orphans()
 		await _slider(light)
 		await _range_slider(light)
@@ -416,6 +417,8 @@ func _variations(theme: Theme) -> void:
 		&"GoMapPreview": &"Panel",
 		&"GoScoreRowStripe": &"PanelContainer", &"GoScoreRowStripeAlt": &"PanelContainer",
 		&"GoScoreRowStripeGold": &"PanelContainer", &"GoScoreRowLabel": &"Label", &"GoScoreRowMutedLabel": &"Label",
+		GoTheme.VAR_HERO_BUTTON: &"Button", GoTheme.VAR_GLASS_BUTTON: &"Button", GoTheme.VAR_GLASS_KEY: &"Button",
+		GoTheme.VAR_GLASS_DIVIDER: &"VSeparator",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
@@ -659,6 +662,65 @@ func _score_stripes(theme: Theme) -> void:
 		for ink_type: StringName in [&"GoScoreRowLabel", &"GoScoreRowMutedLabel"]:
 			var ratio := _contrast(theme.get_color(&"font_color", ink_type), face.bg_color)
 			check(ratio >= 4.5, "%s on %s reads (%.2f:1)" % [ink_type, type, ratio])
+
+
+## 🎮 The main menu's hero keys: a painted plate in every state (pressed darker and 2 lower, faded off), a heavy title,
+## and on the gold and glass plates a letter-spaced subtitle and a glyph disc; the divider is the painted cyan rule.
+func _menu_hero(theme: Theme) -> void:
+	var plates := {GoTheme.VAR_HERO_BUTTON: "hero_gold.png", GoTheme.VAR_GLASS_BUTTON: "glass_navy.png",
+		GoTheme.VAR_GLASS_KEY: "glass_key.png"}
+	var heavy := theme.get_font(&"font", &"GoScoreLabel") as FontVariation
+	for type: StringName in plates:
+		var states := theme.get_stylebox_list(type)
+		for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
+			check(state in states, "%s/%s is set" % [type, state])
+		var normal := theme.get_stylebox(&"normal", type) as GoStyleBoxSprite
+		var pressed := theme.get_stylebox(&"pressed", type) as GoStyleBoxSprite
+		var disabled := theme.get_stylebox(&"disabled", type) as GoStyleBoxSprite
+		check(normal != null and pressed != null and disabled != null, "%s: painted plates" % type)
+		if normal == null or pressed == null or disabled == null: continue
+		check(normal.texture != null and normal.texture.resource_path == PAINTED + plates[type],
+			"%s draws %s" % [type, plates[type]])
+		check(theme.get_stylebox(&"hover", type) == normal and theme.get_stylebox(&"hover_pressed", type) == pressed,
+			"%s: hover is the normal plate, hover_pressed the pressed one" % type)
+		check(pressed.tint.is_equal_approx(PRESSED_TINT) and disabled.tint.is_equal_approx(DISABLED_TINT),
+			"%s: pressed darker, disabled faded" % type)
+		check(is_equal_approx(pressed.content_margin_top, normal.content_margin_top + 2.0)
+			and is_equal_approx(pressed.content_margin_bottom, normal.content_margin_bottom - 2.0),
+			"%s: the label drops 2 while pressed" % type)
+		check(theme.get_stylebox(&"focus", type) is StyleBoxEmpty, "%s/focus draws nothing" % type)
+		var title := theme.get_font(&"font", type) as FontVariation
+		check(title == heavy or (title != null and title.base_font == theme.default_font
+			and is_equal_approx(title.variation_embolden, heavy.variation_embolden)),
+			"%s: the heavy display face (or the same weight, set wider)" % type)
+		check(normal.face_color.a > 0.0, "%s names its plate colour" % type)
+		var ink := theme.get_color(&"font_color", type)
+		var ratio := _contrast(ink, normal.face_color)
+		check(ratio >= 4.5, "%s: its title reads on the plate (%.2f:1)" % [type, ratio])
+		check(theme.get_color(&"icon_normal_color", type) == ink, "%s: the glyph in the title's ink" % type)
+		check(theme.get_constant(&"outline_size", type) == 0, "%s: no outline" % type)
+	for type: StringName in [GoTheme.VAR_HERO_BUTTON, GoTheme.VAR_GLASS_BUTTON]:
+		var face := (theme.get_stylebox(&"normal", type) as GoStyleBoxSprite).face_color
+		var sub := theme.get_color(&"subtitle_color", type)
+		check(_contrast(sub, face) >= 4.5, "%s: its subtitle reads on the plate (%.2f:1)" % [type, _contrast(sub, face)])
+		check(sub != theme.get_color(&"font_color", type), "%s: the subtitle in its own colour" % type)
+		var font := theme.get_font(&"subtitle_font", type) as FontVariation
+		check(font != null and font.spacing_glyph > 0 and font.base_font == theme.default_font,
+			"%s: the subtitle is the body font, letter-spaced" % type)
+		check(theme.get_font_size(&"subtitle_font_size", type) < theme.get_font_size(&"font_size", type),
+			"%s: the subtitle is smaller than the title" % type)
+		var disc := theme.get_stylebox(&"glyph_disc", type) as GoStyleBoxSprite
+		check(disc != null and disc.texture != null, "%s: a glyph disc" % type)
+		for key: StringName in [&"glyph_disc_left", &"glyph_disc_size", &"glyph_disc_drop", &"glyph_disc_glyph",
+				&"glyph_disc_gap",
+				&"subtitle_gap"]:
+			check(theme.has_constant(key, type), "%s/%s is set" % [type, key])
+	check(not theme.has_stylebox(&"glyph_disc", GoTheme.VAR_GLASS_KEY), "GoGlassKey: no disc, the glyph beside its label")
+	check(theme.has_constant(&"glyph_share", GoTheme.VAR_GLASS_KEY), "GoGlassKey: its own glyph share")
+	var rule := theme.get_stylebox(&"separator", GoTheme.VAR_GLASS_DIVIDER) as GoStyleBoxSprite
+	check(rule != null and rule.texture != null and rule.texture.resource_path.ends_with("glass_divider.png")
+		and rule.get_minimum_size().x == 8.0 and theme.get_constant(&"separation", GoTheme.VAR_GLASS_DIVIDER) == 8,
+		"GoGlassDivider: the painted 8-unit cyan rule")
 
 
 ## The WCAG contrast ratio of two opaque colours.

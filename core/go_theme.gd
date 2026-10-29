@@ -170,6 +170,17 @@ const VAR_BARE_BUTTON := &"GoBareButton"
 const VAR_COMPACT_BUTTON := &"GoCompactButton"
 const VAR_ICON_BUTTON := &"GoIconButton"
 const VAR_LIST_BUTTON := &"GoListButton"
+## 🎮 arcade_light's main-menu hero key: the gold plate, a navy disc glyph, a heavy navy title and a letter-spaced
+## brown-gold `subtitle` (`GoGlyphButton`). Other looks have no such plate (a plain button there).
+const VAR_HERO_BUTTON := &"GoHeroButton"
+## 🎮 arcade_light's main-menu glass key: the navy glass plate with a cyan rim, a dark disc glyph, a heavy white title
+## and a letter-spaced cyan `subtitle` (`GoGlyphButton`).
+const VAR_GLASS_BUTTON := &"GoGlassButton"
+## 🎮 arcade_light's small glass key of a menu's top bar: a rounded navy square with a cyan rim and a white glyph (wide,
+## a glyph and a short label: SIGN IN).
+const VAR_GLASS_KEY := &"GoGlassKey"
+## 🎮 arcade_light's thin cyan rule between glass keys, for a `VSeparator`.
+const VAR_GLASS_DIVIDER := &"GoGlassDivider"
 const VAR_TITLE_LABEL := &"GoTitleLabel"
 const VAR_SUBTITLE_LABEL := &"GoSubtitleLabel"
 const VAR_CAPTION_LABEL := &"GoCaptionLabel"

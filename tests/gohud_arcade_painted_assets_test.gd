@@ -24,6 +24,8 @@ const SPRITES := {
 	"card": true, "close_key": true, "inset": true, "keycap": true, "ribbon_gold": true, "ribbon_red": false, "slider_blue": true,
 	"slider_cyan": true, "slider_green": true, "slider_handle": true, "slider_track": true, "toggle_off": true,
 	"toggle_on": true,
+	# The main menu's hero keys (gohud's own): the gold plate, the glass plate, the top bar's key and their discs.
+	"glass_disc": true, "glass_divider": true, "glass_key": true, "glass_navy": true, "hero_disc": true, "hero_gold": true,
 }
 
 ## Every stage-select sprite (the game's `assets/ui/stage`) → its mipmap choice: the window, ribbon, cards and well the

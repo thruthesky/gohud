@@ -34,6 +34,8 @@ func _initialize() -> void:
 		await _defaults(look)
 		await _glyph_overrides(look)
 		await _glyph_fit(look)
+		await _glyph_subtitle(look)
+	await _glyph_menu()
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -519,6 +521,136 @@ func _glyph_fit(look: StringName) -> void:
 	await frames(1)
 	check(not button.has_theme_font_size_override(&"font_size") and button.get_theme_font_size(&"font_size") == base,
 		"%s glyph fit: off again, the look's size" % look)
+	holder.queue_free()
+	await frames(1)
+
+
+## 🔤 `subtitle`: empty, the button is exactly the one-line key; set, a second line under the label, the faces grow
+## by its room, and `fit_label` shrinks both lines by one ratio.
+func _glyph_subtitle(look: StringName) -> void:
+	var glyph := ImageTexture.create_from_image(Image.create(20, 20, false, Image.FORMAT_RGBA8))
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	var plain := GoGlyphButton.make("PLAY", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	var two := GoGlyphButton.make("PLAY", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	holder.add_child(plain)
+	holder.add_child(two)
+	await frames(2)
+	check(two.subtitle == "" and two.subtitle_rect() == Rect2(), "%s subtitle: none by default" % look)
+	var one_line := two.get_combined_minimum_size()
+	var face := two.get_theme_stylebox(&"normal")
+	var bottom := face.get_margin(SIDE_BOTTOM)
+	two.subtitle = "CAMPAIGN"
+	await frames(2)
+	var sub_font := two.subtitle_font()
+	var room := sub_font.get_height(two.subtitle_font_size()) + two.get_theme_constant(&"subtitle_gap")
+	check(is_equal_approx(two.get_theme_stylebox(&"normal").get_margin(SIDE_BOTTOM), bottom + maxf(room, 0.0)),
+		"%s subtitle: the faces make room for the line under the label" % look)
+	check(two.get_combined_minimum_size().y > one_line.y, "%s subtitle: the button grows by the line" % look)
+	var line := two.subtitle_rect()
+	var title_font := two.get_theme_font(&"font")
+	check(line.size.x > 0.0 and line.position.y > two.size.y * 0.5 - title_font.get_height(two.get_theme_font_size(&"font_size")),
+		"%s subtitle: drawn under the label (%s)" % [look, line])
+	check(absf(line.get_center().x - plain.size.x * 0.5) < two.size.x * 0.5, "%s subtitle: inside the button" % look)
+	check(two.subtitle_color() == two.get_theme_color(&"subtitle_color") if two.has_theme_color(&"subtitle_color")
+		else two.subtitle_color() == two.get_theme_color(&"font_color"), "%s subtitle: the look's colour, else the label's" % look)
+	two.subtitle = ""
+	await frames(2)
+	check(two.get_combined_minimum_size() == one_line and two.get_theme_stylebox(&"normal").get_margin(SIDE_BOTTOM) == bottom,
+		"%s subtitle: cleared, the one-line key again" % look)
+	# Fit: one ratio for both lines.
+	two.custom_minimum_size = Vector2(150, 0)
+	two.subtitle = "KAMPAGNE UND WEITERE ABENTEUER"
+	two.fit_label = true
+	await frames(3)
+	var base := plain.get_theme_font_size(&"font_size")
+	var sub_base := two._subtitle_base()
+	var title := two.get_theme_font_size(&"font_size")
+	check(title < base, "%s subtitle fit: a long subtitle shrinks the label too (%d < %d)" % [look, title, base])
+	check(two.subtitle_font_size() < sub_base or title <= GoStyle.fit_floor(base),
+		"%s subtitle fit: and the subtitle by the same ratio (%d)" % [look, two.subtitle_font_size()])
+	check(absf(float(two.subtitle_font_size()) / sub_base - float(title) / base) < 0.1 or title <= GoStyle.fit_floor(base),
+		"%s subtitle fit: one ratio (%d/%d vs %d/%d)" % [look, two.subtitle_font_size(), sub_base, title, base])
+	two.subtitle = "GO"
+	two.custom_minimum_size.x = 400.0   # room for "PLAY" beside a glyph as tall as the two-line button
+	await frames(3)
+	check(two.get_theme_font_size(&"font_size") == base and two.subtitle_font_size() == sub_base,
+		"%s subtitle fit: short again, both at the look's sizes" % look)
+	TranslationServer.set_locale("en")
+	two.notification(Node.NOTIFICATION_TRANSLATION_CHANGED)
+	await frames(2)
+	check(not two._fit_queued, "%s subtitle fit: a language change refits and settles" % look)
+	holder.queue_free()
+	await frames(1)
+
+
+## 🔵 arcade_light's menu plates: the glyph on a disc at the start side, the title and subtitle left-aligned after it.
+func _glyph_menu() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	for variation: StringName in [GoTheme.VAR_HERO_BUTTON, GoTheme.VAR_GLASS_BUTTON]:
+		var button := GoGlyphButton.make("PLAY", GoIconSet.PLAY, variation)
+		button.subtitle = "CAMPAIGN"
+		button.custom_minimum_size = Vector2(700, 168)
+		holder.add_child(button)
+		await frames(2)
+		check(button.has_glyph_disc(), "%s: the look draws a disc" % variation)
+		var disc := button.glyph_disc_rect()
+		var share := button.get_theme_constant(&"glyph_disc_size") / 100.0
+		check(is_equal_approx(disc.size.y, button.size.y * share) and is_equal_approx(disc.size.x, disc.size.y),
+			"%s: the disc is %d%% of the height, round (%s)" % [variation, roundi(share * 100), disc])
+		check(is_equal_approx(disc.position.x, button.get_theme_constant(&"glyph_disc_left")),
+			"%s: the disc stands glyph_disc_left in" % variation)
+		var glyph := button.glyph_rect()
+		check(glyph.get_center().distance_to(disc.get_center()) < 0.6, "%s: the glyph is centred on the disc" % variation)
+		check(maxf(glyph.size.x, glyph.size.y) <= disc.size.y, "%s: the glyph fits the disc" % variation)
+		check(button.alignment == HORIZONTAL_ALIGNMENT_LEFT, "%s: the text stands at the start side" % variation)
+		var lead := button.get_theme_stylebox(&"normal").get_margin(SIDE_LEFT)
+		check(is_equal_approx(lead, disc.end.x + button.get_theme_constant(&"glyph_disc_gap")),
+			"%s: the text starts glyph_disc_gap after the disc (%.1f)" % [variation, lead])
+		check(is_equal_approx(button.subtitle_rect().position.x, lead), "%s: the subtitle lines up with the title" % variation)
+		check(button.subtitle_color() == button.get_theme_color(&"subtitle_color"), "%s: the subtitle's own colour" % variation)
+		# Long labels shrink to the room after the disc.
+		button.text = "MEHRSPIELERMODUS FÜR ALLE"
+		button.fit_label = true
+		await frames(3)
+		var room := button.size.x - lead - button.get_theme_stylebox(&"normal").get_margin(SIDE_RIGHT)
+		var width := button.get_theme_font(&"font").get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
+			button.get_theme_font_size(&"font_size")).x
+		check(width <= room + 0.5 or button.get_theme_font_size(&"font_size") == GoStyle.fit_floor(button._fit_base()),
+			"%s: a long title fits after the disc (%.0f in %.0f)" % [variation, width, room])
+		# Right to left: the disc at the right edge, the text before it.
+		button.layout_direction = Control.LAYOUT_DIRECTION_RTL
+		await frames(2)
+		var flipped := button.glyph_disc_rect()
+		check(is_equal_approx(flipped.end.x, button.size.x - button.get_theme_constant(&"glyph_disc_left")),
+			"%s: right to left, the disc at the right" % variation)
+		check(is_equal_approx(button.get_theme_stylebox(&"normal").get_margin(SIDE_RIGHT), lead),
+			"%s: right to left, the text ends before the disc" % variation)
+		button.layout_direction = Control.LAYOUT_DIRECTION_INHERITED
+		await frames(1)
+		# Another look: the disc goes, the label is centred again.
+		button.theme_type_variation = GoTheme.VAR_PRIMARY_BUTTON
+		await frames(2)
+		check(not button.has_glyph_disc() and button.alignment == HORIZONTAL_ALIGNMENT_CENTER,
+			"%s: without a disc the label is centred again" % variation)
+		button.queue_free()
+	var key := GoGlyphButton.make("", GoIconSet.SETTINGS, GoTheme.VAR_GLASS_KEY)
+	key.custom_minimum_size = Vector2(85, 79)
+	holder.add_child(key)
+	await frames(2)
+	check(not key.has_glyph_disc() and key.alignment == HORIZONTAL_ALIGNMENT_CENTER, "GoGlassKey: a plain glyph key")
+	var want := key.get_theme_constant(&"glyph_share") / 100.0
+	if key.glyph_texture() != null:
+		check(is_equal_approx(maxf(key.glyph_rect().size.x, key.glyph_rect().size.y) / key.size.y, want),
+			"GoGlassKey: the glyph is the look's glyph_share of the key (%.2f)" % want)
+		key.glyph_share = 0.4
+		check(is_equal_approx(maxf(key.glyph_rect().size.x, key.glyph_rect().size.y) / key.size.y, 0.4),
+			"GoGlassKey: an explicit glyph_share wins over the look's")
 	holder.queue_free()
 	await frames(1)
 

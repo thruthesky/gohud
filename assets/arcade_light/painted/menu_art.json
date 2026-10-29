@@ -1,0 +1,364 @@
+{
+ "_about": "Painted art for the main-menu hero/glass buttons, cut 1:1 from target_inner.png (2880x1620, a 1.5x render of a 1920x1080 screen). All numbers in texture/target px. 9-slice edges are l,t,r,b. 'plate' is the opaque body inside the texture (the rest is glow margin).",
+ "target": {
+  "file": "magnet-menu-1to1/.dev/menu-1to1/target_inner.png",
+  "size": [
+   2880,
+   1620
+  ],
+  "design_scale": 1.5
+ },
+ "hero_gold.png": {
+  "size": [
+   1122,
+   321
+  ],
+  "source_rect": [
+   92,
+   716,
+   1122,
+   321
+  ],
+  "nine_slice": {
+   "l": 320,
+   "t": 80,
+   "r": 324,
+   "b": 80
+  },
+  "glow_margin": 30,
+  "plate": {
+   "l": 30.0,
+   "t": 30.0,
+   "r": 1092.0,
+   "b": 291.0,
+   "chamfers_tl_tr_br_bl": [
+    46.0,
+    42.5,
+    41.5,
+    37.0
+   ]
+  },
+  "content_padding": {
+   "l": 133,
+   "t": 46,
+   "r": 80,
+   "b": 46
+  },
+  "face_color_under_text": "#fcec68",
+  "disc": {
+   "file": "hero_disc.png",
+   "center_from_plate_left": 195.4,
+   "center_from_plate_top": 140.9,
+   "center_in_texture": [
+    225.4,
+    170.9
+   ],
+   "diameter": [
+    185.5,
+    177.9
+   ],
+   "texture_offset_in_plate_texture": [
+    128,
+    74
+   ]
+  },
+  "check_error": {
+   "nontext_all": 2.1,
+   "opaque_body": 0.69,
+   "glow_only": 7.9,
+   "bg_est_err_glow": 36.66
+  }
+ },
+ "hero_disc.png": {
+  "size": [
+   194,
+   194
+  ],
+  "source_rect": [
+   220,
+   790,
+   194,
+   194
+  ],
+  "opaque": "baked over the gold face, icon removed",
+  "diameter": [
+   185.5,
+   177.9
+  ]
+ },
+ "glass_navy.png": {
+  "size": [
+   1082,
+   263
+  ],
+  "source_rect": [
+   99,
+   1017,
+   1082,
+   263
+  ],
+  "nine_slice": {
+   "l": 313,
+   "t": 70,
+   "r": 181,
+   "b": 70
+  },
+  "glow_margin": 24,
+  "plate": {
+   "l": 24.5,
+   "t": 24.5,
+   "r": 1057.5,
+   "b": 238.5,
+   "chamfers_tl_tr_br_bl": [
+    31,
+    38,
+    37,
+    45
+   ]
+  },
+  "content_padding": {
+   "l": 111,
+   "t": 40,
+   "r": 74,
+   "b": 40
+  },
+  "face_color_under_text": "#031f54",
+  "second_copy_offset_y": 246,
+  "_second_copy": "LEADERBOARD = the same plate 246 px lower (gap 32 px between plates)",
+  "disc": {
+   "file": "glass_disc.png",
+   "center_from_plate_left": 185.0,
+   "center_from_plate_top": 109.5,
+   "center_in_texture": [
+    209.5,
+    134.0
+   ],
+   "diameter": [
+    197.0,
+    186.0
+   ],
+   "texture_offset_in_plate_texture": [
+    107,
+    32
+   ]
+  },
+  "check_error": {
+   "multiplayer": {
+    "nontext_all": 5.17,
+    "opaque_body": 1.02,
+    "glow_only": 23.92,
+    "bg_est_err_glow": 24.78
+   },
+   "leaderboard": {
+    "nontext_all": 10.37,
+    "opaque_body": 8.58,
+    "glow_only": 17.73,
+    "bg_est_err_glow": 19.11
+   }
+  }
+ },
+ "glass_disc.png": {
+  "size": [
+   204,
+   204
+  ],
+  "source_rect": [
+   206,
+   1049,
+   204,
+   204
+  ],
+  "opaque": "baked over the navy face, icon removed",
+  "diameter": [
+   197.0,
+   186.0
+  ]
+ },
+ "glass_key.png": {
+  "size": [
+   165,
+   160
+  ],
+  "source_rect": [
+   2547,
+   19,
+   165,
+   160
+  ],
+  "nine_slice": {
+   "l": 58,
+   "t": 58,
+   "r": 58,
+   "b": 58
+  },
+  "glow_margin": 18,
+  "plate": {
+   "l": 18.0,
+   "t": 18.0,
+   "r": 147.0,
+   "b": 142.0,
+   "corner_radius": 26.0
+  },
+  "content_padding": {
+   "l": 32,
+   "t": 32,
+   "r": 32,
+   "b": 32
+  },
+  "face_color_under_text": "#0d4090",
+  "placements": {
+   "flag_key_plate_x": [
+    2415,
+    2544
+   ],
+   "sound_key_plate_x": [
+    2565,
+    2694
+   ],
+   "gear_key_plate_x": [
+    2714,
+    2843
+   ],
+   "plate_y": [
+    37,
+    161
+   ],
+   "sign_in_pill_plate": [
+    2069.5,
+    36.5,
+    2370,
+    162
+   ],
+   "sign_in_pill_texture_width": 336
+  },
+  "check_error": {
+   "key_flag": {
+    "nontext_all": 10.74,
+    "opaque_body": 11.88,
+    "glow_only": 9.41,
+    "bg_est_err_glow": 6.44
+   },
+   "key_sound": {
+    "nontext_all": 8.09,
+    "opaque_body": 1.69,
+    "glow_only": 16.99,
+    "bg_est_err_glow": 16.82
+   },
+   "key_gear": {
+    "nontext_all": 8.19,
+    "opaque_body": 6.55,
+    "glow_only": 10.41,
+    "bg_est_err_glow": 9.96
+   },
+   "pill_signin": {
+    "nontext_all": 11.91,
+    "opaque_body": 12.72,
+    "glow_only": 10.33,
+    "bg_est_err_glow": 7.09
+   }
+  }
+ },
+ "glass_divider.png": {
+  "size": [
+   12,
+   128
+  ],
+  "source_rect": [
+   2386,
+   38,
+   12,
+   128
+  ],
+  "nine_slice": {
+   "l": 0,
+   "t": 20,
+   "r": 0,
+   "b": 20
+  },
+  "color": "#78e1ff",
+  "peak_alpha": 0.36,
+  "check_error": {
+   "nontext_all": 2.63,
+   "opaque_body": null,
+   "glow_only": 2.63,
+   "bg_est_err_glow": 11.27
+  }
+ },
+ "text": {
+  "PLAY": {
+   "left_x": 482,
+   "right_x": 853,
+   "top_y": 810,
+   "bottom_y": 904,
+   "cap_height": 95,
+   "color": "#02123c",
+   "left_x_from_plate_left": 360.0,
+   "top_y_from_plate_top": 64.0
+  },
+  "CAMPAIGN": {
+   "left_x": 478,
+   "right_x": 782,
+   "top_y": 927,
+   "bottom_y": 960,
+   "cap_height": 34,
+   "color": "#8f4c02",
+   "left_x_from_plate_left": 356.0,
+   "top_y_from_plate_top": 181.0
+  },
+  "MULTIPLAYER": {
+   "left_x": 478,
+   "right_x": 947,
+   "top_y": 1099,
+   "bottom_y": 1146,
+   "cap_height": 48,
+   "color": "#f4f6f9",
+   "left_x_from_plate_left": 354.5,
+   "top_y_from_plate_top": 57.5
+  },
+  "PLAY WITH FRIENDS": {
+   "left_x": 479,
+   "right_x": 939,
+   "top_y": 1175,
+   "bottom_y": 1201,
+   "cap_height": 27,
+   "color": "#03dcf5",
+   "left_x_from_plate_left": 355.5,
+   "top_y_from_plate_top": 133.5
+  },
+  "LEADERBOARD": {
+   "left_x": 478,
+   "right_x": 979,
+   "top_y": 1344,
+   "bottom_y": 1391,
+   "cap_height": 48,
+   "color": "#f5f6f9"
+  },
+  "FASTEST CLEARS": {
+   "left_x": 479,
+   "right_x": 874,
+   "top_y": 1420,
+   "bottom_y": 1447,
+   "cap_height": 28,
+   "color": "#05dbf5"
+  },
+  "SIGN IN": {
+   "left_x": 2187,
+   "right_x": 2325,
+   "top_y": 88,
+   "bottom_y": 114,
+   "cap_height": 27,
+   "color": "#f6f7fa",
+   "left_x_from_plate_left": 117.5,
+   "top_y_from_plate_top": 51.5
+  },
+  "sign_in_icon": {
+   "left_x": 2110,
+   "right_x": 2159,
+   "top_y": 70,
+   "bottom_y": 129,
+   "cap_height": 60,
+   "color": "#f9fbfc"
+  },
+  "_note": "cap_height = measured ink height of capitals in target px; left_x/top_y absolute in target. Font size ~ cap_height/0.72 for gohud's display font (verify)."
+ }
+}
