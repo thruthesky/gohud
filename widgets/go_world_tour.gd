@@ -9,7 +9,7 @@ signal stage_selected(n: int)
 ## Each island's painted rectangle, normalized to the map and ordered along the route. Together they fill the map
 ## from its top edge to its bottom, as in the arcade reference.
 const ISLANDS := [Rect2(0.011, 0.030, 0.219, 0.230), Rect2(0.270, 0.002, 0.237, 0.227),
-		Rect2(0.538, 0.055, 0.224, 0.218), Rect2(0.770, 0.173, 0.232, 0.237), Rect2(0.526, 0.360, 0.301, 0.255),
+		Rect2(0.538, 0.055, 0.224, 0.218), Rect2(0.768, 0.173, 0.232, 0.237), Rect2(0.526, 0.360, 0.301, 0.255),
 		Rect2(0.174, 0.276, 0.314, 0.270), Rect2(0.005, 0.565, 0.239, 0.264), Rect2(0.288, 0.640, 0.307, 0.289),
 		Rect2(0.640, 0.640, 0.360, 0.318)]
 ## Normalized badge centres: low on each island, the country pill just under it.
@@ -17,7 +17,7 @@ const BADGES := [Vector2(0.079, 0.223), Vector2(0.312, 0.077), Vector2(0.626, 0.
 		Vector2(0.763, 0.534), Vector2(0.239, 0.488), Vector2(0.110, 0.752), Vector2(0.383, 0.854),
 		Vector2(0.803, 0.862)]
 ## Normalized island centres, the route's stops.
-static var POSITIONS: Array[Vector2] = _centres()
+static var positions: Array[Vector2] = _centres()
 
 var nodes: Array[GoWorldTourNode] = []
 ## Off: the stops show their names only, without numbered badges.
@@ -31,7 +31,7 @@ var _labels: Control # every stop's badge and caption, drawn after all islands; 
 func _init() -> void:
 	name = "WorldTour"
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	for i in POSITIONS.size():
+	for i in positions.size():
 		var node := GoWorldTourNode.new()
 		node.name = "Stage%d" % (i + 1)
 		add_child(node)
@@ -91,9 +91,9 @@ func _draw() -> void:
 	var travelled := 0.0
 	var visible_dash := true
 	var chunk := PackedVector2Array()
-	for i in POSITIONS.size() - 1:
-		var a: Vector2 = POSITIONS[i] * size
-		var b: Vector2 = POSITIONS[i + 1] * size
+	for i in positions.size() - 1:
+		var a: Vector2 = positions[i] * size
+		var b: Vector2 = positions[i + 1] * size
 		var delta := b - a
 		var bend := delta.orthogonal().normalized() * delta.length() * (0.14 if i % 2 == 0 else -0.14)
 		var control := (a + b) * 0.5 + bend
