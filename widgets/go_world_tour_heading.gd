@@ -47,12 +47,12 @@ func refresh() -> void:
 
 func _layout() -> void:
 	if size.x <= 0.0 or size.y <= 0.0: return
-	_ribbon_art.position = Vector2(0.0, size.y * 0.35)
-	_ribbon_art.size = Vector2(size.x, size.y * 0.65)
-	title_label.position = Vector2(size.x * 0.09, size.y * 0.38)
-	title_label.size = Vector2(size.x * 0.82, size.y * 0.5)
-	_stage_art.position = Vector2(size.x * 0.21, 0.0)
-	_stage_art.size = Vector2(size.x * 0.58, size.y * 0.44)
+	_ribbon_art.position = Vector2(0.0, size.y * 0.37)
+	_ribbon_art.size = Vector2(size.x, size.y * 0.63)
+	title_label.position = Vector2(size.x * 0.1, size.y * 0.42)
+	title_label.size = Vector2(size.x * 0.8, size.y * 0.42)
+	_stage_art.position = Vector2(size.x * 0.248, 0.0)
+	_stage_art.size = Vector2(size.x * 0.504, size.y * 0.40)
 	stage_label.position = _stage_art.position
 	var stage_size := _stage_art.size * Vector2(1.0, 0.9)
 	var outline := clampi(roundi(_stage_art.size.y * 0.09), 1, 8)
