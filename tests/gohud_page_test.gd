@@ -119,6 +119,24 @@ func _open_close() -> void:
 	check(is_equal_approx(page.surface.alpha, 1.0), "an opaque page asks for an opaque panel")
 	page.opaque = false
 	check(ground.color.a < 1.0, "a see-through page goes back to the scrim (alpha %.2f)" % ground.color.a)
+	# A bare card over a clear veil: the host's own backdrop shows through, and a restyle keeps the face off.
+	page.surface.scrim_transparent = true
+	page.opaque = false
+	check(is_zero_approx(ground.color.a), "a clear veil behind a see-through page (alpha %.2f)" % ground.color.a)
+	page.surface.bare_card = true
+	check(page.surface.card.get_theme_stylebox(&"panel") is StyleBoxEmpty, "a bare card draws no face")
+	page.surface.alpha = 0.5
+	check(page.surface.card.get_theme_stylebox(&"panel") is StyleBoxEmpty, "a bare card stays bare through a restyle")
+	page.surface.bare_card = false
+	check(not page.surface.card.get_theme_stylebox(&"panel") is StyleBoxEmpty, "bare_card off brings the look's face back")
+	# An asked title size holds on a full-width page title (room for it, so no fit shrinks it), and 0 gives it back.
+	var role_size := page.surface.title_label.get_theme_font_size(&"font_size")
+	page.surface.title_font_size = role_size + 8
+	check(page.surface.title_label.get_theme_font_size(&"font_size") == role_size + 8,
+		"title_font_size sizes the page title (%d)" % page.surface.title_label.get_theme_font_size(&"font_size"))
+	page.surface.title_font_size = 0
+	check(page.surface.title_label.get_theme_font_size(&"font_size") == role_size, "title_font_size 0 gives the look's size back")
+	page.surface.scrim_transparent = false
 	page.opaque = true
 	page.close()
 	await frames(2)

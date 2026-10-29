@@ -329,6 +329,14 @@ var alpha := -1.0:
 	set(value):
 		alpha = value
 		_restyle()
+## 🫥 **A card with no face** — no fill, no border, no shadow: the content stands straight on whatever is behind the
+## window (a full-screen page over a painted backdrop the host draws itself). Kept through every restyle (a look or
+## language change, an `alpha` assignment), so the face never comes back by itself. The veil behind follows
+## `scrim_transparent` / `opaque` as usual. Off: the look's card as before.
+var bare_card := false:
+	set(value):
+		bare_card = value
+		_restyle()
 ## Fade the card in when it opens.
 var fade_in := false
 ## Can the height be changed by dragging (sheets)?
@@ -710,7 +718,10 @@ func _restyle() -> void:
 	if card.theme_type_variation != wear:
 		GoStyle.forget_face(card)
 		card.theme_type_variation = wear
-	GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
+	if bare_card:
+		GoStyle.bare_panel(card)
+	else:
+		GoStyle.fade_panel(card, alpha, &"panel", GoTheme.BOX_PANEL)
 	_fit_scroll_frame()
 	_dress_chrome()
 
@@ -787,7 +798,12 @@ func _fit_title_size() -> void:
 	var plate := title_label.get_theme_stylebox(&"normal") if title_label.has_meta(&"go_plate_align") else null
 	var role_size := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
-		if title_label.has_meta(&"go_title_fit"):
+		# 🔑 A plain title (no plate) still takes an asked `title_font_size` — "the title's starting size" — instead of
+		#    its role's (14 dp body type on a phone under a 22 dp heading look). Nothing to fit: a plain title wraps.
+		if title_font_size > 0:
+			title_label.set_meta(&"go_title_fit", true)
+			title_label.add_theme_font_size_override(&"font_size", title_font_size)
+		elif title_label.has_meta(&"go_title_fit"):
 			title_label.remove_meta(&"go_title_fit")
 			title_label.remove_theme_font_size_override(&"font_size")
 		_widen_title(0.0)
