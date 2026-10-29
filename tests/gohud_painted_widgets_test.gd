@@ -37,6 +37,7 @@ func _initialize() -> void:
 		await _glyph_subtitle(look)
 	await _glyph_menu()
 	await _glyph_plate_scale()
+	await _glyph_fit_regrows()
 	await _reparent()
 	for look: StringName in GoThemePresets.ids():
 		GoUi.use_preset(look)
@@ -655,6 +656,73 @@ func _glyph_menu() -> void:
 		key.glyph_share = 0.4
 		check(is_equal_approx(maxf(key.glyph_rect().size.x, key.glyph_rect().size.y) / key.size.y, 0.4),
 			"GoGlassKey: an explicit glyph_share wins over the look's")
+	holder.queue_free()
+	await frames(1)
+
+
+## A fitted title and subtitle grow back like a fresh button, including when only the height or base changes.
+func _glyph_fit_regrows() -> void:
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+	var holder := Control.new()
+	holder.theme = GoUi.theme()
+	root.add_child(holder)
+	for variation: StringName in [GoTheme.VAR_PRIMARY_BUTTON, GoTheme.VAR_GLASS_BUTTON, GoTheme.VAR_HERO_BUTTON]:
+		var button := GoGlyphButton.make("RESET PROGRESS", GoIconSet.MULTIPLAYER, variation)
+		button.subtitle = "PLAY WITH FRIENDS"
+		button.fit_label = true
+		var fresh := GoGlyphButton.make(button.text, button.glyph_icon, variation)
+		fresh.subtitle = button.subtitle
+		fresh.fit_label = true
+		var big := Vector2(1400, 200)
+		fresh.custom_minimum_size = big
+		holder.add_child(fresh)
+		button.custom_minimum_size = big
+		holder.add_child(button)
+		await frames(4)
+		var title := fresh.get_theme_font_size(&"font_size")
+		var sub := fresh.subtitle_font_size()
+		var look := fresh.look_font_size()
+		button.custom_minimum_size = Vector2(210, 100)
+		button.size = button.custom_minimum_size
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") < title and button.subtitle_font_size() < sub,
+			"%s fit regrows: a smaller button shrinks both lines" % variation)
+		check(button.look_font_size() == look, "%s fit regrows: the look's size stays under the fit's override" % variation)
+		button.custom_minimum_size = big
+		button.size = big
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") == title and button.subtitle_font_size() == sub,
+			"%s fit regrows: grown back, both lines match a fresh large button" % variation)
+		# At a fixed width, a plate's height changes the base it starts from.
+		button.custom_minimum_size.y = 100
+		button.size = button.custom_minimum_size
+		await frames(4)
+		button.custom_minimum_size = big
+		button.size = big
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") == title and button.subtitle_font_size() == sub,
+			"%s fit regrows: height alone can grow both lines back" % variation)
+		button.fit_base_size = roundi(look * 0.6)
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") < title, "%s fit regrows: a smaller base shrinks the title" % variation)
+		button.fit_base_size = button.look_font_size()
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") == title and button.subtitle_font_size() == sub,
+			"%s fit regrows: a restored base alone grows both lines back" % variation)
+		button.fit_base_size = 0
+		var small_theme := holder.theme.duplicate() as Theme
+		small_theme.set_font_size(&"font_size", variation, roundi(look * 0.6))
+		button.theme = small_theme
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") < title, "%s fit regrows: a smaller look shrinks the title" % variation)
+		button.theme = null
+		await frames(4)
+		check(button.get_theme_font_size(&"font_size") == title and button.subtitle_font_size() == sub,
+			"%s fit regrows: a restored look alone grows both lines back" % variation)
+		check(not button._fit_queued, "%s fit regrows: the fit settles" % variation)
+		button.queue_free()
+		fresh.queue_free()
 	holder.queue_free()
 	await frames(1)
 

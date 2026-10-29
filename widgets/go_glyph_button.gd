@@ -145,7 +145,7 @@ var _fitted := 0
 var _fit_queued := false
 ## The fit is peeking under its own override (the theme notices that brings are its own, not a change).
 var _peeking := false
-## What the last fit change was made for (text, subtitle, width) and the sizes it left (see `fit_now()`).
+## What the last fit change was made for (text, subtitle, size, bases) and the sizes it left (see `fit_now()`).
 var _fit_key := ""
 var _fit_prev := Vector2i(-1, -1)
 ## The tracked title font the button put on as its `font` override (see [method title_font_at]), else null.
@@ -587,9 +587,11 @@ func fit_now() -> void:
 	var now := Vector2i(get_theme_font_size(&"font_size"), subtitle_font_size())
 	if wanted != now:
 		# 🛑 A button as tall as its two lines: a smaller subtitle makes it shorter, a shorter glyph leaves the text more
-		#    room, the text grows, the button grows… For the same text, subtitle and width, a fit that only goes back
-		#    to the sizes it just left is that loop: the smaller sizes stay.
-		var key := "%s|%s|%d" % [atr(text), atr(subtitle), roundi(size.x)]
+		#    room, the text grows, the button grows… For the same text, subtitle, size and bases, a fit that only goes
+		#    back to the sizes it just left is that loop: the smaller sizes stay. A new height, look or fit_base_size
+		#    starts from its base again, even when that would restore the sizes the last fit left.
+		var key := "%s|%s|%d|%d|%d|%d" % [atr(text), atr(subtitle), roundi(size.x), roundi(size.y),
+			_fit_base(), _subtitle_base()]
 		if key == _fit_key and wanted == _fit_prev and wanted.x >= now.x and wanted.y >= now.y: return
 		_fit_key = key
 		_fit_prev = now
@@ -618,6 +620,12 @@ func _fit_base(height := -1.0) -> int:
 	var base := fit_base_size if fit_base_size > 0 else look
 	if _hugs(): base = mini(base, maxi(1, roundi(look * plate_scale(height))))
 	return base
+
+
+## The look's `font_size` under the override [member fit_label] put on. A screen scaling [member fit_base_size]
+## reads this: `get_theme_font_size(&"font_size")` returns the fitted size, which would keep a grown button small.
+func look_font_size() -> int:
+	return _look_font_size()
 
 
 ## The look's `font_size` for this variation (or a size the caller put on), read under the override the fit put on.
