@@ -513,14 +513,14 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
             shine=0.5, pressed=down))
     put("GoBestBarEntry/styles/disabled", "painted_GoBestBarEntry_normal")
     put("GoBestBarEntry/styles/focus", "painted_empty")
-    for type_name, size in (("GoScoreTableHeadLabel", 19), ("GoScoreTableLabel", 22), ("GoBestBarLabel", 23),
-                            ("GoBestBarEntry", 25), ("GoPodiumName", 19), ("GoPodiumValue", 24)):
+    for type_name, size in (("GoScoreTableHeadLabel", 20), ("GoScoreTableLabel", 22), ("GoBestBarLabel", 23),
+                            ("GoBestBarEntry", 25), ("GoPodiumName", 22), ("GoPodiumValue", 24)):
         put(type_name + "/fonts/font", "painted_score_font")
         setT(type_name + "/font_sizes/font_size", size)
         head = type_name == "GoScoreTableHeadLabel"
         setT(type_name + "/colors/font_color", C(WHITE if head else board_ink))
         setT(type_name + "/colors/font_outline_color", C(board_rim))
-        setT(type_name + "/constants/outline_size", 3 if head else 0)
+        setT(type_name + "/constants/outline_size", 5 if head else 0)
     setT("GoPodiumName/fonts/font", 'SubResource("painted_row_font")')
     for slot in FONT_STATES:
         setT("GoBestBarEntry/colors/" + slot, C(board_ink))
@@ -814,7 +814,7 @@ def leaderboard_controls(setT, put, arcade, box, C):
                 shine=0.9, pressed=down, stroke=True))
         put(type_name + "/styles/focus", "painted_empty")
         put(type_name + "/fonts/font", "painted_score_font")
-        setT(type_name + "/font_sizes/font_size", 26)
+        setT(type_name + "/font_sizes/font_size", 23)
         for slot in FONT_STATES:
             setT("%s/colors/%s" % (type_name, slot), C(word))
         setT(type_name + "/colors/font_outline_color", C(INK))
@@ -824,7 +824,7 @@ def leaderboard_controls(setT, put, arcade, box, C):
     #    bold white words in a thick ink outline (the plain gloss buttons' words are thin and unoutlined).
     for type_name in ("GoPillGreen", "GoPillBlue", "GoPillRed"):
         put(type_name + "/fonts/font", "painted_score_font")
-        setT(type_name + "/font_sizes/font_size", 26)
+        setT(type_name + "/font_sizes/font_size", 21)
         for slot in FONT_STATES:
             setT("%s/colors/%s" % (type_name, slot), C(WHITE))
         setT(type_name + "/colors/font_outline_color", C(INK))
@@ -833,7 +833,7 @@ def leaderboard_controls(setT, put, arcade, box, C):
     put("GoPagePlate/styles/panel", arcade("painted_GoPagePlate", (1.0, 0.99, 0.95, 1.0), (0.97, 0.91, 0.78, 1.0),
                                            INK, radius=16, edge=3, margins=(22, 4, 22, 8), lip=3, shine=0.6))
     put("GoPageLabel/fonts/font", "painted_score_font")
-    setT("GoPageLabel/font_sizes/font_size", 32)
+    setT("GoPageLabel/font_sizes/font_size", 28)
     setT("GoPageLabel/colors/font_color", C(ink))
     setT("GoPageLabel/constants/outline_size", 0)
     # 🪧 The state panel: a big pale-blue card in a navy rim; its optional blue window header strip. The card's
@@ -845,21 +845,26 @@ def leaderboard_controls(setT, put, arcade, box, C):
                                              stroke=True))
     # The heading in the rounded display face, heavy navy; the body line in the scoreboard's bold.
     put("GoStateHeading/fonts/font", "world_tour_font")
-    setT("GoStateHeading/font_sizes/font_size", 72)
+    setT("GoStateHeading/font_sizes/font_size", 73)
     setT("GoStateHeading/colors/font_color", C(ink))
     setT("GoStateHeading/colors/font_outline_color", C(WHITE))
     setT("GoStateHeading/constants/outline_size", 6)
     setT("GoStateHeading/constants/line_spacing", -14)
     put("GoStateBody/fonts/font", "painted_score_font")
-    setT("GoStateBody/font_sizes/font_size", 28)
+    setT("GoStateBody/font_sizes/font_size", 31)
     setT("GoStateBody/colors/font_color", C(ink))
     setT("GoStateBody/constants/outline_size", 0)
     # 🏷 The board title: big white words with a thick ink outline, and the navy pill under it.
     put("GoBoardTitle/fonts/font", "world_tour_font")
-    setT("GoBoardTitle/font_sizes/font_size", 72)
+    setT("GoBoardTitle/font_sizes/font_size", 67)
     setT("GoBoardTitle/colors/font_color", C(WHITE))
     setT("GoBoardTitle/colors/font_outline_color", C(INK))
-    setT("GoBoardTitle/constants/outline_size", 12)
+    setT("GoBoardTitle/constants/outline_size", 14)
+    # A deep ink shadow under the outline: the painted titles stand off the backdrop.
+    setT("GoBoardTitle/colors/font_shadow_color", C(INK))
+    setT("GoBoardTitle/constants/shadow_offset_x", 0)
+    setT("GoBoardTitle/constants/shadow_offset_y", 4)
+    setT("GoBoardTitle/constants/shadow_outline_size", 14)
     setT("GoBoardTitle/constants/line_spacing", -14)
     put("GoBoardPill/styles/panel", box("painted_GoBoardPill", (0.07, 0.16, 0.45, 1.0), 26, 3,
                                         (0.20, 0.45, 0.95, 1.0), margin_h=24.0, margin_v=(4.0, 6.0), bottom=4,
