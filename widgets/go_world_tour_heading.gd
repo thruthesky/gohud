@@ -15,6 +15,9 @@ var _stage_layout_pending := false
 ## The title's band (shares of the heading) and the share of the band's height its base font size takes.
 const TITLE_BAND := Rect2(0.15, 0.47, 0.70, 0.35)
 const TITLE_FILL := 1.0
+const TITLE_TWO_LINE_FILL := 0.55
+## Line pitch of a two-line title as a share of its font size.
+const TITLE_LINE_PITCH := 0.95
 
 
 func _init() -> void:
@@ -80,15 +83,19 @@ func _layout_title() -> void:
 	var base := maxi(8, roundi(band.size.y * TITLE_FILL))
 	title_label.text = _wrap_if_needed(_title, font, width, base)
 	var lines := title_label.text.count("\n") + 1
-	if lines > 1: base = maxi(8, roundi(base * 0.5))
+	# Two lines share the band: each gets about half its height (caps plus a small gap between the lines).
+	if lines > 1: base = maxi(8, roundi(band.size.y * TITLE_TWO_LINE_FILL))
 	var fitted := GoStyle.fit_font_size(PackedStringArray([title_label.text]), base, width, font)
 	if not title_label.has_theme_font_size_override(&"font_size") or title_label.get_theme_font_size(&"font_size") != fitted:
 		title_label.add_theme_font_size_override(&"font_size", fitted)
+	# Baloo's line box is much taller than its capitals: pull a second line up so both stay inside the band.
+	var spacing := 0 if lines == 1 else roundi(fitted * TITLE_LINE_PITCH - font.get_height(fitted))
+	title_label.add_theme_constant_override(&"line_spacing", spacing)
 	title_base_size = base
 	# The line box is taller than the lettering: centre it on the band rather than letting it grow the band.
-	var line_h := maxf(band.size.y, font.get_height(fitted) * lines)
-	title_label.position = Vector2(band.position.x, band.get_center().y - line_h * 0.5)
-	title_label.size = Vector2(band.size.x, line_h)
+	var block_h := font.get_height(fitted) * lines + spacing * (lines - 1)
+	title_label.position = Vector2(band.position.x, band.get_center().y - block_h * 0.5)
+	title_label.size = Vector2(band.size.x, block_h)
 
 
 ## The ribbon's flat centre band in the heading's space: inside the body's slanted ends and its arched top and foot.
