@@ -55,12 +55,15 @@ func _layout() -> void:
 	_stage_art.size = Vector2(size.x * 0.504, size.y * 0.40)
 	stage_label.position = _stage_art.position
 	var stage_size := _stage_art.size * Vector2(1.0, 0.9)
-	var outline := clampi(roundi(_stage_art.size.y * 0.09), 1, 8)
+	var outline := clampi(roundi(_stage_art.size.y * 0.13), 1, 12)
 	if not stage_label.has_theme_constant_override(&"outline_size") or stage_label.get_theme_constant(&"outline_size") != outline:
 		stage_label.add_theme_constant_override(&"outline_size", outline)
 	# Fit before applying the rect: a prior large font otherwise forces Label's minimum size to grow it.
-	stage_base_size = _fit(stage_label, stage_size.x * 0.82, stage_size.y * 0.62, stage_size.y)
-	stage_label.size = stage_size
+	# Baloo's line box is far taller than its capitals: the label may overhang the badge's art, as the title does.
+	stage_base_size = _fit(stage_label, stage_size.x * 0.8, stage_size.y * 0.6, stage_size.y * 1.35)
+	var line_h := maxf(stage_size.y, stage_label.get_theme_font(&"font").get_height(stage_label.get_theme_font_size(&"font_size")))
+	stage_label.position.y = (stage_size.y - line_h) * 0.5
+	stage_label.size = Vector2(stage_size.x, line_h)
 	var title_height := minf(title_label.size.y * 0.68, title_label.size.x / 7.0)
 	var title_font := title_label.get_theme_font(&"font")
 	var title_base := maxi(8, roundi(title_height))
