@@ -199,6 +199,15 @@ BASES = {
     "GoScoreRowStripe": "PanelContainer", "GoScoreRowStripeAlt": "PanelContainer",
     "GoScoreRowStripeGold": "PanelContainer", "GoScoreRowLabel": "Label", "GoScoreRowMutedLabel": "Label",
 }
+# 🏆 The leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoBoardTitle): `leaderboard_controls()`.
+LEADERBOARD_CONTROL_BASES = {
+    "GoCategoryButton": "Button", "GoCategoryButtonSelected": "Button",
+    "GoPagePlate": "PanelContainer", "GoPageLabel": "Label",
+    "GoStatePanel": "PanelContainer", "GoStateHeader": "PanelContainer", "GoStateHeading": "Label",
+    "GoStateBody": "Label", "GoBoardTitle": "Label", "GoBoardPill": "PanelContainer", "GoBoardPillLabel": "Label",
+    "GoPillGreen": "GoPrimaryButton", "GoPillBlue": "GoInfoButton", "GoPillRed": "GoDangerButton",
+}
+BASES.update(LEADERBOARD_CONTROL_BASES)
 # 🦓 The flat zebra rows' padding (left, top, right, bottom): a slim lead-in before the rank, a little more before the
 #    right edge's value, nothing above or below — the row's height is its content's, the stripes touch.
 STRIPE_MARGINS = (10, 0, 16, 0)
@@ -250,7 +259,7 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         return bid
 
     def arcade(bid, top, bottom, rim, radius=12, edge=2, margins=(12, 4, 12, 6), lip=0, shine=0.7,
-               pressed=False):
+               pressed=False, stroke=False):
         """Small reusable glossy arcade plates; the drawing remains entirely inside its allocated rectangle."""
         lines = ['script = ExtResource("arcade")']
         lines += ["content_margin_%s = %g" % (side, margin) for side, margin in
@@ -260,6 +269,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                   "lip = %g" % lip, "shine = %g" % shine, "band = 0"]
         if pressed:
             lines.append("pressed = true")
+        if stroke:
+            lines.append("gloss = 1")          # GoStyleBoxArcade.Gloss.STROKE: no dash at the top's middle
         boxes[bid] = ("StyleBox", lines)
         return bid
 
@@ -437,6 +448,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
         if BASES[type_name] != "Label":
             for slot in FONT_STATES:
                 setT(type_name + "/colors/" + slot, C(ink))
+
+    leaderboard_controls(setT, put, arcade, box, C)
 
     # 🦓 **Flat zebra rows** for a long ranking list: no rim, no corners, no shadow, no gloss — rows stacked with no
     #    gap read as alternating light and grey stripes, not a pile of pills. Every fill is a palette token as written
@@ -736,6 +749,83 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     for bid in [bid for bid in boxes if bid not in used]:
         del boxes[bid]
     write_map()
+
+
+def leaderboard_controls(setT, put, arcade, box, C):
+    """🏆 The podium leaderboard's controls, code-drawn: the art in `assets/arcade_light/leaderboard/` (when the theme
+    ships it) goes over these faces at run time through `GoSkinArcadePainted` (`category_button_art`, …), so a
+    missing picture still leaves the same look in candy gloss."""
+    ink = (0.025, 0.035, 0.22, 1.0)          # the scoreboard's navy ink
+    orange = (0.94, 0.45, 0.05, 1.0)          # the selected category's rim
+    states = ("normal", "hover", "pressed", "hover_pressed", "disabled")
+    # 🗂 The category buttons: a blue glossy plate with an ink rim (white outlined words), gold with an orange rim
+    #    when selected (navy words). The left padding leaves the icon its room; the right one the chevron's.
+    for type_name, top, bottom, rim, word, outline in (
+            ("GoCategoryButton", (0.27, 0.62, 1.0, 1.0), (0.04, 0.27, 0.86, 1.0), INK, WHITE, 6),
+            ("GoCategoryButtonSelected", (1.0, 0.93, 0.36, 1.0), (1.0, 0.70, 0.05, 1.0), orange, ink, 0)):
+        for state in states:
+            down = state in ("pressed", "hover_pressed")
+            tint = DISABLED_TINT if state == "disabled" else WHITE
+            put("%s/styles/%s" % (type_name, state), arcade("painted_%s_%s" % (type_name, state),
+                _times(top, tint), _times(bottom, tint), rim, radius=20, edge=4, margins=(16, 6, 16, 10), lip=4,
+                shine=0.9, pressed=down, stroke=True))
+        put(type_name + "/styles/focus", "painted_empty")
+        put(type_name + "/fonts/font", "painted_score_font")
+        setT(type_name + "/font_sizes/font_size", 26)
+        for slot in FONT_STATES:
+            setT("%s/colors/%s" % (type_name, slot), C(word))
+        setT(type_name + "/colors/font_outline_color", C(INK))
+        setT(type_name + "/constants/outline_size", outline)
+        setT(type_name + "/constants/line_spacing", -4)
+    # 💊 The difficulty pills and the state panel's PLAY / TRY AGAIN: the gloss pills' faces with the scoreboard's
+    #    bold white words in a thick ink outline (the plain gloss buttons' words are thin and unoutlined).
+    for type_name in ("GoPillGreen", "GoPillBlue", "GoPillRed"):
+        put(type_name + "/fonts/font", "painted_score_font")
+        setT(type_name + "/font_sizes/font_size", 26)
+        for slot in FONT_STATES:
+            setT("%s/colors/%s" % (type_name, slot), C(WHITE))
+        setT(type_name + "/colors/font_outline_color", C(INK))
+        setT(type_name + "/constants/outline_size", 6)
+    # 📄 The page stepper's cream plate and its bold page name.
+    put("GoPagePlate/styles/panel", arcade("painted_GoPagePlate", (1.0, 0.99, 0.95, 1.0), (0.97, 0.91, 0.78, 1.0),
+                                           INK, radius=16, edge=3, margins=(22, 4, 22, 8), lip=3, shine=0.6))
+    put("GoPageLabel/fonts/font", "painted_score_font")
+    setT("GoPageLabel/font_sizes/font_size", 32)
+    setT("GoPageLabel/colors/font_color", C(ink))
+    setT("GoPageLabel/constants/outline_size", 0)
+    # 🪧 The state panel: a big pale-blue card in a navy rim; its optional blue window header strip. The card's
+    #    padding is only its rim, so the header spans it edge to edge; `GoStatePanel` pads its body itself.
+    put("GoStatePanel/styles/panel", arcade("painted_GoStatePanel", (0.95, 0.98, 1.0, 1.0), (0.83, 0.92, 0.99, 1.0),
+                                            INK, radius=26, edge=4, margins=(4, 4, 4, 4), shine=0.15))
+    put("GoStateHeader/styles/panel", arcade("painted_GoStateHeader", (0.20, 0.55, 1.0, 1.0), (0.05, 0.30, 0.88, 1.0),
+                                             INK, radius=24, edge=4, margins=(26, 10, 26, 12), lip=3, shine=0.7,
+                                             stroke=True))
+    # The heading in the rounded display face, heavy navy; the body line in the scoreboard's bold.
+    put("GoStateHeading/fonts/font", "world_tour_font")
+    setT("GoStateHeading/font_sizes/font_size", 72)
+    setT("GoStateHeading/colors/font_color", C(ink))
+    setT("GoStateHeading/colors/font_outline_color", C(WHITE))
+    setT("GoStateHeading/constants/outline_size", 6)
+    setT("GoStateHeading/constants/line_spacing", -14)
+    put("GoStateBody/fonts/font", "painted_score_font")
+    setT("GoStateBody/font_sizes/font_size", 28)
+    setT("GoStateBody/colors/font_color", C(ink))
+    setT("GoStateBody/constants/outline_size", 0)
+    # 🏷 The board title: big white words with a thick ink outline, and the navy pill under it.
+    put("GoBoardTitle/fonts/font", "world_tour_font")
+    setT("GoBoardTitle/font_sizes/font_size", 72)
+    setT("GoBoardTitle/colors/font_color", C(WHITE))
+    setT("GoBoardTitle/colors/font_outline_color", C(INK))
+    setT("GoBoardTitle/constants/outline_size", 12)
+    setT("GoBoardTitle/constants/line_spacing", -14)
+    put("GoBoardPill/styles/panel", box("painted_GoBoardPill", (0.07, 0.16, 0.45, 1.0), 26, 3,
+                                        (0.20, 0.45, 0.95, 1.0), margin_h=24.0, margin_v=(4.0, 6.0), bottom=4,
+                                        outer=(INK, 2, (0, 2))))
+    put("GoBoardPillLabel/fonts/font", "painted_score_font")
+    setT("GoBoardPillLabel/font_sizes/font_size", 24)
+    setT("GoBoardPillLabel/colors/font_color", C(WHITE))
+    setT("GoBoardPillLabel/colors/font_outline_color", C(INK))
+    setT("GoBoardPillLabel/constants/outline_size", 3)
 
 
 def texture_id(file):

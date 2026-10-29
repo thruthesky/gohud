@@ -6,6 +6,23 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **Leaderboard controls (arcade_light)** — **`GoCategoryButton`** (`Button`): a category key with `icon_art` on the
+  left; `selected` swaps `GoCategoryButton` (blue gloss, white outlined words) for `GoCategoryButtonSelected` (gold,
+  orange rim, navy words) and shows a chevron (`chevron_art`, else the skin's `chevron`, else the icon set's); the
+  words shrink to fit and break into two balanced lines when one line would shrink under 86 %, `text` untouched.
+  **`GoPageStepper`** (`HBoxContainer`): `text` on a cream `GoPagePlate` (`GoPageLabel`, fitted) between two
+  `GoArrowButton` keys, `page_count` dots under it (`page_index` dark), `previous_disabled` / `next_disabled`,
+  `previous_pressed` / `next_pressed`. **`GoStatePanel`** (`PanelContainer`): the pale card a board shows when empty,
+  failed or loading — `illustration`, `heading` (`GoStateHeading`), `body` (`GoStateBody`), a `GoGlyphButton`
+  (`button_text`, `button_variation`, `button_glyph`, `button_pressed`), `loading` (a ring of 12 fading blue dashes,
+  still under `reduce_motion`, no button), and an optional blue `GoStateHeader` strip (`set_header(icon, title,
+  pill_text)`, `clear_header()`). **`GoBoardTitle`** (`VBoxContainer`): a big white outlined title (`GoBoardTitle`)
+  with an `icon`, and a navy `GoBoardPill` (`pill_text`, `pill_icon`) tucked under it. **`GoGlyphButton.check_badge`**
+  (a round badge over the top-right corner, `badge_rect()`) and **`glow`** (a soft light behind the face). Skin hooks
+  `category_button_art()`, `page_plate_art()`, `page_dot_colors()`, `loading_ring_color()`, `button_glow_color()`;
+  arcade_light reads painted art from `assets/arcade_light/leaderboard/` when present and falls back to the
+  code-drawn faces.
+
 - **arcade_light flat zebra rows** — `GoScoreRowStripe`, `GoScoreRowStripeAlt` and `GoScoreRowStripeGold`
   (`PanelContainer`): a flat fill of the `surface` token, of `surface_soft`, and of `surface` lerped 0.28 toward
   `warning_fill` (a soft gold first place); no border, corner radius or shadow, content margins 10 left, 16 right, 0

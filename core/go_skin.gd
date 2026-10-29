@@ -1580,6 +1580,35 @@ func widget_art(_name: StringName) -> Texture2D:
 	return null
 
 
+# ── 🏆 Leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoGlyphButton.glow) ──────────
+
+## A category button's painted plate in [param state] (`normal`, `pressed`, `disabled`…), gold when [param selected],
+## laid over the theme's `GoCategoryButton` / `GoCategoryButtonSelected` face (the widget keeps that face's padding).
+## `null` (here): the theme's face is the plate.
+func category_button_art(_selected: bool, _state: StringName) -> StyleBox:
+	return null
+
+
+## The page stepper's painted plate. `null` (here): the theme's `GoPagePlate` face.
+func page_plate_art() -> StyleBox:
+	return null
+
+
+## The page dots under a page stepper's name: the current page's dot, then every other dot.
+func page_dot_colors() -> PackedColorArray:
+	return PackedColorArray([GoUi.color(GoTheme.TEXT), Color(GoUi.color(GoTheme.ACCENT), 0.55)])
+
+
+## The head dash of a state panel's loading ring; the dashes behind it fade from it toward the panel.
+func loading_ring_color() -> Color:
+	return GoUi.color(GoTheme.ACCENT)
+
+
+## The soft light round a button that glows (`GoGlyphButton.glow`): the picked difficulty, say.
+func button_glow_color() -> Color:
+	return Color(GoUi.color(GoTheme.SURFACE_HIGH), 0.75)
+
+
 ## The ring round a selected tile (`GoLevelCard.selected`) — drawn over the tile, its centre left open.
 func selection_ring_box() -> StyleBox:
 	var ring := StyleBoxFlat.new()

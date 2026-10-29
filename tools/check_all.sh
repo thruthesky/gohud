@@ -76,6 +76,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_widgets_test.gd" \
 step "①-wt unit tests — the world-tour route and stage nodes"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_world_tour_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-lb unit tests — the leaderboard controls (GoCategoryButton, check badge and glow, GoPageStepper, GoStatePanel, GoBoardTitle)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_leaderboard_controls_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-d unit tests — the game's dialog (GoSurface under arcade_light measures PaintedDialog and RibbonHeader)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_dialog_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

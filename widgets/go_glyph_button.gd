@@ -13,6 +13,9 @@
 ##    instead, exactly as Magnet Mayhem's GlossButton. A face thinner than [constant MIN_EDGE] keeps the group centred
 ##    and the glyph that far from the edge.
 ## 🔑 Right to left, the whole layout is mirrored: the glyph stands at the label's right, where the reading starts.
+## ✅ `check_badge` pins a round badge (a check) over the top-right corner and `glow` lays a soft light round the
+##    button — the picked one of a row of pills (a difficulty):
+##    `easy.check_badge = GoUi.skin().widget_art(&"check_green")` (null in a look without that art: no badge).
 ## 🔑 `fit_label` shrinks a long label (a translation) until it fits beside the glyph — as each of Magnet Mayhem's
 ##    screens did by hand for its GlossButtons — on every resize, text, glyph and look change. Give the button its width
 ##    (`custom_minimum_size` or a container's share): the room is measured from it.
@@ -30,6 +33,12 @@ const MIN_EDGE := 12.0
 const PRESS_DROP := 2.0
 ## The glyph's opacity on a disabled button (the game's GlossButton), over the normal icon colour.
 const DISABLED_ALPHA := 0.6
+## The check badge's diameter as a share of the button's height, and where its centre sits: in from the right edge
+## and down from the top, as shares of the height (it overlaps the corner, as a sticker would).
+const BADGE_SHARE := 0.74
+const BADGE_CENTRE := Vector2(0.2, 0.1)
+## How far the glow reaches out of the button, as a share of its height.
+const GLOW_SHARE := 0.22
 ## The faces that place the label (focus is drawn over them and places nothing).
 const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]
 
@@ -83,7 +92,23 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ## the project plays and a short buzz on a phone. Empty: silent. A press from code (`button_pressed =`) says nothing.
 @export var feedback: StringName = GoFeedback.TAPPED
 
+## ✅ A round badge over the top-right corner (a check on the picked pill). Null: none. It is drawn over the face and
+## past its edge, so leave the button room above and to the right (or let it overlap its neighbour, as a sticker).
+@export var check_badge: Texture2D:
+	set(value):
+		check_badge = value
+		queue_redraw()
+
+## ✨ A soft light round the button, behind its face (the skin's `button_glow_color`) — the picked pill of a row.
+@export var glow := false:
+	set(value):
+		if glow == value: return
+		glow = value
+		_update_glow()
+
 var _shift := 0.0
+## The canvas item the glow is drawn on, behind the button's own (created on the first glow).
+var _glow_item := RID()
 var _shifting := false
 ## The `font_size` override [member fit_label] put on (0: none of ours).
 var _fitted := 0
@@ -222,6 +247,10 @@ func _notification(what: int) -> void:
 			_queue_fit()
 		NOTIFICATION_DRAW:
 			_draw_glyph()
+			_draw_badge()
+			if glow: _update_glow()
+		NOTIFICATION_PREDELETE:
+			if _glow_item.is_valid(): RenderingServer.free_rid(_glow_item)
 
 
 ## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
@@ -314,6 +343,39 @@ func _draw_glyph() -> void:
 		draw_set_transform(Vector2(rect.get_center().x * 2.0, 0.0), 0.0, Vector2(-1.0, 1.0))
 	draw_texture_rect(art, rect, false, glyph_tint())
 	if glyph_flip_h: draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## Where [member check_badge] is drawn, in the button's space (empty without a badge).
+func badge_rect() -> Rect2:
+	if check_badge == null: return Rect2()
+	var side := size.y * BADGE_SHARE
+	var centre := Vector2(size.x - size.y * BADGE_CENTRE.x, size.y * BADGE_CENTRE.y)
+	return Rect2(centre - Vector2.ONE * side * 0.5, Vector2.ONE * side)
+
+
+func _draw_badge() -> void:
+	if check_badge == null: return
+	draw_texture_rect(check_badge, badge_rect(), false)
+
+
+## Draws (or clears) the glow on its own canvas item, behind the button's face.
+func _update_glow() -> void:
+	if not glow:
+		if _glow_item.is_valid(): RenderingServer.canvas_item_clear(_glow_item)
+		return
+	if not is_inside_tree(): return
+	if not _glow_item.is_valid():
+		_glow_item = RenderingServer.canvas_item_create()
+		RenderingServer.canvas_item_set_parent(_glow_item, get_canvas_item())
+		RenderingServer.canvas_item_set_draw_behind_parent(_glow_item, true)
+	RenderingServer.canvas_item_clear(_glow_item)
+	var light := StyleBoxFlat.new()
+	# The body is hidden under the face; only its shadow, the light, shows past the edge.
+	light.bg_color = GoUi.skin().button_glow_color()
+	light.set_corner_radius_all(int(size.y * 0.5))
+	light.shadow_color = light.bg_color
+	light.shadow_size = maxi(1, int(size.y * GLOW_SHARE))
+	light.draw(_glow_item, Rect2(Vector2.ZERO, size))
 
 
 ## The signed drawing rectangle: a negative width mirrors the art within the unchanged [method glyph_rect].
