@@ -67,9 +67,11 @@ func _podium(look: StringName) -> void:
 	# Each text fits its plate.
 	for place in 3:
 		var plate := podium.plate_rect(place)
-		var label := podium.name_label(place)
-		check(plate.encloses(Rect2(label.position, label.size).grow(-0.5)), "%s: place %d name on its plate" % [look,
-				place + 1])
+		for label: Label in [podium.name_label(place), podium.value_label(place)]:
+			var box := Rect2(label.position, label.size)
+			# A line box is taller than its letters; its middle and its width stay on the plate.
+			check(plate.has_point(box.get_center()) and box.size.x <= plate.size.x + 0.5,
+					"%s: place %d %s on its plate" % [look, place + 1, label.name])
 	# A short board hides the missing places.
 	podium.set_places([{name = "Solo", value = "3"}])
 	await frames(1)

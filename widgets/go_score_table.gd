@@ -35,7 +35,7 @@ const VAR_ROW_OWN := &"GoScoreTableRowOwn"
 const VAR_LABEL := &"GoScoreTableLabel"
 ## The columns' shares of the width: rank, player, value — the head's titles and every row use the same, so a title
 ## stands over its column's texts (the name centred on the row).
-const COLUMN_SHARES: Array[float] = [0.26, 0.49, 0.25]
+const COLUMN_SHARES: Array[float] = [0.248, 0.515, 0.237]
 ## Where the head bar's two column rules stand, as shares of its width.
 const RULE_SHARES: Array[float] = [0.2, 0.77]
 ## The rank column: room before the medal, then the medal, then the gap to the "#n" (dp, at the base sizes).

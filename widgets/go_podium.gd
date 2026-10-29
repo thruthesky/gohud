@@ -32,10 +32,19 @@ const VAR_NAME := &"GoPodiumName"
 const VAR_VALUE := &"GoPodiumValue"
 ## The design canvas every rect below is measured in (the reference layout's pixels).
 const DESIGN_SIZE := Vector2(1035.0, 256.0)
-## Per place (0 = 1st, 1 = 2nd, 2 = 3rd): the block, then its laurel medal, in design units.
-const BLOCKS: Array[Rect2] = [Rect2(313, 106, 418, 150), Rect2(3, 142, 334, 114), Rect2(710, 142, 321, 114)]
+## Per place (0 = 1st, 1 = 2nd, 2 = 3rd): the block, then its laurel medal, in design units. A block reaches
+## [constant BLOCK_TUCK] below the canvas: its bottom lip tucks under whatever stands below the podium (the table),
+## as on the painted board, so the name plates stand as tall as there.
+const BLOCKS: Array[Rect2] = [Rect2(313, 100, 418, 168), Rect2(3, 137, 334, 128), Rect2(710, 141, 321, 126)]
 const LAURELS: Array[Rect2] = [Rect2(423, 0, 202, 168), Rect2(93, 32, 174, 132), Rect2(778, 43, 164, 123)]
-## The name plate inside each block, as shares of the block (x, y, width, height).
+## How far the blocks reach below the canvas's bottom edge (design units; [constant BLOCKS] already include it).
+const BLOCK_TUCK := 12.0
+## Per place: the block art's top and bottom bands (shares of the art's height), drawn as painted when a block is
+## taller than its art — the flat middle between them stretches, and the name plate with it.
+const BLOCK_BANDS: Array[Vector2] = [Vector2(130.0 / 300.0, 65.0 / 300.0), Vector2(106.0 / 228.0, 56.0 / 228.0),
+		Vector2(96.0 / 228.0, 60.0 / 228.0)]
+## The name plate inside each block's art, as shares of the art (x, y, width, height). Its top and bottom lie in the
+## art's [constant BLOCK_BANDS], so a stretched block stretches the plate.
 const PLATES: Array[Rect2] = [Rect2(0.128, 0.360, 0.743, 0.497), Rect2(0.127, 0.368, 0.746, 0.482),
 		Rect2(0.109, 0.325, 0.780, 0.509)]
 ## The sunburst behind the gold block and the confetti over the whole podium, in design units.
@@ -44,10 +53,17 @@ const CONFETTI := Rect2(-40, 0, 1115, 218)
 ## The art names per place.
 const BLOCK_ART: Array[StringName] = [&"podium_gold", &"podium_silver", &"podium_bronze"]
 const LAUREL_ART: Array[StringName] = [&"laurel_gold", &"laurel_silver", &"laurel_bronze"]
-## The first place's text is this much larger than the others'.
-const GOLD_TEXT := 1.12
-## The share of the plate's height the name takes (the value takes the rest).
+## The first place's name is this much larger than the others' names, and its value [constant GOLD_VALUE].
+const GOLD_TEXT := 1.2
+const GOLD_VALUE := 1.04
+## Kept for callers: the share of the plate's height above the seam between the name and the value. The texts
+## themselves stand at [constant TEXT_MIDDLES].
 const NAME_SHARE := 0.44
+## Per place: where the middle of the name's capitals (x) and of the value's figures (y) stand, as shares of the
+## plate's height from its top — the painted board's spacing: the name close under the rim, the value low.
+const TEXT_MIDDLES: Array[Vector2] = [Vector2(0.25, 0.74), Vector2(0.19, 0.71), Vector2(0.19, 0.71)]
+## A capital's height as a share of the font size (the look's rounded face).
+const CAP_SHARE := 0.7
 ## The room kept clear at each side of a plate's text (a share of the plate's width).
 const PLATE_PAD := 0.05
 
@@ -146,17 +162,31 @@ func design_rect(rect: Rect2) -> Rect2:
 	return Rect2(origin + rect.position * k, rect.size * k)
 
 
-## Where place [param index]'s block art is drawn (its art kept to its own proportions, standing on the block's
-## bottom edge), in the podium's space.
+## Where place [param index]'s block art is drawn, in the podium's space: its rect in [constant BLOCKS] (reaching
+## [constant BLOCK_TUCK] below the canvas). The art keeps its width; a rect taller than the art stretches its middle,
+## one shorter than its painted bands takes the art's own proportions.
 func block_rect(index: int) -> Rect2:
-	return _fit(design_rect(BLOCKS[index]), _art(BLOCK_ART[index]), true)
+	var room := design_rect(BLOCKS[index])
+	var art := _art(BLOCK_ART[index])
+	if art == null or art.get_width() <= 0 or art.get_height() <= 0: return room
+	var bands := BLOCK_BANDS[index]
+	if room.size.y < art.get_height() * room.size.x / art.get_width() * (bands.x + bands.y):
+		return _fit(room, art, true)
+	return room
 
 
 ## Where place [param index]'s name plate is, in the podium's space.
 func plate_rect(index: int) -> Rect2:
 	var block := block_rect(index)
 	var share := PLATES[index]
-	return Rect2(block.position + share.position * block.size, share.size * block.size)
+	var art := _art(BLOCK_ART[index])
+	if art == null or art.get_width() <= 0 or art.get_height() <= 0:
+		return Rect2(block.position + share.position * block.size, share.size * block.size)
+	# The plate's top and bottom edges lie in the unstretched bands: they keep the art's scale.
+	var tall := art.get_height() * block.size.x / art.get_width()
+	var top := block.position.y + share.position.y * tall
+	var bottom := block.end.y - (1.0 - share.position.y - share.size.y) * tall
+	return Rect2(block.position.x + share.position.x * block.size.x, top, share.size.x * block.size.x, bottom - top)
 
 
 func _make_label(node_name: String, variation: StringName) -> Label:
@@ -204,20 +234,23 @@ func _layout() -> void:
 		var plate := plate_rect(place)
 		var pad := plate.size.x * PLATE_PAD
 		var room := maxf(1.0, plate.size.x - pad * 2.0)
-		var name_tall := plate.size.y * NAME_SHARE
 		name_node.text = str((entry as Dictionary).get("name", ""))
 		value_node.text = str((entry as Dictionary).get("value", ""))
-		name_node.position = Vector2(plate.position.x + pad, plate.position.y)
-		name_node.size = Vector2(room, name_tall)
-		value_node.position = Vector2(plate.position.x + pad, plate.position.y + name_tall)
-		value_node.size = Vector2(room, plate.size.y - name_tall)
-		var bigger := GOLD_TEXT if place == 0 else 1.0
-		for label: Label in [name_node, value_node]:
+		var middles := TEXT_MIDDLES[place]
+		for pair: Array in [[name_node, GOLD_TEXT, middles.x], [value_node, GOLD_VALUE, middles.y]]:
+			var label: Label = pair[0]
 			label.remove_theme_font_size_override(&"font_size")
+			var bigger: float = pair[1] if place == 0 else 1.0
 			var base := maxi(6, roundi(label.get_theme_font_size(&"font_size") * grow * bigger))
 			var font := label.get_theme_font(&"font")
-			label.add_theme_font_size_override(&"font_size",
-					GoStyle.fit_font_size(PackedStringArray([label.text]), base, room, font))
+			var px := GoStyle.fit_font_size(PackedStringArray([label.text]), base, room, font)
+			label.add_theme_font_size_override(&"font_size", px)
+			# One line tall, placed so the capitals' middle stands at its share of the plate.
+			var ascent := font.get_ascent(px) if font != null else px * 0.9
+			var descent := font.get_descent(px) if font != null else px * 0.25
+			var middle := plate.position.y + plate.size.y * float(pair[2])
+			label.size = Vector2(room, ascent + descent)
+			label.position = Vector2(plate.position.x + pad, middle - ascent + px * CAP_SHARE * 0.5)
 	_laying = false
 	queue_redraw()
 
@@ -235,7 +268,7 @@ func _draw() -> void:
 		var block := block_rect(place)
 		var art := _art(BLOCK_ART[place])
 		if art != null:
-			draw_texture_rect(art, block, false)
+			_draw_block(art, block, BLOCK_BANDS[place])
 		else:
 			draw_rect(block, _plain_fill(place))
 			draw_rect(plate_rect(place), GoUi.color(GoTheme.SURFACE))
@@ -255,6 +288,24 @@ func _draw() -> void:
 			var wide := font.get_string_size(digits, HORIZONTAL_ALIGNMENT_LEFT, -1, px)
 			draw_string(font, centre + Vector2(-wide.x * 0.5, font.get_ascent(px) * 0.5 - font.get_descent(px) * 0.5),
 					digits, HORIZONTAL_ALIGNMENT_LEFT, -1, px, GoUi.color(GoTheme.TEXT))
+
+
+## [param art] in [param rect] at the rect's width: the top and bottom [param bands] as painted, the middle stretched.
+func _draw_block(art: Texture2D, rect: Rect2, bands: Vector2) -> void:
+	var w := float(art.get_width())
+	var h := float(art.get_height())
+	var k := rect.size.x / w
+	var top := h * bands.x
+	var bottom := h * bands.y
+	var middle := rect.size.y - (top + bottom) * k
+	if middle <= 0.0:
+		draw_texture_rect(art, rect, false)
+		return
+	draw_texture_rect_region(art, Rect2(rect.position, Vector2(rect.size.x, top * k)), Rect2(0, 0, w, top))
+	draw_texture_rect_region(art, Rect2(rect.position + Vector2(0, top * k), Vector2(rect.size.x, middle)),
+			Rect2(0, top, w, h - top - bottom))
+	draw_texture_rect_region(art, Rect2(Vector2(rect.position.x, rect.end.y - bottom * k),
+			Vector2(rect.size.x, bottom * k)), Rect2(0, h - bottom, w, bottom))
 
 
 ## A look without the art: gold, a light grey and a warm fill from the look's tokens.
