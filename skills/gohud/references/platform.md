@@ -255,9 +255,10 @@ own button handlers for a consistent feel.
 | `GoSafeArea.new()` (a Control) | Positions itself over the safe area — a parent for content that must avoid the notch; it moves on a resize and on `GoRuntime.safe_area_changed` |
 | `enum GoScale.Bp { MOBILE, TABLET, DESKTOP }` | Short side in dp: ≤ `mobile_max_dp` (576) mobile, ≤ `tablet_max_dp` (991) tablet |
 | `GoScale.breakpoint_for_dp(dp)` · `form_width_for(bp)` · `gain_for(bp, handheld, portrait)` · `display_scale(raw_scale, dpi, screen_px)` · `breakpoint_name(bp)` | Pure functions |
+| `GoScale.curve(inputs) -> Dictionary` · `device_inputs(window_px)` · `window_scale_for(short_px)` · `reported_scale(server, raw_scale)` · `simulation_serial()` | 📏 **The scale curve** — inputs: `window`, `screen`, `dpi`, `raw_scale`, `native`, optional `desktop`; `device_inputs` also includes `server` and reads simulated device keys. Returns `factor`, `os_scale`, `short_dp`, `bp`, `handheld`, `gain`, `window_scale`, `user_scale`, `logical`, `dp_per_unit`, `clamp`. Before limits: max(`os_scale`, `window_scale`) × `gain` × `user_scale`. Handhelds use dpi/160 (at least 1) and no window enlargement; desktops use reported OS scale or dpi/96 (at least 1). `reported_scale` accepts macOS, Wayland and web (`SCALE_REPORTING_SERVERS`); Windows and X11 take the dpi fallback. The breakpoint stays in OS dp. `GoRuntime` applies the curve in the `DP` profile; an app that owns its scale can call it too |
 | `enum GoScale.Profile { DP, PER_INCH }` · `GoScale.per_inch_factor(window_px, dpi, base, units_per_inch, min_height, handheld)` · `per_inch_canvas(window_px, base, factor)` · `web_dpi(reported)` · `cap_sides(margins, side_max)` | The per-inch profile as pure functions: the `content_scale_factor` that keeps a `canvas_items` base size about 160 units per physical inch on a handheld (never below the minimum height, never below 1), the canvas it gives, a phone browser's real dpi, and safe margins with the sides capped for an edge-hugging HUD |
 | `GoScale.is_handheld_screen()` · `handheld_from(has_feature, browsers)` · `screen_dpi()` · `dpi_from(reported, web, fallback)` | What `PER_INCH` and the safe area take as the device: a simulated one, else Android or iOS (with `GoConfig.handheld_browsers` also a phone or tablet browser), and the screen's dpi (a browser's rescaled by `web_dpi()`, `GoConfig.fallback_dpi` when it reports none) — the rules as pure functions over a stand-in `has_feature` and a reported dpi |
-| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `safe_area_changed(margins)` · `current_bp()` · `is_mobile()` · `short_dp()` · `safe_margins()` |
+| `GoRuntime` (plugin autoload) | `breakpoint_changed(bp)` · `viewport_resized(size)` · `keyboard_changed(px)` · `safe_area_changed(margins)` · `current_bp()` · `is_mobile()` · `short_dp()` · `dp_per_unit()` · `scale_curve()` · `safe_margins()` — re-applies on a resize, on a move to another monitor and on a DPI change. `scale_curve()` and `dp_per_unit()` describe the `DP` curve even when scaling is off or `PER_INCH` owns the window factor |
 | `GoRuntime.simulate(device)` · `clear_simulation()` · `simulation()` · `GoScale.simulate(device)` · `GoScale.simulated()` | 🧪 A device stood in for tests and screenshots (below) |
 | `GoUi.is_handheld_platform()` | Android or iOS (not "narrow window") — haptics, the virtual keyboard and the real safe area |
 
@@ -265,6 +266,22 @@ own button handlers for a consistent feel.
 project's 2D coordinates, so only turn it on in a project designed for it. With `scale_profile = GoScale.Profile.PER_INCH`
 it instead keeps the project's base size (`canvas_items` stretch) and shrinks a handheld so the UI is the same size in
 the hand on every phone — Magnet Mayhem's device profile.
+
+🖥 **A desktop sized for its viewing distance (`DP` profile)** — `reference_short_side = 1080.0` (a 1920×1080 design)
+enlarges the canvas when the window's short side exceeds the reference: a full-screen 4K window at 100 % OS scale
+gets a 2× window term. `max_window_scale` (4.0) caps this term, not the final factor. The OS scale stays a floor and
+the breakpoint stays in OS dp. Explicit desktop identity prevents effective Windows DPI from selecting handheld
+density; unknown devices keep the physical-diagonal fallback. `user_scale` multiplies the same curve.
+`min_canvas_short` limits enlargement to keep the canvas usable; the one-OS-dp floor takes precedence if the two
+limits conflict. `clamp` names the applied limit: `""`, `"max_window"`, `"min_canvas"` or `"dp_floor"`.
+
+```gdscript
+GoUi.config.scale_enabled = true
+GoUi.config.scale_profile = GoScale.Profile.DP
+GoUi.config.reference_short_side = 1080.0   # a window below the reference keeps its OS scale and gains
+GoUi.config.min_canvas_short = 320.0        # the narrowest layout the app supports (a large UI on a small phone)
+GoUi.config.user_scale = 1.15               # "Large" — re-applies at once through the enabled GoRuntime
+```
 
 ```gdscript
 var runtime := GoUi.runtime()
@@ -295,8 +312,9 @@ right and bottom in window pixels; `mobile` reads as `handheld`, so Magnet Mayhe
 are). The `PER_INCH` scale, the breakpoint and `GoSafeArea` read it; the window takes `size` (a headless run cannot
 resize — the scale is still worked out for it); a key left out reads the real device (no `insets`: none).
 `obstructions()` reads `platform` ("android" | "ios"), `cutouts` (window pixels — an Android device given only these
-gets them as its insets too), `corner_radius` (pixels; left out: the platform's `GoConfig` default), `screen_scale` (iOS
-pixels per point) and `notch_side` (`SIDE_LEFT` | `SIDE_RIGHT`) from the same dictionary.
+gets them as its insets too), `corner_radius` (pixels; left out: the platform's `GoConfig` default), `screen_scale` (pixels
+per point: iOS's UIKit scale, a desktop's OS scale — `{"size": Vector2i(3840, 2160), "handheld": false, "screen_scale": 2.0}` is a 4K
+monitor at 200 %) and `notch_side` (`SIDE_LEFT` | `SIDE_RIGHT`) from the same dictionary.
 
 ```gdscript
 GoRuntime.simulate({"size": Vector2i(2532, 1170), "dpi": 460.0, "insets": Vector4(141, 0, 141, 63), "handheld": true})

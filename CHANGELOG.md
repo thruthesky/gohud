@@ -6,6 +6,17 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ### Added
 
+- **The scale curve — `GoScale.curve(inputs)`**: one decision from `GoScale.device_inputs(window_px)`
+  (window, screen, dpi, reported OS scale, native/desktop identity, or a simulated device) to the scale factor,
+  breakpoint, gain, `dp_per_unit` and applied limit. `GoRuntime.scale_curve()` exposes the decision;
+  `GoRuntime.dp_per_unit()` exposes its dp ratio. With `scale_enabled` and the `DP` profile,
+  **`GoConfig.reference_short_side`** (px, 0 = off) enlarges a desktop canvas when the window's short side exceeds
+  the reference, up to **`max_window_scale`** (4.0); the OS scale remains a floor and the breakpoint stays in OS dp.
+  **`user_scale`** (1.0) sets the player's UI size and **`min_canvas_short`** (0 = no limit) sets the narrowest
+  supported canvas. The one-OS-dp floor takes precedence over that canvas limit. Changing these settings
+  re-applies through the runtime at once. Helpers: `GoScale.window_scale_for(short_px)`,
+  `GoScale.reported_scale(server, raw_scale)`, `SCALE_REPORTING_SERVERS` and `GoScale.simulation_serial()`.
+
 - **`GoPodium`** (`Control`): a leaderboard's top three on painted blocks — gold in the middle and tallest, silver
   left, bronze right — a laurel medal over each, a name plate per block (`GoPodiumName` over `GoPodiumValue`), and a
   sunburst and confetti behind (`show_decor`). `set_places([{name, value}, …])`, index 0 = 1st; a missing, `null` or
@@ -246,6 +257,14 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
   `GoUi.add_locale_translations(code)` registers a language's piece without switching to it (a language picker).
 
 ### Fixed
+
+- **Display scaling follows platform identity.** `GoScale.reported_scale()` uses reported desktop scale only
+  for `SCALE_REPORTING_SERVERS` (macOS, Wayland and web); Windows and X11 use the dpi fallback instead.
+  Native Android and iOS devices use handheld density regardless of diagonal. Explicit desktops keep desktop
+  density even when effective Windows DPI makes their computed diagonal look small; unknown devices retain
+  the physical-diagonal fallback.
+- **`GoRuntime` re-applies scale after a move to another monitor or a DPI change**, even without a resize.
+  A changed curve factor, including a new `user_scale`, also updates the window without requiring a resize.
 
 - **`GoForm` presses its back button once per Android Back, and never after it left the screen.** Two back
   requests in one frame (a double tap, the gesture plus a tap) queued two deferred presses; when the first changed the

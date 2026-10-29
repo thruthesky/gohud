@@ -77,6 +77,7 @@ GoUi.refresh()                          # plain fields do not emit — refresh()
 | | `scale_profile` (`DP`) · `per_inch_units` (160) · `per_inch_min_height` (440) | `PER_INCH`: keep the project's base size and shrink a handheld to ~160 units per inch, never below 440 units tall (a fixed-layout game HUD) |
 | | `mobile_max_dp` (576) · `tablet_max_dp` (991) | Breakpoints by the screen's short side |
 | | `read_gain_mobile` (1.10) · `read_gain_tablet` (1.05) · `read_gain_desktop` (1.0) · `desktop_ui_gain` (1.0) | Scale gains when `scale_enabled` |
+| | `reference_short_side` (0) · `max_window_scale` (4.0) · `min_canvas_short` (0) · `user_scale` (1.0) | `DP` profile (`GoScale.curve`): enlarge a desktop canvas when the window's short side exceeds the reference (0 = off), cap that window term, keep a minimum canvas short side (0 = no limit), and multiply by the player's UI size. The one-OS-dp floor takes precedence over the canvas limit. Changes re-apply through the runtime at once |
 | | `form_max_width_mobile` (0) · `_tablet` (440) · `_desktop` (480) | `GoForm` content width cap; 0 = none |
 | | `respect_safe_area` (true) | Avoid notches on Android/iOS |
 | | `handheld_browsers` (false) · `fallback_dpi` (0) | `PER_INCH`: phone and tablet browsers (`web_android`/`web_ios`) sized as handhelds; the dpi for a screen that reports none (0: unshrunk). Magnet Mayhem: on, 160 |
