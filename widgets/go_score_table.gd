@@ -10,6 +10,7 @@
 ## table.add_row(4, "YOU", "00:39.30", true)          # the player's own row
 ## table.scroll.get_v_scroll_bar().value_changed.connect(_maybe_load_next_page)
 ## table.clear_rows()                                 # a new board: empty it, then add its rows
+## table.add_note("NO MORE RANKS YET")                # nothing to list: one centred line in a row
 ## ```
 ##
 ## 🔑 **The table owns its scroll**: `rows` (a `VBoxContainer`) sits in `scroll` (a `GoScroll`, vertical only) under
@@ -231,6 +232,24 @@ func add_row(rank: int, player_name: String, value: String, own := false) -> Con
 	return row
 
 
+## Adds a plain row with one centred line ([param text], e.g. "NO MORE RANKS YET") at the bottom and returns it: what
+## a list says when it has nothing to list, in a row's own look and height. It counts in `row_count()`.
+func add_note(text: String) -> Control:
+	var row := PanelContainer.new()
+	row.name = "Note%d" % (rows.get_child_count() + 1)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.set_meta(&"note", true)
+	row.theme_type_variation = VAR_ROW
+	row.custom_minimum_size.y = row_height
+	var label := _label("Text", VAR_LABEL)
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	row.add_child(label)
+	rows.add_child(row)
+	_queue_fit()
+	return row
+
+
 ## Removes every row (they are freed).
 func clear_rows() -> void:
 	for row in rows.get_children():
@@ -290,6 +309,7 @@ func _restyle_rows() -> void:
 	if not is_instance_valid(rows): return
 	for row in rows.get_children():
 		if row is Control and row.has_meta(&"rank"): _style_row(row)
+		elif row is Control and row.has_meta(&"note"): (row as Control).custom_minimum_size.y = row_height
 	_queue_fit()
 
 
@@ -313,6 +333,13 @@ func _fit() -> void:
 		label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([label.text]), base,
 				inner * COLUMN_SHARES[column] - 8.0, label.get_theme_font(&"font")))
 	for row in rows.get_children():
+		if row is PanelContainer and row.has_meta(&"note"):
+			var note := row.get_node(^"Text") as Label
+			note.remove_theme_font_size_override(&"font_size")
+			var size_base := font_size if font_size > 0 else note.get_theme_font_size(&"font_size")
+			note.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([note.text]),
+					size_base, maxf(1.0, row_inner - _side_padding(row as Control) - 16.0), note.get_theme_font(&"font")))
+			continue
 		if not (row is PanelContainer and row.has_meta(&"rank")): continue
 		var cells := row_inner - _side_padding(row as Control)
 		var labels := row_labels(row)

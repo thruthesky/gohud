@@ -130,6 +130,13 @@ func _table(look: StringName) -> void:
 	var row := table.add_row(12, "Late", "9")
 	await frames(1)
 	check(GoScoreTable.row_labels(row)[0].text == "#12", "%s: rank text after clearing" % look)
+	table.clear_rows()
+	var note := table.add_note("NO MORE RANKS YET")
+	await frames(2)
+	check(table.row_count() == 1 and (note.get_node(^"Text") as Label).text == "NO MORE RANKS YET",
+			"%s: a note row holds its line" % look)
+	check(note.theme_type_variation == GoScoreTable.VAR_ROW and is_equal_approx(note.size.y, table.row_height),
+			"%s: a note row wears a row's look and height (got %s)" % [look, note.size.y])
 	table.free()
 
 
