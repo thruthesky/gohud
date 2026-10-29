@@ -26,19 +26,19 @@ void vertex() {
 }
 
 void fragment() {
-	// Nearest island pixel within reach, sampled on 16 rays x 4 rings: a soft, wide warm-yellow halo.
+	// Nearest island pixel within reach, sampled on 12 rays x 6 rings: a bright warm-yellow rim fading softly outward.
 	float center = texture(TEXTURE, UV).a * island_mask(UV);
 	float near = 0.0;
-	for (int ring = 1; ring <= 4; ring++) {
-		float r = reach * float(ring) / 4.0;
-		float weight = 1.0 - (float(ring) - 1.0) / 4.0;
-		for (int k = 0; k < 16; k++) {
-			float a = float(k) * 0.392699 + float(ring) * 0.19;
+	for (int ring = 1; ring <= 6; ring++) {
+		float r = reach * float(ring) / 6.0;
+		float weight = 1.0 - (float(ring) - 1.0) / 6.0;
+		for (int k = 0; k < 12; k++) {
+			float a = float(k) * 0.523599 + float(ring) * 0.26;
 			vec2 p = UV + vec2(cos(a), sin(a)) * r * atlas_pixel_size;
 			near = max(near, texture(TEXTURE, p).a * island_mask(p) * weight);
 		}
 	}
-	float glow = pow(near, 0.7);
-	vec3 colour = mix(vec3(1.0, 0.82, 0.05), vec3(1.0, 0.96, 0.45), smoothstep(0.6, 1.0, near));
+	float glow = smoothstep(0.0, 0.85, near);
+	vec3 colour = mix(vec3(1.0, 0.80, 0.0), vec3(1.0, 0.98, 0.55), smoothstep(0.65, 1.0, near));
 	COLOR = vec4(colour, glow * (1.0 - center) * vertex_alpha);
 }

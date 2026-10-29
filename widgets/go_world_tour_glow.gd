@@ -4,7 +4,7 @@ class_name GoWorldTourGlow
 extends Control
 
 ## The halo's reach beyond the island, as a share of the picture's height.
-const HALO_REACH := 0.15
+const HALO_REACH := 0.11
 
 
 func _init() -> void:

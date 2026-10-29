@@ -118,16 +118,17 @@ func _layout() -> void:
 
 
 func _layout_on_map() -> void:
-	thumbnail_slot.position = Vector2.ZERO
-	thumbnail_slot.size = size
+	# The island's painted rect is a little larger than its touch target, as the reference art overhangs it.
+	thumbnail_slot.size = size * 1.06
+	thumbnail_slot.position = (size - thumbnail_slot.size) * 0.5
 	var side := badge_side
 	_badge.size = Vector2.ONE * side
 	_badge.position = badge_center - _badge.size * 0.5
 	_ring.position = _badge.position - Vector2.ONE * 3.0
 	_ring.size = _badge.size + Vector2.ONE * 6.0
-	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.58)))
-	var caption_h := side * 0.47
-	var base := maxi(8, roundi(caption_h * 0.66))
+	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.62)))
+	var caption_h := side * 0.5
+	var base := maxi(8, roundi(caption_h * 0.7))
 	var font := title_label.get_theme_font(&"font")
 	var text_w := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, base).x if font != null else 0.0
 	var caption_w := clampf(text_w + caption_h * 1.2, side * 1.45, side * 2.4)
