@@ -11,10 +11,21 @@ var selected := false
 var title := ""
 var number := 1
 var title_base_size := 8
+## Set by the map: the badge centre (local) and diameter. The island art then fills the node's own rect.
+var badge_center := Vector2.INF
+var badge_side := 0.0
+## Off: no numbered badge; the caption alone sits at the foot of the island, and focus rings the caption.
+var show_number := true:
+	set(value):
+		show_number = value
+		if _badge != null: refresh()
 var _badge: Panel
 var _badge_art: TextureRect
 var _caption: Panel
 var _ring: Panel
+## Holds the badge, caption and focus ring. A map moves it into its own label layer, drawn after every island, so the
+## labels sit above the art without a z_index (which would also lift them above dialogs opened over the map).
+var labels: Control
 
 
 func _init() -> void:
@@ -28,12 +39,16 @@ func _init() -> void:
 	thumbnail_slot.clip_contents = false
 	add_child(thumbnail_slot)
 	thumbnail_slot.child_entered_tree.connect(_place_thumbnail)
+	labels = Control.new()
+	labels.name = "Labels"
+	labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(labels)
 	_ring = Panel.new()
 	_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_ring)
+	labels.add_child(_ring)
 	_badge = Panel.new()
 	_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_badge)
+	labels.add_child(_badge)
 	_badge_art = TextureRect.new()
 	_badge_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_badge_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -45,7 +60,7 @@ func _init() -> void:
 	number_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_caption = Panel.new()
 	_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_caption)
+	labels.add_child(_caption)
 	title_label = _label("Caption", &"GoWorldTourCaption")
 	_caption.add_child(title_label)
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -78,9 +93,12 @@ func refresh() -> void:
 	_ring.add_theme_stylebox_override(&"panel", GoUi.skin().selection_ring_box())
 	title_label.add_theme_color_override(&"font_color", GoUi.color(GoTheme.TEXT))
 	_sync_focus()
-	thumbnail_slot.modulate = Color(0.62, 0.64, 0.7) if disabled else Color.WHITE
+	# A skin with a locked picture already shows the lock; others dim the stage's own picture.
+	var dim := disabled and GoUi.skin().world_tour_locked_picture() == null
+	thumbnail_slot.modulate = Color(0.62, 0.64, 0.7) if dim else Color.WHITE
 	for child in thumbnail_slot.get_children():
 		if child.has_method(&"set_selected"): child.set_selected(selected)
+		if child is CanvasItem: (child as CanvasItem).queue_redraw()
 	_layout()
 
 
@@ -88,6 +106,9 @@ func _layout() -> void:
 	if thumbnail_slot == null or size.x <= 0.0 or size.y <= 0.0: return
 	# Pictures may spread beyond the touch target, like scenery islands on the world map. Their controls ignore input;
 	# the button keeps its own bounds so adjacent islands remain independently selectable.
+	if badge_center != Vector2.INF:
+		_layout_on_map()
+		return
 	var stage_scales := [0.91, 0.92, 0.96, 0.94, 1.00, 0.96, 0.91, 0.98, 1.04]
 	var art_scale: float = stage_scales[clampi(number - 1, 0, stage_scales.size() - 1)]
 	if selected: art_scale = maxf(art_scale, 1.10)
@@ -111,6 +132,31 @@ func _layout() -> void:
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_size.x * 0.85, font))
 
 
+func _layout_on_map() -> void:
+	# The island's painted rect is a little larger than its touch target, as the reference art overhangs it.
+	thumbnail_slot.size = size * 1.06
+	thumbnail_slot.position = (size - thumbnail_slot.size) * 0.5
+	var side := badge_side
+	_badge.size = Vector2.ONE * side
+	_badge.position = badge_center - _badge.size * 0.5
+	_ring.position = _badge.position - Vector2.ONE * 3.0
+	_ring.size = _badge.size + Vector2.ONE * 6.0
+	number_label.add_theme_font_size_override(&"font_size", maxi(8, roundi(side * 0.62)))
+	var caption_h := side * 0.5
+	var base := maxi(8, roundi(caption_h * 0.7))
+	var font := title_label.get_theme_font(&"font")
+	var text_w := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, base).x if font != null else 0.0
+	var caption_w := clampf(text_w + caption_h * 1.2, side * 1.45, side * 2.4)
+	_caption.size = Vector2(caption_w, caption_h)
+	_caption.position = Vector2(badge_center.x - caption_w * 0.5, badge_center.y + side * 0.6 - caption_h * 0.5)
+	if not show_number: # the name alone, centred under the island and overlapping its foot
+		_caption.position = Vector2((size.x - caption_w) * 0.5, thumbnail_slot.position.y + thumbnail_slot.size.y - caption_h * 1.15)
+		_ring.position = _caption.position - Vector2.ONE * 3.0
+		_ring.size = _caption.size + Vector2.ONE * 6.0
+	title_base_size = base
+	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_w - caption_h * 0.8, font))
+
+
 func _place_thumbnail(child: Node) -> void:
 	if child is Control:
 		(child as Control).set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -118,6 +164,7 @@ func _place_thumbnail(child: Node) -> void:
 
 
 func _sync_focus() -> void:
+	_badge.visible = show_number
 	_ring.visible = has_focus() or (selected and not _badge_art.visible)
 
 

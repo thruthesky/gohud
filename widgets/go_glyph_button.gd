@@ -88,6 +88,14 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		fit_base_size = value
 		_queue_fit()
 
+## The width [member fit_label] leaves free beside the label and the glyph's room. Negative (the default) takes the
+## normal face's minimum width; a painted pill's minimum counts its whole rounded ends, so a wide label on a short
+## pill (the World Tour's PLAY MULTIPLAYER) sets its own padding: the content margins and the outline, say.
+@export var fit_padding := -1.0:
+	set(value):
+		fit_padding = value
+		_queue_fit()
+
 ## 🔔 What the player's press says through `GoFeedback` (`GoFeedback.TAPPED`, `CONFIRMED`, `CANCELED`, …): a sound
 ## the project plays and a short buzz on a phone. Empty: silent. A press from code (`button_pressed =`) says nothing.
 @export var feedback: StringName = GoFeedback.TAPPED
@@ -254,10 +262,10 @@ func _notification(what: int) -> void:
 
 
 ## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
-## minimum width and `glyph_allowance()`, as Magnet Mayhem's screens measured it. Off: the size it is drawn at.
+## minimum width (or [member fit_padding]) and `glyph_allowance()`, as Magnet Mayhem's screens measured it. Off: the size it is drawn at.
 func fitted_font_size() -> int:
 	if not fit_label: return get_theme_font_size(&"font_size")
-	var room := size.x - _face_width() - glyph_allowance()
+	var room := size.x - (_face_width() if fit_padding < 0.0 else fit_padding) - glyph_allowance()
 	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), room, get_theme_font(&"font"))
 
 

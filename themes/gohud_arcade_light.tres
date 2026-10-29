@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=233 format=3]
+[gd_resource type="Theme" load_steps=235 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -37,6 +37,7 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/ribbon_title.png" id="stage_ribbon_title"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/well.png" id="stage_well"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/window.png" id="stage_window"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/stage/world_tour_window.svg" id="stagesvg_world_tour_window"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/check_on.svg" id="check_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/radio_on.svg" id="radio_on"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/check_on_disabled.svg" id="check_on_disabled"]
@@ -767,6 +768,7 @@ fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"
 [sub_resource type="FontVariation" id="world_tour_font"]
 base_font = ExtResource("font_baloo2")
 variation_opentype = {2003265652: 800.0}
+variation_embolden = 0.6
 fallbacks = Array[Font]([SubResource("painted_font")])
 
 [sub_resource type="StyleBox" id="painted_GoButton_normal"]
@@ -1911,6 +1913,17 @@ texture = ExtResource("stage_window")
 edge = Vector4(70, 70, 70, 70)
 pixels_per_unit = 3.0
 face_color = Color(0.815686, 0.909804, 0.988235, 1)
+
+[sub_resource type="StyleBox" id="painted_GoWorldTourWindow"]
+script = ExtResource("sprite")
+content_margin_left = 22
+content_margin_top = 20
+content_margin_right = 22
+content_margin_bottom = 24
+texture = ExtResource("stagesvg_world_tour_window")
+edge = Vector4(90, 90, 90, 120)
+pixels_per_unit = 3.0
+face_color = Color(0.937255, 0.980392, 0.992157, 1)
 
 [sub_resource type="StyleBox" id="painted_GoRibbonWide"]
 script = ExtResource("sprite")
@@ -3429,7 +3442,7 @@ GoWindowBlue/base_type = &"PanelContainer"
 GoWindowBlue/styles/panel = SubResource("painted_GoWindowBlue")
 GoWorldTourButton/base_type = &"GoPrimaryButton"
 GoWorldTourButton/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
-GoWorldTourButton/constants/outline_size = 5
+GoWorldTourButton/constants/outline_size = 10
 GoWorldTourButton/fonts/font = SubResource("world_tour_font")
 GoWorldTourCaption/base_type = &"Label"
 GoWorldTourCaption/colors/font_color = Color(0.113725, 0.137255, 0.25098, 1)
@@ -3438,9 +3451,11 @@ GoWorldTourCaption/fonts/font = SubResource("world_tour_font")
 GoWorldTourTitle/base_type = &"Label"
 GoWorldTourTitle/colors/font_color = Color(1, 1, 1, 1)
 GoWorldTourTitle/colors/font_outline_color = Color(0.113725, 0.137255, 0.25098, 1)
-GoWorldTourTitle/constants/outline_size = 8
+GoWorldTourTitle/constants/outline_size = 12
 GoWorldTourTitle/font_sizes/font_size = 54
 GoWorldTourTitle/fonts/font = SubResource("world_tour_font")
+GoWorldTourWindow/base_type = &"PanelContainer"
+GoWorldTourWindow/styles/panel = SubResource("painted_GoWorldTourWindow")
 HScrollBar/icons/decrement = SubResource("painted_HScrollBar_decrement")
 HScrollBar/icons/decrement_highlight = SubResource("painted_HScrollBar_decrement")
 HScrollBar/icons/decrement_pressed = SubResource("painted_HScrollBar_decrement")

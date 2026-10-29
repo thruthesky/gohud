@@ -3,6 +3,9 @@
 class_name GoWorldTourGlow
 extends Control
 
+## The halo's reach beyond the island, as a share of the picture's height.
+const HALO_REACH := 0.11
+
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -25,5 +28,11 @@ func _draw() -> void:
 	(material as ShaderMaterial).set_shader_parameter(&"atlas_pixel_size", texel)
 	(material as ShaderMaterial).set_shader_parameter(&"atlas_region", Vector4(region.position.x * texel.x,
 			region.position.y * texel.y, region.end.x * texel.x, region.end.y * texel.y))
-	# One textured draw; the shader samples neighboring alpha to form the halo instead of redrawing the island.
-	picture.call(&"draw_art", self, Vector2.ZERO, Color.WHITE)
+	# One textured draw over the island's rectangle grown by the halo's reach; the shader samples neighbouring alpha
+	# to form the halo (and masks other islands in the shared atlas) instead of redrawing the island.
+	var scale_factor := minf(size.x / region.size.x, size.y / region.size.y)
+	var origin := (size - region.size * scale_factor) * 0.5
+	var reach := region.size.y * HALO_REACH
+	var src := region.grow(reach)
+	(material as ShaderMaterial).set_shader_parameter(&"reach", reach)
+	draw_texture_rect_region(source, Rect2(origin - Vector2.ONE * reach * scale_factor, src.size * scale_factor), src)

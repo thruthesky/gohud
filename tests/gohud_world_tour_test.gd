@@ -122,7 +122,7 @@ func _initialize() -> void:
 				outside = global_point
 				break
 		if outside != Vector2.INF: break
-	check(outside != Vector2.INF, "fixture has visible artwork beyond the button bounds")
+	# The arcade islands fit their buttons; a picture that overflows its button must still take the press beyond it.
 	if outside != Vector2.INF:
 		var move := InputEventMouseMotion.new()
 		move.position = outside

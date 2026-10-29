@@ -6,24 +6,45 @@ extends Control
 
 signal stage_selected(n: int)
 
-## Normalized centres in the map, ordered along the route.
-const POSITIONS := [Vector2(0.13, 0.17), Vector2(0.37, 0.14), Vector2(0.65, 0.20),
-		Vector2(0.87, 0.37), Vector2(0.68, 0.55), Vector2(0.27, 0.52),
-		Vector2(0.13, 0.76), Vector2(0.42, 0.84), Vector2(0.76, 0.84)]
+## Each island's painted rectangle, normalized to the map and ordered along the route. Together they fill the map
+## from its top edge to its bottom, as in the arcade reference.
+const ISLANDS := [Rect2(0.011, 0.030, 0.219, 0.230), Rect2(0.270, 0.002, 0.237, 0.227),
+		Rect2(0.538, 0.055, 0.224, 0.218), Rect2(0.768, 0.173, 0.232, 0.237), Rect2(0.526, 0.360, 0.301, 0.255),
+		Rect2(0.174, 0.276, 0.314, 0.270), Rect2(0.005, 0.565, 0.239, 0.264), Rect2(0.288, 0.640, 0.307, 0.289),
+		Rect2(0.640, 0.640, 0.360, 0.318)]
+## Normalized badge centres: low on each island, the country pill just under it.
+const BADGES := [Vector2(0.079, 0.223), Vector2(0.312, 0.077), Vector2(0.626, 0.235), Vector2(0.911, 0.366),
+		Vector2(0.763, 0.534), Vector2(0.239, 0.488), Vector2(0.110, 0.752), Vector2(0.383, 0.854),
+		Vector2(0.803, 0.862)]
+## Normalized island centres, the route's stops.
+static var positions: Array[Vector2] = _centres()
 
 var nodes: Array[GoWorldTourNode] = []
+## Off: the stops show their names only, without numbered badges.
+var show_numbers := true:
+	set(value):
+		show_numbers = value
+		for node in nodes: node.show_number = value
+var _labels: Control # every stop's badge and caption, drawn after all islands; a sibling, never a z_index
 
 
 func _init() -> void:
 	name = "WorldTour"
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	for i in POSITIONS.size():
+	for i in positions.size():
 		var node := GoWorldTourNode.new()
 		node.name = "Stage%d" % (i + 1)
 		add_child(node)
 		nodes.append(node)
 		node.configure(i + 1, "", true, false)
 		node.pressed.connect(_on_pressed.bind(i + 1))
+	_labels = Control.new()
+	_labels.name = "Labels"
+	_labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_labels)
+	for node in nodes:
+		node.remove_child(node.labels)
+		_labels.add_child(node.labels)
 	resized.connect(_layout)
 
 
@@ -41,26 +62,38 @@ func _on_pressed(n: int) -> void:
 	if not nodes[n - 1].disabled: stage_selected.emit(n)
 
 
+static func _centres() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for r: Rect2 in ISLANDS: out.append(r.get_center())
+	return out
+
+
 func _layout() -> void:
-	var extent := Vector2(size.x * 0.25, size.y * 0.26)
+	var badge := minf(size.y * 0.10, size.x * 0.072)
 	for i in nodes.size():
-		nodes[i].size = extent
-		nodes[i].position = POSITIONS[i] * size - extent * 0.5
+		var r: Rect2 = ISLANDS[i]
+		var rect := Rect2(r.position * size, r.size * size)
+		nodes[i].badge_center = BADGES[i] * size - rect.position
+		nodes[i].badge_side = badge
+		nodes[i].position = rect.position
+		nodes[i].size = rect.size
+		nodes[i].labels.position = rect.position
+		nodes[i].call(&"_layout")
 	queue_redraw()
 
 
 ## Each segment is a quadratic curve. Short rounded white dashes outlined in blue remain legible over the sky.
 func _draw() -> void:
 	if size.x <= 0.0 or size.y <= 0.0: return
-	var width := maxf(2.0, size.y * 0.0095)
-	var dash := width * 2.3
-	var gap := width * 1.6
+	var width := maxf(2.0, size.y * 0.0085)
+	var dash := width * 2.0
+	var gap := width * 1.25
 	var travelled := 0.0
 	var visible_dash := true
 	var chunk := PackedVector2Array()
-	for i in POSITIONS.size() - 1:
-		var a: Vector2 = POSITIONS[i] * size
-		var b: Vector2 = POSITIONS[i + 1] * size
+	for i in positions.size() - 1:
+		var a: Vector2 = positions[i] * size
+		var b: Vector2 = positions[i + 1] * size
 		var delta := b - a
 		var bend := delta.orthogonal().normalized() * delta.length() * (0.14 if i % 2 == 0 else -0.14)
 		var control := (a + b) * 0.5 + bend
@@ -93,9 +126,10 @@ func _draw_dash(points: PackedVector2Array, width: float) -> void:
 	if points.size() < 2: return
 	var outline := GoUi.color(GoTheme.ACCENT)
 	var fill := GoUi.color(GoTheme.ON_ACCENT)
-	draw_polyline(points, outline, width + 3.0, true)
-	draw_circle(points[0], (width + 3.0) * 0.5, outline, true, -1.0, true)
-	draw_circle(points[-1], (width + 3.0) * 0.5, outline, true, -1.0, true)
+	var edge := width + maxf(2.0, width * 0.35)
+	draw_polyline(points, outline, edge, true)
+	draw_circle(points[0], edge * 0.5, outline, true, -1.0, true)
+	draw_circle(points[-1], edge * 0.5, outline, true, -1.0, true)
 	draw_polyline(points, fill, width, true)
 	draw_circle(points[0], width * 0.5, fill, true, -1.0, true)
 	draw_circle(points[-1], width * 0.5, fill, true, -1.0, true)
