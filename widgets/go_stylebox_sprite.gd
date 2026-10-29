@@ -52,6 +52,13 @@ extends StyleBox
 	set(value):
 		draw_center = value
 		emit_changed()
+## Texture pixels of the art drawn *outside* the box (x = left, y = top, z = right, w = bottom): a glow or a drop
+## shadow painted around the plate stays out of the layout — the box's rect is the plate, the halo bleeds past it.
+## Zero (the default) draws the art exactly in the rect, as the game's `SpriteBox`.
+@export var bleed := Vector4.ZERO:
+	set(value):
+		bleed = value
+		emit_changed()
 ## The plate's nominal colour — what contrast checks read, since a texture has no `bg_color`. Never drawn.
 @export var face_color := Color(0, 0, 0, 0):
 	set(value):
@@ -99,10 +106,21 @@ func frame_margin(side: Side) -> float:
 	return edge[side] / pixels_per_unit
 
 
+## [param rect] grown by [member bleed]: where the art is drawn.
+func bled_rect(rect: Rect2) -> Rect2:
+	if bleed == Vector4.ZERO: return rect
+	var k := 1.0 / pixels_per_unit
+	return rect.grow_individual(bleed.x * k, bleed.y * k, bleed.z * k, bleed.w * k)
+
+
+func _get_draw_rect(rect: Rect2) -> Rect2:
+	return bled_rect(rect)
+
+
 func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 	if texture == null:
 		return
-	var dst: Array[Rect2] = dest_rects(rect)
+	var dst: Array[Rect2] = dest_rects(bled_rect(rect))
 	var src: Array[Rect2] = source_rects()
 	for i: int in 9:
 		if i == 4 and not draw_center:
