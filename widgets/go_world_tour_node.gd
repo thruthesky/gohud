@@ -19,10 +19,18 @@ var show_number := true:
 	set(value):
 		show_number = value
 		if _badge != null: refresh()
+## The stars earned on this stop, a small row centred just above the caption; under 0 (the default) shows none.
+var stars := -1:
+	set(value):
+		stars = value
+		if _star_row != null: refresh()
+## A star's side as a share of the caption plate's height.
+const STAR_SHARE := 0.8
 var _badge: Panel
 var _badge_art: TextureRect
 var _caption: Panel
 var _ring: Panel
+var _star_row: GoStarRow
 ## Holds the badge, caption and focus ring. A map moves it into its own label layer, drawn after every island, so the
 ## labels sit above the art without a z_index (which would also lift them above dialogs opened over the map).
 var labels: Control
@@ -64,6 +72,9 @@ func _init() -> void:
 	title_label = _label("Caption", &"GoWorldTourCaption")
 	_caption.add_child(title_label)
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_star_row = GoStarRow.make(0, 3)
+	_star_row.visible = false
+	labels.add_child(_star_row)
 	resized.connect(_layout)
 	focus_entered.connect(_sync_focus)
 	focus_exited.connect(_sync_focus)
@@ -92,6 +103,8 @@ func refresh() -> void:
 	_caption.add_theme_stylebox_override(&"panel", GoUi.skin().world_tour_caption_box())
 	_ring.add_theme_stylebox_override(&"panel", GoUi.skin().selection_ring_box())
 	title_label.add_theme_color_override(&"font_color", GoUi.color(GoTheme.TEXT))
+	_star_row.visible = stars >= 0
+	_star_row.stars = maxi(stars, 0)
 	_sync_focus()
 	# A skin with a locked picture already shows the lock; others dim the stage's own picture.
 	var dim := disabled and GoUi.skin().world_tour_locked_picture() == null
@@ -130,6 +143,7 @@ func _layout() -> void:
 	var font := title_label.get_theme_font(&"font")
 	title_base_size = base
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_size.x * 0.85, font))
+	_place_stars()
 
 
 func _layout_on_map() -> void:
@@ -155,6 +169,18 @@ func _layout_on_map() -> void:
 		_ring.size = _caption.size + Vector2.ONE * 6.0
 	title_base_size = base
 	title_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(PackedStringArray([title]), base, caption_w - caption_h * 0.8, font))
+	_place_stars()
+
+
+## The star row sits centred on the caption, its foot just clear of the plate's top edge.
+func _place_stars() -> void:
+	if not _star_row.visible: return
+	var side := _caption.size.y * STAR_SHARE
+	_star_row.star_size = side
+	_star_row.gap = side * 0.08
+	_star_row.size = _star_row.get_combined_minimum_size()
+	_star_row.position = Vector2(_caption.position.x + (_caption.size.x - _star_row.size.x) * 0.5,
+			_caption.position.y - _star_row.size.y - side * 0.06)
 
 
 func _place_thumbnail(child: Node) -> void:
