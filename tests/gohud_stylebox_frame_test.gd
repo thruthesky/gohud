@@ -18,6 +18,7 @@ func _initialize() -> void:
 	_fill_outline()
 	_colours()
 	_draw_rect()
+	_opacity()
 	_states()
 	_style_frame()
 	_helpers()
@@ -103,6 +104,42 @@ func _draw_rect() -> void:
 	var grown := box._get_draw_rect(rect)
 	check(grown.encloses(rect.grow(4.0)) and grown.end.is_equal_approx(rect.end + Vector2(7, 7)),
 		"draw rect: widened by the shadow's spread and offset (%s)" % grown)
+
+
+## `opacity` fades the dressing (frame art + shadow) as one value; `tint`, `shadow_color`, the body and the draw rect stay.
+func _opacity() -> void:
+	var box := _box()
+	box.tint = Color(0.8, 0.8, 0.8, 0.9)
+	box.shadow_color = Color(0, 0, 0.04, 0.6)
+	box.shadow_size = 4.0
+	box.shadow_offset = Vector2(3, 3)
+	var rect := Rect2(10, 10, 100, 40)
+	var full_rect := box._get_draw_rect(rect)
+	check(is_equal_approx(box.opacity, 1.0) and box.art_modulate() == box.tint and is_equal_approx(box.shadow_alpha(), 0.6),
+		"opacity 1 (default): the art and the shadow as set")
+	var changes := [0]
+	box.changed.connect(func() -> void: changes[0] += 1)
+	box.opacity = 0.5
+	check(changes[0] == 1, "opacity: the setter emits changed (%d)" % changes[0])
+	check(is_equal_approx(box.art_modulate().a, 0.45) and is_equal_approx(box.art_modulate().r, box.tint.r) and is_equal_approx(box.shadow_alpha(), 0.3),
+		"opacity 0.5: art alpha 0.45, shadow alpha 0.3, colour kept (%s · %.2f)" % [box.art_modulate(), box.shadow_alpha()])
+	check(box.tint == Color(0.8, 0.8, 0.8, 0.9) and is_equal_approx(box.shadow_color.a, 0.6) and box.bg_color == Color("#0C7A99"),
+		"opacity: tint, shadow_color and the body are untouched")
+	box.opacity = 0.0
+	check(box.art_modulate().a == 0.0 and box.shadow_alpha() == 0.0, "opacity 0: nothing of the dressing is drawn")
+	check(box._get_draw_rect(rect) == full_rect, "opacity: the draw rect stays the same at 0")
+	box.opacity = 1.7
+	check(box.opacity == 1.0, "opacity: clamped to 0..1")
+	box.opacity = -0.2
+	check(box.opacity == 0.0, "opacity: clamped at 0")
+	# Drawn for real at 0, 0.5 and 1 (a script error here shows in the run's log).
+	for value: float in [0.0, 0.5, 1.0]:
+		box.opacity = value
+		var item := RenderingServer.canvas_item_create()
+		box._draw(item, rect)
+		RenderingServer.free_rid(item)
+	var copy := box.duplicate() as GoStyleBoxFrame
+	check(copy.opacity == box.opacity, "opacity: duplicate() keeps it (state copies fade with their face)")
 
 
 func _states() -> void:
@@ -224,6 +261,7 @@ func _round_trip() -> void:
 	box.shadow_color = Color(0, 0, 0.04, 0.59)
 	box.shadow_size = 4.0
 	box.shadow_offset = Vector2(3, 3)
+	box.opacity = 0.4
 	var err := ResourceSaver.save(box, SAVE_PATH)
 	check(err == OK, "save: ResourceSaver writes the box (error %d)" % err)
 	var loaded := ResourceLoader.load(SAVE_PATH, "", ResourceLoader.CACHE_MODE_IGNORE) as GoStyleBoxFrame
@@ -237,4 +275,5 @@ func _round_trip() -> void:
 		check(loaded.shadow_color.is_equal_approx(box.shadow_color) and loaded.shadow_size == box.shadow_size
 			and loaded.shadow_offset == box.shadow_offset, "load: keeps the shadow")
 		check(is_equal_approx(loaded.content_margin_top, 12.0), "load: keeps the padding")
+		check(is_equal_approx(loaded.opacity, 0.4), "load: keeps the opacity")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))

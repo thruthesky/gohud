@@ -100,7 +100,12 @@ func frame_margin(side: Side) -> float:
 
 
 func _draw(to_canvas_item: RID, rect: Rect2) -> void:
-	if texture == null:
+	_draw_nine(to_canvas_item, rect, tint)
+
+
+## Draws the nine slices multiplied by [param modulate] (`_draw` passes `tint`; a subclass may pass a faded copy).
+func _draw_nine(to_canvas_item: RID, rect: Rect2, modulate: Color) -> void:
+	if texture == null or modulate.a <= 0.0:
 		return
 	var dst: Array[Rect2] = dest_rects(rect)
 	var src: Array[Rect2] = source_rects()
@@ -109,4 +114,4 @@ func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 			continue
 		if dst[i].size.x <= 0.0 or dst[i].size.y <= 0.0:
 			continue
-		RenderingServer.canvas_item_add_texture_rect_region(to_canvas_item, dst[i], texture.get_rid(), src[i], tint)
+		RenderingServer.canvas_item_add_texture_rect_region(to_canvas_item, dst[i], texture.get_rid(), src[i], modulate)

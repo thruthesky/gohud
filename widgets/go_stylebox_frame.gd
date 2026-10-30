@@ -25,7 +25,7 @@
 ##    `shadow_offset`) — `GoStyle._flat_like`, `GoSkin.box_background` and the brand-button code look those names up.
 ##    `bg_color` also becomes `face_color`, the colour contrast checks measure text against.
 ## 🔑 Cost: one polygon for the body, up to four for the shadow and nine texture rects — drawn only when the control
-##    redraws. No shader. The art is a texture: import it without mipmaps unless it is drawn far smaller than its pixels.
+##    redraws. No shader. `opacity` 0 draws the body alone (fade the dressing in later — one value per face). The art is a texture: import it without mipmaps unless it is drawn far smaller than its pixels.
 @tool
 class_name GoStyleBoxFrame
 extends GoStyleBoxSprite
@@ -61,6 +61,14 @@ extends GoStyleBoxSprite
 	set(value):
 		shadow_offset = value
 		emit_changed()
+## How much of the dressing shows (0..1): multiplies the frame art's `tint` alpha and the shadow's alpha when drawn,
+## leaving `tint`, `shadow_color` and the body as set. Fading a face in or out is then one value — state copies keep their
+## own tints (a pressed shade, a disabled grey) and fade with it. The body (`bg_color`) is not scaled: a face at 0 is its
+## flat body alone, the cheapest thing to draw (no texture slices, no shadow polygons). The draw rect is unchanged.
+@export_range(0.0, 1.0, 0.01) var opacity := 1.0:
+	set(value):
+		opacity = clampf(value, 0.0, 1.0)
+		emit_changed()
 
 
 func _init() -> void:
@@ -87,14 +95,24 @@ func fill_outline(rect: Rect2) -> PackedVector2Array:
 	return out
 
 
+## The frame art's colour as drawn: `tint` with its alpha scaled by `opacity`.
+func art_modulate() -> Color:
+	return Color(tint, tint.a * opacity)
+
+
+## The shadow's alpha as drawn: `shadow_color.a` scaled by `opacity`.
+func shadow_alpha() -> float:
+	return shadow_color.a * opacity
+
+
 func _draw(to_canvas_item: RID, rect: Rect2) -> void:
-	if shadow_color.a > 0.0:
+	if shadow_alpha() > 0.0:
 		_draw_shadow(to_canvas_item, rect)
 	if draw_center and bg_color.a > 0.0:
 		var body := fill_outline(rect)
 		if body.size() >= 3:
 			RenderingServer.canvas_item_add_polygon(to_canvas_item, body, PackedColorArray([bg_color]))
-	super._draw(to_canvas_item, rect)
+	_draw_nine(to_canvas_item, rect, art_modulate())
 
 
 ## A soft shadow from a few copies of the body, each a little larger and fainter (falling off with the square, so the
@@ -103,9 +121,9 @@ func _draw_shadow(to_canvas_item: RID, rect: Rect2) -> void:
 	var base := rect.grow(-fill_inset)
 	base.position += shadow_offset
 	var steps := clampi(int(ceilf(shadow_size / 2.0)), 1, 4)
-	# Each copy carries an even share of the alpha, so the middle (where every copy overlaps) lands near `shadow_color.a`
+	# Each copy carries an even share of the alpha, so the middle (where every copy overlaps) lands near `shadow_alpha()`
 	# whatever the step count; the outer copies fade with the square of their distance.
-	var share := 1.0 - pow(1.0 - shadow_color.a, 1.0 / float(steps))
+	var share := 1.0 - pow(1.0 - shadow_alpha(), 1.0 / float(steps))
 	for step in range(steps, 0, -1):
 		var spread := shadow_size * float(step) / float(steps)
 		var falloff := 1.0 - float(step - 1) / float(steps)
