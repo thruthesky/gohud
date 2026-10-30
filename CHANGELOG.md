@@ -4,6 +4,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+- **arcade_light flashbang art**: the power-up icon `powerup_flashbang` (`assets/arcade_light/hud/`, 96 px) and its item key `btn_flashbang` (`assets/arcade_light/touch/`, 256 px, the purple glossy disc of `btn_banana`) — a toy stun grenade going off in a white-and-yellow burst, in the HUD's navy ink — both through `GoSkin.widget_art`, painted in code by `tools/paint_arcade_flashbang.gd`.
 - **`GoIconSet.DISCORD` outlined**: the Discord logo now has a thick black outline and black eyes, so it reads on any backdrop as a bare picture key: `GoIconButton.art = GoUi.icons().texture(GoIconSet.DISCORD)`.
 - **`GoIconSet.DISCORD`** (`&"discord"`): the Simple Icons Discord logo (CC0) in white, in arcade_light's icon set — a "join our Discord" key: `GoGlyphButton.make("", GoIconSet.DISCORD, &"GoInfoButton")`.
 - **`GoStyleBoxFrame.opacity`** (0..1, default 1): fades a framed face's dressing — the frame art's tint alpha and the shadow's alpha — as one value, leaving `tint`, `shadow_color`, the body and the draw rect as set (`art_modulate()` / `shadow_alpha()` report what is drawn). At 0 the face draws its body alone. `GoStyleBoxSprite` draws through `_draw_nine(canvas, rect, modulate)` (its `_draw` passes `tint`).

@@ -575,7 +575,8 @@ const STAGE_ART := ART_ROOT + "stage/"
 ## `tools/paint_arcade_shield.gd`) and the touch controls' art
 ## (btn_attract, btn_repulse, btn_jump, stick_base, stick_knob) — the game's `assets/ui/hud` and `assets/ui/touch`.
 ## Painted for gohud in the same style: the power-up icons a HUD card shows (`hud/powerup_banana`, `powerup_trap`,
-## `powerup_reflect`, `powerup_bomb`) and the item keys a held power-up is dropped with (`touch/btn_banana`, `btn_trap`).
+## `powerup_reflect`, `powerup_bomb`, `powerup_flashbang`) and the item keys a held power-up is dropped with (`touch/btn_banana`,
+## `btn_trap`, `btn_flashbang`; the flashbang's two painted in code by `tools/paint_arcade_flashbang.gd`).
 const HUD_ART := ART_ROOT + "hud/"
 const TOUCH_ART := ART_ROOT + "touch/"
 ## Numbered gold, silver and bronze award medals, with ribbon tails and glossy faces.

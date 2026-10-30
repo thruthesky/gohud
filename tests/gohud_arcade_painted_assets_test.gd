@@ -45,6 +45,8 @@ const HUD_SPRITES := {
 	"shield": false,
 	# The power-up icons, painted for gohud in the same style (image generation, keyed and cut to 96 px).
 	"powerup_banana": false, "powerup_trap": false, "powerup_reflect": false, "powerup_bomb": false,
+	# ... and the flashbang's, painted in code (tools/paint_arcade_flashbang.gd).
+	"powerup_flashbang": false,
 }
 
 ## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's
@@ -52,7 +54,7 @@ const HUD_SPRITES := {
 const TOUCH_SPRITES := {
 	"btn_attract": false, "btn_jump": false, "btn_repulse": false, "stick_base": false, "stick_knob": false,
 	# The item keys a held power-up is dropped with, painted for gohud in the same style (image generation, 256 px).
-	"btn_banana": false, "btn_trap": false,
+	"btn_banana": false, "btn_trap": false, "btn_flashbang": false,
 }
 
 ## Every glyph → its mipmap choice, as above.
