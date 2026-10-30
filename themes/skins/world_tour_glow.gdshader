@@ -12,9 +12,11 @@ float island_mask(vec2 coordinate) {
 	// creates disconnected yellow patches inside the selected picture, even when its own pixels are transparent.
 	if (coordinate.x < atlas_region.x || coordinate.y < atlas_region.y || coordinate.x >= atlas_region.z || coordinate.y >= atlas_region.w) return 0.0;
 	vec2 pixel = coordinate / atlas_pixel_size;
-	// The source atlas rectangles overlap at their corners. Do not draw a halo from a neighbouring island.
+	// The source atlas rectangles overlap at their corners. Do not draw a halo from a neighbouring island; each cut
+	// matches a notch of GoWorldTourPicture._outline().
 	if (island_stage == 5 && pixel.x >= 1220.0 && pixel.y >= 647.0) return 0.0;
 	if (island_stage == 6 && pixel.x < 435.0 && pixel.y < 325.0) return 0.0;
+	if (island_stage == 6 && pixel.x < 425.0 && pixel.y >= 560.0) return 0.0;
 	if (island_stage == 7 && pixel.x > 250.0 && pixel.y < 580.0) return 0.0;
 	if (island_stage == 8 && pixel.x > 750.0 && pixel.y < 657.0) return 0.0;
 	if (island_stage == 9 && pixel.x < 1237.0 && pixel.y < 657.0) return 0.0;
