@@ -28,7 +28,14 @@ func _ready() -> void:
 	# 🛑 The safe area itself is **physical direction** — the notch does not move to the other side for Arabic or Urdu.
 	#    The left-right direction of the content is each child's own decision.
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
+	# 🛑 Window resizes only while in the tree (null viewport outside it → a release-build crash in an override that reads
+	#    the window). Re-entering lays out once for any resize missed while out.
 	get_viewport().size_changed.connect(_layout)
+	tree_entered.connect(func() -> void:
+		if not get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.connect(_layout)
+		_layout())
+	tree_exiting.connect(func() -> void:
+		if get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.disconnect(_layout))
 	# A 180° turn or a simulated device moves the safe area with no resize.
 	var runtime := GoUi.runtime()
 	if runtime != null and runtime.has_signal(&"safe_area_changed"): runtime.connect(&"safe_area_changed", _on_safe_area)
