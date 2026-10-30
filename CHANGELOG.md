@@ -4,6 +4,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+- **`GoIconSet.DISCORD`** (`&"discord"`): the Simple Icons Discord logo (CC0) in white, in arcade_light's icon set — a "join our Discord" key: `GoGlyphButton.make("", GoIconSet.DISCORD, &"GoInfoButton")`.
 - **`GoStyleBoxFrame.opacity`** (0..1, default 1): fades a framed face's dressing — the frame art's tint alpha and the shadow's alpha — as one value, leaving `tint`, `shadow_color`, the body and the draw rect as set (`art_modulate()` / `shadow_alpha()` report what is drawn). At 0 the face draws its body alone. `GoStyleBoxSprite` draws through `_draw_nine(canvas, rect, modulate)` (its `_draw` passes `tint`).
 - Deferred-gesture iPhone edge HUDs now expose a configurable 16-point bottom touch keep-out; form safe areas and non-deferred gestures keep their full inset.
 

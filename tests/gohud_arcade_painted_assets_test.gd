@@ -226,6 +226,8 @@ func _sign_in_icons() -> void:
 	var apple := GoUi.icons().texture(GoIconSet.APPLE)
 	check(google != null and google.resource_path == GLYPHS + "/google.svg", "with arcade_light chosen, google is the G mark")
 	check(apple != null and apple.resource_path == GLYPHS + "/apple.svg", "with arcade_light chosen, apple is the Apple logo")
+	var discord := GoUi.icons().texture(GoIconSet.DISCORD)
+	check(discord != null and discord.resource_path == GLYPHS + "/discord.svg", "with arcade_light chosen, discord is the Discord logo")
 	if google == null or apple == null: return
 	check(google.get_width() >= 96 and apple.get_width() >= 96, "the marks import at 96 px, sharp on a 56 px key")
 	# The G keeps its four colours: blue, red, yellow and green pixels are all there (drawn untinted, `node()` is white).

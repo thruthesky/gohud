@@ -954,7 +954,7 @@ func _icons() -> void:
 	var missing: Array = []
 	# The kill feed's, the multiplayer, the two-player and the sign-in glyphs are arcade_light's own (no plain-look drawing), so they are looked up there.
 	var arcade_only: Array[StringName] = [GoIconSet.MAGNET_ARROW, GoIconSet.FALL, GoIconSet.MULTIPLAYER,
-		GoIconSet.GOOGLE, GoIconSet.APPLE, GoIconSet.MAIL, GoIconSet.DUO]
+		GoIconSet.GOOGLE, GoIconSet.APPLE, GoIconSet.MAIL, GoIconSet.DUO, GoIconSet.DISCORD]
 	var arcade := (load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset).icons
 	for key in constants:
 		var value: Variant = constants[key]

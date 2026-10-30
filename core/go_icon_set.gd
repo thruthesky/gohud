@@ -163,6 +163,8 @@ const DUO := &"duo"
 const GOOGLE := &"google"
 const APPLE := &"apple"
 const MAIL := &"mail"
+# A community link (a "join our Discord" key) — arcade_light only: the Simple Icons Discord logo (CC0) in white.
+const DISCORD := &"discord"
 const RUN := &"run"
 
 # ── What the set holds ─────────────────────────────────────────────────
