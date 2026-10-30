@@ -698,7 +698,15 @@ func _ready() -> void:
 		if _runtime.has_signal(&"breakpoint_changed"): _runtime.breakpoint_changed.connect(func(_bp) -> void: relayout())
 		# A 180° turn moves the safe area with no resize; the window re-centres in what is usable now.
 		if _runtime.has_signal(&"safe_area_changed"): _runtime.safe_area_changed.connect(func(_m) -> void: relayout())
+	# 🛑 Window resizes only while this surface is in the tree: a surface held out of it (an outgoing scene between
+	#    `change_scene_to_*` and its deletion, a page put aside) has a null viewport, and a typed call on it is a native crash
+	#    in a release build. Re-entering catches up with any resize missed while out.
 	get_viewport().size_changed.connect(relayout)
+	tree_entered.connect(func() -> void:
+		if not get_viewport().size_changed.is_connected(relayout): get_viewport().size_changed.connect(relayout)
+		relayout())
+	tree_exiting.connect(func() -> void:
+		if get_viewport().size_changed.is_connected(relayout): get_viewport().size_changed.disconnect(relayout))
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
 	_restyle()
