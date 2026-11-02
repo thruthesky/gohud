@@ -82,6 +82,10 @@ extends Resource
 @export var joystick_ring_alpha := 0.45
 ## Width of the joystick ring (dp).
 @export var joystick_ring_width := 2.0
+## 🕹️ The aim wedge's width (degrees) and the steps of its arc (`draw_aim_wedge`).
+const AIM_WEDGE_DEGREES := 64.0
+const AIM_WEDGE_STEPS := 16
+
 ## Opacity of a painted joystick (`joystick_art`) while no finger is on it.
 @export var joystick_idle_alpha := 0.55
 ## Opacity of a painted joystick (`joystick_art`) while a finger drives it.
@@ -1291,12 +1295,13 @@ func draw_joystick(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: f
 
 ## 🕹️ Draws the joystick from `joystick_art()` when the skin has it (and says so) — the dish, then the knob over a soft
 ## drop shadow, see-through at rest so it does not hide the view. A skin that overrides `draw_joystick` calls it first.
+## [param ink] tints it (a `GoTouchButton` `stick` in its `stick_ink`); white keeps the art's own colours.
 func draw_joystick_art(canvas: CanvasItem, center: Vector2, knob: Vector2, radius: float, knob_radius: float,
-		active: bool) -> bool:
+		active: bool, ink := Color.WHITE) -> bool:
 	var dish := joystick_art(false)
 	var cap := joystick_art(true)
 	if dish == null or cap == null: return false
-	var tint := Color(1.0, 1.0, 1.0, joystick_active_alpha if active else joystick_idle_alpha)
+	var tint := Color(ink, ink.a * (joystick_active_alpha if active else joystick_idle_alpha))
 	draw_touch_sprite(canvas, dish, center, radius, tint, false)
 	draw_touch_sprite(canvas, cap, knob, knob_radius, tint, true)
 	return true
@@ -1314,6 +1319,35 @@ func draw_touch_sprite(canvas: CanvasItem, picture: Texture2D, center: Vector2, 
 	if shadow:
 		canvas.draw_circle(center + Vector2(0.0, 4.0), radius, Color(touch_shadow_ink(), 0.35 * tint.a))
 	canvas.draw_texture_rect(picture, Rect2(center - Vector2(radius, radius), Vector2(radius, radius) * 2.0), false, tint)
+
+
+## 🕹️ A `GoTouchButton` `stick`'s tint when it sets no `stick_ink`: `accent`, lightened so the glass still reads.
+func touch_stick_ink() -> Color:
+	return GoUi.color(GoTheme.ACCENT).lerp(Color.WHITE, 0.55)
+
+
+## 🕹️ The colour of a `GoTouchButton` `stick`'s aim wedge. The default is `accent`, lightened.
+func touch_aim_ink() -> Color:
+	return GoUi.color(GoTheme.ACCENT).lerp(Color.WHITE, 0.35)
+
+
+## 🕹️ A `GoTouchButton` `stick`'s aim wedge: a soft fan from the dish's [param center] toward [param pull] (length 0~1:
+## the stronger, the brighter), out to just inside the rim. Only draws.
+func draw_aim_wedge(canvas: CanvasItem, center: Vector2, radius: float, pull: Vector2) -> void:
+	var strength := clampf(pull.length(), 0.0, 1.0)
+	if strength <= 0.0: return
+	var ink := touch_aim_ink()
+	var heading := pull.angle()
+	var spread := deg_to_rad(AIM_WEDGE_DEGREES) / 2.0
+	var points := PackedVector2Array([center])
+	var colors := PackedColorArray([Color(ink, 0.0)])
+	for i in AIM_WEDGE_STEPS + 1:
+		var a := heading - spread + spread * 2.0 * i / AIM_WEDGE_STEPS
+		points.append(center + Vector2.from_angle(a) * radius * 0.94)
+		colors.append(Color(ink, 0.35 + 0.4 * strength))
+	canvas.draw_polygon(points, colors)
+	canvas.draw_arc(center, radius * 0.94, heading - spread, heading + spread, AIM_WEDGE_STEPS,
+		Color(ink.lerp(Color.WHITE, 0.5), 0.6 + 0.4 * strength), maxf(2.0, radius * 0.05), true)
 
 
 ## 🕹️ The soft shadow under a touch button or stick knob (drawn at 35% of the button's own opacity).

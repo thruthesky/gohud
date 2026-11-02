@@ -19,6 +19,15 @@
 ## aim.aimed.connect(func(pull: Vector2) -> void: input.aim(pull))
 ## ```
 ##
+## With `stick` (and `drag_aim`) the button wears the skin's joystick instead of its picture, a twin of `GoJoystick`:
+## the dish stays where it is, tinted `stick_ink`, its knob carries `stick_icon`, and while held the knob leans the way
+## of the pull and the skin's aim wedge (`GoSkin.draw_aim_wedge`) points there. The name sits under the dish.
+##
+## ```gdscript
+## aim.stick = true
+## aim.stick_icon = GoUi.icons().texture(GoIconSet.MAGNET)
+## ```
+##
 ## An item key shows what it holds and how many are left: its picture (`btn_banana`, `btn_trap` under `arcade_light`)
 ## and a `badge` on the rim, the skin's round count plate (`GoSkin.badge_box`).
 ##
@@ -126,6 +135,33 @@ signal aimed(pull: Vector2)
 @export_range(8, 256) var aim_radius := 50.0
 ## The aim knob's radius (dp).
 @export_range(4, 128) var aim_knob_radius := 24.0
+
+## Draws the button as the skin's joystick (`GoSkin.draw_joystick`) with `stick_icon` on its knob; see the class notes.
+@export var stick := false:
+	set(value):
+		stick = value
+		queue_redraw()
+
+## The picture on the stick's knob. null draws a bare knob.
+@export var stick_icon: Texture2D:
+	set(value):
+		stick_icon = value
+		queue_redraw()
+
+## The stick's tint. Transparent means the skin's `touch_stick_ink()`.
+@export var stick_ink := Color.TRANSPARENT:
+	set(value):
+		stick_ink = value
+		queue_redraw()
+
+## The stick's knob radius, as a share of the dish's.
+@export_range(0.2, 0.8, 0.01) var stick_knob_share := 0.44
+
+## The icon's radius on the knob, as a share of the knob's.
+@export_range(0.2, 1.0, 0.01) var stick_icon_share := 0.8
+
+## The name's baseline below the stick's rim (dp); `caption_drop` then goes under it.
+@export_range(0, 128) var stick_label_drop := 20.0
 
 ## A count on the rim, up and to the right (the charges an item key has left: "×2"). Empty draws none. It sits on the
 ## skin's badge plate (`GoSkin.badge_box(badge_ink)`), white over the touch edge, and moves with the press and pulse.
@@ -260,8 +296,12 @@ func aim() -> Vector2:
 	return (_knob - _base) / aim_radius if _held and drag_aim else Vector2.ZERO
 
 
-## With `drag_aim`: where the knob is drawn (local).
+## With `drag_aim`: where the knob is drawn (local). With `stick`, on the dish: the pull scaled to the room inside the
+## rim (the centre at rest).
 func knob() -> Vector2:
+	if stick:
+		var r := radius()
+		return size / 2.0 + aim() * (r - r * stick_knob_share)
 	return _knob
 
 
@@ -441,6 +481,9 @@ func _draw() -> void:
 			draw_arc(c, ring, -PI / 2.0, -PI / 2.0 + TAU * cooldown, RING_POINTS, skin.touch_cooldown_ink(), 5.0, true)
 	var r := radius()
 	var shade := tint() * press_tint if _held else tint()
+	if stick:
+		_draw_stick(skin, c, r, shade)
+		return
 	var face := picture()
 	if face != null:
 		skin.draw_touch_sprite(self, face, c, r, shade, true)
@@ -463,6 +506,30 @@ func _draw() -> void:
 		_label(text, c + Vector2(-r, r * label_rise), r * 2.0, label_font_size())
 	if not caption.is_empty():
 		_label(caption, c + Vector2(-r0, r0 + caption_drop), r0 * 2.0, caption_font_size(false))
+	if not badge.is_empty():
+		_draw_badge(c, r)
+
+
+## The `stick` look: the skin's dish and knob in `stick_ink`, the aim wedge while pulled, the icon on the knob, the name
+## under the rim, and under it the caption (held: `held_caption`).
+func _draw_stick(skin: GoSkin, c: Vector2, r: float, shade: Color) -> void:
+	var ink_color := stick_ink if stick_ink.a > 0.0 else skin.touch_stick_ink()
+	var k := knob()
+	var kr := r * stick_knob_share
+	if not skin.draw_joystick_art(self, c, k, r, kr, _held, ink_color * shade):
+		skin.draw_joystick(self, c, k, r, kr, ink_color * shade, GoUi.color(GoTheme.SURFACE), _held)
+	var pull := aim()
+	if pull.length() > 0.0:
+		skin.draw_aim_wedge(self, c, r, pull)
+	if stick_icon != null:
+		var ir := kr * stick_icon_share
+		draw_texture_rect(stick_icon, Rect2(k - Vector2(ir, ir), Vector2(ir, ir) * 2.0), false, shade)
+	var r0 := diameter / 2.0
+	if not text.is_empty():
+		_label(text, c + Vector2(-r0, r0 + stick_label_drop), r0 * 2.0, label_font_size())
+	var line := held_caption if _held else caption
+	if not line.is_empty():
+		_label(line, c + Vector2(-r0, r0 + stick_label_drop + caption_drop), r0 * 2.0, caption_font_size(_held))
 	if not badge.is_empty():
 		_draw_badge(c, r)
 
