@@ -825,9 +825,26 @@ func _sync_content_edge() -> void:
 			(level.scroll as GoScroll).set_panel_padding(padding)
 		_sync_level_gap(level)
 	if not _levels.is_empty(): return   # the root's column is hidden — it catches up on the last pop
+	# 🔑 A page that does not scroll itself (`set_scrolls(false)`) holds the screen's own scroll at the body's edge — that
+	#    scroll borrows the same padding. 🛑 Left at the roomy padding it was built with, it reached past the card once the
+	#    surface took its dense step (a game's bag in landscape: the list and its scrollbar 8 dp past the screen's edge).
+	if not _scrolls:
+		for scroll in _body_edge_scrolls():
+			if scroll._panel_padding != padding: scroll.set_panel_padding(padding)
 	if padding == _content_edge_padding: return
 	_content_edge_padding = padding
 	_content_scroll.set_panel_padding(padding)
+
+
+## The scrolls a screen put straight into [member body] with a panel edge (`GoScroll.use_panel_edge` wraps the scroll in
+## its edge frame, which is then the body's child).
+func _body_edge_scrolls() -> Array[GoScroll]:
+	var out: Array[GoScroll] = []
+	for child in body.get_children():
+		var scroll: GoScroll = child as GoScroll
+		if scroll == null and child is MarginContainer and child.get_child_count() > 0: scroll = child.get_child(0) as GoScroll
+		if scroll != null and scroll._edge_frame != null: out.append(scroll)
+	return out
 
 
 ## The gap between a sub-page's scroll and its pinned rows (status, footer): the surface's own section gap, never less

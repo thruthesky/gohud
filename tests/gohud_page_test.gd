@@ -314,6 +314,24 @@ func _wide_row_fits() -> void:
 	check(wide.get_global_rect().end.x <= area.end.x + 0.5, "the button wraps inside the page (ends at %.0f of %.0f)"
 		% [wide.get_global_rect().end.x, area.end.x])
 	page.queue_free()
+	# A page that does not scroll itself holds its own edge scroll: it borrows what the card pads now, dense step included.
+	var own := GoPage.new()
+	own.open("Own scroll")
+	own.set_scrolls(false)
+	var scroll := GoScroll.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	own.body.add_child(scroll)
+	var column := GoStyle.column()
+	scroll.add_child(column)
+	scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+	var stiff := Control.new()
+	stiff.custom_minimum_size = Vector2(900, 20)   # wider than the phone: the surface takes its dense step
+	column.add_child(stiff)
+	root.add_child(own)
+	await frames(4)
+	check(scroll._panel_padding == own.surface._content_padding,
+		"a page's own edge scroll borrows the card's current padding (%d, card %d)" % [scroll._panel_padding, own.surface._content_padding])
+	own.queue_free()
 	await _size(390, 844)
 	await frames(2)
 	section("a row wider than the screen never widens the page")
