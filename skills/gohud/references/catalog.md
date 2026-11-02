@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (28)
+8. [HUD and game shapes](#hud-and-game-shapes) (29)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -1038,6 +1038,20 @@ var ping := GoSignalBars.make(4, GoSignalBars.Tone.GOOD)
 ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")
 ```
 
+### `GoRewardRow`
+
+Extends `PanelContainer`. A row for what a player earns by progress: a quest or achievement with a bar, its payment and a claim pill, a check or a padlock by state. Fixed height for GoListView. Details: `hud.md` §39 (GoRewardRow).
+
+```gdscript
+var quest := GoRewardRow.make("Win 3 matches", GoIconSet.STAR)
+quest.key = "win_3"
+quest.set_progress(1, 3)
+quest.set_reward(50, GoIconSet.COIN)
+quest.set_claim_text("CLAIM")
+quest.set_state(GoRewardRow.State.READY)
+quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
+```
+
 ### `GoFoldTab`
 
 Extends `Button`. Folds a HUD panel into a small pill and back: a slim handle with a chevron, then a pill that keeps a glyph, a short text and a gauge. The host lays the HUD out again on fold_changed. Details: `hud.md` §37 (GoFoldTab).
@@ -1184,7 +1198,7 @@ var size_class := GoScale.breakpoint_for_dp(minf(usable.size.x, usable.size.y)) 
 
 ### `GoFeedback`
 
-Extends `RefCounted`. Sound cues and haptics routed to your own audio; gohud ships no sound. Details: `platform.md` §3 (Sound and haptics).
+Extends `RefCounted`. Sound cues and haptics routed to your own audio; gohud ships no sound. Details: `hud.md` §39 (GoRewardRow).
 
 ```gdscript
 GoFeedback.sound_handler = func(cue: String) -> void: audio.play_cue(cue)

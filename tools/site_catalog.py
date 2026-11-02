@@ -2206,6 +2206,30 @@ ping.set_reading(2, GoSignalBars.Tone.FAIR, "180 ms")""", T(
 		"Індикатор сигналу як у телефоні: стовпчики ростуть зліва направо, світяться зеленим, золотим чи червоним, поруч показник на кшталт «48 ms» — пінг у HUD матчу.",
 		"มาตรวัดสัญญาณแบบโทรศัพท์: แท่งที่สูงขึ้นจากซ้ายไปขวา สว่างเป็นสีเขียว ทอง หรือแดง พร้อมค่าอย่าง \"48 ms\" — ค่า ping บน HUD ของแมตช์",
 		"مقياس إشارة كما في الهاتف: أعمدة ترتفع من اليسار إلى اليمين، تضيء بالأخضر أو الذهبي أو الأحمر، مع قراءة مثل \"48 ms\" — زمن الاستجابة في واجهة المباراة.")),
+	("hud", "GoRewardRow", "PanelContainer", """var quest := GoRewardRow.make("Win 3 matches", GoIconSet.STAR)
+quest.key = "win_3"
+quest.set_progress(1, 3)
+quest.set_reward(50, GoIconSet.COIN)
+quest.set_claim_text("CLAIM")
+quest.set_state(GoRewardRow.State.READY)
+quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))""", T(
+		"A row for what a player earns by progress: a quest or achievement with a bar, its payment and a claim pill, a check or a padlock by state. Fixed height for GoListView.",
+		"진행으로 얻는 것을 보여 주는 줄 — 막대와 보상이 있는 퀘스트·업적, 상태에 따라 받기 버튼, 체크, 자물쇠. GoListView 에 맞는 고정 높이.",
+		"進行で得られるものを示す行。バーと報酬のあるクエストや実績で、状態に応じて受け取りボタン、チェック、南京錠を表示します。GoListView に合う固定の高さです。",
+		"展示玩家靠进度获得之物的一行：带进度条和奖励的任务或成就，按状态显示领取按钮、对勾或挂锁。高度固定，适用于 GoListView。",
+		"顯示玩家靠進度獲得之物的一列：帶進度條和獎勵的任務或成就，依狀態顯示領取按鈕、勾號或掛鎖。高度固定，適用於 GoListView。",
+		"Una fila para lo que el jugador gana con su progreso: una misión o un logro con barra, recompensa y un botón de reclamar, una marca o un candado según el estado. Altura fija para GoListView.",
+		"Uma linha para o que o jogador ganha com o progresso: uma missão ou conquista com barra, recompensa e um botão de resgatar, uma marca ou um cadeado conforme o estado. Altura fixa para GoListView.",
+		"Строка для того, что игрок получает за прогресс: задание или достижение с полосой, наградой и кнопкой получения, галочкой или замком по состоянию. Постоянная высота для GoListView.",
+		"Une ligne pour ce que le joueur gagne par sa progression : une quête ou un succès avec une barre, sa récompense et un bouton de réclamation, une coche ou un cadenas selon l'état. Hauteur fixe pour GoListView.",
+		"Oyuncunun ilerleyerek kazandığı şeyler için bir satır: çubuklu ve ödüllü bir görev ya da başarım; duruma göre alma düğmesi, onay işareti veya kilit. GoListView için sabit yükseklik.",
+		"Wiersz na to, co gracz zdobywa postępem: zadanie lub osiągnięcie z paskiem, nagrodą i przyciskiem odbioru, znacznikiem albo kłódką zależnie od stanu. Stała wysokość dla GoListView.",
+		"Una riga per ciò che il giocatore ottiene progredendo: una missione o un obiettivo con barra, ricompensa e un pulsante di riscatto, una spunta o un lucchetto secondo lo stato. Altezza fissa per GoListView.",
+		"Một hàng cho thứ người chơi kiếm được nhờ tiến độ: nhiệm vụ hoặc thành tích có thanh tiến độ, phần thưởng và nút nhận, dấu kiểm hoặc ổ khóa theo trạng thái. Chiều cao cố định cho GoListView.",
+		"Baris untuk hal yang didapat pemain lewat kemajuan: misi atau pencapaian dengan bilah, hadiah, dan tombol klaim, tanda centang, atau gembok sesuai status. Tinggi tetap untuk GoListView.",
+		"Рядок для того, що гравець здобуває прогресом: завдання чи досягнення зі смугою, нагородою та кнопкою отримання, галочкою або замком за станом. Стала висота для GoListView.",
+		"แถวสำหรับสิ่งที่ผู้เล่นได้รับจากความคืบหน้า: ภารกิจหรือความสำเร็จพร้อมแถบ รางวัล และปุ่มรับ เครื่องหมายถูก หรือแม่กุญแจตามสถานะ ความสูงคงที่สำหรับ GoListView",
+		"صف لما يكسبه اللاعب بالتقدم: مهمة أو إنجاز مع شريط وجائزة وزر استلام أو علامة صح أو قفل حسب الحالة. ارتفاع ثابت يناسب GoListView.")),
 	("hud", "GoFoldTab", "Button", """var tab := GoFoldTab.new()
 tab.side = SIDE_LEFT
 tab.icon_name = GoIconSet.USERS

@@ -338,6 +338,24 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	grade.add_child(GoStyle.label("GoStarRow — a result screen's grade", GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED)))
 	page.add_child(grade)
 
+	page.add_child(GoStyle.section("Reward rows", false))
+	# GoRewardRow: the game says the state, the progress and the payment; a press only asks, and hands back the key.
+	var quests := GoStyle.column(GoUi.metric(GoTheme.GAP_SMALL))
+	for quest: Array in [["Play 5 matches", GoIconSet.FLAG, 3, GoRewardRow.State.IN_PROGRESS],
+			["Win five online matches without falling off the arena", GoIconSet.STAR, 5, GoRewardRow.State.READY],
+			["Finish the training", GoIconSet.GIFT, 5, GoRewardRow.State.CLAIMED],
+			["Reach the second island", GoIconSet.CROWN, 0, GoRewardRow.State.LOCKED]]:
+		var reward := GoRewardRow.make(quest[0], quest[1], quest[3])
+		reward.key = quest[0]
+		reward.set_progress(quest[2], 5)
+		reward.set_reward((quests.get_child_count() + 1) * 50, GoIconSet.COIN)
+		reward.set_claim_text("CLAIM")
+		reward.claim_pressed.connect(func(id: Variant) -> void:
+			_say("claimed %s" % id)
+			reward.set_state(GoRewardRow.State.CLAIMED))
+		quests.add_child(reward)
+	page.add_child(quests)
+
 	page.add_child(GoStyle.section("Signal bars", false))
 	# GoSignalBars: the caller (the server's measured ping) picks the bars, the tone and the text — 0 of 4 is no reading.
 	var signals := GoStyle.wrap_row()   # wraps, so a 320dp phone holds them

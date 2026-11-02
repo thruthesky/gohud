@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD e formas de jogo <small>(28)</small></h2>
+  <h2>HUD e formas de jogo <small>(29)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -1008,6 +1008,18 @@ overlay_layer.<wbr>add_child(<wbr>perf)</code></pre>
       <p class="catalog-base">estende <code>PanelContainer</code></p>
       <pre><code>var ping := GoSignalBars.<wbr>make(<wbr>4,<wbr> GoSignalBars.<wbr>Tone.<wbr>GOOD)
 ping.<wbr>set_reading(<wbr>2,<wbr> GoSignalBars.<wbr>Tone.<wbr>FAIR,<wbr> "180 ms")</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gorewardrow"><code>GoRewardRow</code></h3>
+      <p>Uma linha para o que o jogador ganha com o progresso: uma missão ou conquista com barra, recompensa e um botão de resgatar, uma marca ou um cadeado conforme o estado. Altura fixa para GoListView.</p>
+      <p class="catalog-base">estende <code>PanelContainer</code></p>
+      <pre><code>var quest := GoRewardRow.<wbr>make(<wbr>"Win 3 matches",<wbr> GoIconSet.<wbr>STAR)
+quest.<wbr>key = "win_3"
+quest.<wbr>set_progress(<wbr>1,<wbr> 3)
+quest.<wbr>set_reward(<wbr>50,<wbr> GoIconSet.<wbr>COIN)
+quest.<wbr>set_claim_text(<wbr>"CLAIM")
+quest.<wbr>set_state(<wbr>GoRewardRow.<wbr>State.<wbr>READY)
+quest.<wbr>claim_pressed.<wbr>connect(<wbr>func(<wbr>id: Variant) -&gt; void: server.<wbr>claim(<wbr>id))</code></pre>
     </div>
     <div class="card">
       <h3 id="gofoldtab"><code>GoFoldTab</code></h3>

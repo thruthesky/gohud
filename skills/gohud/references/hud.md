@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab and GoGestureHint.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint and GoRewardRow.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -45,6 +45,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 36. [GoSignalBars — a signal meter](#36-gosignalbars--a-signal-meter)
 37. [GoFoldTab — fold a HUD panel into a pill](#37-gofoldtab--fold-a-hud-panel-into-a-pill)
 38. [GoGestureHint — ghost fingers that play a gesture](#38-gogesturehint--ghost-fingers-that-play-a-gesture)
+39. [GoRewardRow — a quest or achievement in a list](#39-gorewardrow--a-quest-or-achievement-in-a-list)
 
 ## 1. GoHudAnchor
 
@@ -1275,3 +1276,65 @@ hint.stop()                                      # hides it; nothing is drawn un
   inside a 3 dp `shadow` outline at 0.8; with the last argument true, a head at each end) and `gesture_arrow_fill()` (the lightest
   of `surface`, `on_accent` and `text`). It follows a look change (`GoUi.watch`).
 - 🛑 Display only: the game decides when the gesture was done and calls `stop()`.
+
+## 39. GoRewardRow — a quest or achievement in a list
+
+`class_name GoRewardRow extends PanelContainer` · one thing a player earns by progress: a daily quest, an achievement,
+a season task. A picture in a well, a title, a bar with its `3 / 5`, the payment, and at the end the row's state. The
+game supplies every word and every fact; a press only asks. `GoLevelCard` is a fixed tile and `GoTaskCard` takes no
+input, so neither fits a scrolling list of claims.
+
+```gdscript
+var quest := GoRewardRow.make("Win 3 matches", GoIconSet.STAR)
+quest.key = "win_3"
+quest.set_progress(1, 3)
+quest.set_reward(50, GoIconSet.COIN)
+quest.set_claim_text("CLAIM")
+quest.set_state(GoRewardRow.State.READY)
+quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
+```
+
+In a long list, connect once when the row is made, and set `key` first when it is bound:
+
+```gdscript
+var list := GoListView.recycle(quests.size(), GoRewardRow.extent(),
+	func() -> Control:
+		var fresh := GoRewardRow.make("")
+		fresh.claim_pressed.connect(_claim)
+		return fresh,
+	func(node: Control, index: int) -> void:
+		var row := node as GoRewardRow
+		row.key = quests[index].id
+		row.title = quests[index].title
+		row.set_progress(quests[index].done, quests[index].goal)
+		row.set_reward(quests[index].coins, GoIconSet.COIN)
+		row.set_claim_text("CLAIM")
+		row.set_state(quests[index].state))
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }` · `state` · `set_state(value)` | `IN_PROGRESS` | READY: the glowing pill. CLAIMED: the check sticker, the row dimmed. LOCKED: the padlock, the row dimmed. `set_state` with the same state re-arms the pill after a refused claim |
+| `make(text, picture = &"", row_state = State.IN_PROGRESS)` | | Static |
+| `extent()` | | Static. Every row's height under the current look and `GoConfig`: give it to `GoListView`. Grows with the touch floor and the base font |
+| `title` | `""` | Wraps: two lines at full size, three at the fit floor, then an ellipsis |
+| `icon` · `icon_texture` | `&""` · null | A name (the skin's `widget_art`, else the icon set) or the picture itself |
+| `set_progress(value, target, animate = false)` | | A `target` of 0 or less hides the bar and the fraction. No slide by default: a row bound to other data must not glide there |
+| `set_reward(amount, picture = GoIconSet.COIN, texture = null)` | | An `amount` of 0 or less shows no payment. Written by `GoBar.format_amount` |
+| `claim_text` · `set_claim_text(text)` | `""` | The pill's word; shrinks to fit, never widens the pill |
+| `claimed_text` · `locked_text` | `""` | Spoken for those states, never drawn: the marks say it |
+| `key` | `null` | The caller's name for what the row shows now, of any type. A different value means other data |
+| `signal claim_pressed(id)` | | `id` is `key` at that moment. Once per READY: the pill goes off until `set_state()` is called |
+| `feedback` | `GoFeedback.CONFIRMED` | What a claim press says through `GoFeedback` |
+| `refresh()` | | Applies pending changes now; the setters batch to the end of the frame |
+| `title_label` · `bar` · `fraction_label` · `reward_row` · `reward_label` · `claim_button` · `lock_mark` · `check_host` | | The parts |
+| `claim_variation()` | | Static. `GoPillGreen`, or `GoPrimaryButton` in a look without it |
+
+- 🛑 A row that moves to other data (a new `key` or `title`) forgets a finger already on its pill, so a press begun on
+  one quest cannot claim the next. Refreshing the same data (progress, payment, the same state) keeps the press.
+- The touch target is `GoUi.touch_size()`. The sizes are dp constants, so the row follows the runtime's scale; the fonts
+  are the `body` and `compact` roles, and `GoConfig.fit_min_scale` is the floor.
+- The row keeps its own copies of the look's card and pill with less side padding (`CARD_PAD`, `PILL_PAD`), for the title
+  and the claim word on a phone; a look that pads less keeps its own padding.
+- Its boxes keep their spacing inside a `GoForm` (`go_own_spacing`). Right to left the row mirrors; numbers stay left to
+  right. It follows a look change (`GoUi.watch`).

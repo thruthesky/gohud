@@ -157,6 +157,8 @@ const PIECES: Array[Dictionary] = [
 		"code": "GoPagination.make(1, total, load)"},
 	{"group": 5, "name": "GoRewardCalendar", "note": "Daily attendance — only today can be pressed.",
 		"code": "GoRewardCalendar.make(days, got)"},
+	{"group": 5, "name": "GoRewardRow", "note": "A quest or achievement: progress, payment, one claim press.",
+		"code": "GoRewardRow.make(title, icon)"},
 	{"group": 5, "name": "GoRadar", "note": "The stat pentagon, with a dashed line to compare gear.",
 		"code": "GoRadar.make(stats, compare)"},
 	{"group": 5, "name": "GoDonut", "note": "Damage share and currency splits, with a legend in words.",
@@ -1003,6 +1005,17 @@ func _card_new_widgets() -> Control:
 		calendar.set_claimed_until(day)
 		_say("claimed day %d" % (day + 1)))
 	body.add_child(calendar)
+
+	var quest := GoRewardRow.make("Win five online matches without falling off the arena", GoIconSet.STAR,
+		GoRewardRow.State.READY)
+	quest.key = "win_five"
+	quest.set_progress(5, 5)
+	quest.set_reward(120, GoIconSet.COIN)
+	quest.set_claim_text("CLAIM")
+	quest.claim_pressed.connect(func(id: Variant) -> void:
+		quest.set_state(GoRewardRow.State.CLAIMED)
+		_say("claimed %s" % id))
+	body.add_child(quest)
 
 	var coupon := GoCodeInput.make(8, 4)
 	coupon.completed.connect(func(code: String) -> void: _say("coupon %s" % code))
