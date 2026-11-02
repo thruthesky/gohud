@@ -130,6 +130,7 @@ func _init() -> void:
 
 	_scrim = ColorRect.new()
 	_scrim.name = "Scrim"
+	_scrim.set_meta(&"go_scrim", true)   # a scrim says it is one (`GoStyle.style_scrim`)
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_scrim.mouse_filter = Control.MOUSE_FILTER_STOP
 	_scrim.mouse_force_pass_scroll_events = false

@@ -569,6 +569,7 @@ func _build() -> void:
 	_scrim = veil
 	_scrim.name = "Scrim"
 	_scrim.color = GoUi.color(GoTheme.SCRIM)
+	_scrim.set_meta(&"go_scrim", true)   # a scrim says it is one (`GoStyle.style_scrim`)
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_scrim.gui_input.connect(_scrim_input)
 	add_child(_scrim)

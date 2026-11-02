@@ -3325,6 +3325,9 @@ static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 ## Resets the depth of a scrim already in place (a login background that veils only once the art has loaded).
 static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT) -> void:
 	if node == null: return
+	# 🏷 It says it is a scrim (`go_scrim`): a layer that holds one is a modal layer over what is behind it, so a fit or
+	#    tap check can tell it from a panel that merely stops taps (a card that grew over the buttons next to it).
+	node.set_meta(&"go_scrim", true)
 	# 🌫 The look may frost what is behind (`GoSkin.scrim_material` — `GoSkinArcade.arcade_scrim_blur`); a clear veil
 	#    (alpha 0) stays plain.
 	node.material = GoUi.skin().scrim_material_now() if alpha != 0.0 else null

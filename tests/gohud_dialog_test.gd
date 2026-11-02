@@ -588,6 +588,8 @@ func _backdrop(look: StringName) -> void:
 	var scrim: ColorRect = surface._scrim
 	var drawer_scrim: ColorRect = drawer._scrim
 	var made := GoStyle.scrim()
+	check(made.has_meta(&"go_scrim") and scrim.has_meta(&"go_scrim") and drawer_scrim.has_meta(&"go_scrim"),
+		"%s backdrop: a made scrim, a window's and a drawer's say they are scrims (go_scrim)" % look)
 	if painted:
 		check(scrim.material != null and drawer_scrim.material != null and made.material != null,
 			"%s backdrop: the game's blur behind a window, a drawer and a made scrim" % look)
