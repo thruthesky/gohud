@@ -72,7 +72,9 @@ func _fills(card: Rect2, area: Rect2) -> bool:
 
 ## Adds words to [param button]'s text until its one-line minimum is at least [param width] wide.
 func _grow_words(button: Button, width: float) -> void:
-	var more := ["this", "message", "to", "everyone", "in", "the", "party", "right", "now"]
+	# Stress the one-line width while keeping the wrapped word floors feasible. Long words such as "everyone"
+	# left this three-control row 325 dp wide even after wrapping, in a 296 dp content area.
+	var more := ["this", "line", "to", "the", "next", "row", "with", "all", "its", "keys"]
 	var at := 0
 	while button.get_minimum_size().x < width and at < 200:
 		button.text += " " + more[at % more.size()]
@@ -344,11 +346,21 @@ func _wide_row_fits() -> void:
 		line.add_child(send)
 		_grow_words(send, area.size.x * 0.6)
 		sends.append(send)
+	check(line.get_combined_minimum_size().x > area.size.x, "fixture: the unwrapped row really is wider than the page")
+	var word_floor := input.get_combined_minimum_size().x + line.get_theme_constant(&"separation") * sends.size()
+	for send: Button in sends:
+		var wrapped := GoStyle.button(send.text)
+		word_floor += wrapped.get_combined_minimum_size().x
+		wrapped.free()
 	await frames(4)
 	card = chat.surface.card.get_global_rect()
+	var frame := chat.surface.card.get_combined_minimum_size().x - line.get_combined_minimum_size().x
+	check(word_floor + frame <= area.size.x, "fixture: the row's wrapped word floors fit (%.0f + %.0f in %.0f)" % [word_floor, frame, area.size.x])
+	var row_sizes := "input %.0f, buttons %s, row %.0f" % [input.get_combined_minimum_size().x,
+		sends.map(func(b: Button) -> float: return b.get_combined_minimum_size().x), line.get_combined_minimum_size().x]
 	check(sends.all(func(b: Button) -> bool: return b.get_minimum_size().x < area.size.x or b.autowrap_mode != TextServer.AUTOWRAP_OFF),
 		"no button of that row is wider than the page by itself")
-	check(_fills(card, area), "a page whose one row is too wide as a whole still fills the screen (card %s, area %s)" % [card, area])
+	check(_fills(card, area), "a page whose one row is too wide as a whole still fills the screen (card %s, area %s; %s)" % [card, area, row_sizes])
 	check(line.get_global_rect().end.x <= area.end.x + 0.5, "that row folds its buttons inside the page (ends at %.0f of %.0f)"
 		% [line.get_global_rect().end.x, area.end.x])
 	check(sends.any(func(b: Button) -> bool: return b.autowrap_mode != TextServer.AUTOWRAP_OFF), "a button in it is re-fitted from its words")
