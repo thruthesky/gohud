@@ -98,6 +98,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_game_hud_test.gd" \
 step "①-rr unit tests — GoRewardRow (the four states, the fixed height, a row reused by a list)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_row_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-sb unit tests — GoSideButton (the picture over its word, the touch floor, the fit, the count, a press anywhere)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_side_button_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-t unit tests — the seven templates the skill ships"
 # 🛑 `skills/gohud/assets/templates/` is **code people copy into their own project and use as-is**,
 #    yet until 2026-09-16 no check opened any of those five (the docs said "headless-tested").

@@ -159,6 +159,8 @@ const PIECES: Array[Dictionary] = [
 		"code": "GoRewardCalendar.make(days, got)"},
 	{"group": 5, "name": "GoRewardRow", "note": "A quest or achievement: progress, payment, one claim press.",
 		"code": "GoRewardRow.make(title, icon)"},
+	{"group": 5, "name": "GoSideButton", "note": "A menu's side key: a big picture, its word and a count.",
+		"code": "GoSideButton.make(words, art)"},
 	{"group": 5, "name": "GoRadar", "note": "The stat pentagon, with a dashed line to compare gear.",
 		"code": "GoRadar.make(stats, compare)"},
 	{"group": 5, "name": "GoDonut", "note": "Damage share and currency splits, with a legend in words.",
@@ -1016,6 +1018,13 @@ func _card_new_widgets() -> Control:
 		quest.set_state(GoRewardRow.State.CLAIMED)
 		_say("claimed %s" % id))
 	body.add_child(quest)
+
+	var daily_art: Texture2D = GoUi.skin().widget_art(&"menu_daily")
+	var daily := GoSideButton.make("DAILY", daily_art if daily_art != null else GoUi.icons().texture(GoIconSet.FLAG))
+	daily.picture_size = 64
+	daily.pressed.connect(func() -> void: _say("opened the daily quests"))
+	body.add_child(daily)
+	daily.set_badge(2)
 
 	var coupon := GoCodeInput.make(8, 4)
 	coupon.completed.connect(func(code: String) -> void: _say("coupon %s" % code))

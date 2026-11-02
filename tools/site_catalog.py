@@ -2230,6 +2230,29 @@ quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))""", T(
 		"Рядок для того, що гравець здобуває прогресом: завдання чи досягнення зі смугою, нагородою та кнопкою отримання, галочкою або замком за станом. Стала висота для GoListView.",
 		"แถวสำหรับสิ่งที่ผู้เล่นได้รับจากความคืบหน้า: ภารกิจหรือความสำเร็จพร้อมแถบ รางวัล และปุ่มรับ เครื่องหมายถูก หรือแม่กุญแจตามสถานะ ความสูงคงที่สำหรับ GoListView",
 		"صف لما يكسبه اللاعب بالتقدم: مهمة أو إنجاز مع شريط وجائزة وزر استلام أو علامة صح أو قفل حسب الحالة. ارتفاع ثابت يناسب GoListView.")),
+	("hud", "GoSideButton", "BaseButton", """var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
+daily.picture_size = 76
+daily.label_width = 120
+daily.pressed.connect(func() -> void: open_quests("daily"))
+menu.add_child(daily)
+daily.set_badge(3)""", T(
+		"A side menu key: a big painted picture, a short outlined word under it and a count on the picture's corner, such as a main menu's daily quests or achievements.",
+		"메뉴 옆에 서는 키 — 크게 칠한 그림, 그 아래 외곽선 있는 짧은 낱말, 그림 모서리의 숫자. 메인 메뉴의 일일 퀘스트나 업적 키 같은 것.",
+		"メニューの横に立つキー。大きく描いた絵、その下に縁取りのある短い言葉、絵の角に数字。メインメニューのデイリークエストや実績のキーなど。",
+		"菜单侧边的按键：一幅大幅手绘图片，下方一个带描边的短词，图片角上一个数字，例如主菜单的每日任务或成就按键。",
+		"選單側邊的按鍵：一幅大幅手繪圖片，下方一個帶描邊的短詞，圖片角上一個數字，例如主選單的每日任務或成就按鍵。",
+		"Una tecla al costado del menú: una imagen pintada grande, una palabra corta con contorno debajo y un número en la esquina de la imagen, como las misiones diarias o los logros del menú principal.",
+		"Uma tecla ao lado do menu: uma imagem pintada grande, uma palavra curta com contorno embaixo e um número no canto da imagem, como as missões diárias ou as conquistas do menu principal.",
+		"Кнопка сбоку меню: большая нарисованная картинка, короткое слово с обводкой под ней и число в углу картинки, например ежедневные задания или достижения главного меню.",
+		"Une touche sur le côté du menu : une grande image peinte, un mot court cerné en dessous et un nombre dans le coin de l'image, comme les quêtes du jour ou les succès du menu principal.",
+		"Menünün yanında duran bir tuş: büyük boyalı bir resim, altında dış çizgili kısa bir sözcük ve resmin köşesinde bir sayı; ana menünün günlük görevleri ya da başarımları gibi.",
+		"Klawisz z boku menu: duży malowany obrazek, pod nim krótkie słowo z obrysem i liczba w rogu obrazka, na przykład dzienne zadania lub osiągnięcia w menu głównym.",
+		"Un tasto a lato del menu: una grande immagine dipinta, una parola breve con contorno sotto e un numero nell'angolo dell'immagine, come le missioni giornaliere o gli obiettivi del menu principale.",
+		"Một phím bên cạnh menu: một hình vẽ lớn, một chữ ngắn có viền bên dưới và một con số ở góc hình, như nhiệm vụ hằng ngày hay thành tích của menu chính.",
+		"Tombol di sisi menu: gambar lukis besar, satu kata pendek bergaris tepi di bawahnya, dan angka di sudut gambar, seperti misi harian atau pencapaian di menu utama.",
+		"Клавіша збоку меню: велика намальована картинка, коротке слово з обведенням під нею та число в куті картинки, як-от щоденні завдання чи досягнення головного меню.",
+		"ปุ่มข้างเมนู: ภาพวาดขนาดใหญ่ คำสั้น ๆ ที่มีเส้นขอบอยู่ด้านล่าง และตัวเลขที่มุมภาพ เช่นภารกิจรายวันหรือความสำเร็จของเมนูหลัก",
+		"مفتاح على جانب القائمة: صورة مرسومة كبيرة، وكلمة قصيرة بحدّ تحتها، ورقم في زاوية الصورة، مثل المهام اليومية أو الإنجازات في القائمة الرئيسية.")),
 	("hud", "GoFoldTab", "Button", """var tab := GoFoldTab.new()
 tab.side = SIDE_LEFT
 tab.icon_name = GoIconSet.USERS

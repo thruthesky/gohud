@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (29)
+8. [HUD and game shapes](#hud-and-game-shapes) (30)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -1050,6 +1050,19 @@ quest.set_reward(50, GoIconSet.COIN)
 quest.set_claim_text("CLAIM")
 quest.set_state(GoRewardRow.State.READY)
 quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
+```
+
+### `GoSideButton`
+
+Extends `BaseButton`. A side menu key: a big painted picture, a short outlined word under it and a count on the picture's corner, such as a main menu's daily quests or achievements. Details: `hud.md` §40 (GoSideButton).
+
+```gdscript
+var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
+daily.picture_size = 76
+daily.label_width = 120
+daily.pressed.connect(func() -> void: open_quests("daily"))
+menu.add_child(daily)
+daily.set_badge(3)
 ```
 
 ### `GoFoldTab`

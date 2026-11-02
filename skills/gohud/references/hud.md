@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint and GoRewardRow.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint, GoRewardRow and GoSideButton.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -46,6 +46,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 37. [GoFoldTab — fold a HUD panel into a pill](#37-gofoldtab--fold-a-hud-panel-into-a-pill)
 38. [GoGestureHint — ghost fingers that play a gesture](#38-gogesturehint--ghost-fingers-that-play-a-gesture)
 39. [GoRewardRow — a quest or achievement in a list](#39-gorewardrow--a-quest-or-achievement-in-a-list)
+40. [GoSideButton — a picture key down a menu's side](#40-gosidebutton--a-picture-key-down-a-menus-side)
 
 ## 1. GoHudAnchor
 
@@ -1375,3 +1376,49 @@ list.item_extent = tallest
   and the claim word on a phone; a look that pads less keeps its own padding.
 - Its boxes keep their spacing inside a `GoForm` (`go_own_spacing`). Right to left the row mirrors; numbers stay left to
   right. It follows a look change (`GoUi.watch`).
+
+## 40. GoSideButton — a picture key down a menu's side
+
+`class_name GoSideButton extends BaseButton` · a big painted picture, a short word under it and a count on the
+picture's corner: the DAILY QUESTS and ACHIEVEMENTS keys standing down the side of a main menu, a shop or event key.
+`GoGlyphButton` puts a small glyph beside its words on a plate and `GoIconButton` has no word, so neither reads as a
+picture key with a caption over a busy backdrop.
+
+```gdscript
+var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
+daily.picture_size = 76                   # the picture's square (dp)
+daily.label_width = 120                   # the word shrinks into this, never under the fit floor
+daily.pressed.connect(open_quests.bind("daily"))
+menu.add_child(daily)
+daily.set_badge(3)                        # 0 hides it
+```
+
+There is no plate: the picture is the key. While held it darkens to `GoSkin.picture_press_tint()` and pops with the
+look's press feel (`GoStyle.press_feel`); disabled, the picture and the word fade (`DISABLED_ALPHA`). The word is the
+look's outlined HUD text (`GoOutlineLabel` in arcade_light), so it reads on a painted backdrop; a look without it takes
+the name plate's ink and edge (`GoSkin.nameplate_ink`, `nameplate_outline_ink`). arcade_light's menu pictures are
+`menu_daily` (a calendar with a green check) and `menu_achievements` (a trophy with a rosette), both 192 px on the long
+side, in `assets/arcade_light/rewards/`.
+
+| Member | Default | Notes |
+|---|---|---|
+| `make(words, picture_art = null)` | | Static |
+| `text` | `""` | The word, shown as it is (translate it first) and spoken. Empty: no word and no room kept for one |
+| `art` | `null` | The picture, kept in aspect inside its square |
+| `picture_size` | `72` | The square's side (dp) |
+| `label_width` | `0.0` | The room the word shrinks into (dp); 0 = one and a half pictures (`label_room()`) |
+| `font_size` | `0` | The word's size before it shrinks; 0 = the look's `button` role. `fitted_font_size()` is the size drawn |
+| `set_badge(count, words = "", as_dot = false)` · `badge()` | | `GoBadge.attach` on the picture: centred on its top-right corner, hidden at 0 |
+| `badge_role` | `GoTheme.ROLE_BODY` | The count's text role: bigger than a list's badge, as the key is |
+| `feedback` | `GoFeedback.TAPPED` | What a press says through `GoFeedback` |
+| `face_tint()` | | The tint the picture and the word take now (white, the press tint, or faded) |
+| `refresh()` | | Applies pending changes now; the setters batch to the end of the frame |
+| `picture` · `label` | | The parts (`TextureRect`, `Label`) |
+
+- The whole node takes the press, the word as well as the picture, and its minimum size is never under
+  `GoUi.touch_size()` either way. It is as wide as `label_width`, the picture or the drawn word, whichever is widest.
+- 🛑 The word never wraps: past the fit floor (`GoConfig.fit_min_scale`) it overflows its room, centred. Give
+  `label_width` what the longest language needs at the floor.
+- Under arcade_light it stays out of the focus order like the look's other keys (`GoStyle.skin_focus`); a look that
+  keeps focus draws its `Button` focus ring round the whole key. It follows a look change (`GoUi.watch`).
+- 🛑 Display only: the key reports `pressed`, and the count is the caller's.
