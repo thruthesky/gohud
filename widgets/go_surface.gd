@@ -1939,6 +1939,11 @@ func _relayout_anchor(area: Rect2) -> void:
 	var cap := minf(anchor_max_height, area.size.y * height_ratio_cap())
 	var height := clampf(above if opens_up else below, 0, cap)
 	if fit_content: height = minf(height, _desired_height())
+	# A long anchored list still needs one usable touch row. If the preferred side is
+	# too short, borrow room across the anchor and let the normal safe-area clamp place it.
+	var body_height := body.get_combined_minimum_size().y
+	var chrome := _desired_height() - body_height
+	height = maxf(height, minf(cap, chrome + minf(body_height, GoUi.metric(GoTheme.TOUCH))))
 	card.size = Vector2(maxf(1, width), maxf(1, height)).round()
 	# When the pinned header and footer are bigger than the room left, the card grows to its minimum size — then it is pushed inside the screen.
 	var y := anchor.position.y - gap - card.size.y if opens_up else anchor.end.y + gap

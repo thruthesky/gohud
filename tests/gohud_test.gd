@@ -1953,6 +1953,39 @@ func _surface() -> void:
 	anchored.queue_free()
 	await frames(2)
 
+	# A preferred side can leave only a sliver after pinned chrome. Borrow safe height
+	# rather than strand a long list in a viewport smaller than a touch target.
+	var saved_scale := root.content_scale_size
+	root.content_scale_size = Vector2i(760, 342)
+	await frames(4)
+	var middle := Button.new()
+	middle.position = Vector2(40, 130)
+	middle.size = Vector2(80, 40)
+	root.add_child(middle)
+	var short := GoSurface.new()
+	short.placement = GoSurface.Placement.ANCHOR
+	short.anchor_control = middle
+	short.anchor_width = 252
+	short.set_title("Members")
+	root.add_child(short)
+	for index in 20:
+		short.body.add_child(GoStyle.label("Member %d with a complete name" % index))
+	short.footer.visible = true
+	short.footer.add_child(GoStyle.button("Lead party"))
+	short.footer.add_child(GoStyle.button("Leave"))
+	short.show()
+	await frames(8)
+	short.relayout()
+	await frames(4)
+	check(short.scroll.size.y >= GoUi.metric(GoTheme.TOUCH),
+		"an anchored long list retains a full touch-row viewport (%s)" % short.scroll.size)
+	check(GoSafeArea.usable_rect(root).grow(1).encloses(short.card.get_global_rect()),
+		"borrowing room for an anchored list keeps its card in the safe area")
+	short.queue_free()
+	middle.queue_free()
+	root.content_scale_size = saved_scale
+	await frames(4)
+
 	a.hide()
 	await frames(1)
 	check(not GoSurface.is_any_open(), "hide them all and 0 surfaces are open")
