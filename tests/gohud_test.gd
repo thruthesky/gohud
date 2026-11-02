@@ -1381,6 +1381,23 @@ func _style() -> void:
 	await frames(1)
 	check(flowing.autowrap_mode == TextServer.AUTOWRAP_OFF, "a button in a flow row does not wrap")
 	check(flowing.get_combined_minimum_size().x > 48.0, "its natural width is as wide as its text — it does not split down the page (%.0f)" % flowing.get_combined_minimum_size().x)
+	var flowing_row := GoStyle.list_button(&"", "A complete action label with padding", Callable(), Color.TRANSPARENT, "", false)
+	flowing_row.custom_minimum_size.x = 144
+	wrap.add_child(flowing_row)
+	await frames(5)
+	var row_content := flowing_row.get_child(0) as Control
+	check(flowing_row.get_global_rect().grow(0.5).encloses(row_content.get_global_rect()),
+		"a flow list button contains its single-line child layout and padding")
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x,
+		"a flow list button inherits its content width")
+	var row_label := flowing_row.find_children("*", "Label", true, false)[0] as Label
+	row_label.text = "A longer translated action label with every word retained"
+	await frames(5)
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x,
+		"the flow list button follows a changed child label")
+	row_label.text = "OK"
+	await frames(5)
+	check(flowing_row.custom_minimum_size.x >= 144, "the flow list button preserves its declared width floor")
 	var fold := GoStyle.foldable("Advanced", true)
 	check(fold is FoldableContainer and fold.title == "Advanced" and fold.folded, "a FoldableContainer section")
 	fold.free()

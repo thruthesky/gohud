@@ -71,6 +71,23 @@ static func natural_width(node: Node) -> void:
 	if control is Button: (control as Button).autowrap_mode = TextServer.AUTOWRAP_OFF
 	elif control is Label: (control as Label).autowrap_mode = TextServer.AUTOWRAP_OFF
 	for child in control.get_children(): natural_width(child)
+	# A button may draw its label in a child layout (list rows). Its own minimum does not include that layout.
+	# Once the flow makes those labels single-line, keep the entire padded layout inside the button too.
+	if control is Button and not control.has_meta(&"go_natural_width_fit"):
+		control.set_meta(&"go_natural_width_fit", true)
+		var update := _fit_natural_width.bind(weakref(control), control.custom_minimum_size.x)
+		for child in control.get_children():
+			if child is Control: (child as Control).minimum_size_changed.connect(update, CONNECT_DEFERRED)
+		update.call_deferred()
+
+
+static func _fit_natural_width(control_ref: WeakRef, baseline: float) -> void:
+	var control := control_ref.get_ref() as Control
+	if control == null: return
+	var width := baseline
+	for child in control.get_children():
+		if child is Control: width = maxf(width, (child as Control).get_combined_minimum_size().x)
+	if not is_equal_approx(control.custom_minimum_size.x, width): control.custom_minimum_size.x = width
 
 
 ## 📂 **A foldable section** (Godot 4.5+ `FoldableContainer`). For groups that need not stay open,
