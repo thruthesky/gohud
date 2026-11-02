@@ -1347,6 +1347,63 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
+## ✏️ The ink of a `GoEditFrame` in [param state] (`GoEditFrame.State`). The default: `accent` while idle or selected,
+## `warning` for an overlap, `muted` for a ghost.
+func edit_frame_ink(state: int) -> Color:
+	match state:
+		GoEditFrame.State.WARNING: return GoUi.color(GoTheme.WARNING)
+		GoEditFrame.State.GHOST: return GoUi.color(GoTheme.MUTED)
+	return GoUi.color(GoTheme.ACCENT)
+
+
+## ✏️ A `GoEditFrame`: its outline on [param rect] (a ring when [param circle]) in [param state], with a handle on each
+## of [param handles]. The default: IDLE a 2 dp dashed outline; SELECTED and WARNING a 3 dp solid one over a light wash
+## of the ink, each handle a `surface` dot ringed in the ink; GHOST a dashed outline over a `scrim` veil with the icon
+## set's `EYE_OFF` in the middle. Every line rides on a thin `shadow` edge so it reads on any scene.
+func draw_edit_frame(canvas: CanvasItem, rect: Rect2, state: int, circle: bool, handles: PackedVector2Array) -> void:
+	var ink := edit_frame_ink(state)
+	var dark := Color(GoUi.color(GoTheme.SHADOW), 0.45)
+	var solid := state == GoEditFrame.State.SELECTED or state == GoEditFrame.State.WARNING
+	var width := 3.0 if solid else 2.0
+	var center := rect.get_center()
+	var radius := minf(rect.size.x, rect.size.y) / 2.0
+	if state == GoEditFrame.State.GHOST:
+		var veil := Color(GoUi.color(GoTheme.SCRIM), 0.5)
+		if circle: canvas.draw_circle(center, radius, veil, true, -1.0, true)
+		else: canvas.draw_rect(rect, veil)
+		var eye := GoUi.icons().texture(GoIconSet.EYE_OFF)
+		if eye != null:
+			var side := clampf(radius * 0.8, 16.0, 40.0)
+			canvas.draw_texture_rect(eye, Rect2(center - Vector2(side, side) / 2.0, Vector2(side, side)), false,
+				GoUi.color(GoTheme.ON_ACCENT))
+	elif solid:
+		var wash := Color(ink, 0.16)
+		if circle: canvas.draw_circle(center, radius, wash, true, -1.0, true)
+		else: canvas.draw_rect(rect, wash)
+	if circle:
+		canvas.draw_arc(center, radius, 0.0, TAU, 64, dark, width + 2.0, true)
+		if solid:
+			canvas.draw_arc(center, radius, 0.0, TAU, 64, ink, width, true)
+		else:
+			var dashes := maxi(8, int(TAU * radius / 14.0))
+			for i in dashes:
+				var a := TAU * i / dashes
+				canvas.draw_arc(center, radius, a, a + TAU / dashes * 0.55, 6, ink, width, true)
+	else:
+		var corners := [rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y)]
+		for i in 4:
+			var a: Vector2 = corners[i]
+			var b: Vector2 = corners[(i + 1) % 4]
+			canvas.draw_line(a, b, dark, width + 2.0, true)
+			if solid: canvas.draw_line(a, b, ink, width, true)
+			else: canvas.draw_dashed_line(a, b, ink, width, 8.0, true, true)
+	var fill := GoUi.color(GoTheme.SURFACE)
+	for at in handles:
+		canvas.draw_circle(at, 7.0, dark, true, -1.0, true)
+		canvas.draw_circle(at, 6.0, fill, true, -1.0, true)
+		canvas.draw_arc(at, 6.0, 0.0, TAU, 24, ink, 2.5, true)
+
+
 ## 👆 One ghost fingertip of a `GoGestureHint` at [param at], [param radius] dp, [param ink] its rim, [param strength]
 ## (0..1) how much of it shows — a trail copy is drawn the same way, fainter and smaller. The default reads on a bright
 ## sky and a dark floor alike: a soft `shadow` rim dropped 3 dp, a `surface` disc at 0.62, a 3 dp [param ink] rim and a

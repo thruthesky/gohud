@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD та ігрові елементи <small>(29)</small></h2>
+  <h2>HUD та ігрові елементи <small>(30)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -973,6 +973,15 @@ skill.<wbr>cooldown = 0.4</code></pre>
       <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
 hud.<wbr>add_child(<wbr>spot)
 spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goeditframe"><code>GoEditFrame</code></h3>
+      <p>Рамка, яку редактор розкладки малює навколо кожного елемента, що гравець може пересунути: звичайна, вибрана з ручками, попередження, прихована. Не приймає введення.</p>
+      <p class="catalog-base">успадковує <code>Control</code></p>
+      <pre><code>var frame := GoEditFrame.<wbr>new(<wbr>)
+editor.<wbr>add_child(<wbr>frame)
+frame.<wbr>circle = true
+frame.<wbr>state = GoEditFrame.<wbr>State.<wbr>SELECTED</code></pre>
     </div>
     <div class="card">
       <h3 id="gogesturehint"><code>GoGestureHint</code></h3>

@@ -460,6 +460,11 @@ func spotlight_ring_box() -> StyleBox:
 	return ring
 
 
+## The layout editor's frames: the training ring's GOLD for the one being edited, as the spotlight marks "this one".
+func edit_frame_ink(state: int) -> Color:
+	return GOLD if state == GoEditFrame.State.SELECTED else super(state)
+
+
 # 🎨 The training card's title gold (HUD_NAME) and hint red, and the clock's last seconds (READY_RED), are the
 #    look's `heading` and `alert` tokens (`themes/palettes/arcade_light.json`): `GoSkin.task_title_ink()`,
 #    `task_hint_ink()` and `hud_alert_ink()` read them.

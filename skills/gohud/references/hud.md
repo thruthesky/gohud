@@ -1359,3 +1359,34 @@ title and the end column shows only when it has something to show. The height st
   and the claim word on a phone; a look that pads less keeps its own padding.
 - Its boxes keep their spacing inside a `GoForm` (`go_own_spacing`). Right to left the row mirrors; numbers stay left to
   right. It follows a look change (`GoUi.watch`).
+
+## 40. GoEditFrame — the frame of a layout editor
+
+`class_name GoEditFrame extends Control` · a "customize controls" screen (PUBG Mobile, COD Mobile, Brawl Stars) shows
+every thumb button and HUD box in its place, each in a frame that says it can be moved; a tap selects one, a drag
+moves it. One that overlaps another turns to warning ink, and one the player hid stays as a ghost so it can be found
+and shown again. The editor places and sizes the frame on the thing it frames and routes every touch itself.
+
+```gdscript
+var frame := GoEditFrame.new()
+editor.add_child(frame)
+frame.circle = true                               # a round thumb button: a ring, not a box
+frame.position = jump.position
+frame.size = jump.size
+frame.state = GoEditFrame.State.SELECTED          # tapped
+frame.state = GoEditFrame.State.WARNING           # overlaps another control
+frame.state = GoEditFrame.State.GHOST             # hidden by the player
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `enum State { IDLE, SELECTED, WARNING, GHOST }` · `state` | `IDLE` | IDLE dashed, SELECTED solid with a wash and handles, WARNING the same in `warning` ink, GHOST dashed `muted` over a `scrim` veil with `EYE_OFF` |
+| `pad` | `6.0` | How far the outline stands off the node's rect — `frame_rect()` |
+| `circle` | `false` | A ring round a round thing; its handles sit on the compass points |
+| `handles` · `handle_points()` | `true` | The four handles of a SELECTED or WARNING frame (local points; empty otherwise) |
+| `ink()` | | The state's ink (`GoSkin.edit_frame_ink()`) |
+| `paint_count` | | How many times it was painted |
+
+- Skin hooks: `edit_frame_ink(state)` and `draw_edit_frame(canvas, rect, state, circle, handles)`; arcade_light draws
+  the selected frame in the training spotlight's gold. It follows a look change (`GoUi.watch`).
+- 🛑 Display only: `MOUSE_FILTER_IGNORE` — the editor decides what a press selects or drags.

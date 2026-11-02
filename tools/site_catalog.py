@@ -2123,6 +2123,27 @@ spot.follow(jump_button, true)""", T(
 		"Затемнює екран навколо одного елемента й обводить його; затемнення згасає, рамка лишається.",
 		"หรี่หน้าจอรอบตัวควบคุมหนึ่งตัวและวาดกรอบรอบมัน ความมืดจะจางไป กรอบยังอยู่",
 		"يعتّم الشاشة حول عنصر واحد ويحيطه بإطار؛ يتلاشى التعتيم ويبقى الإطار.")),
+	("hud", "GoEditFrame", "Control", """var frame := GoEditFrame.new()
+editor.add_child(frame)
+frame.circle = true
+frame.state = GoEditFrame.State.SELECTED""", T(
+		"The outline a layout editor draws round each thing the player can move: idle, selected with handles, warning, ghost. Never takes input.",
+		"레이아웃 편집기가 플레이어가 옮길 수 있는 것마다 두르는 테두리: 기본, 핸들이 달린 선택, 경고, 숨김. 입력을 받지 않는다.",
+		"レイアウトエディターが、プレイヤーが動かせる要素ごとに描く枠：通常、ハンドル付きの選択、警告、非表示。入力は受け取らない。",
+		"布局编辑器为玩家可移动的每个元素绘制的轮廓：普通、带手柄的选中、警告、隐藏。不接收输入。",
+		"版面編輯器為玩家可移動的每個元素繪製的外框：一般、帶控點的選取、警告、隱藏。不接收輸入。",
+		"El contorno que un editor de diseño dibuja alrededor de cada cosa que el jugador puede mover: normal, seleccionado con asas, aviso, oculto. Nunca recibe entrada.",
+		"O contorno que um editor de layout desenha em volta de cada coisa que o jogador pode mover: normal, selecionado com alças, alerta, oculto. Nunca recebe entrada.",
+		"Рамка, которую редактор раскладки рисует вокруг каждого элемента, который игрок может двигать: обычная, выбранная с ручками, предупреждение, скрытая. Не принимает ввод.",
+		"Le contour qu'un éditeur de disposition trace autour de chaque élément que le joueur peut déplacer : normal, sélectionné avec poignées, alerte, masqué. Ne prend jamais l'entrée.",
+		"Bir yerleşim düzenleyicisinin oyuncunun taşıyabileceği her şeyin çevresine çizdiği çerçeve: normal, tutamaçlı seçili, uyarı, gizli. Hiç girdi almaz.",
+		"Obrys, który edytor układu rysuje wokół każdego elementu, który gracz może przesunąć: zwykły, zaznaczony z uchwytami, ostrzeżenie, ukryty. Nigdy nie przejmuje wejścia.",
+		"Il contorno che un editor di layout disegna attorno a ogni elemento che il giocatore può spostare: normale, selezionato con maniglie, avviso, nascosto. Non riceve mai input.",
+		"Đường viền trình chỉnh bố cục vẽ quanh mỗi thứ người chơi có thể di chuyển: thường, được chọn có tay nắm, cảnh báo, ẩn. Không bao giờ nhận đầu vào.",
+		"Garis tepi yang digambar editor tata letak di sekitar setiap hal yang bisa dipindahkan pemain: biasa, terpilih dengan pegangan, peringatan, tersembunyi. Tidak pernah menerima input.",
+		"Рамка, яку редактор розкладки малює навколо кожного елемента, що гравець може пересунути: звичайна, вибрана з ручками, попередження, прихована. Не приймає введення.",
+		"เส้นขอบที่ตัวแก้ไขเลย์เอาต์วาดรอบทุกสิ่งที่ผู้เล่นย้ายได้: ปกติ, เลือกอยู่พร้อมจุดจับ, เตือน, ซ่อน ไม่รับอินพุตเลย",
+		"الإطار الذي يرسمه محرر التخطيط حول كل عنصر يستطيع اللاعب تحريكه: عادي، محدد مع مقابض، تحذير، مخفي. لا يستقبل أي إدخال.")),
 	("hud", "GoGestureHint", "Control", """var hint := GoGestureHint.new()
 hud.add_child(hint)
 hint.position = Vector2(480, 0)

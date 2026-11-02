@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 与游戏组件 <small>(29)</small></h2>
+  <h2>HUD 与游戏组件 <small>(30)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -973,6 +973,15 @@ skill.<wbr>cooldown = 0.4</code></pre>
       <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
 hud.<wbr>add_child(<wbr>spot)
 spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goeditframe"><code>GoEditFrame</code></h3>
+      <p>布局编辑器为玩家可移动的每个元素绘制的轮廓：普通、带手柄的选中、警告、隐藏。不接收输入。</p>
+      <p class="catalog-base">继承 <code>Control</code></p>
+      <pre><code>var frame := GoEditFrame.<wbr>new(<wbr>)
+editor.<wbr>add_child(<wbr>frame)
+frame.<wbr>circle = true
+frame.<wbr>state = GoEditFrame.<wbr>State.<wbr>SELECTED</code></pre>
     </div>
     <div class="card">
       <h3 id="gogesturehint"><code>GoGestureHint</code></h3>
