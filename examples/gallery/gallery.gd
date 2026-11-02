@@ -359,7 +359,7 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 	page.add_child(GoStyle.section("Side menu keys", false))
 	# GoSideButton: a big picture, its word and a count; arcade_light paints menu_daily and menu_achievements, other
 	# looks show the icon set's picture in their place.
-	var side := GoStyle.wrap_row()
+	var menu_keys := GoStyle.wrap_row()
 	for key: Array in [["DAILY", &"menu_daily", GoIconSet.FLAG, 3], ["ACHIEVEMENTS", &"menu_achievements", GoIconSet.CROWN, 0]]:
 		var art: Texture2D = GoUi.skin().widget_art(key[1])
 		var picture: Texture2D = art if art != null else GoUi.icons().texture(key[2])
@@ -368,9 +368,9 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 		menu_key.label_width = 120
 		var words: String = key[0]
 		menu_key.pressed.connect(func() -> void: _say("opened %s" % words.to_lower()))
-		side.add_child(menu_key)
+		menu_keys.add_child(menu_key)
 		menu_key.set_badge(key[3])
-	page.add_child(side)
+	page.add_child(menu_keys)
 
 	page.add_child(GoStyle.section("Signal bars", false))
 	# GoSignalBars: the caller (the server's measured ping) picks the bars, the tone and the text — 0 of 4 is no reading.

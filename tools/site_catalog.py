@@ -2237,7 +2237,7 @@ daily.pressed.connect(func() -> void: open_quests("daily"))
 menu.add_child(daily)
 daily.set_badge(3)""", T(
 		"A side menu key: a big painted picture, a short outlined word under it and a count on the picture's corner, such as a main menu's daily quests or achievements.",
-		"메뉴 옆에 서는 키 — 크게 칠한 그림, 그 아래 외곽선 있는 짧은 낱말, 그림 모서리의 숫자. 메인 메뉴의 일일 퀘스트나 업적 키 같은 것.",
+		"메뉴 옆에 서는 키 — 크게 칠한 그림, 그 아래 외곽선 있는 짧은 단어, 그림 모서리의 숫자. 메인 메뉴의 일일 퀘스트나 업적 키 같은 것.",
 		"メニューの横に立つキー。大きく描いた絵、その下に縁取りのある短い言葉、絵の角に数字。メインメニューのデイリークエストや実績のキーなど。",
 		"菜单侧边的按键：一幅大幅手绘图片，下方一个带描边的短词，图片角上一个数字，例如主菜单的每日任务或成就按键。",
 		"選單側邊的按鍵：一幅大幅手繪圖片，下方一個帶描邊的短詞，圖片角上一個數字，例如主選單的每日任務或成就按鍵。",
