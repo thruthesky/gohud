@@ -948,6 +948,7 @@ class _PageSurface extends GoSurface:
 		#    roomy step, as before.
 		_wrap_to_width(fill.x)
 		_update_density(0.0, fill.x)
+		_wrap_rows_to_width(fill.x)
 		if owner_page != null: owner_page._sync_content_edge()   # the padding the content column borrows may have changed
 		card.position = top_left
 		card.size = fill

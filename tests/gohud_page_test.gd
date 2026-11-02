@@ -314,6 +314,30 @@ func _wide_row_fits() -> void:
 	check(wide.get_global_rect().end.x <= area.end.x + 0.5, "the button wraps inside the page (ends at %.0f of %.0f)"
 		% [wide.get_global_rect().end.x, area.end.x])
 	page.queue_free()
+	# A row too wide only as a whole (no button in it wider than the page): after the dense step its buttons fold.
+	var chat := GoPage.new()
+	chat.open("Row")
+	var line := GoStyle.row()
+	chat.body.add_child(line)
+	var input := LineEdit.new()
+	input.custom_minimum_size.x = 60
+	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	line.add_child(input)
+	var sends: Array[Button] = []
+	for words in ["Send this message now", "Run the command"]:
+		var send := GoStyle.button(words)
+		send.autowrap_mode = TextServer.AUTOWRAP_OFF   # set to one line by its screen, as a chat line's send is
+		line.add_child(send)
+		sends.append(send)
+	root.add_child(chat)
+	await frames(4)
+	area = GoSafeArea.usable_rect(chat.surface.get_window())
+	card = chat.surface.card.get_global_rect()
+	check(_fills(card, area), "a page whose one row is too wide as a whole still fills the screen (card %s, area %s)" % [card, area])
+	check(line.get_global_rect().end.x <= area.end.x + 0.5, "that row folds its buttons inside the page (ends at %.0f of %.0f)"
+		% [line.get_global_rect().end.x, area.end.x])
+	check(sends.any(func(b: Button) -> bool: return b.autowrap_mode != TextServer.AUTOWRAP_OFF), "a button in it is re-fitted from its words")
+	chat.queue_free()
 	# A page that does not scroll itself holds its own edge scroll: it borrows what the card pads now, dense step included.
 	var own := GoPage.new()
 	own.open("Own scroll")

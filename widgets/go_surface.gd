@@ -1629,9 +1629,11 @@ func relayout() -> void:
 			room = maxf(room, minf(cap_height, area.size.y * settings.surface_fit_max_height_ratio))
 		# If it looks like overflowing, try one step less padding and gap — then measure again.
 		_update_density(room, width)
+		_wrap_rows_to_width(width)
 		height = clampf(_desired_height(), 1.0, room)
 	else:
 		_update_density(0.0, width)
+		_wrap_rows_to_width(width)
 	# 🛑 Size and position are given as integers — at a fractional position (centered · logical width 349.09) the size is
 	#    stored as "position + size" and 184 becomes 183.99997, the card's inner padding (MarginContainer) floors child
 	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
@@ -1677,6 +1679,48 @@ static func _wrap_buttons(node: Node, inside: float) -> void:
 		if button.autowrap_mode == TextServer.AUTOWRAP_OFF and button.get_combined_minimum_size().x > inside + 0.5:
 			GoStyle.fit_words(button)
 	for child in node.get_children(): _wrap_buttons(child, inside)
+
+
+## 📏 **The last step before a card hangs off the screen: a row that is too wide folds its own buttons.** After the
+## one-line buttons wider than the card (`_wrap_to_width`) and the dense step (`_update_density`), content can still be
+## wider than [param width] because of a *row* — no button in it is wider than the card, together they are: a chat line
+## `[input] [mic] [Send · Run]` in Urdu on a 341 dp phone (2026-11-02: the card stood a few dp past both screen edges).
+## Then every one-line button whose row leaves it less room than its one-line width is re-fitted from its words
+## (`GoStyle.fit_words`: several words fold, never narrower than the longest; one word stays).
+## 🔑 Last, not first: `_wrap_to_width` leaves such rows alone on purpose — a row that the dense step makes fit keeps its
+##    labels on one line ("Find party" beside two cells). Only content still too wide gets here; a window that fits is
+##    never touched.
+func _wrap_rows_to_width(width: float) -> void:
+	if not GoUi.config.autowrap_text or card.get_combined_minimum_size().x <= width + 0.5: return
+	var inside := width - (card.get_combined_minimum_size().x - _column.get_combined_minimum_size().x)
+	for section: Control in [toolbar, body, status, footer]:
+		if section.visible: _wrap_rows(section, inside)
+
+
+## [param room] is the width [param node] may take. It is handed down the tree: a container's own frame (margins, a
+## panel's face, a scroll's edge — its minimum over its widest child) comes off it, and in a horizontal row a child gets
+## what its siblings and the gaps leave. A plain `Control` places its children itself: they get its room.
+static func _wrap_rows(node: Node, room: float) -> void:
+	if node.has_meta(&"go_no_wrap"): return
+	var control := node as Control
+	if control is Button:
+		var button := control as Button
+		if button.autowrap_mode == TextServer.AUTOWRAP_OFF and button.get_combined_minimum_size().x > room + 0.5:
+			GoStyle.fit_words(button)
+	if not control is Container:
+		for child in node.get_children(): _wrap_rows(child, room)
+		return
+	if control is ScrollContainer and (control as ScrollContainer).horizontal_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED:
+		return   # a sideways scroll is as wide as it likes inside
+	var need := control.get_combined_minimum_size().x
+	var row := control is BoxContainer and not (control as BoxContainer).vertical
+	var widest := 0.0
+	for child in control.get_children():
+		if child is Control and (child as Control).visible: widest = maxf(widest, (child as Control).get_combined_minimum_size().x)
+	for child in control.get_children():
+		if not child is Control or not (child as Control).visible: continue
+		var own := (child as Control).get_combined_minimum_size().x
+		_wrap_rows(child, room - (need - own) if row else room - (need - widest))
 
 
 ## 🛑 A card wider than its width costs a screen ("why is my title cut on phones?") — say so once, in debug builds, with
