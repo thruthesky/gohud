@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=235 format=3]
+[gd_resource type="Theme" load_steps=247 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -27,6 +27,12 @@
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/slider_track.png" id="painted_slider_track"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_off.png" id="painted_toggle_off"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/painted/toggle_on.png" id="painted_toggle_on"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/bar_blue.png" id="rewards_bar_blue"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/bar_green.png" id="rewards_bar_green"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/bar_track.png" id="rewards_bar_track"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/row_cyan.png" id="rewards_row_cyan"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/row_done.png" id="rewards_row_done"]
+[ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/rewards/row_gold.png" id="rewards_row_gold"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_down.svg" id="score_scroll_down"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_left.svg" id="score_scroll_left"]
 [ext_resource type="Texture2D" path="res://addons/gohud/assets/arcade_light/score/scroll_right.svg" id="score_scroll_right"]
@@ -1836,6 +1842,72 @@ shine = 0.5
 band = 0
 pressed = true
 
+[sub_resource type="StyleBox" id="painted_GoRewardRow"]
+script = ExtResource("sprite")
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 4
+texture = ExtResource("rewards_row_cyan")
+edge = Vector4(96, 56, 96, 56)
+pixels_per_unit = 2.0
+face_color = Color(0.709804, 0.890196, 0.984314, 1)
+
+[sub_resource type="StyleBox" id="painted_GoRewardRowGold"]
+script = ExtResource("sprite")
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 4
+texture = ExtResource("rewards_row_gold")
+edge = Vector4(96, 56, 96, 56)
+pixels_per_unit = 2.0
+face_color = Color(0.988235, 0.870588, 0.364706, 1)
+
+[sub_resource type="StyleBox" id="painted_GoRewardRowDone"]
+script = ExtResource("sprite")
+content_margin_left = 12
+content_margin_top = 4
+content_margin_right = 12
+content_margin_bottom = 4
+texture = ExtResource("rewards_row_done")
+edge = Vector4(96, 56, 96, 56)
+pixels_per_unit = 2.0
+face_color = Color(0.8, 0.854902, 0.937255, 1)
+
+[sub_resource type="StyleBox" id="painted_GoRewardBar_track"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("rewards_bar_track")
+edge = Vector4(28, 0, 28, 0)
+pixels_per_unit = 1.7
+face_color = Color(0.007843, 0.164706, 0.376471, 1)
+
+[sub_resource type="StyleBox" id="painted_GoRewardBar_fill"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("rewards_bar_blue")
+edge = Vector4(28, 0, 28, 0)
+pixels_per_unit = 1.7
+face_color = Color(0.003922, 0.615686, 0.992157, 1)
+
+[sub_resource type="StyleBox" id="painted_GoRewardBarGreen_fill"]
+script = ExtResource("sprite")
+content_margin_left = 0
+content_margin_top = 0
+content_margin_right = 0
+content_margin_bottom = 0
+texture = ExtResource("rewards_bar_green")
+edge = Vector4(28, 0, 28, 0)
+pixels_per_unit = 1.7
+face_color = Color(0.168627, 0.913725, 0.172549, 1)
+
 [sub_resource type="StyleBoxFlat" id="painted_GoTile"]
 content_margin_left = 0
 content_margin_top = 3
@@ -3211,6 +3283,17 @@ GoPrimaryGlowButton/styles/hover = SubResource("btn_primary_glow_hover")
 GoPrimaryGlowButton/styles/hover_pressed = SubResource("btn_primary_glow_pressed")
 GoPrimaryGlowButton/styles/normal = SubResource("btn_primary_glow")
 GoPrimaryGlowButton/styles/pressed = SubResource("btn_primary_glow_pressed")
+GoRewardBar/base_type = &"ProgressBar"
+GoRewardBar/styles/background = SubResource("painted_GoRewardBar_track")
+GoRewardBar/styles/fill = SubResource("painted_GoRewardBar_fill")
+GoRewardBarGreen/base_type = &"ProgressBar"
+GoRewardBarGreen/styles/fill = SubResource("painted_GoRewardBarGreen_fill")
+GoRewardRow/base_type = &"PanelContainer"
+GoRewardRow/styles/panel = SubResource("painted_GoRewardRow")
+GoRewardRowDone/base_type = &"PanelContainer"
+GoRewardRowDone/styles/panel = SubResource("painted_GoRewardRowDone")
+GoRewardRowGold/base_type = &"PanelContainer"
+GoRewardRowGold/styles/panel = SubResource("painted_GoRewardRowGold")
 GoRibbon/base_type = &"PanelContainer"
 GoRibbon/styles/panel = SubResource("painted_GoRibbon")
 GoRibbonRed/base_type = &"PanelContainer"

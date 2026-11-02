@@ -114,7 +114,22 @@ SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png
 
 # 🔑 The colour each sprite shows under its label — sampled at the middle of the PNG. `face_color` is never drawn;
 #    it is what `check_contrast.py` measures text against (tinted like the face it belongs to).
+# 🎁 The quest rows' art (`assets/arcade_light/rewards/`): the plates are 2x (a 68 dp row), the bars and their 9-slice
+#    ends stretch sideways only, and the padding leaves the plate's rim to the art.
+REWARD_PLATE_EDGE = (96, 56, 96, 56)
+REWARD_PLATE_PPU = 2.0
+REWARD_PLATE_PAD = (12.0, 4.0, 4.0)
+REWARD_BAR_EDGE = (28, 0, 28, 0)
+REWARD_BAR_PPU = 1.7
+ROW_CYAN_FACE = (0.709804, 0.890196, 0.984314, 1.0)     # #b5e3fb (the art's centre pixel, as below)
+ROW_GOLD_FACE = (0.988235, 0.870588, 0.364706, 1.0)     # #fcde5d
+ROW_DONE_FACE = (0.8, 0.854902, 0.937255, 1.0)          # #ccdaef
+BAR_TRACK_FACE = (0.007843, 0.164706, 0.376471, 1.0)    # #022a60
+BAR_BLUE_FACE = (0.003922, 0.615686, 0.992157, 1.0)     # #019dfd
+BAR_GREEN_FACE = (0.168627, 0.913725, 0.172549, 1.0)    # #2be92c
 FACES = {
+    "rewards/row_cyan.png": ROW_CYAN_FACE, "rewards/row_gold.png": ROW_GOLD_FACE, "rewards/row_done.png": ROW_DONE_FACE,
+    "rewards/bar_track.png": BAR_TRACK_FACE, "rewards/bar_blue.png": BAR_BLUE_FACE, "rewards/bar_green.png": BAR_GREEN_FACE,
     "btn_grey.png": (0.576471, 0.580392, 0.745098, 1.0),     # #9394be
     "btn_blue.png": (0.227451, 0.47451, 0.988235, 1.0),      # #3a79fc
     "btn_red.png": (0.964706, 0.231373, 0.219608, 1.0),      # #f63b38
@@ -205,6 +220,9 @@ BASES = {
     "GoScoreTableRowOwn": "PanelContainer", "GoScoreTableLabel": "Label",
     "GoBestBar": "PanelContainer", "GoBestBarLabel": "Label", "GoBestBarEntry": "Button",
     "GoPodiumName": "Label", "GoPodiumValue": "Label",
+    # 🎁 The quest rows (GoRewardRow): their plates, and the bar's track and fills under ProgressBar's own part names.
+    "GoRewardRow": "PanelContainer", "GoRewardRowGold": "PanelContainer", "GoRewardRowDone": "PanelContainer",
+    "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar",
 }
 # 🏆 The leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoBoardTitle): `leaderboard_controls()`.
 LEADERBOARD_CONTROL_BASES = {
@@ -526,6 +544,17 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoPodiumName/fonts/font", 'SubResource("painted_row_font")')
     for slot in FONT_STATES:
         setT("GoBestBarEntry/colors/" + slot, C(board_ink))
+    # 🎁 **The quest rows** (`GoRewardRow`): a painted plate per state, and a bar whose track and fills share one outline.
+    for type_name, file in (("GoRewardRow", "row_cyan"), ("GoRewardRowGold", "row_gold"),
+                            ("GoRewardRowDone", "row_done")):
+        put(type_name + "/styles/panel", sprite("painted_" + type_name, "rewards/%s.png" % file, REWARD_PLATE_EDGE,
+                                                REWARD_PLATE_PPU, *REWARD_PLATE_PAD))
+    put("GoRewardBar/styles/background", sprite("painted_GoRewardBar_track", "rewards/bar_track.png", REWARD_BAR_EDGE,
+                                                REWARD_BAR_PPU, 0.0, 0.0, 0.0))
+    put("GoRewardBar/styles/fill", sprite("painted_GoRewardBar_fill", "rewards/bar_blue.png", REWARD_BAR_EDGE,
+                                          REWARD_BAR_PPU, 0.0, 0.0, 0.0))
+    put("GoRewardBarGreen/styles/fill", sprite("painted_GoRewardBarGreen_fill", "rewards/bar_green.png",
+                                               REWARD_BAR_EDGE, REWARD_BAR_PPU, 0.0, 0.0, 0.0))
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
@@ -889,6 +918,8 @@ def texture_id(file):
         return "stage_" + file[len("stage/"):-len(".png")]
     if file.startswith("score/"):
         return "score_" + file[len("score/"):-len(".svg")]
+    if file.startswith("rewards/"):
+        return "rewards_" + file[len("rewards/"):-len(".png")]
     return "painted_" + file[:-len(".png")]
 
 
@@ -899,6 +930,8 @@ def texture_path(rid):
         return STAGE + rid[len("stage_"):] + ".png"
     if rid.startswith("score_"):
         return RES + "/assets/arcade_light/score/" + rid[len("score_"):] + ".svg"
+    if rid.startswith("rewards_"):
+        return RES + "/assets/arcade_light/rewards/" + rid[len("rewards_"):] + ".png"
     return PAINTED + rid[len("painted_"):] + ".png"
 
 
@@ -922,7 +955,8 @@ def ext_resources(boxes):
     if not lines:
         return []
     files = sorted({line.split('ExtResource("')[1].split('"')[0] for _, body in boxes.values() for line in body
-                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_", "texture = ExtResource(\"stagesvg_", "texture = ExtResource(\"score_"))})
+                    if line.startswith(("texture = ExtResource(\"painted_", "texture = ExtResource(\"stage_", "texture = ExtResource(\"stagesvg_", "texture = ExtResource(\"score_",
+                                                  "texture = ExtResource(\"rewards_"))})
     for rid in files:
         lines.append('[ext_resource type="Texture2D" path="%s" id="%s"]' % (texture_path(rid), rid))
     return lines

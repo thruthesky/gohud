@@ -31,6 +31,18 @@
 ## power.lead = 2
 ## ```
 ##
+## ## 🖼 A painted bar
+## `set_faces(track, fill)` draws the bar from two 9-slice pictures instead of the look's: the track at full width and the
+## fill over it at the same top-left and height, as wide as the value. A value above 0 keeps the fill at least as wide
+## as the bar is thick, so its round ends never pinch; 0 shows the bare track. `set_faces(null, null)` goes back.
+## ```gdscript
+## var quest := GoBar.new()
+## quest.readout = GoBar.Readout.NONE
+## quest.segments = 0
+## quest.thickness = 26
+## quest.set_faces(track_box, fill_box)
+## ```
+##
 ## ## 🛑 Values move smoothly — but it has to be switchable off
 ## When HP jumps in steps you cannot read how hard you were hit, so it interpolates over 0.18s by default.
 ## Under `GoConfig.reduce_motion` it changes instantly.
@@ -82,6 +94,7 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 		thickness = value
 		if is_instance_valid(_bar): _bar.custom_minimum_size.y = value
 		if is_instance_valid(_frame): _frame.custom_minimum_size.y = value
+		_fit_art_fill()
 
 ## Seconds to glide over when the value changes. 0 means instant.
 @export_range(0.0, 1.0, 0.01) var ease_seconds := 0.18
@@ -169,6 +182,10 @@ var _ticks: Control
 var _value := 0.0
 var _maximum := 1.0
 var _tween: Tween
+var _face_track: StyleBox
+var _face_fill: StyleBox
+## The painted fill: made by the first `set_faces()`, so a bar that never takes faces carries no extra node.
+var _art_fill: Panel
 
 
 func _init() -> void:
@@ -317,11 +334,17 @@ func set_values(value: float, maximum: float, animate := true) -> void:
 	if not animate or GoUi.config.reduce_motion or ease_seconds <= 0.0 or not is_inside_tree():
 		_bar.value = ratio
 		_gradient.anchor_right = ratio
+		_place_art_fill(ratio)
 		return
 	_tween = create_tween().set_parallel()
 	_tween.tween_property(_bar, "value", ratio, ease_seconds).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	_tween.tween_property(_gradient, "anchor_right", ratio, ease_seconds).set_ease(Tween.EASE_OUT) \
 		.set_trans(Tween.TRANS_QUAD)
+	if is_instance_valid(_art_fill):
+		_art_fill.visible = _art_fill.visible or ratio > 0.0
+		_tween.tween_property(_art_fill, "anchor_right", ratio, ease_seconds).set_ease(Tween.EASE_OUT) \
+			.set_trans(Tween.TRANS_QUAD)
+		_tween.finished.connect(_place_art_fill.bind(ratio))
 
 
 ## For setting just the 0~1 ratio (when the maximum is unknown).
@@ -337,23 +360,66 @@ func maximum() -> float:
 	return _maximum
 
 
-## Whether the bar is drawn as the look's painted frame (`GoSkin.bar_frame_box()`) rather than a `ProgressBar`.
+## 🖼 Draws the bar from [param track] and [param fill] (see "A painted bar" above). Either one null: the look's bar.
+## Setting the faces it already wears costs nothing, so a row refreshed often can call this every time.
+func set_faces(track: StyleBox, fill: StyleBox) -> void:
+	var painted := track != null and fill != null
+	var new_track: StyleBox = track if painted else null
+	var new_fill: StyleBox = fill if painted else null
+	if new_track == _face_track and new_fill == _face_fill: return
+	_face_track = new_track
+	_face_fill = new_fill
+	if painted and not is_instance_valid(_art_fill):
+		_art_fill = Panel.new()
+		_art_fill.name = "ArtFill"
+		_art_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_frame.add_child(_art_fill)
+		_art_fill.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		_frame.resized.connect(_fit_art_fill)
+	_restyle()
+
+
+## Whether [method set_faces] has given the bar its own pictures.
+func has_faces() -> bool:
+	return _face_fill != null
+
+
+## Whether the bar is drawn as a frame (`GoSkin.bar_frame_box()`, or [method set_faces]) rather than a `ProgressBar`.
 func frame_mode() -> bool:
-	return GoUi.skin().bar_frame_box() != null
+	return has_faces() or GoUi.skin().bar_frame_box() != null
+
+
+## The painted fill's width for [param ratio]: gone at 0, else never thinner than the bar is thick.
+func _place_art_fill(ratio: float) -> void:
+	if not is_instance_valid(_art_fill): return
+	_art_fill.anchor_right = ratio
+	_fit_art_fill()
+	_art_fill.visible = has_faces() and ratio > 0.0
+
+
+## The fill's least width: the bar's thickness, and never past a track squeezed narrower than that.
+func _fit_art_fill() -> void:
+	if is_instance_valid(_art_fill): _art_fill.custom_minimum_size.x = minf(float(thickness), _frame.size.x)
 
 
 func _restyle() -> void:
 	if not is_instance_valid(_bar): return
-	var groove := GoUi.skin().bar_frame_box()
+	var painted := has_faces()
+	var groove: StyleBox = _face_track if painted else GoUi.skin().bar_frame_box()
 	_frame.visible = groove != null
 	_bar.visible = groove == null
-	if groove != null:
+	_fill_clip.visible = not painted
+	if painted:
+		_frame.add_theme_stylebox_override(&"panel", _face_track)
+		_art_fill.add_theme_stylebox_override(&"panel", _face_fill)
+	elif groove != null:
 		_frame.add_theme_stylebox_override(&"panel", groove)
 		_fill_clip.add_theme_stylebox_override(&"panel", GoUi.skin().bar_fill_clip_box())
 		_fill_clip.offset_left = groove.get_content_margin(SIDE_LEFT)
 		_fill_clip.offset_top = groove.get_content_margin(SIDE_TOP)
 		_fill_clip.offset_right = -groove.get_content_margin(SIDE_RIGHT)
 		_fill_clip.offset_bottom = -groove.get_content_margin(SIDE_BOTTOM)
+	_place_art_fill(_bar.value)
 	_paint()
 	_apply_label_style()
 	_apply_gap()

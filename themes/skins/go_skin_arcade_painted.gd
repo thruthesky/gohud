@@ -584,8 +584,12 @@ const SCORE_ART := ART_ROOT + "score/"
 ## The podium leaderboard's art: podium_gold/silver/bronze, laurel_gold/silver/bronze, medal_row_1/2/3, sunburst,
 ## confetti, the category plates and icons, check badges, the stepper plate and the empty-board pictures.
 const LEADERBOARD_ART := ART_ROOT + "leaderboard/"
+## The quest rows' art (`GoRewardRow`): the plates row_cyan/gold/done, bar_track, bar_blue, bar_green, value_pill (a
+## game's balance and timer chip), and the full-colour pictures coin, gift, quest_play, quest_medal, quest_magnet,
+## quest_powerup, quest_star, quest_flame.
+const REWARD_ART := ART_ROOT + "rewards/"
 ## The folders `widget_art` looks in, in order.
-const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART, LEADERBOARD_ART]
+const ART_FOLDERS: Array[String] = [STAGE_ART, HUD_ART, TOUCH_ART, SCORE_ART, LEADERBOARD_ART, REWARD_ART]
 ## The sky behind an opaque window, the game's `STAGE_SKY`.
 const STAGE_SKY := Color(0.36, 0.62, 0.92, 1.0)
 ## A selected stage card's gold ring.

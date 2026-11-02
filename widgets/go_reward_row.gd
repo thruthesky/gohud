@@ -1,25 +1,36 @@
-## 🎁 **A reward row** — one thing a player earns by progress: a daily quest, an achievement, a season task. A picture,
-## a title, a progress bar with its `3 / 5`, what it pays, and at the end the row's state.
+## 🎁 **A reward row** — one thing a player earns by progress: a daily quest, an achievement, a season task. One line
+## of a table: a picture, a title, a progress bar with its `3 / 5`, what it pays, and at the end the row's state.
 ##
 ## ```gdscript
-## var quest := GoRewardRow.make("Win 3 matches", GoIconSet.STAR)
+## var quest := GoRewardRow.make("Win 3 matches", &"quest_medal")
 ## quest.set_progress(1, 3)
-## quest.set_reward(50, GoIconSet.COIN)
+## quest.set_reward(50)
 ## quest.set_claim_text("CLAIM")
 ## quest.set_state(GoRewardRow.State.READY)
 ## quest.key = "win_3"
 ## quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
 ## ```
 ##
-## | `state` | What it shows |
-## |---|---|
-## | `IN_PROGRESS` | the bar and its fraction |
-## | `READY` | the glowing claim pill (`GoPillGreen`; a look without it uses `GoPrimaryButton`) |
-## | `CLAIMED` | the check sticker, on a dimmed row |
-## | `LOCKED` | the padlock, on a dimmed row |
+## | `state` | What it shows | arcade_light |
+## |---|---|---|
+## | `IN_PROGRESS` | the bar and its fraction | the cyan plate, the blue bar |
+## | `READY` | the glowing claim pill (`GoPillGreen`; a look without it uses `GoPrimaryButton`) | the gold plate, the green bar |
+## | `CLAIMED` | the check | the done plate, the `check_green` sticker |
+## | `LOCKED` | the padlock | the done plate |
+##
+## ## 🎨 Two ways to draw it
+## arcade_light paints the row to stand beside a `GoScoreTable`: the theme types `GoRewardRow`, `GoRewardRowGold`,
+## `GoRewardRowDone`, `GoRewardBar` and `GoRewardBarGreen`, the table's own `GoScoreTableLabel` lettering, and full-colour
+## pictures with no plate behind them (`coin`, `gift`, `quest_play`, `quest_medal`, `quest_magnet`, `quest_powerup`,
+## `quest_star`, `quest_flame`, from `GoSkin.widget_art`). Any other look draws it with its own card, a glyph in a well
+## (`GoInsetPanel`), `GoBar` and a dimmed claimed or locked row.
+##
+## ## 📐 Its width
+## From [constant WIDE_WIDTH] up everything stands on one line and the columns of a stack of rows line up. Narrower, the
+## bar, its fraction and the payment move under the title.
 ##
 ## ## 🔑 In a long list
-## Every row is [method extent] tall whatever its words, so it fits `GoListView` as well as a `GoScroll`:
+## Every row is [method extent] tall whatever its words and its width, so it fits `GoListView` as well as a `GoScroll`:
 ## ```gdscript
 ## var list := GoListView.recycle(quests.size(), GoRewardRow.extent(),
 ## 	func() -> Control:
@@ -31,7 +42,7 @@
 ## 		row.key = quests[index].id             # first, so a press on the old quest is dropped
 ## 		row.title = quests[index].title
 ## 		row.set_progress(quests[index].done, quests[index].goal)
-## 		row.set_reward(quests[index].coins, GoIconSet.COIN)
+## 		row.set_reward(quests[index].coins)
 ## 		row.set_claim_text("CLAIM")
 ## 		row.set_state(quests[index].state))
 ## ```
@@ -41,9 +52,8 @@
 ##    tap sends one request; a refused claim comes back with `set_state(State.READY)`.
 ## 🛑 The row decides nothing and keeps nothing: the caller says the state, the progress and what is paid, and a press
 ##    only asks.
-## 🔤 The caller gives every word. The title wraps and shrinks (`GoStyle.fit_font_size`, never under
-##    `GoConfig.fit_min_scale`): two lines at full size, three at the floor; still too long there, it ends in an
-##    ellipsis. The claim word shrinks to fit its pill.
+## 🔤 The caller gives every word. The title wraps to at most two lines and shrinks (`GoStyle.fit_font_size`, never under
+##    `GoConfig.fit_min_scale`); still too long there, it ends in an ellipsis. The claim word shrinks to fit its pill.
 ## ♿ No state rests on colour: each has its own mark, and `claimed_text` and `locked_text` go into the screen-reader name.
 @tool
 class_name GoRewardRow
@@ -56,13 +66,23 @@ enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }
 
 ## The pill's look; a theme without it uses `GoPrimaryButton`.
 const VAR_CLAIM := &"GoPillGreen"
-## The well the row's picture sits in.
+## The well the row's picture sits in, in a look that does not paint the row.
 const VAR_WELL := &"GoInsetPanel"
-## A claimed or locked row's opacity. Its mark stays at full strength.
+## The painted row's plates, by state. A theme without [constant VAR_ROW] draws the row with its own card.
+const VAR_ROW := &"GoRewardRow"
+const VAR_ROW_READY := &"GoRewardRowGold"
+const VAR_ROW_DONE := &"GoRewardRowDone"
+## The painted bar: `background` and `fill` on [constant VAR_BAR], the READY row's `fill` on [constant VAR_BAR_READY].
+const VAR_BAR := &"GoRewardBar"
+const VAR_BAR_READY := &"GoRewardBarGreen"
+## The painted row's lettering: the Rankings table's.
+const VAR_TEXT := &"GoScoreTableLabel"
+## The width (dp) from which the row stands on one line. Narrower, the bar and the payment go under the title.
+const WIDE_WIDTH := 780.0
+## A claimed or locked row's opacity in a look that does not paint it. Its mark stays at full strength.
 const DIM_ALPHA := 0.55
-## The title's lines at full size, and at the smallest size it shrinks to.
+## The title's lines, at most.
 const TITLE_LINES := 2
-const TITLE_LINES_AT_FLOOR := 3
 ## The picture's well, the picture in it and the end column's width (dp).
 const WELL_SIZE := 44.0
 const ICON_SIZE := 30
@@ -75,6 +95,23 @@ const PILL_PAD := 8.0
 const REWARD_ICON_SIZE := 18
 const MARK_SIZE := 34
 const BAR_THICKNESS := 10
+## The painted row's content height, its picture, the coin, the check, the pill and the bar's thickness (dp). Narrower than
+## [constant WIDE_WIDTH] the picture and the bar give way, so a title and the bar both stand in that height.
+const ART_BODY := 62.0
+const ART_ICON_SIZE := 56
+const ART_NARROW_ICON_SIZE := 44
+const ART_COIN_SIZE := 30
+const ART_MARK_SIZE := 50
+const ART_PILL_HEIGHT := 48.0
+const ART_BAR_THICKNESS := 26
+const ART_NARROW_BAR_THICKNESS := 12
+## On one line: the columns that keep a stack of rows lined up (dp), and the bar's column against the title's.
+const WIDE_SLOT_WIDTH := 122.0
+const WIDE_PAY_WIDTH := 84.0
+const WIDE_FRACTION_WIDTH := 66.0
+const WIDE_PROGRESS_SHARE := 0.85
+## The painted numbers against the title's full size.
+const ART_NUMBER_SHARE := 0.9
 
 ## The row's words, wrapped and shrunk to fit.
 @export var title := "":
@@ -145,7 +182,7 @@ var fraction_label: Label
 var claim_button: GoGlyphButton
 var reward_row: HBoxContainer
 var reward_label: Label
-## The padlock's holder, and the anchor the check sticker (a `GoBadge`) hangs from.
+## The padlock's holder, and the check's: the picture `check_green`, else a `GoBadge` sticker hung from it.
 var lock_mark: Control
 var check_host: Control
 
@@ -157,9 +194,14 @@ var _well_art: Control
 var _reward_art: Control
 var _slot: VBoxContainer
 var _marks: Control
-var _text: VBoxContainer
+## Side by side on one line, stacked below [constant WIDE_WIDTH]: `vertical` follows the width.
+var _text: BoxContainer
 var _progress: HBoxContainer
+## The payment's column on one line. It stays when a row pays nothing, so the columns of a stack still line up.
+var _pay: HBoxContainer
 var _row: HBoxContainer
+var _wide := false
+var _has_target := true
 ## What each holder shows now (holder → its key), so a row bound again rebuilds no picture that stayed the same.
 var _shown := {}
 var _claim_sent := false
@@ -175,6 +217,7 @@ func _init() -> void:
 	theme_type_variation = GoTheme.VAR_CARD
 	_build()
 	_built = true
+	resized.connect(_on_resized)
 	_refresh()
 
 
@@ -193,13 +236,14 @@ func _build() -> void:
 	_well_art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_well.add_child(_well_art)
 
-	_text = _box(VBoxContainer.new(), "Text")
+	_text = _box(BoxContainer.new(), "Text")
 	_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_text.alignment = BoxContainer.ALIGNMENT_CENTER
 	_row.add_child(_text)
 	title_label = Label.new()
 	title_label.name = "Title"
 	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -207,6 +251,8 @@ func _build() -> void:
 	title_label.resized.connect(_fit_title)
 	_text.add_child(title_label)
 	_progress = _box(HBoxContainer.new(), "Progress")
+	_progress.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_progress.size_flags_stretch_ratio = WIDE_PROGRESS_SHARE
 	_text.add_child(_progress)
 	bar = GoBar.new()
 	bar.segments = 0
@@ -219,24 +265,27 @@ func _build() -> void:
 	fraction_label = GoStyle.one_line(Label.new())
 	fraction_label.name = "Fraction"
 	fraction_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fraction_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	fraction_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	# 🛑 As `GoBar`'s own readout: `3 / 5` keeps its order in Arabic too.
 	fraction_label.text_direction = Control.TEXT_DIRECTION_LTR
 	fraction_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	_progress.add_child(fraction_label)
 
+	_pay = _box(HBoxContainer.new(), "Pay")
+	_row.add_child(_pay)
 	_slot = _box(VBoxContainer.new(), "Slot")
-	_slot.custom_minimum_size.x = SLOT_WIDTH
 	_slot.alignment = BoxContainer.ALIGNMENT_CENTER
 	_row.add_child(_slot)
 	reward_row = _box(HBoxContainer.new(), "Reward")
-	reward_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_slot.add_child(reward_row)
+	_pay.add_child(reward_row)
 	_reward_art = _holder("Picture", REWARD_ICON_SIZE)
 	_reward_art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	reward_row.add_child(_reward_art)
 	reward_label = GoStyle.one_line(Label.new())
 	reward_label.name = "Amount"
 	reward_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	reward_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	# 🛑 A number reads left to right in every language, and a caller's amount is not a translation key.
 	reward_label.text_direction = Control.TEXT_DIRECTION_LTR
 	reward_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
@@ -255,25 +304,13 @@ func _build() -> void:
 	_marks = Control.new()
 	_marks.name = "Marks"
 	_marks.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_marks.custom_minimum_size = Vector2(SLOT_WIDTH, MARK_SIZE)
 	_slot.add_child(_marks)
 	lock_mark = _holder("Lock", MARK_SIZE)
 	_marks.add_child(lock_mark)
-	lock_mark.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
-	lock_mark.offset_left = -MARK_SIZE * 0.5
-	lock_mark.offset_right = MARK_SIZE * 0.5
-	lock_mark.offset_top = -MARK_SIZE * 0.5
-	lock_mark.offset_bottom = MARK_SIZE * 0.5
-	# 🔑 A sticker's centre sits on its host's top-right corner, so a host of no size centres it in the column.
-	check_host = Control.new()
-	check_host.name = "Check"
-	check_host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lock_mark.set_anchors_preset(Control.PRESET_CENTER)
+	check_host = _holder("Check", 0)
 	_marks.add_child(check_host)
-	check_host.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
-	check_host.offset_left = 0.0
-	check_host.offset_right = 0.0
-	check_host.offset_top = 0.0
-	check_host.offset_bottom = 0.0
+	check_host.set_anchors_preset(Control.PRESET_CENTER)
 
 
 func _box(node: BoxContainer, part: String) -> BoxContainer:
@@ -304,6 +341,10 @@ func _ready() -> void:
 	_refresh()
 
 
+func _on_resized() -> void:
+	if (size.x >= WIDE_WIDTH) != _wide: _queue_refresh()
+
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _built: _queue_refresh()
 
@@ -322,14 +363,11 @@ static func make(text: String, picture: StringName = &"", row_state := State.IN_
 	return node
 
 
-## 📏 Every row's height under the current look and `GoConfig` — the extent to give `GoListView`. It has room for the
-## two title lines over the bar, and for the amount over a touch-sized pill, so no words can change it.
+## 📏 Every row's height under the current look and `GoConfig` — the extent to give `GoListView`, at any width. It has
+## room for two title lines at full size, a touch-sized pill, and below [constant WIDE_WIDTH] two title lines at the fit
+## floor over the bar, so no words can change it.
 static func extent() -> float:
-	var card := _face(GoTheme.VAR_CARD, &"panel")
-	var rim := 0.0
-	if card != null:
-		rim = minf(card.get_margin(SIDE_TOP), CARD_PAD) + minf(card.get_margin(SIDE_BOTTOM), CARD_PAD)
-	return ceilf(rim + maxf(WELL_SIZE, maxf(_text_height(), _slot_height())))
+	return ceilf(_rim_height() + _body_height())
 
 
 ## The look's card with its padding held to [constant CARD_PAD]: a copy, faces are shared.
@@ -342,26 +380,75 @@ static func _card_face() -> StyleBox:
 	return own
 
 
-static func _line_height(role: StringName) -> float:
-	return GoStyle._fit_font().get_height(GoUi.font_size(role))
+## Whether the look paints the row (see the top of this file).
+static func _painted() -> bool:
+	var look := GoUi.theme()
+	return look != null and look.has_stylebox(&"panel", VAR_ROW)
 
 
-## The title's box: the taller of its lines at full size and at the fit floor.
-static func _title_height() -> float:
-	var floor_size := GoStyle.fit_floor(GoUi.font_size(GoTheme.ROLE_BODY))
-	return ceilf(maxf(_line_height(GoTheme.ROLE_BODY) * TITLE_LINES,
-		GoStyle._fit_font().get_height(floor_size) * TITLE_LINES_AT_FLOOR))
+## The height the row's plate or card keeps for itself.
+static func _rim_height() -> float:
+	var painted := _painted()
+	var plate := _face(VAR_ROW if painted else GoTheme.VAR_CARD, &"panel")
+	if plate == null: return 0.0
+	var top := plate.get_margin(SIDE_TOP)
+	var bottom := plate.get_margin(SIDE_BOTTOM)
+	return top + bottom if painted else minf(top, CARD_PAD) + minf(bottom, CARD_PAD)
 
 
+## The height inside the rim.
+static func _body_height() -> float:
+	var least := ART_BODY if _painted() else WELL_SIZE
+	return maxf(least, maxf(_title_height(_title_size()), maxf(_text_height(), _slot_height())))
+
+
+static func _line_height(px: int) -> float:
+	return _text_font().get_height(px)
+
+
+## The font the row's title and numbers are measured in.
+static func _text_font() -> Font:
+	var look := GoUi.theme()
+	if _painted(): return look.get_font(&"font", VAR_TEXT)
+	return GoStyle._fit_font()
+
+
+## The title's full size.
+static func _title_size() -> int:
+	if GoUi.config.base_font_size > 0 or not _painted(): return GoUi.font_size(GoTheme.ROLE_BODY)
+	return GoUi.theme().get_font_size(&"font_size", VAR_TEXT)
+
+
+## The height of the title's lines at [param px].
+static func _title_height(px: int) -> float:
+	return ceilf(_line_height(px) * TITLE_LINES)
+
+
+## The line under the title below [constant WIDE_WIDTH]: the bar, its fraction and the payment.
+static func _progress_height() -> float:
+	var bar_side := ART_NARROW_BAR_THICKNESS if _painted() else BAR_THICKNESS
+	return maxf(_line_height(GoUi.font_size(GoTheme.ROLE_COMPACT)), maxf(bar_side, _coin_side(false)))
+
+
+## Below [constant WIDE_WIDTH]: the title at the fit floor over the line under it.
 static func _text_height() -> float:
-	return _title_height() + GoUi.metric(GoTheme.GAP_TINY) + maxf(_line_height(GoTheme.ROLE_COMPACT), BAR_THICKNESS)
+	var gap := 0.0 if _painted() else float(GoUi.metric(GoTheme.GAP_TINY))
+	return _title_height(GoStyle.fit_floor(_title_size())) + gap + _progress_height()
 
 
 static func _slot_height() -> float:
 	var pill := _face(claim_variation(), &"normal")
-	var tall := maxf(GoUi.touch_size(), pill.get_minimum_size().y if pill != null else 0.0)
-	var line := maxf(REWARD_ICON_SIZE, _line_height(GoTheme.ROLE_BODY))
-	return line + GoUi.metric(GoTheme.GAP_TINY) + maxf(tall, MARK_SIZE)
+	return maxf(_pill_height(), pill.get_minimum_size().y if pill != null else 0.0)
+
+
+## The claim pill's height: the touch floor, and on the painted row its own chunkier size.
+static func _pill_height() -> float:
+	return maxf(GoUi.touch_size(), ART_PILL_HEIGHT if _painted() else 0.0)
+
+
+## The coin's side: big on the painted row's one line, small on the line under a title.
+static func _coin_side(wide: bool) -> int:
+	return ART_COIN_SIZE if wide and _painted() else REWARD_ICON_SIZE
 
 
 ## The face [param part] of the theme type [param type], climbing its variation chain. Null when none has it.
@@ -388,7 +475,7 @@ static func claim_variation() -> StringName:
 ## The progress: the bar at [param value] of [param target] and its fraction. A [param target] of 0 or less hides them
 ## (an achievement with no count). Off by default, [param animate]: a row bound to other data must not slide there.
 func set_progress(value: float, target: float, animate := false) -> void:
-	_progress.visible = target > 0.0
+	_has_target = target > 0.0
 	bar.set_values(value, target, animate)
 	_queue_refresh()
 
@@ -416,8 +503,12 @@ func _dress_faces() -> void:
 	var look := GoUi.theme()
 	if look == _faces_of: return
 	_faces_of = look
+	var painted := _painted()
+	# 🔑 A plate is the row's own theme type: the row reads it from the look wherever it stands.
+	theme = look if painted else null
 	var card := _card_face()
-	if card != null: add_theme_stylebox_override(&"panel", card)
+	if painted or card == null: remove_theme_stylebox_override(&"panel")
+	else: add_theme_stylebox_override(&"panel", card)
 	var variation := claim_variation()
 	claim_button.theme_type_variation = variation
 	for part: StringName in GoGlyphButton.TEXT_STATES:
@@ -427,6 +518,70 @@ func _dress_faces() -> void:
 		for side in [SIDE_LEFT, SIDE_RIGHT]: own.set_content_margin(side, minf(face.get_margin(side), PILL_PAD))
 		claim_button.add_theme_stylebox_override(part, own)
 	claim_button.fit_padding = PILL_PAD * 2.0
+
+
+## One line or two, for the row's width: the payment's home and the columns that hold a stack of rows in line.
+func _place_columns(gap: int, tiny: int, coin: int) -> void:
+	_text.vertical = not _wide
+	_text.alignment = BoxContainer.ALIGNMENT_CENTER
+	var home: Container = _pay if _wide else _progress
+	if reward_row.get_parent() != home: reward_row.reparent(home, false)
+	_pay.visible = _wide
+	_pay.custom_minimum_size.x = WIDE_PAY_WIDTH if _wide else 0.0
+	_row.add_theme_constant_override(&"separation", gap)
+	_text.add_theme_constant_override(&"separation", gap if _wide else 0 if _painted() else tiny)
+	_slot.add_theme_constant_override(&"separation", tiny)
+	reward_row.add_theme_constant_override(&"separation", tiny)
+	_progress.add_theme_constant_override(&"separation", gap if _wide else tiny)
+	_slot.custom_minimum_size.x = WIDE_SLOT_WIDTH if _wide else SLOT_WIDTH
+	fraction_label.custom_minimum_size.x = WIDE_FRACTION_WIDTH if _wide else 0.0
+	_reward_art.custom_minimum_size = Vector2(coin, coin)
+
+
+## The row's plate, or its card and the claimed row's dimming.
+func _dress_plate(painted: bool, done: bool) -> void:
+	if painted: theme_type_variation = VAR_ROW_DONE if done else VAR_ROW_READY if state == State.READY else VAR_ROW
+	else: theme_type_variation = GoTheme.VAR_CARD
+	var alpha := DIM_ALPHA if done and not painted else 1.0
+	for part: Control in [_well, _text, reward_row]: part.modulate.a = alpha
+
+
+## The picture's well: a plated hollow in a look that does not paint the row, nothing at all behind a painted picture.
+func _dress_well(painted: bool, side: float) -> void:
+	var plated := not painted and _has_type(VAR_WELL)
+	_well.theme_type_variation = VAR_WELL if plated else &""
+	if plated: _well.remove_theme_stylebox_override(&"panel")
+	elif not _well.has_theme_stylebox_override(&"panel"): GoStyle.bare_panel(_well)
+	_well.custom_minimum_size = Vector2(side, side)
+
+
+func _dress_bar(painted: bool, ready_now: bool, claimed: bool) -> void:
+	bar.visible = _has_target
+	if painted:
+		bar.ink = Color.TRANSPARENT
+		bar.thickness = ART_BAR_THICKNESS if _wide else ART_NARROW_BAR_THICKNESS
+		bar.set_faces(_face(VAR_BAR, &"background"), _face(VAR_BAR_READY if ready_now else VAR_BAR, &"fill"))
+		return
+	bar.set_faces(null, null)
+	bar.thickness = BAR_THICKNESS
+	bar.ink = GoUi.color(GoTheme.SUCCESS_FILL) if ready_now or claimed else Color.TRANSPARENT
+
+
+## [param label] in the row's lettering at [param px]: the Rankings' navy, or the look's [param role] in [param ink].
+func _letter(label: Label, painted: bool, role: StringName, ink: Color, px: int) -> void:
+	if painted:
+		label.theme = GoUi.theme()
+		label.theme_type_variation = VAR_TEXT
+		label.remove_theme_color_override(&"font_color")
+	else:
+		GoStyle.typography(label, role, ink)
+	label.add_theme_font_size_override(&"font_size", px)
+
+
+## A number's size: the painted row's big numbers on one line, else the small line under the title.
+func _number_size(painted: bool, role: StringName) -> int:
+	if painted and _wide: return roundi(_title_size() * ART_NUMBER_SHARE)
+	return GoUi.font_size(role if _wide else GoTheme.ROLE_COMPACT)
 
 
 ## Applies the pending changes now instead of at the end of the frame.
@@ -464,58 +619,97 @@ func _refresh() -> void:
 	var ready_now := state == State.READY
 	var claimed := state == State.CLAIMED
 	var locked := state == State.LOCKED
+	var painted := _painted()
 	_dress_faces()
-	custom_minimum_size.y = extent()
-	var gap := GoUi.metric(GoTheme.GAP_SMALL)
-	var tiny := GoUi.metric(GoTheme.GAP_TINY)
-	_row.add_theme_constant_override(&"separation", gap)
-	_text.add_theme_constant_override(&"separation", tiny)
-	_slot.add_theme_constant_override(&"separation", tiny)
-	reward_row.add_theme_constant_override(&"separation", tiny)
-	_progress.add_theme_constant_override(&"separation", tiny)
-
+	var height := extent()
+	custom_minimum_size.y = height
 	var ink := GoUi.color(GoTheme.TEXT)
-	if _has_type(VAR_WELL): _well.theme_type_variation = VAR_WELL
-	else: GoStyle.bare_panel(_well)
-	_show(_well_art, icon_texture, icon, ICON_SIZE, ink)
+	_wide = size.x >= WIDE_WIDTH
+	var coin := _coin_side(_wide)
+	_place_columns(GoUi.metric(GoTheme.GAP_SMALL), GoUi.metric(GoTheme.GAP_TINY), coin)
+	_dress_plate(painted, claimed or locked)
+
+	var picture: int = ICON_SIZE
+	var well := WELL_SIZE
+	if painted:
+		picture = ART_ICON_SIZE if _wide else ART_NARROW_ICON_SIZE
+		well = float(picture)
+	_dress_well(painted, well)
+	_well_art.custom_minimum_size = Vector2(picture, picture)
+	_show(_well_art, icon_texture, icon, picture, ink)
 
 	title_label.text = title
-	GoStyle.typography(title_label, GoTheme.ROLE_BODY, ink)
-	title_label.custom_minimum_size.y = _title_height()
-	bar.ink = GoUi.color(GoTheme.SUCCESS_FILL) if ready_now or claimed else Color.TRANSPARENT
+	_letter(title_label, painted, GoTheme.ROLE_BODY, ink, _title_size())
+	_dress_bar(painted, ready_now, claimed)
+	fraction_label.visible = _has_target
 	fraction_label.text = GoUi.text(&"bar_fraction").format({
 		"value": GoBar.format_amount(bar.value()), "max": GoBar.format_amount(bar.maximum())})
-	GoStyle.typography(fraction_label, GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED))
+	_letter(fraction_label, painted, GoTheme.ROLE_COMPACT, GoUi.color(GoTheme.MUTED),
+		_number_size(painted, GoTheme.ROLE_COMPACT))
+	if _wide: _fit_one_line(fraction_label, WIDE_FRACTION_WIDTH)
+
+	var paying := _reward_amount > 0.0
+	reward_row.visible = paying
+	reward_label.text = GoBar.format_amount(_reward_amount)
+	_letter(reward_label, painted, GoTheme.ROLE_BODY, ink, _number_size(painted, GoTheme.ROLE_BODY))
+	_show(_reward_art, _reward_texture, _reward_icon, coin, ink)
+	_fit_one_line(reward_label, (WIDE_PAY_WIDTH if _wide else SLOT_WIDTH) - coin - GoUi.metric(GoTheme.GAP_TINY))
+
+	_progress.visible = _has_target or (paying and not _wide)
+	title_label.custom_minimum_size.y = _title_box(height)
 	_fit_title()
 
-	reward_row.visible = _reward_amount > 0.0
-	reward_label.text = GoBar.format_amount(_reward_amount)
-	GoStyle.typography(reward_label, GoTheme.ROLE_BODY, ink)
-	_show(_reward_art, _reward_texture, _reward_icon, REWARD_ICON_SIZE, ink)
-	_fit_reward()
-
+	var slot_width: float = WIDE_SLOT_WIDTH if _wide else SLOT_WIDTH
+	var mark: int = ART_MARK_SIZE if painted else MARK_SIZE
+	_slot.visible = _wide or ready_now or claimed or locked
 	claim_button.visible = ready_now
 	claim_button.text = claim_text
-	claim_button.fit_base_size = GoUi.font_size(GoTheme.ROLE_BODY)
-	claim_button.custom_minimum_size = Vector2(SLOT_WIDTH, GoUi.touch_size())
+	claim_button.fit_base_size = 0 if painted and _wide else GoUi.font_size(GoTheme.ROLE_BODY)
+	claim_button.custom_minimum_size = Vector2(slot_width, _pill_height())
 	claim_button.disabled = _claim_sent
 
 	_marks.visible = claimed or locked
+	_marks.custom_minimum_size = Vector2(slot_width, mark)
 	lock_mark.visible = locked
 	check_host.visible = claimed
-	if locked: _show(lock_mark, null, &"lock", MARK_SIZE, ink, GoIconSet.LOCK)
-	if claimed and not check_host.has_meta(&"gohud_badge"):
-		GoBadge.stick(check_host, "", GoUi.color(GoTheme.SUCCESS_FILL), 0.0, GoIconSet.CHECK)
-
-	var alpha := DIM_ALPHA if claimed or locked else 1.0
-	for part: Control in [_well, _text, reward_row]: part.modulate.a = alpha
+	if locked:
+		_center_mark(lock_mark, mark)
+		_show(lock_mark, null, &"lock", mark, ink, GoIconSet.LOCK)
+	if claimed: _show_check(mark, ink)
 
 	var said := [title]
-	if _progress.visible: said.append(fraction_label.text)
+	if _has_target: said.append(fraction_label.text)
 	if ready_now: said.append(claim_text)
 	elif claimed: said.append(claimed_text)
 	elif locked: said.append(locked_text)
 	accessibility_name = GoUi.spoken(said)
+
+
+## The title's box: the whole height on one line, what the line under it leaves when it stands over that line.
+func _title_box(height: float) -> float:
+	var room := height - _rim_height()
+	if _wide or not _progress.visible: return minf(room, _title_height(_title_size()))
+	var gap := 0.0 if _painted() else float(GoUi.metric(GoTheme.GAP_TINY))
+	return room - gap - _progress_height()
+
+
+## [param holder] centred in the marks' column, [param side] square.
+func _center_mark(holder: Control, side: float) -> void:
+	holder.custom_minimum_size = Vector2(side, side)
+	holder.offset_left = -side * 0.5
+	holder.offset_right = side * 0.5
+	holder.offset_top = -side * 0.5
+	holder.offset_bottom = side * 0.5
+
+
+## The check: the skin's sticker, else a `GoBadge` on a host of no size — a badge's centre sits on its host's top-right
+## corner, so that centres it in the column.
+func _show_check(side: int, ink: Color) -> void:
+	var art := GoUi.skin().widget_art(&"check_green")
+	_center_mark(check_host, side if art != null else 0)
+	_show(check_host, art, &"", side, ink)
+	if art == null and not check_host.has_meta(&"gohud_badge"):
+		GoBadge.stick(check_host, "", GoUi.color(GoTheme.SUCCESS_FILL), 0.0, GoIconSet.CHECK)
 
 
 ## Puts a picture in [param holder]: [param given], else the skin's art named [param picture], else the icon set's
@@ -543,25 +737,28 @@ func _show(holder: Control, given: Texture2D, picture: StringName, side: int, in
 		node.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
-## The title's size: the biggest from the body role down to the fit floor at which it wraps into its box.
+## The title's size: the biggest from its full size down to the fit floor at which it wraps into its box, no word
+## broken.
 func _fit_title() -> void:
 	var room := title_label.size.x
 	if room <= 0.0 or not title_label.is_inside_tree(): return
 	var shown := atr(title)
 	var font := title_label.get_theme_font(&"font")
-	var base := GoUi.font_size(GoTheme.ROLE_BODY)
+	var base := _title_size()
 	# Laid end to end it must fit two lines' width — then measured wrapped: a wrap leaves room at each line's end.
 	var px := GoStyle.fit_font_size(PackedStringArray([shown]), base, room * TITLE_LINES, font)
 	var bottom := GoStyle.fit_floor(base)
 	var box := title_label.custom_minimum_size.y
-	while px > bottom and _wrapped_lines(shown, font, px, room) > _lines_held(box, font, px): px -= 1
+	var words := shown.replace("-", " ").split(" ", false)
+	while px > bottom and (_wrapped_lines(shown, font, px, room) > _lines_held(box, font, px)
+			or _widest(words, font, px) > room): px -= 1
 	title_label.add_theme_font_size_override(&"font_size", px)
 	title_label.max_lines_visible = _lines_held(box, font, px)
 
 
 ## How many lines at [param px] stand in a box [param box] tall.
 func _lines_held(box: float, font: Font, px: int) -> int:
-	return clampi(floori(box / font.get_height(px)), 1, TITLE_LINES_AT_FLOOR)
+	return clampi(floori(box / font.get_height(px)), 1, TITLE_LINES)
 
 
 func _wrapped_lines(words: String, font: Font, px: int, room: float) -> int:
@@ -570,8 +767,16 @@ func _wrapped_lines(words: String, font: Font, px: int, room: float) -> int:
 	return roundi(tall / font.get_height(px))
 
 
-func _fit_reward() -> void:
-	var room := SLOT_WIDTH - REWARD_ICON_SIZE - GoUi.metric(GoTheme.GAP_TINY)
-	var font := reward_label.get_theme_font(&"font") if reward_label.is_inside_tree() else null
-	reward_label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(
-		PackedStringArray([reward_label.text]), GoUi.font_size(GoTheme.ROLE_BODY), room, font))
+func _widest(words: PackedStringArray, font: Font, px: int) -> float:
+	var most := 0.0
+	for word in words: most = maxf(most, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x)
+	return most
+
+
+## Shrinks a one-line [param label] from the size it wears to fit [param room]. Past the floor it asks for more: a
+## number is never cut, its neighbour (the bar) gives way.
+func _fit_one_line(label: Label, room: float) -> void:
+	if not label.is_inside_tree(): return
+	var base := label.get_theme_font_size(&"font_size")
+	label.add_theme_font_size_override(&"font_size", GoStyle.fit_font_size(
+		PackedStringArray([label.text]), base, room, label.get_theme_font(&"font")))

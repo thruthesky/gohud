@@ -102,7 +102,8 @@ Full rules: `theming.md` §4.
 | `icon_beside` | `false` | The icon sits left of the bar instead, centred on it (`Track` › `Icon`, then the fill or the painted frame taking the rest of the width); the name row hides while it has no name and no readout |
 | `label_size` · `label_ink` | `-1` · transparent | The name's and readout's size (-1: the compact role's) and colour (transparent: `secondary`) |
 | `label_gap` · `lead` | `-1` · `0` | The room between the name row and the bar (-1: `gap_tiny`) · room left above the name |
-| `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`): a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
+| `frame_mode()` | | True when the look draws a painted frame (`GoSkin.bar_frame_box()`; `arcade_light`) or `set_faces()` gave the bar its own: a rounded groove clipping an `ink` → `ink_end` gradient (`Frame` › `Gradient`, `Ticks`) instead of the `ProgressBar` |
+| `set_faces(track, fill)` · `has_faces()` | | 🖼 Draws the bar from two 9-slice `StyleBox`es instead of the look's: the track at full width and the fill over it at the same top-left and height, as wide as the value. A value above 0 stays at least `thickness` wide; 0 shows the bare track. Either one null goes back to the look's bar. A bar that never takes faces carries no extra node (`GoRewardRow`'s painted bar) |
 | `set_values(value, maximum, animate := true)` · `set_ratio(ratio, animate := true)` · `value()` · `maximum()` | | Pass `animate = false` for the first fill |
 | `static format_amount(amount) -> String` · `static abbreviate(amount)` | | `12.3k`, `4.5m`, or `GoConfig.number_formatter` |
 
@@ -1280,15 +1281,15 @@ hint.stop()                                      # hides it; nothing is drawn un
 ## 39. GoRewardRow — a quest or achievement in a list
 
 `class_name GoRewardRow extends PanelContainer` · one thing a player earns by progress: a daily quest, an achievement,
-a season task. A picture in a well, a title, a bar with its `3 / 5`, the payment, and at the end the row's state. The
-game supplies every word and every fact; a press only asks. `GoLevelCard` is a fixed tile and `GoTaskCard` takes no
-input, so neither fits a scrolling list of claims.
+a season task. One line of a table: a picture, a title, a bar with its `3 / 5`, the payment, and at the end the row's
+state. The game supplies every word and every fact; a press only asks. `GoLevelCard` is a fixed tile and `GoTaskCard`
+takes no input, so neither fits a scrolling list of claims.
 
 ```gdscript
-var quest := GoRewardRow.make("Win 3 matches", GoIconSet.STAR)
+var quest := GoRewardRow.make("Win 3 matches", &"quest_medal")
 quest.key = "win_3"
 quest.set_progress(1, 3)
-quest.set_reward(50, GoIconSet.COIN)
+quest.set_reward(50)                      # the coin: arcade_light's painted one, a glyph in other looks
 quest.set_claim_text("CLAIM")
 quest.set_state(GoRewardRow.State.READY)
 quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
@@ -1307,17 +1308,36 @@ var list := GoListView.recycle(quests.size(), GoRewardRow.extent(),
 		row.key = quests[index].id
 		row.title = quests[index].title
 		row.set_progress(quests[index].done, quests[index].goal)
-		row.set_reward(quests[index].coins, GoIconSet.COIN)
+		row.set_reward(quests[index].coins)
 		row.set_claim_text("CLAIM")
 		row.set_state(quests[index].state))
 ```
 
+**arcade_light paints the row** to stand beside a `GoScoreTable`, with the table's own lettering (`GoScoreTableLabel`):
+
+| State | Plate | Bar | At the end |
+|---|---|---|---|
+| `IN_PROGRESS` | `GoRewardRow` (`row_cyan`) | `GoRewardBar` (`bar_track`, `bar_blue`) | nothing |
+| `READY` | `GoRewardRowGold` (`row_gold`) | `GoRewardBarGreen` (`bar_green`) | the glowing `GoPillGreen` |
+| `CLAIMED` | `GoRewardRowDone` (`row_done`) | `GoRewardBar` | the `check_green` sticker |
+| `LOCKED` | `GoRewardRowDone` | `GoRewardBar` | the padlock |
+
+Its pictures stand with no plate behind them, come through `GoUi.skin().widget_art(...)`, and take an `icon` name as they
+are: `coin`, `gift`, `quest_play`, `quest_medal`, `quest_magnet`, `quest_powerup`, `quest_star`, `quest_flame`, and the
+leaderboard's icons (`assets/arcade_light/leaderboard/`). The art folder is `assets/arcade_light/rewards/`, which also
+holds `value_pill` (a chip for a screen's balance or timer, 240x76, 9-slice 44/44/0/0). Any other look draws the row with
+its own card, a glyph in a well (`GoInsetPanel`), `GoBar`, and a claimed or locked row dimmed.
+
+From `WIDE_WIDTH` (780 dp) up, every part stands on one line and the columns of a stack of rows line up (bar, fraction,
+payment and state, also in a row that pays nothing). Narrower, the bar, its fraction and the payment move under the
+title and the end column shows only when it has something to show. The height stays `extent()` at any width.
+
 | Member | Default | Notes |
 |---|---|---|
-| `enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }` · `state` · `set_state(value)` | `IN_PROGRESS` | READY: the glowing pill. CLAIMED: the check sticker, the row dimmed. LOCKED: the padlock, the row dimmed. `set_state` with the same state re-arms the pill after a refused claim |
+| `enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }` · `state` · `set_state(value)` | `IN_PROGRESS` | See the table above. `set_state` with the same state re-arms the pill after a refused claim |
 | `make(text, picture = &"", row_state = State.IN_PROGRESS)` | | Static |
-| `extent()` | | Static. Every row's height under the current look and `GoConfig`: give it to `GoListView`. Grows with the touch floor and the base font |
-| `title` | `""` | Wraps: two lines at full size, three at the fit floor, then an ellipsis |
+| `extent()` | | Static. Every row's height under the current look and `GoConfig`, at any width: give it to `GoListView`. 70 dp in arcade_light. Grows with the touch floor and the base font |
+| `title` | `""` | Wraps to at most two lines and shrinks to the fit floor, no word broken; then an ellipsis |
 | `icon` · `icon_texture` | `&""` · null | A name (the skin's `widget_art`, else the icon set) or the picture itself |
 | `set_progress(value, target, animate = false)` | | A `target` of 0 or less hides the bar and the fraction. No slide by default: a row bound to other data must not glide there |
 | `set_reward(amount, picture = GoIconSet.COIN, texture = null)` | | An `amount` of 0 or less shows no payment. Written by `GoBar.format_amount` |
@@ -1333,7 +1353,8 @@ var list := GoListView.recycle(quests.size(), GoRewardRow.extent(),
 - 🛑 A row that moves to other data (a new `key` or `title`) forgets a finger already on its pill, so a press begun on
   one quest cannot claim the next. Refreshing the same data (progress, payment, the same state) keeps the press.
 - The touch target is `GoUi.touch_size()`. The sizes are dp constants, so the row follows the runtime's scale; the fonts
-  are the `body` and `compact` roles, and `GoConfig.fit_min_scale` is the floor.
+  are `GoScoreTableLabel` in arcade_light and the `body` and `compact` roles elsewhere, and `GoConfig.fit_min_scale` is
+  the floor. A number is never cut: past the floor its column grows and the bar gives way.
 - The row keeps its own copies of the look's card and pill with less side padding (`CARD_PAD`, `PILL_PAD`), for the title
   and the claim word on a phone; a look that pads less keeps its own padding.
 - Its boxes keep their spacing inside a `GoForm` (`go_own_spacing`). Right to left the row mirrors; numbers stay left to

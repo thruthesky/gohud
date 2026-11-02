@@ -1,11 +1,19 @@
-## 🧪 **Checks for `GoRewardRow`** — the four states, the height no words can change (in every look), text that fits
-## without going under the fit floor, the touch target, and a row reused by a `GoListView`: a press begun on one quest
-## must never claim the next.
+## 🧪 **Checks for `GoRewardRow`** — the four states, the height no words can change (in every look), the one line of a
+## table and the fallback under it, the painted plates and art, text that fits without going under the fit floor, the
+## touch target, `GoBar.set_faces`, and a row reused by a `GoListView`: a press begun on one quest must never claim the
+## next.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_row_test.gd" bash addons/gohud/tools/run_tests.sh
 extends SceneTree
 
 const LONG := "Win five online matches without falling off the arena even once in a row today"
+## Long German quest names, as real translations run.
+const GERMAN: Array[String] = ["Beende 5 Online-Spiele unter den ersten drei Plätzen",
+	"Erledige 10 Gegner mit der Magnetabstoßung in Online-Matches",
+	"Sammle zwölf Energieverstärker in einem einzigen Wettkampf", "Spiele 3 Spiele"]
+## A table's row at 1280x720, and a phone held upright.
+const WIDE := 880.0
+const NARROW := 336.0
 const LOOKS: Array[StringName] = [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_DARK,
 	GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
 	GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK, GoThemePresets.ARCADE_DARK,
@@ -33,12 +41,17 @@ func _initialize() -> void:
 		await _fixed_height(look)
 		await _states(look)
 		await _right_to_left(look)
+		await _one_line(look)
 		host.free()
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	await frames(1)
 	_make_host()
 	await _arcade_parts()
+	await _art_is_registered()
+	await _bar_faces()
 	await _text_fits()
+	await _german_fits()
+	await _width_moves_the_bar()
 	await _follows_config()
 	await _press_once()
 	await _stale_press()
@@ -58,16 +71,20 @@ func _initialize() -> void:
 func _make_host() -> void:
 	host = Control.new()
 	host.theme = GoUi.theme()
-	host.size = Vector2(336, 700)
+	host.size = Vector2(WIDE, 700)
 	root.add_child(host)
 
 
-func _row(text := "Win 3 matches", state := GoRewardRow.State.READY) -> GoRewardRow:
+func _painted() -> bool:
+	return GoUi.theme().has_stylebox(&"panel", GoRewardRow.VAR_ROW)
+
+
+func _row(text := "Win 3 matches", state := GoRewardRow.State.READY, width := NARROW) -> GoRewardRow:
 	var row := GoRewardRow.make(text, GoIconSet.STAR, state)
 	row.set_progress(3, 5)
 	row.set_reward(50, GoIconSet.COIN)
 	row.set_claim_text("CLAIM")
-	row.size = Vector2(336, GoRewardRow.extent())
+	row.size = Vector2(width, GoRewardRow.extent())
 	host.add_child(row)
 	row.claim_pressed.connect(func(id: Variant) -> void: claims.append(id))
 	return row
@@ -76,22 +93,23 @@ func _row(text := "Win 3 matches", state := GoRewardRow.State.READY) -> GoReward
 func _fixed_height(look: StringName) -> void:
 	var tall := GoRewardRow.extent()
 	var heights := {}
-	for state: int in GoRewardRow.State.values():
-		for text: String in ["Go", LONG]:
-			var row := _row(text, state)
-			row.set_claim_text("BELOHNUNG ABHOLEN")
-			row.set_reward(1234567, GoIconSet.COIN)
-			row.set_progress(123456, 7654321)
-			await frames(2)
-			heights[row.get_combined_minimum_size().y] = true
-			check(row.get_combined_minimum_size().y <= tall, "%s: state %d stays within extent() (%s > %s)" % [look, state,
-				row.get_combined_minimum_size().y, tall])
-			check(row.get_combined_minimum_size().x <= 336.0, "%s: state %d fits a phone (%s)" % [look, state,
-				row.get_combined_minimum_size().x])
-			if state == GoRewardRow.State.READY:
-				check(row.claim_button.size.y >= GoUi.touch_size(), "%s: the pill keeps the touch target" % look)
-				check(row.claim_button.size.x >= GoUi.touch_size(), "%s: the pill keeps the touch width" % look)
-			row.free()
+	for width: float in [NARROW, WIDE]:
+		for state: int in GoRewardRow.State.values():
+			for text: String in ["Go", LONG]:
+				var row := _row(text, state, width)
+				row.set_claim_text("BELOHNUNG ABHOLEN")
+				row.set_reward(1234567, GoIconSet.COIN)
+				row.set_progress(123456, 7654321)
+				await frames(2)
+				var least := row.get_combined_minimum_size()
+				heights[least.y] = true
+				check(least.y <= tall, "%s: state %d at %d stays within extent() (%s > %s)" % [look, state, width, least.y,
+					tall])
+				check(least.x <= width, "%s: state %d fits %d (%s)" % [look, state, width, least.x])
+				if state == GoRewardRow.State.READY:
+					check(row.claim_button.size.y >= GoUi.touch_size(), "%s: the pill keeps the touch target" % look)
+					check(row.claim_button.size.x >= GoUi.touch_size(), "%s: the pill keeps the touch width" % look)
+				row.free()
 	check(heights.size() == 1, "%s: no state or word changes the height (%s)" % [look, heights.keys()])
 
 
@@ -113,7 +131,8 @@ func _states(look: StringName) -> void:
 		check(row.lock_mark.visible == want[2], "%s: state %d lock" % [look, state])
 		check(row.fraction_label.text.contains("3") and row.fraction_label.text.contains("5"),
 			"%s: state %d keeps its fraction" % [look, state])
-		var dim: bool = state == GoRewardRow.State.CLAIMED or state == GoRewardRow.State.LOCKED
+		var done: bool = state == GoRewardRow.State.CLAIMED or state == GoRewardRow.State.LOCKED
+		var dim := done and not _painted()
 		check((row.title_label.get_parent() as Control).modulate.a < 1.0 == dim, "%s: state %d dims or not" % [look, state])
 		if want[2]: check(row.lock_mark.get_child_count() == 1, "%s: the lock has a picture" % look)
 	row.free()
@@ -135,16 +154,72 @@ func _right_to_left(look: StringName) -> void:
 	box.free()
 
 
+## The whole row at a table's width: every part on one line, in order, and a stack of rows in columns.
+func _one_line(look: StringName) -> void:
+	var stack: Array[GoRewardRow] = []
+	var texts := ["Go", LONG, GERMAN[0], "Win 2 matches"]
+	for state: int in GoRewardRow.State.values():
+		var row := _row(texts[state], state, WIDE)
+		row.position.y = state * (GoRewardRow.extent() + 6.0)
+		stack.append(row)
+	await frames(3)
+	var ready_row := stack[GoRewardRow.State.READY]
+	var well: Control = ready_row.find_child("Well", true, false)
+	var parts: Array[Control] = [well, ready_row.title_label, ready_row.bar, ready_row.fraction_label,
+		ready_row.reward_row, ready_row.claim_button]
+	var middle := ready_row.get_global_rect().get_center().y
+	for index in parts.size():
+		var part := parts[index]
+		check(absf(part.get_global_rect().get_center().y - middle) <= 2.0, "%s: %s stands on the row's line" % [look,
+			part.name])
+		if index > 0:
+			check(part.get_global_rect().position.x >= parts[index - 1].get_global_rect().end.x - 0.5,
+				"%s: %s comes after %s" % [look, part.name, parts[index - 1].name])
+	for row in stack:
+		check(is_equal_approx(row.bar.global_position.x, stack[0].bar.global_position.x),
+			"%s: the bars stand in one column (%s, %s)" % [look, row.bar.global_position.x, stack[0].bar.global_position.x])
+		check(is_equal_approx(row.bar.size.x, stack[0].bar.size.x), "%s: the bars are one length" % look)
+		check(is_equal_approx(row.fraction_label.global_position.x, stack[0].fraction_label.global_position.x),
+			"%s: the fractions stand in one column" % look)
+		check(is_equal_approx(row.reward_row.global_position.x, stack[0].reward_row.global_position.x),
+			"%s: the payments stand in one column" % look)
+	for row in stack: row.free()
+
+
 func _arcade_parts() -> void:
-	var row := _row()
+	check(GoRewardRow.extent() >= 66.0 and GoRewardRow.extent() <= 72.0, "the row is 66-72 dp (%s)" % GoRewardRow.extent())
+	var row := _row("Win 3 matches", GoRewardRow.State.READY, WIDE)
 	await frames(2)
 	check(row.claim_button.theme_type_variation == &"GoPillGreen", "arcade_light's pill is GoPillGreen")
 	check(row.claim_button.glow, "the pill glows")
 	check(row.claim_button.feedback == GoFeedback.CONFIRMED, "a claim sounds confirmed")
+	check(row.title_label.theme_type_variation == GoRewardRow.VAR_TEXT, "the title wears the Rankings' lettering")
+	check(row.title_label.get_theme_color(&"font_color") == GoUi.theme().get_color(&"font_color", GoRewardRow.VAR_TEXT),
+		"in the Rankings' navy")
+	var well := row.find_child("Well", true, false) as PanelContainer
+	check(well.get_theme_stylebox(&"panel") is StyleBoxEmpty, "no plate behind the picture")
+	var coin := row.reward_row.get_child(0).get_child(0) as TextureRect
+	check(coin != null and coin.texture == GoUi.skin().widget_art(&"coin"), "the payment wears the painted coin")
+	var look := GoUi.theme()
+	var plates := {
+		GoRewardRow.State.IN_PROGRESS: [GoRewardRow.VAR_ROW, GoRewardRow.VAR_BAR],
+		GoRewardRow.State.READY: [GoRewardRow.VAR_ROW_READY, GoRewardRow.VAR_BAR_READY],
+		GoRewardRow.State.CLAIMED: [GoRewardRow.VAR_ROW_DONE, GoRewardRow.VAR_BAR],
+		GoRewardRow.State.LOCKED: [GoRewardRow.VAR_ROW_DONE, GoRewardRow.VAR_BAR],
+	}
+	for state: int in plates:
+		row.set_state(state)
+		row.refresh()
+		check(row.theme_type_variation == plates[state][0], "state %d wears %s" % [state, plates[state][0]])
+		check(row.get_theme_stylebox(&"panel") == look.get_stylebox(&"panel", plates[state][0]), "state %d's plate" % state)
+		check(row.bar.has_faces(), "state %d's bar is painted" % state)
+		var fill := row.bar.find_child("ArtFill", true, false) as Panel
+		check(fill.get_theme_stylebox(&"panel") == look.get_stylebox(&"fill", plates[state][1]), "state %d's fill" % state)
 	row.set_state(GoRewardRow.State.CLAIMED)
 	row.refresh()
-	var sticker: GoBadge = row.check_host.get_meta(&"gohud_badge")
-	check(sticker.solid and sticker.icon == GoIconSet.CHECK, "the check is a GoBadge sticker")
+	var sticker := row.check_host.get_child(0) as TextureRect
+	check(sticker != null and sticker.texture == GoUi.skin().widget_art(&"check_green"), "the check is check_green")
+	check(not row.check_host.has_meta(&"gohud_badge"), "with no badge behind it")
 	row.free()
 	var plain := GoRewardRow.make("Plain")
 	plain.set_progress(0, 0)
@@ -156,11 +231,81 @@ func _arcade_parts() -> void:
 	plain.free()
 
 
+## Every name a game reaches through `GoUi.skin().widget_art()`, and a look without them still answering null.
+func _art_is_registered() -> void:
+	for art: StringName in [&"row_cyan", &"row_gold", &"row_done", &"bar_track", &"bar_blue", &"bar_green", &"value_pill",
+			&"coin", &"gift", &"quest_play", &"quest_medal", &"quest_magnet", &"quest_powerup", &"quest_star",
+			&"quest_flame"]:
+		check(GoUi.skin().widget_art(art) != null, "%s is registered" % art)
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(1)
+	check(GoUi.skin().widget_art(&"coin") == null, "a look without the art has no coin")
+	var plain := _row("Plain", GoRewardRow.State.CLAIMED, WIDE)
+	await frames(2)
+	check(plain.reward_row.get_child(0).get_child_count() == 1, "and keeps the coin glyph")
+	check(not plain.bar.has_faces(), "and its own bar")
+	check(plain.check_host.has_meta(&"gohud_badge"), "and its check sticker")
+	plain.free()
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+
+
+func _bar_faces() -> void:
+	var track: StyleBox = GoUi.theme().get_stylebox(&"background", GoRewardRow.VAR_BAR)
+	var fill: StyleBox = GoUi.theme().get_stylebox(&"fill", GoRewardRow.VAR_BAR)
+	var bar := GoBar.new()
+	bar.readout = GoBar.Readout.NONE
+	bar.thickness = 26
+	bar.size = Vector2(200, 26)
+	host.add_child(bar)
+	await frames(1)
+	check(not bar.has_faces(), "a bar has no faces of its own")
+	check(bar.find_child("ArtFill", true, false) == null, "and carries no extra node")
+	bar.set_faces(track, null)
+	check(not bar.has_faces(), "half a pair is no faces")
+	bar.set_faces(track, fill)
+	bar.set_values(1, 2, false)
+	await frames(2)
+	var art := bar.find_child("ArtFill", true, false) as Panel
+	var frame := bar.find_child("Frame", true, false) as Panel
+	check(frame.get_theme_stylebox(&"panel") == track, "the track is the frame")
+	check(is_equal_approx(art.size.x, frame.size.x * 0.5), "the fill is as wide as the value (%s of %s)" % [art.size.x,
+		frame.size.x])
+	check(art.global_position == frame.global_position and art.size.y == frame.size.y,
+		"at the track's own top-left and height")
+	bar.set_values(1, 1000, false)
+	await frames(1)
+	check(art.visible and art.size.x >= 26.0, "a sliver keeps its round ends (%s)" % art.size.x)
+	bar.thickness = 12
+	await frames(1)
+	check(art.size.x < 26.0, "and follows the bar's thickness (%s)" % art.size.x)
+	bar.thickness = 26
+	bar.size.x = 10.0
+	await frames(2)
+	check(art.get_global_rect().end.x <= frame.get_global_rect().end.x + 0.5, "a squeezed track still holds its fill (%s of %s)" % [
+		art.size.x, frame.size.x])
+	bar.size.x = 200.0
+	await frames(2)
+	check(art.size.x >= 26.0, "and it comes back with the room (%s)" % art.size.x)
+	bar.set_values(0, 1000, false)
+	await frames(1)
+	check(not art.visible, "0 shows the bare track")
+	bar.set_values(5, 10)
+	await frames(30)
+	check(art.visible and is_equal_approx(art.anchor_right, 0.5), "the fill follows an eased value (%s)" % art.anchor_right)
+	bar.set_faces(null, null)
+	await frames(1)
+	check(not art.visible, "without faces the painted fill goes")
+	check(frame.get_theme_stylebox(&"panel") != track, "and the look's frame comes back")
+	check(bar.find_child("FillClip", true, false).visible, "with its own fill")
+	bar.free()
+
+
 func _text_fits() -> void:
-	var base := GoUi.font_size(GoTheme.ROLE_BODY)
+	var base := GoRewardRow._title_size()
 	var bottom := GoStyle.fit_floor(base)
-	var short := _row("Go")
-	var wide := _row("Win five online matches without falling off the arena")
+	var short := _row("Go", GoRewardRow.State.READY, WIDE)
+	var wide := _row("Win five online matches without falling off the arena and never once coming back")
 	var huge := _row(LONG + " " + LONG + " " + LONG)
 	var pill := _row("Claim", GoRewardRow.State.READY)
 	pill.set_claim_text("BELOHNUNG")
@@ -170,9 +315,8 @@ func _text_fits() -> void:
 	check(short.title_label.get_theme_font_size(&"font_size") == base, "a short title keeps the full size")
 	var fitted := wide.title_label.get_theme_font_size(&"font_size")
 	check(fitted < base and fitted >= bottom, "a long title shrinks to the floor at most (%d)" % fitted)
-	check(wide.title_label.get_visible_line_count() >= wide.title_label.get_line_count(), "a 54-letter title shows whole")
 	check(huge.title_label.get_theme_font_size(&"font_size") == bottom, "an endless title stops at the floor")
-	check(huge.title_label.get_visible_line_count() <= GoRewardRow.TITLE_LINES_AT_FLOOR, "an endless title stays in its box")
+	check(huge.title_label.get_visible_line_count() <= GoRewardRow.TITLE_LINES, "an endless title stays in two lines")
 	check(huge.title_label.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "and ends in an ellipsis")
 	var size := pill.claim_button.get_theme_font_size(&"font_size")
 	var room := pill.claim_button.size.x - GoRewardRow.PILL_PAD * 2.0
@@ -180,9 +324,65 @@ func _text_fits() -> void:
 	check(GoStyle.row_width(font, PackedStringArray(["BELOHNUNG"]), size) <= room,
 		"a nine-letter word fits the pill (%d px, %s of %s)" % [size,
 		GoStyle.row_width(font, PackedStringArray(["BELOHNUNG"]), size), room])
-	check(word.claim_button.get_theme_font_size(&"font_size") == GoStyle.fit_floor(base), "the claim word stops at the floor")
+	check(word.claim_button.get_theme_font_size(&"font_size") == GoStyle.fit_floor(GoUi.font_size(GoTheme.ROLE_BODY)),
+		"the claim word stops at the floor")
 	check(word.claim_button.size.x == GoRewardRow.SLOT_WIDTH, "a long claim word never widens the pill")
 	for node: Control in [short, wide, huge, pill, word]: node.free()
+
+
+## Real German names at a table's width: whole, in two lines at most, no word broken, under the row's height.
+func _german_fits() -> void:
+	var base := GoRewardRow._title_size()
+	var rows: Array[GoRewardRow] = []
+	for text in GERMAN: rows.append(_row(text, GoRewardRow.State.READY, WIDE))
+	await frames(3)
+	check(rows[3].title_label.get_theme_font_size(&"font_size") == base, "a short German title keeps the full size")
+	for row in rows:
+		var label := row.title_label
+		var px := label.get_theme_font_size(&"font_size")
+		check(px >= GoStyle.fit_floor(base), "%s stays over the floor (%d)" % [row.title, px])
+		check(label.get_line_count() <= GoRewardRow.TITLE_LINES, "%s wraps to two lines (%d)" % [row.title,
+			label.get_line_count()])
+		check(label.get_visible_line_count() >= label.get_line_count(), "%s shows whole" % row.title)
+		check(label.size.y <= GoRewardRow.extent(), "%s stays inside the row" % row.title)
+		for word in row.title.replace("-", " ").split(" ", false):
+			check(label.get_theme_font(&"font").get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x <= label.size.x,
+				"%s is not broken" % word)
+	for row in rows: row.free()
+
+
+## The fallback: below the threshold the bar, its fraction and the payment stand under the title, on one row height.
+func _width_moves_the_bar() -> void:
+	var row := _row("Win 3 matches", GoRewardRow.State.READY, WIDE)
+	await frames(2)
+	var text := row.title_label.get_parent() as BoxContainer
+	var progress := row.bar.get_parent() as Control
+	check(not text.vertical, "at a table's width the bar stands beside the title")
+	check(row.reward_row.get_parent() != progress, "and the payment has its own column")
+	row.size.x = GoRewardRow.WIDE_WIDTH - 1.0
+	await frames(2)
+	check(text.vertical, "under the threshold the text stacks")
+	check(row.reward_row.get_parent() == progress, "and the payment joins the bar's line")
+	check(row.bar.get_global_rect().position.y >= row.title_label.get_global_rect().end.y - 0.5, "the bar stands under the title")
+	check(row.bar.get_global_rect().end.y <= row.get_global_rect().end.y, "and inside the row")
+	var plain := _row(GERMAN[1], GoRewardRow.State.IN_PROGRESS)
+	await frames(3)
+	check(plain.title_label.get_visible_line_count() >= plain.title_label.get_line_count()
+		or plain.title_label.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "a long title ends in an ellipsis")
+	check(plain.title_label.get_visible_line_count() <= GoRewardRow.TITLE_LINES, "in two lines at most")
+	row.size.x = WIDE
+	await frames(2)
+	check(not text.vertical, "wide again, the bar goes back beside the title")
+	check(row.reward_row.get_parent() != progress, "and the payment to its column")
+	check(row.key == null and row.title == "Win 3 matches", "moving the parts leaves the row's data alone")
+	row.free()
+	plain.free()
+	var none := _row("Only words", GoRewardRow.State.IN_PROGRESS)
+	none.set_progress(0, 0)
+	await frames(2)
+	check(not none.bar.visible and not none.fraction_label.visible, "no target shows no bar on a narrow row")
+	check(none.reward_row.is_visible_in_tree(), "and still shows the payment")
+	none.free()
 
 
 func _follows_config() -> void:
@@ -295,8 +495,7 @@ func _setters_again() -> void:
 		check(row.claim_button.text == "CLAIM %d" % pass_number, "the claim word follows")
 		check(row.reward_label.text == str(pass_number + 1), "the amount follows")
 		check(row.bar.value() == pass_number, "the bar jumps, it does not slide from the row's last data")
-	check(row.check_host.get_children().filter(func(n: Node) -> bool: return n is GoBadge).size() == 1,
-		"a state set again stacks no second sticker")
+	check(row.check_host.get_child_count() == 1, "a state set again stacks no second sticker")
 	row.free()
 
 
@@ -319,9 +518,11 @@ func _follows_the_look() -> void:
 	await frames(2)
 	check(row.claim_button.theme_type_variation == GoTheme.VAR_PRIMARY_BUTTON, "a look without the pill falls back")
 	check(row.title_label.get_theme_color(&"font_color").is_equal_approx(GoUi.color(GoTheme.TEXT)), "the ink follows the look")
+	check(row.theme_type_variation == GoTheme.VAR_CARD and not row.bar.has_faces(), "and its card and bar with it")
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	await frames(2)
 	check(row.claim_button.theme_type_variation == &"GoPillGreen", "and back")
+	check(row.theme_type_variation == GoRewardRow.VAR_ROW_READY and row.bar.has_faces(), "the painted row comes back")
 	row.free()
 
 
