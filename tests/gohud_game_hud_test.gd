@@ -1902,6 +1902,10 @@ func _device_simulation() -> void:
 	var kept_size := root.content_scale_size
 	var kept_factor := root.content_scale_factor
 	var kept_aspect := root.content_scale_aspect
+	# 🛑 A host that scales its own window answers each simulated resize with its own factor: its listeners stand
+	#    aside while the add-on's simulation is measured, and come back after.
+	var host_listeners := _host_resize_listeners()
+	for link: Dictionary in host_listeners: root.size_changed.disconnect(link["callable"])
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
 	GoUi.config.scale_enabled = true
 	GoUi.config.scale_profile = GoScale.Profile.PER_INCH
@@ -1976,7 +1980,18 @@ func _device_simulation() -> void:
 	root.content_scale_size = kept_size
 	root.content_scale_factor = kept_factor
 	root.content_scale_aspect = kept_aspect
+	for link: Dictionary in host_listeners: root.size_changed.connect(link["callable"], link["flags"])
 	await frames(1)
+
+
+## The window's `size_changed` links whose listener is the host project's own script, not the add-on's.
+func _host_resize_listeners() -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	for link: Dictionary in root.size_changed.get_connections():
+		var target: Object = (link["callable"] as Callable).get_object()
+		var script: Script = target.get_script() if target != null else null
+		if script != null and not script.resource_path.begins_with("res://addons/gohud/"): found.append(link)
+	return found
 
 
 ## 📷 `GoSafeArea.obstructions()` on simulated phones and the corner geometry — the HUD's edge-to-edge model: an iPhone's
