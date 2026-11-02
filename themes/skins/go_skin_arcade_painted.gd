@@ -441,6 +441,15 @@ func touch_outline_ink() -> Color:
 	return INK
 
 
+## The game's ATTRACT stick: the painted glass in a light blue, and a cyan aim wedge.
+func touch_stick_ink() -> Color:
+	return Color("#bfe2ff")
+
+
+func touch_aim_ink() -> Color:
+	return Color("#5fe3ff")
+
+
 ## The game's REPULSE cooldown arc.
 func touch_cooldown_ink() -> Color:
 	return Color("#ff7a74")

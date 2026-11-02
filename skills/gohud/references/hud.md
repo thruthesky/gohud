@@ -1045,6 +1045,7 @@ drop.badge = "×%d" % charges_left       # the count on its rim; empty hides it
 | `caption` · `held_caption` · `caption_size` · `held_caption_size` · `caption_drop` | · · `11` · `12` · `28` | A hint under the button at rest / while held (`GoStyle.fit_font_size`) |
 | `cooling` · `cooldown` · `pulse_scale` | `false` · `0` · `1.15` | Dims it and rings the share still to run; ready again it pulses once (not under `reduce_motion`) |
 | `drag_aim` · `aim_radius` · `aim_knob_radius` | `false` · `50` · `24` | Hold and drag: a ring and knob under the thumb; `aim()` and `aimed(pull)` give the pull, 0~1 |
+| `stick` · `stick_icon` · `stick_ink` · `stick_knob_share` · `stick_icon_share` · `stick_label_drop` | `false` · null · skin's `touch_stick_ink()` · `0.44` · `0.8` · `20` | With `drag_aim`: drawn as the skin's joystick (the dish stays put, the icon on the knob, the knob leaning with the pull, the skin's `draw_aim_wedge` pointing there); the name under the dish |
 | `press_scale` · `press_tint` · `cooling_tint` · `hit_slop` | `0.93` · · · `8` | A held button shrinks and darkens; the press reaches `hit_slop` past the rim |
 | `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
 | `driven` · `drive_press(at)` · `drive_drag(at)` · `drive_release(canceled)` | `false` | The owner routes the fingers (below) |

@@ -39,6 +39,7 @@ func _initialize() -> void:
 		await _joystick_art(look)
 		await _touch_lifecycle(look)
 		await _touch_driven(look)
+		await _touch_stick(look)
 		await _joystick_driven(look)
 		await _task_card(look)
 		await _spotlight(look)
@@ -1097,6 +1098,33 @@ func _touch_driven(look: StringName) -> void:
 	check(attract.aim().is_equal_approx(Vector2(0, 0.5)), "touch driven: a half pull is half")
 	attract.drive_release(true)
 	check(not attract.is_held() and attract.aim() == Vector2.ZERO, "touch driven: released, no aim")
+	holder.queue_free()
+	await frames(1)
+
+
+func _touch_stick(look: StringName) -> void:
+	var attract := GoTouchButton.make(&"btn_attract", "ATTRACT", 120.0)
+	attract.drag_aim = true
+	attract.driven = true
+	attract.stick = true
+	attract.stick_icon = GoUi.icons().texture(GoIconSet.MAGNET)
+	var holder := _host(attract)
+	holder.position = Vector2(100, 200)
+	await frames(1)
+	var c := attract.size / 2.0
+	check(attract.knob() == c, "touch stick: at rest the knob sits in the dish's middle (%s)" % look)
+	var at := attract.button_center()
+	attract.drive_press(at + Vector2(10, 10))
+	check(attract.knob() == c, "touch stick: the dish stays put, the knob too until the thumb moves")
+	attract.drive_drag(at + Vector2(10, 10) + Vector2(-200, 0))
+	var r := attract.radius()
+	check(attract.aim() == Vector2(-1, 0) and attract.knob().is_equal_approx(c + Vector2(-(r - r * attract.stick_knob_share), 0)),
+		"touch stick: a full pull leans the knob to the rim, the way of the pull (%s)" % attract.knob())
+	attract.drive_drag(at + Vector2(10, 10) + Vector2(0, -25))
+	check(attract.knob().y < c.y and is_equal_approx(attract.knob().x, c.x), "touch stick: a half pull up leans it up")
+	await frames(1) # draws the dish, the wedge and the icon without an error
+	attract.drive_release(false)
+	check(attract.knob() == c and attract.aim() == Vector2.ZERO, "touch stick: released, back to the middle")
 	holder.queue_free()
 	await frames(1)
 
