@@ -29,8 +29,17 @@
 ## From [constant WIDE_WIDTH] up everything stands on one line and the columns of a stack of rows line up. Narrower, the
 ## bar, its fraction and the payment move under the title.
 ##
+## ## 💬 How to earn it
+## [member description] is a short line under the title that says how (`"Hit a rival from 12 m or more"`), in smaller
+## type (arcade_light: `GoRewardRowNote`; other looks: the caption size in the muted ink). It wraps to at most
+## [constant NOTE_LINES] lines and shrinks to fit (`GoStyle.fit_font_size`, never under `GoConfig.fit_min_scale`), then
+## ends in an ellipsis. On one line it runs under the title and the bar together; narrower, between the title and the
+## bar. A row with a description is taller by just its lines: [method extent_for] is that height. Empty, the row is
+## exactly the row without one.
+##
 ## ## 🔑 In a long list
-## Every row is [method extent] tall whatever its words and its width, so it fits `GoListView` as well as a `GoScroll`:
+## Every row without a description is [method extent] tall whatever its words and its width, so it fits `GoListView`
+## as well as a `GoScroll`. Rows with one take the tallest [method extent_for] of the list at the list's width:
 ## ```gdscript
 ## var list := GoListView.recycle(quests.size(), GoRewardRow.extent(),
 ## 	func() -> Control:
@@ -53,8 +62,11 @@
 ## 🛑 The row decides nothing and keeps nothing: the caller says the state, the progress and what is paid, and a press
 ##    only asks.
 ## 🔤 The caller gives every word. The title wraps to at most two lines and shrinks (`GoStyle.fit_font_size`, never under
-##    `GoConfig.fit_min_scale`); still too long there, it ends in an ellipsis. The claim word shrinks to fit its pill.
-## ♿ No state rests on colour: each has its own mark, and `claimed_text` and `locked_text` go into the screen-reader name.
+##    `GoConfig.fit_min_scale`); still too long there, it ends in an ellipsis. The description does the same in its
+##    own size. No word is broken; Chinese and Japanese, written without spaces, wrap between characters. The claim
+##    word shrinks to fit its pill.
+## ♿ No state rests on colour: each has its own mark, and `claimed_text` and `locked_text` go into the screen-reader name,
+##    after the title and the description.
 @tool
 class_name GoRewardRow
 extends PanelContainer
@@ -77,6 +89,12 @@ const VAR_BAR := &"GoRewardBar"
 const VAR_BAR_READY := &"GoRewardBarGreen"
 ## The painted row's lettering: the Rankings table's.
 const VAR_TEXT := &"GoScoreTableLabel"
+## The painted row's description: smaller and softer than the title. A painted look without it uses the title's
+## lettering at [constant NOTE_SHARE] of its size.
+const VAR_NOTE := &"GoRewardRowNote"
+const NOTE_SHARE := 0.78
+## The description's lines, at most.
+const NOTE_LINES := 2
 ## The width (dp) from which the row stands on one line. Narrower, the bar and the payment go under the title.
 const WIDE_WIDTH := 780.0
 ## A claimed or locked row's opacity in a look that does not paint it. Its mark stays at full strength.
@@ -112,6 +130,9 @@ const WIDE_FRACTION_WIDTH := 66.0
 const WIDE_PROGRESS_SHARE := 0.85
 ## The painted numbers against the title's full size.
 const ART_NUMBER_SHARE := 0.9
+## What a described row's measure keeps back from each text's width (dp), so the words it measured always fit the
+## width they are drawn in.
+const MEASURE_SLACK := 4.0
 
 ## The row's words, wrapped and shrunk to fit.
 @export var title := "":
@@ -119,6 +140,14 @@ const ART_NUMBER_SHARE := 0.9
 		if value == title: return
 		title = value
 		_drop_press()
+		_queue_refresh()
+
+## How to earn it: one short line under the title, in smaller type (see the top of this file). Empty: none, and the
+## row is exactly as tall as [method extent].
+@export_multiline var description := "":
+	set(value):
+		if value == description: return
+		description = value
 		_queue_refresh()
 
 ## A picture name: the skin's art of that name (`GoSkin.widget_art`), else the icon set's (`GoIconSet.STAR`…).
@@ -176,6 +205,8 @@ var key: Variant = null:
 
 ## The parts, for tests and for a game placing something over them.
 var title_label: Label
+## The description's line or two.
+var description_label: Label
 var bar: GoBar
 ## The `3 / 5` beside the bar.
 var fraction_label: Label
@@ -194,6 +225,8 @@ var _well_art: Control
 var _reward_art: Control
 var _slot: VBoxContainer
 var _marks: Control
+## The words' column: the title's line, and on one line the description under it.
+var _words: VBoxContainer
 ## Side by side on one line, stacked below [constant WIDE_WIDTH]: `vertical` follows the width.
 var _text: BoxContainer
 var _progress: HBoxContainer
@@ -202,6 +235,10 @@ var _pay: HBoxContainer
 var _row: HBoxContainer
 var _wide := false
 var _has_target := true
+## The title's box: the height its lines may take.
+var _title_room := 0.0
+## The width a described row was last measured at.
+var _measured_width := -1.0
 ## What each holder shows now (holder → its key), so a row bound again rebuilds no picture that stayed the same.
 var _shown := {}
 var _claim_sent := false
@@ -236,20 +273,21 @@ func _build() -> void:
 	_well_art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_well.add_child(_well_art)
 
+	_words = _box(VBoxContainer.new(), "Words")
+	_words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_words.alignment = BoxContainer.ALIGNMENT_CENTER
+	_row.add_child(_words)
 	_text = _box(BoxContainer.new(), "Text")
 	_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text.alignment = BoxContainer.ALIGNMENT_CENTER
-	_row.add_child(_text)
-	title_label = Label.new()
-	title_label.name = "Title"
-	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	title_label.add_theme_constant_override(&"line_spacing", 0)
+	_words.add_child(_text)
+	title_label = _wrapping_label("Title")
 	title_label.resized.connect(_fit_title)
 	_text.add_child(title_label)
+	description_label = _wrapping_label("Description")
+	description_label.visible = false
+	_words.add_child(description_label)
 	_progress = _box(HBoxContainer.new(), "Progress")
 	_progress.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_progress.size_flags_stretch_ratio = WIDE_PROGRESS_SHARE
@@ -320,6 +358,19 @@ func _box(node: BoxContainer, part: String) -> BoxContainer:
 	return node
 
 
+## A label that wraps into the lines it is given and ends in an ellipsis past them.
+func _wrapping_label(part: String) -> Label:
+	var label := Label.new()
+	label.name = part
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_constant_override(&"line_spacing", 0)
+	return label
+
+
 func _holder(part: String, side: int) -> Control:
 	var node := Control.new()
 	node.name = part
@@ -342,7 +393,8 @@ func _ready() -> void:
 
 
 func _on_resized() -> void:
-	if (size.x >= WIDE_WIDTH) != _wide: _queue_refresh()
+	# A described row's height follows its width: the lines its words take there.
+	if (size.x >= WIDE_WIDTH) != _wide or (_described() and size.x != _measured_width): _queue_refresh()
 
 
 func _notification(what: int) -> void:
@@ -365,9 +417,144 @@ static func make(text: String, picture: StringName = &"", row_state := State.IN_
 
 ## 📏 Every row's height under the current look and `GoConfig` — the extent to give `GoListView`, at any width. It has
 ## room for two title lines at full size, a touch-sized pill, and below [constant WIDE_WIDTH] two title lines at the fit
-## floor over the bar, so no words can change it.
+## floor over the bar, so no words can change it. A row with a [member description] is [method extent_for] tall.
 static func extent() -> float:
 	return ceilf(_rim_height() + _body_height())
+
+
+## 📏 The height of a row [param width] wide in [param row_state] showing [param title_text] and [param note] (the words
+## as shown, already translated): [method extent] without a description, else that row grown by just the lines its
+## words take there. (Below [constant WIDE_WIDTH] a row in progress has no end column, so its words have more room.)
+## A list of described rows takes the tallest of its rows at the list's width:
+## ```gdscript
+## var tallest := GoRewardRow.extent()
+## for quest in quests:
+## 	tallest = maxf(tallest, GoRewardRow.extent_for(quest.title, quest.how, list.size.x, quest.state))
+## list.item_extent = tallest
+## ```
+static func extent_for(title_text: String, note: String, width: float, row_state := State.READY) -> float:
+	if note.is_empty(): return extent()
+	return ceilf(_rim_height() + _measure(title_text, note, width, _has_slot(width, row_state)).body)
+
+
+## Whether a row [param width] wide in [param row_state] shows its end column: always on one line, below it only for
+## the pill or a mark.
+static func _has_slot(width: float, row_state: State) -> bool:
+	return width >= WIDE_WIDTH or row_state != State.IN_PROGRESS
+
+
+## A described row's words at [param width]: the title's and the description's size, lines and height, and the body
+## they need. The row lays itself out from this, so [method extent_for] is its height by construction.
+static func _measure(title_text: String, note: String, width: float, slot: bool) -> Dictionary:
+	var painted := _painted()
+	var wide := width >= WIDE_WIDTH
+	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
+	var tiny := float(GoUi.metric(GoTheme.GAP_TINY))
+	var words := maxf(1.0, _words_width(width, wide, slot))
+	var title_font := _text_font()
+	var base := _title_size()
+	# On one line the title shares its line with the bar's column; the description runs under both.
+	var title_room := maxf(1.0, (words - gap) / (1.0 + WIDE_PROGRESS_SHARE)) if wide else words
+	var title_fit := _fit_lines(title_text, title_font, base, title_room, _described_title_box(wide), TITLE_LINES)
+	var note_font := _note_font()
+	var note_fit := _fit_lines(note, note_font, _note_size(), words, _note_box(), NOTE_LINES)
+	var title_height := ceilf(title_fit.y * title_font.get_height(title_fit.x))
+	# The description's lines at its full size: shrunk words stand centred in them, so a row is no shorter for a longer
+	# description.
+	var note_height := ceilf(note_fit.y * note_font.get_height(_note_size()))
+	var content := 0.0
+	if wide:
+		content = maxf(title_height, _wide_progress_height()) + tiny + note_height
+	else:
+		var stack := 0.0 if painted else tiny
+		content = title_height + stack + note_height + stack + _progress_height()
+	var least := ART_BODY if painted else WELL_SIZE
+	return {"title_size": title_fit.x, "title_lines": title_fit.y, "title_height": title_height,
+		"note_size": note_fit.x, "note_lines": note_fit.y, "note_height": note_height,
+		"body": maxf(least, maxf(content, _slot_height()))}
+
+
+## The words' column of a row [param width] wide, kept short of the real one by [constant MEASURE_SLACK]: what the row
+## leaves after its rim, its picture, its payment's and its end column ([param slot]: shown), and their gaps.
+static func _words_width(width: float, wide: bool, slot: bool) -> float:
+	var painted := _painted()
+	var gap := float(GoUi.metric(GoTheme.GAP_SMALL))
+	var picture := WELL_SIZE
+	if painted: picture = float(ART_ICON_SIZE if wide else ART_NARROW_ICON_SIZE)
+	if wide: return width - _rim_width() - picture - WIDE_PAY_WIDTH - WIDE_SLOT_WIDTH - gap * 3.0 - MEASURE_SLACK
+	if not slot: return width - _rim_width() - picture - gap - MEASURE_SLACK
+	return width - _rim_width() - picture - SLOT_WIDTH - gap * 2.0 - MEASURE_SLACK
+
+
+## The width the row's plate or card keeps for itself at its sides.
+static func _rim_width() -> float:
+	var painted := _painted()
+	var plate := _face(VAR_ROW if painted else GoTheme.VAR_CARD, &"panel")
+	if plate == null: return 0.0
+	var left := plate.get_margin(SIDE_LEFT)
+	var right := plate.get_margin(SIDE_RIGHT)
+	return left + right if painted else minf(left, CARD_PAD) + minf(right, CARD_PAD)
+
+
+## A described row's title box: two lines at full size beside the bar, two at the fit floor over it.
+static func _described_title_box(wide: bool) -> float:
+	var base := _title_size()
+	return _title_height(base if wide else GoStyle.fit_floor(base))
+
+
+## The bar's line on one line: the painted bar or the look's, and the fraction beside it.
+static func _wide_progress_height() -> float:
+	var bar_side := float(ART_BAR_THICKNESS if _painted() else BAR_THICKNESS)
+	var number := roundi(_title_size() * ART_NUMBER_SHARE) if _painted() else GoUi.font_size(GoTheme.ROLE_COMPACT)
+	return maxf(bar_side, _line_height(number))
+
+
+## The description's font and full size: the look's `GoRewardRowNote`, else the caption size.
+static func _note_font() -> Font:
+	var look := GoUi.theme()
+	if _painted() and look.has_font(&"font", VAR_NOTE): return look.get_font(&"font", VAR_NOTE)
+	return _text_font() if _painted() else GoStyle._fit_font()
+
+
+static func _note_size() -> int:
+	if GoUi.config.base_font_size > 0 or not _painted(): return GoUi.font_size(GoTheme.ROLE_CAPTION)
+	var look := GoUi.theme()
+	if look.has_font_size(&"font_size", VAR_NOTE): return look.get_font_size(&"font_size", VAR_NOTE)
+	return roundi(_title_size() * NOTE_SHARE)
+
+
+## The description's box: [constant NOTE_LINES] lines at full size.
+static func _note_box() -> float:
+	return ceilf(_note_font().get_height(_note_size()) * NOTE_LINES)
+
+
+## 🔤 [param text] fitted to [param room] wide and [param box] tall, in at most [param most] lines: the biggest size
+## from [param base] down to the fit floor at which it wraps into the lines the box holds, no word broken. Gives the
+## size and the lines it takes (still too long at the floor: the floor, and the lines the box holds).
+static func _fit_lines(text: String, font: Font, base: int, room: float, box: float, most: int) -> Vector2i:
+	var px := GoStyle.fit_font_size(PackedStringArray([text]), base, room * most, font)
+	var bottom := GoStyle.fit_floor(base)
+	var words := _unbreakable_words(text)
+	while px > bottom and (_wrapped_lines(text, font, px, room) > _lines_held(box, font, px, most)
+			or _widest(words, font, px) > room): px -= 1
+	var held := _lines_held(box, font, px, most)
+	return Vector2i(px, clampi(_wrapped_lines(text, font, px, room), 1, held))
+
+
+## The words a line may not break: those between spaces and hyphens, but none written in Chinese or Japanese
+## characters, which wrap between any two.
+static func _unbreakable_words(text: String) -> PackedStringArray:
+	var out := PackedStringArray()
+	for word in text.replace("-", " ").split(" ", false):
+		var breakable := false
+		for index in word.length():
+			var code := word.unicode_at(index)
+			if (code >= 0x3040 and code <= 0x30FF) or (code >= 0x3400 and code <= 0x9FFF) \
+					or (code >= 0xF900 and code <= 0xFAFF) or (code >= 0xFF00 and code <= 0xFFEF):
+				breakable = true
+				break
+		if not breakable: out.append(word)
+	return out
 
 
 ## The look's card with its padding held to [constant CARD_PAD]: a copy, faces are shared.
@@ -526,6 +713,13 @@ func _place_columns(gap: int, tiny: int, coin: int) -> void:
 	_text.alignment = BoxContainer.ALIGNMENT_CENTER
 	var home: Container = _pay if _wide else _progress
 	if reward_row.get_parent() != home: reward_row.reparent(home, false)
+	# The description: under the title and the bar together on one line, between the title and the bar below it.
+	var note_home: Container = _words if _wide else _text
+	if description_label.get_parent() != note_home: description_label.reparent(note_home, false)
+	if not _wide: _text.move_child(description_label, title_label.get_index() + 1)
+	# Without one, the title's line fills the row as it always did; with one, the words stand centred as a block.
+	_text.size_flags_vertical = Control.SIZE_FILL if _described() else Control.SIZE_EXPAND_FILL
+	_words.add_theme_constant_override(&"separation", tiny)
 	_pay.visible = _wide
 	_pay.custom_minimum_size.x = WIDE_PAY_WIDTH if _wide else 0.0
 	_row.add_theme_constant_override(&"separation", gap)
@@ -544,6 +738,8 @@ func _dress_plate(painted: bool, done: bool) -> void:
 	else: theme_type_variation = GoTheme.VAR_CARD
 	var alpha := DIM_ALPHA if done and not painted else 1.0
 	for part: Control in [_well, _text, reward_row]: part.modulate.a = alpha
+	# Inside the title's box (below the threshold) it dims with it.
+	description_label.modulate.a = alpha if description_label.get_parent() != _text else 1.0
 
 
 ## The picture's well: a plated hollow in a look that does not paint the row, nothing at all behind a painted picture.
@@ -567,11 +763,12 @@ func _dress_bar(painted: bool, ready_now: bool, claimed: bool) -> void:
 	bar.ink = GoUi.color(GoTheme.SUCCESS_FILL) if ready_now or claimed else Color.TRANSPARENT
 
 
-## [param label] in the row's lettering at [param px]: the Rankings' navy, or the look's [param role] in [param ink].
-func _letter(label: Label, painted: bool, role: StringName, ink: Color, px: int) -> void:
+## [param label] in the row's lettering at [param px]: the Rankings' navy (or the painted [param variation]), or the
+## look's [param role] in [param ink].
+func _letter(label: Label, painted: bool, role: StringName, ink: Color, px: int, variation := VAR_TEXT) -> void:
 	if painted:
 		label.theme = GoUi.theme()
-		label.theme_type_variation = VAR_TEXT
+		label.theme_type_variation = variation if GoUi.theme().has_font_size(&"font_size", variation) else VAR_TEXT
 		label.remove_theme_color_override(&"font_color")
 	else:
 		GoStyle.typography(label, role, ink)
@@ -621,10 +818,13 @@ func _refresh() -> void:
 	var locked := state == State.LOCKED
 	var painted := _painted()
 	_dress_faces()
-	var height := extent()
+	_wide = size.x >= WIDE_WIDTH
+	var described := _described()
+	var measure := _measure(atr(title), atr(description), size.x, _has_slot(size.x, state)) if described else {}
+	_measured_width = size.x
+	var height := ceilf(_rim_height() + measure.body) if described else extent()
 	custom_minimum_size.y = height
 	var ink := GoUi.color(GoTheme.TEXT)
-	_wide = size.x >= WIDE_WIDTH
 	var coin := _coin_side(_wide)
 	_place_columns(GoUi.metric(GoTheme.GAP_SMALL), GoUi.metric(GoTheme.GAP_TINY), coin)
 	_dress_plate(painted, claimed or locked)
@@ -656,8 +856,18 @@ func _refresh() -> void:
 	_fit_one_line(reward_label, (WIDE_PAY_WIDTH if _wide else SLOT_WIDTH) - coin - GoUi.metric(GoTheme.GAP_TINY))
 
 	_progress.visible = _has_target or (paying and not _wide)
-	title_label.custom_minimum_size.y = _title_box(height)
-	_fit_title()
+	description_label.visible = described
+	description_label.text = description
+	_letter(description_label, painted, GoTheme.ROLE_CAPTION, GoUi.color(GoTheme.MUTED), _note_size(), VAR_NOTE)
+	if described:
+		# Both stand at the size and in the lines the row was measured with: its height is theirs.
+		_title_room = _described_title_box(_wide)
+		_wear_fit(title_label, measure.title_size, measure.title_lines, measure.title_height)
+		_wear_fit(description_label, measure.note_size, measure.note_lines, measure.note_height)
+	else:
+		_title_room = _title_box(height)
+		title_label.custom_minimum_size.y = _title_room
+		_fit_title()
 
 	var slot_width: float = WIDE_SLOT_WIDTH if _wide else SLOT_WIDTH
 	var mark: int = ART_MARK_SIZE if painted else MARK_SIZE
@@ -678,6 +888,7 @@ func _refresh() -> void:
 	if claimed: _show_check(mark, ink)
 
 	var said := [title]
+	if described: said.append(description)
 	if _has_target: said.append(fraction_label.text)
 	if ready_now: said.append(claim_text)
 	elif claimed: said.append(claimed_text)
@@ -739,35 +950,42 @@ func _show(holder: Control, given: Texture2D, picture: StringName, side: int, in
 
 ## The title's size: the biggest from its full size down to the fit floor at which it wraps into its box, no word
 ## broken.
+## A row without a description: its title's own measure in the box the row gives it, at the width it has. (A described
+## row measures its words once for its height and wears that: [method _wear_fit].)
 func _fit_title() -> void:
+	if _described(): return
 	var room := title_label.size.x
 	if room <= 0.0 or not title_label.is_inside_tree(): return
-	var shown := atr(title)
 	var font := title_label.get_theme_font(&"font")
-	var base := _title_size()
 	# Laid end to end it must fit two lines' width — then measured wrapped: a wrap leaves room at each line's end.
-	var px := GoStyle.fit_font_size(PackedStringArray([shown]), base, room * TITLE_LINES, font)
-	var bottom := GoStyle.fit_floor(base)
-	var box := title_label.custom_minimum_size.y
-	var words := shown.replace("-", " ").split(" ", false)
-	while px > bottom and (_wrapped_lines(shown, font, px, room) > _lines_held(box, font, px)
-			or _widest(words, font, px) > room): px -= 1
-	title_label.add_theme_font_size_override(&"font_size", px)
-	title_label.max_lines_visible = _lines_held(box, font, px)
+	var fit := _fit_lines(atr(title), font, _title_size(), room, _title_room, TITLE_LINES)
+	title_label.add_theme_font_size_override(&"font_size", fit.x)
+	title_label.max_lines_visible = _lines_held(_title_room, font, fit.x, TITLE_LINES)
 
 
-## How many lines at [param px] stand in a box [param box] tall.
-func _lines_held(box: float, font: Font, px: int) -> int:
-	return clampi(floori(box / font.get_height(px)), 1, TITLE_LINES)
+## [param label] at [param px], in [param lines] lines, [param tall] high.
+func _wear_fit(label: Label, px: int, lines: int, tall: float) -> void:
+	label.add_theme_font_size_override(&"font_size", px)
+	label.max_lines_visible = lines
+	label.custom_minimum_size.y = tall
 
 
-func _wrapped_lines(words: String, font: Font, px: int, room: float) -> int:
+func _described() -> bool:
+	return not description.is_empty()
+
+
+## How many lines at [param px] stand in a box [param box] tall, [param most] at most.
+static func _lines_held(box: float, font: Font, px: int, most: int) -> int:
+	return clampi(floori(box / font.get_height(px)), 1, most)
+
+
+static func _wrapped_lines(words: String, font: Font, px: int, room: float) -> int:
 	var flags := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
 	var tall := font.get_multiline_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, room, px, -1, flags).y
 	return roundi(tall / font.get_height(px))
 
 
-func _widest(words: PackedStringArray, font: Font, px: int) -> float:
+static func _widest(words: PackedStringArray, font: Font, px: int) -> float:
 	var most := 0.0
 	for word in words: most = maxf(most, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x)
 	return most

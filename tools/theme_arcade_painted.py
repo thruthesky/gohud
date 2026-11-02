@@ -119,6 +119,10 @@ SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png
 REWARD_PLATE_EDGE = (96, 56, 96, 56)
 REWARD_PLATE_PPU = 2.0
 REWARD_PLATE_PAD = (12.0, 4.0, 4.0)
+# 💬 The quest row's description: its size (the title is 22) and its ink, a navy softer than the board's #010339 that
+#    still reads well over the cyan, gold and grey plates.
+REWARD_NOTE_SIZE = 17
+REWARD_NOTE_INK = (0.133, 0.2, 0.431, 1.0)                # #22336e
 REWARD_BAR_EDGE = (28, 0, 28, 0)
 REWARD_BAR_PPU = 1.7
 ROW_CYAN_FACE = (0.709804, 0.890196, 0.984314, 1.0)     # #b5e3fb (the art's centre pixel, as below)
@@ -222,7 +226,7 @@ BASES = {
     "GoPodiumName": "Label", "GoPodiumValue": "Label",
     # 🎁 The quest rows (GoRewardRow): their plates, and the bar's track and fills under ProgressBar's own part names.
     "GoRewardRow": "PanelContainer", "GoRewardRowGold": "PanelContainer", "GoRewardRowDone": "PanelContainer",
-    "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar",
+    "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar", "GoRewardRowNote": "Label",
 }
 # 🏆 The leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoBoardTitle): `leaderboard_controls()`.
 LEADERBOARD_CONTROL_BASES = {
@@ -555,6 +559,12 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                                           REWARD_BAR_PPU, 0.0, 0.0, 0.0))
     put("GoRewardBarGreen/styles/fill", sprite("painted_GoRewardBarGreen_fill", "rewards/bar_green.png",
                                                REWARD_BAR_EDGE, REWARD_BAR_PPU, 0.0, 0.0, 0.0))
+    # 💬 A quest row's description (`GoRewardRow.description`): how to earn it, under the title — the rows' lighter face
+    #    in a softer navy, a size under the title's 22, so the two read as a title and its note on every plate.
+    put("GoRewardRowNote/fonts/font", "painted_row_font")
+    setT("GoRewardRowNote/font_sizes/font_size", REWARD_NOTE_SIZE)
+    setT("GoRewardRowNote/colors/font_color", C(REWARD_NOTE_INK))
+    setT("GoRewardRowNote/constants/outline_size", 0)
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,

@@ -1332,12 +1332,28 @@ From `WIDE_WIDTH` (780 dp) up, every part stands on one line and the columns of 
 payment and state, also in a row that pays nothing). Narrower, the bar, its fraction and the payment move under the
 title and the end column shows only when it has something to show. The height stays `extent()` at any width.
 
+**A short how-to line** — `description` — stands under the title in smaller lettering (`GoRewardRowNote` in
+arcade_light: the row's font at 17 dp in a soft navy; the caption role in muted ink elsewhere): across the title and
+the bar on a wide row, between the title and the bar on a narrow one. It shrinks to the fit floor, then wraps to at most
+two lines (Japanese and Chinese wrap between characters at full size) and ends in an ellipsis. Empty, the row is exactly
+the row above. A described row grows by the lines its words take: `extent_for(title, description, width, state)` is
+that height, so a list takes the tallest of its rows:
+
+```gdscript
+var tallest := GoRewardRow.extent()
+for quest in quests:
+	tallest = maxf(tallest, GoRewardRow.extent_for(quest.title, quest.how, list_width, quest.state))
+list.item_extent = tallest
+```
+
 | Member | Default | Notes |
 |---|---|---|
 | `enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }` · `state` · `set_state(value)` | `IN_PROGRESS` | See the table above. `set_state` with the same state re-arms the pill after a refused claim |
 | `make(text, picture = &"", row_state = State.IN_PROGRESS)` | | Static |
 | `extent()` | | Static. Every row's height under the current look and `GoConfig`, at any width: give it to `GoListView`. 70 dp in arcade_light. Grows with the touch floor and the base font |
+| `extent_for(title_text, note, width, row_state = State.READY)` | | Static. A row's height `width` wide showing those words (already translated): `extent()` without a description, else grown by the lines they take. Below `WIDE_WIDTH` a row in progress has no end column, so its words have more room; `READY` measures the narrower case |
 | `title` | `""` | Wraps to at most two lines and shrinks to the fit floor, no word broken; then an ellipsis |
+| `description` · `description_label` | `""` | The how-to line under the title: shrinks to the fit floor, then at most two lines and an ellipsis. Spoken after the title. Empty = no line, `extent()` tall |
 | `icon` · `icon_texture` | `&""` · null | A name (the skin's `widget_art`, else the icon set) or the picture itself |
 | `set_progress(value, target, animate = false)` | | A `target` of 0 or less hides the bar and the fraction. No slide by default: a row bound to other data must not glide there |
 | `set_reward(amount, picture = GoIconSet.COIN, texture = null)` | | An `amount` of 0 or less shows no payment. Written by `GoBar.format_amount` |

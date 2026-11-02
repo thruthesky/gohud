@@ -421,7 +421,7 @@ func _variations(theme: Theme) -> void:
 		&"GoScoreTableHeadLabel": &"Label", &"GoScoreTableLabel": &"Label", &"GoBestBar": &"PanelContainer",
 		&"GoBestBarLabel": &"Label", &"GoBestBarEntry": &"Button", &"GoPodiumName": &"Label", &"GoPodiumValue": &"Label",
 		&"GoRewardRow": &"PanelContainer", &"GoRewardRowGold": &"PanelContainer", &"GoRewardRowDone": &"PanelContainer",
-		&"GoRewardBar": &"ProgressBar", &"GoRewardBarGreen": &"ProgressBar",
+		&"GoRewardBar": &"ProgressBar", &"GoRewardBarGreen": &"ProgressBar", &"GoRewardRowNote": &"Label",
 	}
 	for type: StringName in bases:
 		check(theme.is_type_variation(type, bases[type]), "%s is a variation of %s (got %s)" % [type, bases[type],
