@@ -10,6 +10,8 @@ Painted art for the quest and reward rows. Icons are full colour, about 160 px o
 - `quest_powerup.png` 160x157 - glowing blue lightning power-up orb (pickups)
 - `quest_star.png` 160x151 - shiny gold star (campaign wins)
 - `quest_flame.png` 153x160 - red-orange flame badge (HARD stages cleared)
+- `menu_daily.png` 191x192 - calendar with a green check and a sparkle (a main menu's daily-quests `GoSideButton`)
+- `menu_achievements.png` 187x192 - gold trophy with a red star rosette on a navy base (a main menu's achievements `GoSideButton`)
 - Trophy, skull, clock and check are reused from `../leaderboard/` (`icon_trophy.png`, `icon_skull.png`, `icon_clock.png`, `check_green.png`).
 - `row_cyan.png` 480x136 - empty pale glossy cyan row plate, thin bright cyan rim (open quest); nine-patch 96/96/56/56
 - `row_gold.png` 480x136 - empty glossy gold row plate, gold rim (claimable quest); nine-patch 96/96/56/56
