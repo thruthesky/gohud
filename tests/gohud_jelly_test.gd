@@ -204,9 +204,19 @@ func _title_fit() -> void:
 	short.get_parent().queue_free()
 	GoUi.use_preset(&"default_light")
 	var plain := _surface("A rather long window title that needs the room")
+	var tidy := _surface("Hi")
 	await frames(3)
-	check(not plain.title_label.has_theme_font_size_override(&"font_size"), "fit: without a ribbon nothing shrinks")
+	# Without a ribbon there is no one-line fit: the title wraps. It steps down only when its words would not fit its
+	# lines (they were trimmed to "…" before, 2026-11-02) — never below the fit floor, and a title that fits keeps its size.
+	check(not tidy.title_label.has_theme_font_size_override(&"font_size"), "fit: without a ribbon a title that fits keeps its size")
+	var plain_role := GoUi.font_size(plain.title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var plain_size := plain.title_label.get_theme_font_size(&"font_size")
+	check(plain.title_label.get_visible_line_count() >= plain.title_label.get_line_count() or plain_size <= GoStyle.fit_floor(plain_role),
+		"fit: without a ribbon a long title wraps and steps down only until every word shows (%d, floor %d)"
+		% [plain_size, GoStyle.fit_floor(plain_role)])
+	check(plain_size >= GoStyle.fit_floor(plain_role), "fit: without a ribbon it never goes below the fit floor (%d)" % plain_size)
 	plain.get_parent().queue_free()
+	tidy.get_parent().queue_free()
 	await frames(1)
 
 

@@ -70,6 +70,15 @@ func _fills(card: Rect2, area: Rect2) -> bool:
 	return area.grow(0.001).encloses(card) and card.size.x > area.size.x - 1.0 and card.size.y > area.size.y - 1.0
 
 
+## Adds words to [param button]'s text until its one-line minimum is at least [param width] wide.
+func _grow_words(button: Button, width: float) -> void:
+	var more := ["this", "message", "to", "everyone", "in", "the", "party", "right", "now"]
+	var at := 0
+	while button.get_minimum_size().x < width and at < 200:
+		button.text += " " + more[at % more.size()]
+		at += 1
+
+
 func _size(width: int, height: int) -> void:
 	root.content_scale_size = Vector2i(width, height)
 	await frames(3)
@@ -315,8 +324,13 @@ func _wide_row_fits() -> void:
 		% [wide.get_global_rect().end.x, area.end.x])
 	page.queue_free()
 	# A row too wide only as a whole (no button in it wider than the page): after the dense step its buttons fold.
+	# 📏 The words are sized from the page itself — each button about 0.6 of it — so the row is too wide on any screen
+	#    the test runs on (a host project may hold its own window size).
 	var chat := GoPage.new()
 	chat.open("Row")
+	root.add_child(chat)
+	await frames(4)
+	area = GoSafeArea.usable_rect(chat.surface.get_window())
 	var line := GoStyle.row()
 	chat.body.add_child(line)
 	var input := LineEdit.new()
@@ -324,27 +338,40 @@ func _wide_row_fits() -> void:
 	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	line.add_child(input)
 	var sends: Array[Button] = []
-	for words in ["Send this message now", "Run the command"]:
-		var send := GoStyle.button(words)
+	for first in ["Send", "Run"]:
+		var send := GoStyle.button(first)
 		send.autowrap_mode = TextServer.AUTOWRAP_OFF   # set to one line by its screen, as a chat line's send is
 		line.add_child(send)
+		_grow_words(send, area.size.x * 0.6)
 		sends.append(send)
-	root.add_child(chat)
 	await frames(4)
-	area = GoSafeArea.usable_rect(chat.surface.get_window())
 	card = chat.surface.card.get_global_rect()
+	check(sends.all(func(b: Button) -> bool: return b.get_minimum_size().x < area.size.x or b.autowrap_mode != TextServer.AUTOWRAP_OFF),
+		"no button of that row is wider than the page by itself")
 	check(_fills(card, area), "a page whose one row is too wide as a whole still fills the screen (card %s, area %s)" % [card, area])
 	check(line.get_global_rect().end.x <= area.end.x + 0.5, "that row folds its buttons inside the page (ends at %.0f of %.0f)"
 		% [line.get_global_rect().end.x, area.end.x])
 	check(sends.any(func(b: Button) -> bool: return b.autowrap_mode != TextServer.AUTOWRAP_OFF), "a button in it is re-fitted from its words")
 	chat.queue_free()
 	# A long plain title steps its size down before it trims a word to "…" (a sub-page's labelled Back beside it).
+	# 📏 Its words are about (lines + 0.4) title widths long at its role's size: too long for its lines at that size, short
+	#    enough at the fit floor (0.7 of it) — on any screen.
 	var titled := GoPage.new()
-	titled.open("Where every part of this set drops and which monsters carry it")
+	titled.open("Where")
 	root.add_child(titled)
 	await frames(4)
 	var title := titled.surface.title_label
 	var role := GoUi.font_size(title.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var font := title.get_theme_font(&"font")
+	var words := "Where"
+	var more := ["every", "part", "of", "this", "set", "drops", "and", "which", "monsters", "carry", "it"]
+	var target := title.size.x * (title.max_lines_visible + 0.4)
+	var at := 0
+	while font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, role).x < target:
+		words += " " + more[at % more.size()]
+		at += 1
+	titled.surface.set_title(words)
+	await frames(4)
 	check(title.get_visible_line_count() >= title.get_line_count() or title.get_theme_font_size(&"font_size") <= GoStyle.fit_floor(role),
 		"a long title shows every line, or is at the fit floor (%d of %d lines at %d, floor %d)"
 		% [title.get_visible_line_count(), title.get_line_count(), title.get_theme_font_size(&"font_size"), GoStyle.fit_floor(role)])
