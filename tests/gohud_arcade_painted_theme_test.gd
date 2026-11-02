@@ -642,7 +642,7 @@ func _score_stripes(theme: Theme) -> void:
 			func(r: Control) -> Rect2: return r.get_rect())])
 	column.free()
 	# The rows' lettering: the body font at embolden 0.5 — lighter than the scoreboard's heavy face, the same languages.
-	var body := theme.default_font as FontVariation
+	var body := _body_font(theme)
 	var heavy := theme.get_font(&"font", &"GoScoreLabel") as FontVariation
 	for type: StringName in [&"GoScoreRowLabel", &"GoScoreRowMutedLabel"]:
 		var font := theme.get_font(&"font", type) as FontVariation
@@ -675,8 +675,16 @@ func _contrast(a: Color, b: Color) -> float:
 
 
 ## Real scroll containers inherit painted bars even when the caller never supplies a variation or an override.
+## The body face the score fonts are built on. `default_font` normally; in a host project with a font of its own
+## (Project Settings → GUI → Theme), `GoUi` stands the baked body font down and leaves `default_font` empty, while the
+## score fonts keep the baked face — so compare with `go_body_font_baked` there.
+func _body_font(theme: Theme) -> FontVariation:
+	if theme.default_font != null: return theme.default_font as FontVariation
+	return theme.get_meta(&"go_body_font_baked", null) as FontVariation
+
+
 func _scoreboard(theme: Theme) -> void:
-	var normal_font := theme.default_font as FontVariation
+	var normal_font := _body_font(theme)
 	for type: StringName in [&"GoScoreLabel", &"GoScoreHeadLabel", &"GoScoreTitleLabel", &"GoScoreOutlineLabel",
 			&"GoScoreButton", &"GoScorePrimaryButton", &"GoScoreTab", &"GoScoreTabSelected", &"GoScoreGoldButton"]:
 		var font := theme.get_font(&"font", type) as FontVariation

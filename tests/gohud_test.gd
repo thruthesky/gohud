@@ -1209,7 +1209,25 @@ func _first_label_text(node: Node) -> String:
 
 # ── Pure scale functions ─────────────────────────────────────────────
 
+## The scale numbers a host project may write into the shared config at boot (a game's own breakpoints, gains and
+## reference size). The pure-function checks are written against the kit's defaults, so `_scale` runs them on a
+## default config's values and puts the host's back afterwards.
+const HOST_SCALE_KEYS: Array[StringName] = [&"mobile_max_dp", &"tablet_max_dp", &"read_gain_mobile", &"read_gain_tablet",
+	&"read_gain_desktop", &"desktop_ui_gain", &"reference_short_side", &"max_window_scale", &"min_canvas_short", &"user_scale"]
+
+
 func _scale() -> void:
+	var settings := GoUi.config
+	var defaults := GoConfig.new()
+	var host := {}
+	for key in HOST_SCALE_KEYS:
+		host[key] = settings.get(key)
+		settings.set(key, defaults.get(key))
+	_scale_checks()
+	for key in HOST_SCALE_KEYS: settings.set(key, host[key])
+
+
+func _scale_checks() -> void:
 	check(GoScale.breakpoint_for_dp(360) == GoScale.Bp.MOBILE, "360dp is mobile")
 	check(GoScale.breakpoint_for_dp(576) == GoScale.Bp.MOBILE, "the 576dp boundary is mobile")
 	check(GoScale.breakpoint_for_dp(800) == GoScale.Bp.TABLET, "800dp is tablet")
