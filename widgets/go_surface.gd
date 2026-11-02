@@ -225,6 +225,8 @@ var title_width := 0.0:
 		if not is_instance_valid(title_label): return
 		title_label.size_flags_horizontal = Control.SIZE_EXPAND | Control.SIZE_SHRINK_CENTER if title_width > 0.0 else Control.SIZE_EXPAND_FILL
 		_fit_title.call_deferred()
+## True while the plain title tries its sizes (`_fit_title_size`) — the `resized` they raise must not start it over.
+var _sizing_title := false
 ## The title's starting font size; 0 uses the look's. It still shrinks to the configured fit floor.
 var title_font_size := 0:
 	set(value):
@@ -798,7 +800,7 @@ func _variation_plate() -> StyleBox:
 ## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate the title keeps the
 ## size its role gives it.
 func _fit_title() -> void:
-	if title_label == null: return
+	if title_label == null or _sizing_title: return
 	_fit_title_size()
 	_place_title_glyph()
 	_place_corner()
@@ -809,13 +811,34 @@ func _fit_title_size() -> void:
 	var role_size := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
 		# 🔑 A plain title (no plate) still takes an asked `title_font_size` — "the title's starting size" — instead of
-		#    its role's (14 dp body type on a phone under a 22 dp heading look). Nothing to fit: a plain title wraps.
-		if title_font_size > 0:
-			title_label.set_meta(&"go_title_fit", true)
-			title_label.add_theme_font_size_override(&"font_size", title_font_size)
-		elif title_label.has_meta(&"go_title_fit"):
-			title_label.remove_meta(&"go_title_fit")
-			title_label.remove_theme_font_size_override(&"font_size")
+		#    its role's (14 dp body type on a phone under a 22 dp heading look). A plain title wraps.
+		var fitted := title_font_size if title_font_size > 0 else role_size
+		# 📏 It wraps up to `max_lines_visible` lines and trims after them — so a long title in a narrow header (a
+		#    sub-page's labelled Back beside it, "Tempat mendapat bagian" on a 341 dp phone, 2026-11-02) lost its last
+		#    word to "…". It steps down toward the fit floor (`GoStyle.fit_floor`) until its words take those lines; only
+		#    a title still too long at the floor is trimmed.
+		# 🛑 Measured with the font, never by trying sizes on the label: each size set resizes the label, and `resized`
+		#    calls this again — trying sizes there recursed until the stack ran out.
+		var lines := title_label.max_lines_visible
+		var width := title_label.size.x - title_label.get_theme_stylebox(&"normal").get_minimum_size().x
+		if width > 0.0 and lines > 0 and not title_label.text.is_empty():
+			var font := title_label.get_theme_font(&"font")
+			var words := title_label.atr(title_label.text)
+			var floor_size := GoStyle.fit_floor(fitted)
+			var breaks := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+			while fitted > floor_size and font.get_multiline_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, width, fitted,
+					-1, breaks).y > font.get_height(fitted) * (lines + 0.5):
+				fitted -= 1
+		# The label has the last word: its own wrap can break a line the font measure kept (rounding, its frame).
+		# 🔑 `_sizing_title` stops the `resized` each size raises from starting this over in the middle.
+		_sizing_title = true
+		_size_title(fitted, role_size)
+		if width > 0.0 and lines > 0:
+			while fitted > GoStyle.fit_floor(title_font_size if title_font_size > 0 else role_size) \
+					and title_label.get_line_count() > lines:
+				fitted -= 1
+				_size_title(fitted, role_size)
+		_sizing_title = false
 		_widen_title(0.0)
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
@@ -853,6 +876,17 @@ func _widen_title(wide: float) -> void:
 	if is_equal_approx(title_label.custom_minimum_size.x, wide): return
 	title_label.custom_minimum_size.x = wide
 	_mark_layout_dirty()
+
+
+## The plain title's font size: no override at its role's own size (unless one was asked), one marked `go_title_fit` else.
+func _size_title(font_size: int, role_size: int) -> void:
+	if font_size == role_size and title_font_size <= 0:
+		if title_label.has_meta(&"go_title_fit"):
+			title_label.remove_meta(&"go_title_fit")
+			title_label.remove_theme_font_size_override(&"font_size")
+	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != font_size:
+		title_label.set_meta(&"go_title_fit", true)
+		title_label.add_theme_font_size_override(&"font_size", font_size)
 
 
 ## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.

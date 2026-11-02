@@ -338,6 +338,18 @@ func _wide_row_fits() -> void:
 		% [line.get_global_rect().end.x, area.end.x])
 	check(sends.any(func(b: Button) -> bool: return b.autowrap_mode != TextServer.AUTOWRAP_OFF), "a button in it is re-fitted from its words")
 	chat.queue_free()
+	# A long plain title steps its size down before it trims a word to "…" (a sub-page's labelled Back beside it).
+	var titled := GoPage.new()
+	titled.open("Where every part of this set drops and which monsters carry it")
+	root.add_child(titled)
+	await frames(4)
+	var title := titled.surface.title_label
+	var role := GoUi.font_size(title.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	check(title.get_visible_line_count() >= title.get_line_count() or title.get_theme_font_size(&"font_size") <= GoStyle.fit_floor(role),
+		"a long title shows every line, or is at the fit floor (%d of %d lines at %d, floor %d)"
+		% [title.get_visible_line_count(), title.get_line_count(), title.get_theme_font_size(&"font_size"), GoStyle.fit_floor(role)])
+	check(title.get_theme_font_size(&"font_size") < role, "it is set smaller than its role's %d to get there (%d)" % [role, title.get_theme_font_size(&"font_size")])
+	titled.queue_free()
 	# A page that does not scroll itself holds its own edge scroll: it borrows what the card pads now, dense step included.
 	var own := GoPage.new()
 	own.open("Own scroll")
