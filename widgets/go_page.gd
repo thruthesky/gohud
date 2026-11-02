@@ -914,7 +914,6 @@ class _PageSurface extends GoSurface:
 		_layout_dirty = false
 		_resize_pending = false
 		if card == null or not is_inside_tree(): return
-		_update_density()
 		var area := GoSafeArea.usable_rect_with_keyboard(get_window(), _keyboard_px)
 		_laid_out = area
 		# 🛑 The page sizes its parts first: the card cannot shrink below its content's minimum, and the parts still
@@ -924,8 +923,18 @@ class _PageSurface extends GoSurface:
 		# Whole pixels, inside the area: rounding the size up put the card's last row 0.3 px past an 800×450 window's
 		# 355.7 logical px (key_bindings_ui "MoveArrows outside the window", 2026-10-19).
 		var top_left := area.position.ceil()
+		var fill := area.end.floor() - top_left
+		# 📏 The width fit a centred card gets (`GoSurface.relayout`): content wider than the page re-wraps its one-line
+		#    buttons, then takes the dense step (and the small segmented cells) — measured at the page's own width.
+		#    🛑 Without it one wide row widened the whole page and pushed its ✕ past the right edge (a settings page on a
+		#    341-unit phone, 2026-11-02): the page is the safe area, so nothing else caught it. A page that fits keeps the
+		#    roomy step, as before.
+		_wrap_to_width(fill.x)
+		_update_density(0.0, fill.x)
+		if owner_page != null: owner_page._sync_content_edge()   # the padding the content column borrows may have changed
 		card.position = top_left
-		card.size = area.end.floor() - top_left
+		card.size = fill
+		if card.size.x > fill.x + 0.5: _warn_too_wide(fill.x)
 
 	## 🛑 The window can change size without `size_changed` reaching this surface in the same frame (a stretch change, a
 	##    rotation settling over two frames — measured: the card kept the portrait width after a turn). An open page

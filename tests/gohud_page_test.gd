@@ -32,6 +32,7 @@ func _initialize() -> void:
 	await _orientation_and_preview()
 	await _long_tab_labels()
 	await _card_follows_content()
+	await _wide_row_fits()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -291,6 +292,31 @@ func _card_follows_content() -> void:
 	page.queue_free()
 	await _size(390, 844)
 	await frames(2)
+
+
+## A row wider than the screen never widens the page: the page fills the safe area, so before the width fit one
+## one-line button wider than a 320 dp phone opened the card past the right edge and the ✕ went with it (a game's
+## settings page on a 341-unit phone, 2026-11-02). The page re-wraps the button at its own width, as a centred card does.
+func _wide_row_fits() -> void:
+	await _size(320, 640)
+	var page := GoPage.new()
+	page.open("Wide")
+	var wide := GoStyle.button("Collect every reward from today's events and the weekly board at once")
+	page.body.add_child(wide)
+	root.add_child(page)
+	await frames(4)
+	var area := GoSafeArea.usable_rect(page.surface.get_window())
+	var card := page.surface.card.get_global_rect()
+	check(_fills(card, area), "a page with a one-line button wider than the phone still fills the screen (card %s, area %s)"
+		% [card, area])
+	var close := page.surface.close_button.get_global_rect()
+	check(area.grow(0.5).encloses(close), "its ✕ stays on the screen (%s in %s)" % [close, area])
+	check(wide.get_global_rect().end.x <= area.end.x + 0.5, "the button wraps inside the page (ends at %.0f of %.0f)"
+		% [wide.get_global_rect().end.x, area.end.x])
+	page.queue_free()
+	await _size(390, 844)
+	await frames(2)
+	section("a row wider than the screen never widens the page")
 
 
 ## A glyph icon (a Label marked `go_no_wrap`) never wraps on the rail and sits level with its words, in both orientations.
