@@ -1395,6 +1395,12 @@ func _style() -> void:
 	await frames(5)
 	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x,
 		"the flow list button follows a changed child label")
+	row_content.offset_left = 8
+	row_content.offset_right = -8
+	row_label.text += " with anchored padding"
+	await frames(5)
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x + 16,
+		"the flow list button preserves the child layout's anchored padding")
 	row_label.text = "OK"
 	await frames(5)
 	check(flowing_row.custom_minimum_size.x >= 144, "the flow list button preserves its declared width floor")

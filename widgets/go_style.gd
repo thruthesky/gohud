@@ -86,7 +86,15 @@ static func _fit_natural_width(control_ref: WeakRef, baseline: float) -> void:
 	if control == null: return
 	var width := baseline
 	for child in control.get_children():
-		if child is Control: width = maxf(width, (child as Control).get_combined_minimum_size().x)
+		if not child is Control: continue
+		var content := child as Control
+		var need := content.get_combined_minimum_size().x
+		var span := content.anchor_right - content.anchor_left
+		# A full-rect child may use offsets as padding instead of a MarginContainer (choice cards).
+		# Fit the space between those edges, rather than allowing this fitter to erase that padding.
+		if span > 0.0: need = (need + content.offset_left - content.offset_right) / span
+		else: need += maxf(0, content.offset_left)
+		width = maxf(width, need)
 	if not is_equal_approx(control.custom_minimum_size.x, width): control.custom_minimum_size.x = width
 
 
