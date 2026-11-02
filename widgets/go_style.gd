@@ -2928,6 +2928,8 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 	line.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var group := ButtonGroup.new()
 	line.set_meta(&"group", group)
+	# 🔑 Marks the row for `tighten_segmented` (true: its cells are small already).
+	line.set_meta(&"go_segmented", compact)
 	var count := options.size()
 	for index in count:
 		var item := Button.new()
@@ -2965,6 +2967,37 @@ static func segmented(options: Array, selected := 0, action := Callable(), trans
 		if action.is_valid(): item.pressed.connect(action.bind(index))
 		line.add_child(item)
 	return line
+
+
+## 📏 **Narrows a roomy segmented row** (`segmented` with `compact` off) to small cells, keeping each cell's face: the
+## padding becomes the small button padding token and the cell floor the touch size (from 1.5 × touch) — every state alike,
+## so no cell shifts on a press. True when the row changed (false: small already, or not a segmented row).
+## 🔑 `GoSurface` calls it when a card's content is wider than its screen at the dense step — a cell is one word or an
+##    icon, so wrapping cannot narrow it (a three-cell row with lock icons was 276 wide in a 262 card on a 327-dp phone,
+##    2026-11-02). The faces stay as they are (a small cell's own face wants the outer pill it is built to sit in).
+static func tighten_segmented(line: HBoxContainer) -> bool:
+	if line == null or not line.has_meta(&"go_segmented") or bool(line.get_meta(&"go_segmented")): return false
+	line.set_meta(&"go_segmented", true)
+	var floor_x := float(GoUi.metric(GoTheme.TOUCH))
+	for item in line.get_children():
+		if not (item is Button): continue
+		var cell := item as Button
+		# 🛑 A font-set icon beside the label (`_segment_icon` → `apply_icon` inset) keeps the room it was given on the left —
+		#    small padding alone put the text on the glyph ("🔒ard", virtual-monitor shot 2026-11-02). Only the left: a
+		#    segmented cell stands at its minimum width (the row shrinks to its cells), so the text area is the text itself
+		#    and stays clear of the glyph without `apply_icon`'s mirrored right margin, which is only there for a stretched
+		#    button's centred text.
+		var glyph := cell.get_node_or_null(^"IconGlyph") as Control
+		var room := 0.0
+		if glyph != null and not cell.text.is_empty(): room = glyph.offset_right + float(GoUi.metric(GoTheme.GAP_SMALL))
+		for state in [&"normal", &"hover", &"pressed", &"hover_pressed", &"focus"]:
+			if not cell.has_theme_stylebox_override(state): continue
+			var face := cell.get_theme_stylebox(state).duplicate() as StyleBox
+			_compact_insets(face)
+			face.content_margin_left = maxf(face.content_margin_left, room)
+			cell.add_theme_stylebox_override(state, face)
+		cell.custom_minimum_size.x = minf(cell.custom_minimum_size.x, floor_x)
+	return true
 
 
 ## Puts an icon on one segment cell that **follows the label's color in every state**.
