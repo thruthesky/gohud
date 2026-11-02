@@ -1929,6 +1929,10 @@ func _relayout_anchor(area: Rect2) -> void:
 	else:
 		width = clampf(space_left, anchor_min_width, wide)
 		x = anchor.end.x - width
+	# Anchored cards need the same overflow recovery as centred cards. Otherwise a row can force the
+	# assigned anchor width wider even though each of its labels can wrap within the requested card.
+	_wrap_to_width(width)
+	_wrap_rows_to_width(width)
 	var below := area.end.y - anchor.end.y - gap - edge
 	var above := anchor.position.y - area.position.y - gap - edge
 	var opens_up := below < above

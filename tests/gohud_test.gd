@@ -1922,6 +1922,31 @@ func _surface() -> void:
 	check(a.card.position.y >= anchor.get_global_rect().end.y,
 		"ANCHOR attaches below its target (card y %.0f · anchor end %.0f)" % [a.card.position.y, anchor.get_global_rect().end.y])
 
+	var anchored := GoSurface.new()
+	anchored.placement = GoSurface.Placement.ANCHOR
+	anchored.anchor_control = anchor
+	anchored.anchor_width = 252
+	root.add_child(anchored)
+	var anchored_row := GoStyle.row()
+	anchored.body.add_child(anchored_row)
+	for caption: String in ["Move this player to the next rank", "Remove this player from the party"]:
+		var action := GoStyle.button(caption)
+		action.autowrap_mode = TextServer.AUTOWRAP_OFF
+		anchored_row.add_child(action)
+	check(anchored_row.get_combined_minimum_size().x > anchored.anchor_width,
+		"the anchored-card row starts wider than the requested card")
+	anchored.show()
+	await frames(8)
+	anchored.relayout()
+	await frames(3)
+	check(anchored.card.size.x <= anchored.anchor_width + 1.0,
+		"an anchored card folds a wide row within its requested width")
+	for action: Button in anchored_row.get_children():
+		check(action.autowrap_mode != TextServer.AUTOWRAP_OFF,
+			"anchored row actions wrap rather than force a wider card")
+	anchored.queue_free()
+	await frames(2)
+
 	a.hide()
 	await frames(1)
 	check(not GoSurface.is_any_open(), "hide them all and 0 surfaces are open")
