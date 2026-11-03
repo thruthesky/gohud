@@ -460,12 +460,12 @@ static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPAR
 ## User content should keep the default AUTO direction instead. Safe to call more than once.
 ## The child observes translation notifications without an autoload, polling or captured label references.
 static func locale_paragraph(node: Label) -> void:
-	for child in node.get_children():
+	for child in node.get_children(true):
 		if child is GoLocaleParagraph:
 			(child as GoLocaleParagraph).apply()
 			return
 	var direction := GoLocaleParagraph.new()
-	node.add_child(direction)
+	node.add_child(direction, false, Node.INTERNAL_MODE_BACK)
 	direction.apply()
 
 

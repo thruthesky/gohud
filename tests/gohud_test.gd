@@ -1057,7 +1057,8 @@ func _i18n() -> void:
 	GoStyle.locale_paragraph(raw)
 	GoStyle.locale_paragraph(raw)
 	GoStyle.locale_paragraph(line)
-	check(raw.get_child_count() == 1, "locale paragraph binding is idempotent")
+	check(raw.get_child_count(true) == 1 and raw.get_child_count() == 0,
+		"locale paragraph binding is idempotent and private to the label")
 	check(raw.text_direction == Control.TEXT_DIRECTION_RTL and line.text_direction == Control.TEXT_DIRECTION_RTL,
 		"already translated label and line opt into locale paragraphs")
 	TranslationServer.set_locale("en")
