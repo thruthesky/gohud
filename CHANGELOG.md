@@ -4,6 +4,8 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+- Translated label paragraphs follow the application locale even when a sentence starts with a Latin name or its layout is pinned LTR. `GoStyle.label_key` follows locale by default; `label` and `line` opt in with the trailing `follow_locale` argument, or `GoStyle.locale_paragraph(label)` for an existing label. Existing labels refresh on language changes and tree entry without polling or a required autoload. Raw user content retains AUTO.
+
 - **`GoEditFrame`** (`Control`): the outline a layout editor draws round each thing the player can move — the
   "customize controls" screen of a mobile shooter. `State.IDLE` a dashed `accent` outline ("this can move"),
   `SELECTED` a solid one over a light wash with four handles, `WARNING` the same in `warning` ink (it overlaps another),

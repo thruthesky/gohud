@@ -435,11 +435,12 @@ static func glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> floa
 
 
 ## A label holding a **translation key** — the engine redraws it on its own when the language changes.
-static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
+static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := true) -> Label:
 	var node := Label.new()
 	node.theme = GoUi.theme()
 	node.text = key
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
+	if follow_locale: locale_paragraph(node)
 	if GoUi.config.autowrap_text: node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -448,10 +449,24 @@ static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANS
 
 
 ## **Text shown as it is** — a person's name, a server value, an already translated phrase.
-static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
-	var node := label_key(text, role, ink)
+## Set [param follow_locale] for translated UI prose; names and user content keep AUTO.
+static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := false) -> Label:
+	var node := label_key(text, role, ink, follow_locale)
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	return node
+
+
+## Make an already translated UI sentence follow the app locale, even inside an LTR layout.
+## User content should keep the default AUTO direction instead. Safe to call more than once.
+## The child observes translation notifications without an autoload, polling or captured label references.
+static func locale_paragraph(node: Label) -> void:
+	for child in node.get_children():
+		if child is GoLocaleParagraph:
+			(child as GoLocaleParagraph).apply()
+			return
+	var direction := GoLocaleParagraph.new()
+	node.add_child(direction)
+	direction.apply()
 
 
 ## One section title line (a small, dim, uppercase-feeling heading).
@@ -2330,8 +2345,8 @@ static func let_input_through(node: Node) -> void:
 
 ## **A one-line label** — never wraps, and cuts the overflow with an ellipsis (…). For name and number rows on narrow cards.
 ## 🛑 An ellipsized label's minimum width is nearly 0 — in a narrow cell the text looks as if it vanished entirely. The caller secures the cell width.
-static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
-	var node := label(text, role, ink)
+static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := false) -> Label:
+	var node := label(text, role, ink, follow_locale)
 	node.autowrap_mode = TextServer.AUTOWRAP_OFF
 	node.set_meta(&"go_no_wrap", true)
 	node.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

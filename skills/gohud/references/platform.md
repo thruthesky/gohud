@@ -157,6 +157,13 @@ GoUi.config.icons = font_set
 
 ## 2. Localization and RTL
 
+`GoStyle.label_key` gives translated UI prose the app locale's paragraph direction, independent of its first character
+or parent layout. For pretranslated prose use the trailing `follow_locale = true` argument on `label` / `line`, or
+`GoStyle.locale_paragraph(label)` after creating a label elsewhere. Existing labels follow live language changes and
+refresh on tree entry. Raw player names, chat and mail bodies should keep `label` / `line`'s AUTO default. Numeric-only
+fields can keep their explicit LTR direction. Layout mirroring is separate from paragraph direction.
+
+
 Widgets never hard-code display text. Text you pass (titles, labels, rows) is yours: literal with `label()` /
 `button()`, a translation key with `label_key()` / `button_key()` / `*_key()` methods. gohud's own 46 strings
 (`GoConfig.text_keys`, translated in `i18n/gohud.csv`):

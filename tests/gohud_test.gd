@@ -1040,6 +1040,37 @@ func _i18n() -> void:
 	check(GoUi.text(&"cancel") == "إلغاء", "ar translation")
 	TranslationServer.set_locale("ja")
 	check(GoUi.text(&"confirm") == "確認", "ja translation")
+	var prose := GoStyle.label_key("Latin token")
+	var raw := GoStyle.label("Latin token")
+	var key_auto := GoStyle.label_key("Latin token", GoTheme.ROLE_BODY, Color.TRANSPARENT, false)
+	var line := GoStyle.line("Latin token", GoTheme.ROLE_BODY, Color.TRANSPARENT, true)
+	var ltr_parent := Control.new()
+	ltr_parent.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	root.add_child(ltr_parent)
+	for node in [prose, raw, line, key_auto]: ltr_parent.add_child(node)
+	TranslationServer.set_locale("ur")
+	await frames()
+	check(prose.text_direction == Control.TEXT_DIRECTION_RTL, "translated paragraphs follow Urdu inside an LTR layout")
+	check(raw.text_direction == Control.TEXT_DIRECTION_AUTO and key_auto.text_direction == Control.TEXT_DIRECTION_AUTO,
+		"raw user content and an explicitly opted-out key keep AUTO")
+	check(line.text_direction == Control.TEXT_DIRECTION_RTL, "line trailing argument follows Urdu immediately")
+	GoStyle.locale_paragraph(raw)
+	GoStyle.locale_paragraph(raw)
+	GoStyle.locale_paragraph(line)
+	check(raw.get_child_count() == 1, "locale paragraph binding is idempotent")
+	check(raw.text_direction == Control.TEXT_DIRECTION_RTL and line.text_direction == Control.TEXT_DIRECTION_RTL,
+		"already translated label and line opt into locale paragraphs")
+	TranslationServer.set_locale("en")
+	await frames()
+	check(prose.text_direction == Control.TEXT_DIRECTION_LTR and raw.text_direction == Control.TEXT_DIRECTION_LTR,
+		"existing paragraphs follow a live switch back to English")
+	TranslationServer.set_locale("ur")
+	var detached := GoStyle.label_key("Latin first")
+	TranslationServer.set_locale("en")
+	ltr_parent.add_child(detached)
+	await frames()
+	check(detached.text_direction == Control.TEXT_DIRECTION_LTR, "a detached paragraph refreshes when entering the tree")
+	ltr_parent.free()
 	var overrides: Dictionary[StringName, String] = {&"close": "X"}
 	GoUi.config.text_overrides = overrides
 	check(GoUi.text(&"close") == "X", "text_overrides wins over the translation")
