@@ -88,6 +88,7 @@ func _build() -> void:
 	var face := GoUi.skin().floating_box(GoTheme.BOX_CARD, accent, alpha)
 	face.set_content_margin_all(0)
 	card.add_theme_stylebox_override(&"panel", face)
+	GoScroll.contain(card)   # the body scrolls inside the card; a wheel or swipe left over never reaches the game behind it
 	add_child(card)
 
 	var inset := GoStyle.padding(GoUi.metric(GoTheme.PADDING_COMPACT))
