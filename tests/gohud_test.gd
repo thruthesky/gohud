@@ -952,8 +952,8 @@ func _icons() -> void:
 	var script: Script = load(ADDON + "/core/go_icon_set.gd")
 	var constants := script.get_script_constant_map()
 	var missing: Array = []
-	# The kill feed's, the multiplayer, the two-player and the sign-in glyphs are arcade_light's own (no plain-look drawing), so they are looked up there.
-	var arcade_only: Array[StringName] = [GoIconSet.MAGNET_ARROW, GoIconSet.FALL, GoIconSet.MULTIPLAYER,
+	# The stick's magnet, the kill feed's, the multiplayer, the two-player and the sign-in glyphs are arcade_light's own (no plain-look drawing), so they are looked up there.
+	var arcade_only: Array[StringName] = [GoIconSet.MAGNET, GoIconSet.MAGNET_ARROW, GoIconSet.FALL, GoIconSet.MULTIPLAYER,
 		GoIconSet.GOOGLE, GoIconSet.APPLE, GoIconSet.MAIL, GoIconSet.DUO, GoIconSet.DISCORD]
 	var arcade := (load("res://addons/gohud/themes/presets/arcade_light.tres") as GoThemePreset).icons
 	for key in constants:
