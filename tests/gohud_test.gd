@@ -3230,9 +3230,18 @@ func _scroll_drag() -> void:
 		await frames(1)
 	check(ended[0], "the fling comes to rest")
 	check(column.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED, "the rows take the mouse again once the list stops")
-	_pointer(point, false, false)
-	await frames(1)
-	check(rows.any(func(row: Button) -> bool: return row.is_hovered()), "hover works again after the drag")
+	# The fling changes which row occupies the old finger position; that point can now be in a row gap.
+	# Move onto a fully visible row and require that exact row's hover, not an arbitrary highlight.
+	var hover_row: Button = null
+	for row: Button in rows:
+		if scroll.get_global_rect().encloses(row.get_global_rect()):
+			hover_row = row
+			break
+	check(hover_row != null, "the rested list has a fully visible row for hover")
+	if hover_row != null:
+		_pointer(hover_row.get_global_rect().get_center(), false, false)
+		await frames(2)
+		check(hover_row.is_hovered(), "hover works again after the drag")
 	scroll.scroll_vertical = 0
 	await frames(1)
 	rows[15].grab_focus()
