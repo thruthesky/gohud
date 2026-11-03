@@ -211,7 +211,7 @@ func _title_fit() -> void:
 	check(not tidy.title_label.has_theme_font_size_override(&"font_size"), "fit: without a ribbon a title that fits keeps its size")
 	var plain_role := GoUi.font_size(plain.title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	var plain_size := plain.title_label.get_theme_font_size(&"font_size")
-	check(plain.title_label.get_visible_line_count() >= plain.title_label.get_line_count() or plain_size <= GoStyle.fit_floor(plain_role),
+	check(plain.title_label.get_visible_line_count() >= plain.title_label.get_line_count(),
 		"fit: without a ribbon a long title wraps and steps down only until every word shows (%d, floor %d)"
 		% [plain_size, GoStyle.fit_floor(plain_role)])
 	check(plain_size >= GoStyle.fit_floor(plain_role), "fit: without a ribbon it never goes below the fit floor (%d)" % plain_size)

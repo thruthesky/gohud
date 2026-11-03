@@ -33,6 +33,7 @@ func _initialize() -> void:
 	await _long_tab_labels()
 	await _card_follows_content()
 	await _wide_row_fits()
+	await _complete_plain_title()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -377,15 +378,15 @@ func _wide_row_fits() -> void:
 	var font := title.get_theme_font(&"font")
 	var words := "Where"
 	var more := ["every", "part", "of", "this", "set", "drops", "and", "which", "monsters", "carry", "it"]
-	var target := title.size.x * (title.max_lines_visible + 0.4)
+	var target := title.size.x * (GoSurface.TITLE_FIT_LINES + 0.4)
 	var at := 0
 	while font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, role).x < target:
 		words += " " + more[at % more.size()]
 		at += 1
 	titled.surface.set_title(words)
 	await frames(4)
-	check(title.get_visible_line_count() >= title.get_line_count() or title.get_theme_font_size(&"font_size") <= GoStyle.fit_floor(role),
-		"a long title shows every line, or is at the fit floor (%d of %d lines at %d, floor %d)"
+	check(title.get_visible_line_count() >= title.get_line_count(),
+		"a long title shows every line, including at the fit floor (%d of %d lines at %d, floor %d)"
 		% [title.get_visible_line_count(), title.get_line_count(), title.get_theme_font_size(&"font_size"), GoStyle.fit_floor(role)])
 	check(title.get_theme_font_size(&"font_size") < role, "it is set smaller than its role's %d to get there (%d)" % [role, title.get_theme_font_size(&"font_size")])
 	titled.queue_free()
@@ -450,6 +451,48 @@ func _icon_rows() -> void:
 	page.queue_free()
 	GoUi.config.icons = null
 	await frames(2)
+
+
+## A detail title can still need more than the preferred two lines after it reaches the font floor.
+func _complete_plain_title() -> void:
+	await _size(327, 729)
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Inbox")
+	var details := page.push("Subject")
+	var content := GoStyle.label("The complete detail body remains below its header.")
+	details.add_child(content)
+	await frames(4)
+	var title := page.surface.title_label
+	var role := GoUi.font_size(title.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var floor_size := GoStyle.fit_floor(role)
+	var font := title.get_theme_font(&"font")
+	var words := "A recovered shipment"
+	var width := title.size.x - title.get_theme_stylebox(&"normal").get_minimum_size().x
+	check(width > 0.0, "fixture: the detail header has a positive title width")
+	if width <= 0.0:
+		page.queue_free()
+		return
+	var breaks := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+	while font.get_multiline_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, width, floor_size, -1, breaks).y \
+			<= font.get_height(floor_size) * (GoSurface.TITLE_FIT_LINES + 1.5):
+		words += " from the frontier"
+	page.surface.set_title(words)
+	await frames(6)
+	check(title.get_line_count() > GoSurface.TITLE_FIT_LINES, "fixture: the detail subject needs more than two lines even at the floor")
+	check(title.get_visible_line_count() >= title.get_line_count(), "the detail header shows every line at the font floor (%d/%d)"
+		% [title.get_visible_line_count(), title.get_line_count()])
+	check(title.get_theme_font_size(&"font_size") >= floor_size, "the whole subject stays at or above the font floor")
+	check(content.get_global_rect().position.y >= title.get_global_rect().end.y - 0.5, "the taller complete header leaves the body below it")
+	check(page.surface.back_button.visible and page.surface.card.get_global_rect().encloses(page.surface.back_button.get_global_rect()), "Back stays inside the card beside the complete title")
+	check(page.surface.close_button.visible and page.surface.card.get_global_rect().encloses(page.surface.close_button.get_global_rect()), "close stays inside the card beside the complete title")
+	var tall := page.surface.header.size.y
+	page.surface.set_title("Subject")
+	await frames(6)
+	check(page.surface.header.size.y < tall and title.get_theme_font_size(&"font_size") == role, "a short replacement restores the natural title size and compact header")
+	page.queue_free()
+	await frames(2)
+	await _size(390, 844)
 
 
 # ── Rail in landscape, top tabs in portrait; the preview ───────────────

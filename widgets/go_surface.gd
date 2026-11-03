@@ -40,6 +40,9 @@ enum AnchorAlign { AUTO, START, END }
 ## How a card too big for the screen stays on it (`fit_mode`): its body scrolls, or the whole card shrinks.
 enum FitMode { SCROLL, SCALE }
 
+## Preferred plain-title line budget while fitting its font. At the floor, all remaining lines stay visible.
+const TITLE_FIT_LINES := 2
+
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
 ## Is nobody steering the menus by keyboard or gamepad right now (last input a pointer, or a game key — `_track_device`)?
@@ -606,8 +609,9 @@ func _build() -> void:
 
 	title_label = GoStyle.label("", GoTheme.ROLE_SUBTITLE)
 	title_label.name = "Title"
-	title_label.max_lines_visible = 2
-	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title_label.max_lines_visible = -1
+	# Unlimited wrapped text needs its full natural height; an ellipsis setting would collapse that minimum.
+	title_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title_label.resized.connect(func() -> void: _fit_title())
@@ -798,8 +802,8 @@ func _variation_plate() -> StyleBox:
 
 ## On a title plate the title stays on one line: past the plate's room it shrinks, down to
 ## `GoSkin.title_plate_min_size()`, and only then folds — or, under a `SCALE` fit, widens the card instead (the game's
-## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate the title keeps the
-## size its role gives it.
+## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate it fits toward
+## TITLE_FIT_LINES at the configured font floor, then grows the header to show every remaining line.
 func _fit_title() -> void:
 	if title_label == null or _sizing_title: return
 	_fit_title_size()
@@ -814,13 +818,12 @@ func _fit_title_size() -> void:
 		# 🔑 A plain title (no plate) still takes an asked `title_font_size` — "the title's starting size" — instead of
 		#    its role's (14 dp body type on a phone under a 22 dp heading look). A plain title wraps.
 		var fitted := title_font_size if title_font_size > 0 else role_size
-		# 📏 It wraps up to `max_lines_visible` lines and trims after them — so a long title in a narrow header (a
-		#    sub-page's labelled Back beside it, "Tempat mendapat bagian" on a 341 dp phone, 2026-11-02) lost its last
-		#    word to "…". It steps down toward the fit floor (`GoStyle.fit_floor`) until its words take those lines; only
-		#    a title still too long at the floor is trimmed.
+		# Fit toward a preferred line budget, never below the configured font floor. The default label keeps every
+		# line: if its complete title still needs more room at the floor, the header grows instead of cutting words
+		# after two lines (a detail title beside Back on a narrow phone). A caller's explicit line cap remains its own.
 		# 🛑 Measured with the font, never by trying sizes on the label: each size set resizes the label, and `resized`
 		#    calls this again — trying sizes there recursed until the stack ran out.
-		var lines := title_label.max_lines_visible
+		var lines := title_label.max_lines_visible if title_label.max_lines_visible > 0 else TITLE_FIT_LINES
 		var width := title_label.size.x - title_label.get_theme_stylebox(&"normal").get_minimum_size().x
 		if width > 0.0 and lines > 0 and not title_label.text.is_empty():
 			var font := title_label.get_theme_font(&"font")
