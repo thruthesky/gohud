@@ -523,6 +523,8 @@ var _scrim_origin := Vector2.ZERO
 var _holds_back := false
 ## A cut `height_ratio` has been reported (debug builds) — once per surface, since `relayout` runs again whenever content changes.
 var _warned_height_cap := false
+## Said once: the content was wider than the card could be (`_warn_too_wide`).
+var _warned_width := false
 ## 🔑 Something the layout reads has changed since the last `relayout()` — a section's minimum size or visibility, or a
 ##    layout field above. A `fit_content` surface re-measures on the next frame **only then**.
 ## 🛑 It used to re-measure **every frame** while open: 50–220 µs a frame on a desktop CPU for the 23-row Laryen Guide
@@ -698,7 +700,15 @@ func _ready() -> void:
 		if _runtime.has_signal(&"breakpoint_changed"): _runtime.breakpoint_changed.connect(func(_bp) -> void: relayout())
 		# A 180° turn moves the safe area with no resize; the window re-centres in what is usable now.
 		if _runtime.has_signal(&"safe_area_changed"): _runtime.safe_area_changed.connect(func(_m) -> void: relayout())
+	# 🛑 Window resizes only while this surface is in the tree: a surface held out of it (an outgoing scene between
+	#    `change_scene_to_*` and its deletion, a page put aside) has a null viewport, and a typed call on it is a native crash
+	#    in a release build. Re-entering catches up with any resize missed while out.
 	get_viewport().size_changed.connect(relayout)
+	tree_entered.connect(func() -> void:
+		if not get_viewport().size_changed.is_connected(relayout): get_viewport().size_changed.connect(relayout)
+		relayout())
+	tree_exiting.connect(func() -> void:
+		if get_viewport().size_changed.is_connected(relayout): get_viewport().size_changed.disconnect(relayout))
 	get_viewport().gui_focus_changed.connect(_focus_changed)
 	visibility_changed.connect(_sync_active)
 	_restyle()
@@ -1609,6 +1619,7 @@ func relayout() -> void:
 	if ratio > ratio_cap + 0.001: _warn_height_cap(ratio, ratio_cap)
 	var width := maxf(1.0, minf(cap_width, area.size.x * width_ratio))
 	var height := maxf(1.0, minf(cap_height, area.size.y * minf(ratio, ratio_cap)))
+	_wrap_to_width(width)
 	if fit_content:
 		# 🔑 Short content shrinks it, and **long content grows it as far as the screen allows.** Scrolling while screen
 		#    space is left over makes users who never noticed the scroll submit with unseen fields empty (`surface_fit_max_height_ratio`).
@@ -1620,12 +1631,13 @@ func relayout() -> void:
 		_update_density(room, width)
 		height = clampf(_desired_height(), 1.0, room)
 	else:
-		_update_density()
+		_update_density(0.0, width)
 	# 🛑 Size and position are given as integers — at a fractional position (centered · logical width 349.09) the size is
 	#    stored as "position + size" and 184 becomes 183.99997, the card's inner padding (MarginContainer) floors child
 	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
 	#    confirmation (measured 2026-09-15 on a Laryen phone in portrait · does not reproduce at headless logical sizes).
 	card.size = Vector2(width, height).round()
+	if card.size.x > roundf(width) + 0.5: _warn_too_wide(width)
 	# Centred the way a `CenterContainer` centres (rounded down), so a window sits on the pixel the game's dialog does.
 	var y := area.position.y + (area.size.y - card.size.y) * (1.0 if placement == Placement.BOTTOM else 0.5)
 	# A plate hanging over the card's top edge must stay on screen too: the card comes down only when it would not.
@@ -1633,10 +1645,64 @@ func relayout() -> void:
 	card.position = Vector2(area.position.x + (area.size.x - card.size.x) * 0.5, y).floor()
 
 
+## 📏 **Content wider than the card wraps instead of widening it.** A card is given `width`, but a `Control` is never
+## smaller than its minimum: a row whose one-line width runs past `width` makes the card that wide, and a centred card
+## wider than its area hangs off **both** edges — the title's first letter and the first column cut by the screen (a
+## 327 dp phone, 2026-11-02), a footer button flush with the glass.
+## The usual cause is a button whose text arrived after it was styled: `GoStyle.fit_words` decides wrapping once, from the
+## text it sees then — a button built empty ("") and filled in later stays on one line however long its label grows
+## (`GoConfig.autowrap_text` promises the opposite: "turned off, a line stretches out and the minimum width can run past
+## the screen"). So when the content asks for more than [param width], a one-line button in the toolbar, body, status or
+## footer that is **by itself** wider than the card's inside is decided again from the text it shows now — `fit_words`'
+## own rule (one word stays on one line; several wrap, never narrower than the longest word); a `go_no_wrap` mark keeps a
+## control at its natural width, as everywhere.
+## 🛑 Only such a button: a wrapping button in a row that does not stretch it stands at its minimum — its longest word —
+##    so re-fitting every button folded short labels that had room ("Find / party" beside two cells, and in a tall script
+##    a taller row that moved the whole card).
+## 🔑 Only on overflow: a window that fits is never touched. The header is left out (its title trims, its buttons are
+##    the window's own). A row that is too wide as a whole is the density step's (`_update_density`); content that still
+##    does not fit says so once in debug builds (`_warn_too_wide`).
+func _wrap_to_width(width: float) -> void:
+	if not GoUi.config.autowrap_text or card.get_combined_minimum_size().x <= width + 0.5: return
+	# The card's inside: its width less what the card adds round the column (face margins and padding).
+	var inside := width - (card.get_combined_minimum_size().x - _column.get_combined_minimum_size().x)
+	for section: Control in [toolbar, body, status, footer]:
+		_wrap_buttons(section, inside)
+
+
+static func _wrap_buttons(node: Node, inside: float) -> void:
+	if node.has_meta(&"go_no_wrap"): return
+	if node is Button:
+		var button := node as Button
+		if button.autowrap_mode == TextServer.AUTOWRAP_OFF and button.get_combined_minimum_size().x > inside + 0.5:
+			GoStyle.fit_words(button)
+	for child in node.get_children(): _wrap_buttons(child, inside)
+
+
+## 🛑 A card wider than its width costs a screen ("why is my title cut on phones?") — say so once, in debug builds, with
+##    the widest section, so the row that will not wrap is found at once.
+func _warn_too_wide(width: float) -> void:
+	if _warned_width or not OS.is_debug_build() or Engine.is_editor_hint(): return
+	_warned_width = true
+	var widest := ""
+	var most := 0.0
+	for section: Control in [header, toolbar, body, status, footer]:
+		var need := section.get_combined_minimum_size().x
+		if section.visible and need > most:
+			most = need
+			widest = String(section.name)
+	push_warning("gohud: %s needs %.0f wide but its card gets %.0f — it hangs off the screen. The widest section is %s (%.0f): let its rows wrap or shrink (a button text set after styling is re-fitted by `_wrap_to_width`; a `go_no_wrap` control is not)."
+		% [String(get_path()) if is_inside_tree() else String(name), card.size.x, width, widest, most])
+
+
 ## Drops padding and title size one step when space runs short — making room for content on small screens.
 ##
 ## Pass `room` (greater than 0) to drop a step **when the content overflows that height** as well — a form with the
 ## virtual keyboard covering half the screen, say: not much room, yet everything has to be visible.
+## 📏 And a step **when the content is wider than `width`** (the card width this relayout applies): a centred card wider
+##    than its area hangs off both edges, so 12 dp of padding a side is worth more than a roomy frame (a 327-dp phone,
+##    2026-11-02 — a four-cell filter row was 256 wide in a 278 card padded 20). If the dense step is still too wide, the
+##    segmented rows take their small cells (`_tighten_segments`) — what is still too wide after that says so (`_warn_too_wide`).
 ## Pass `width` (greater than 0) — the card width this relayout is about to apply — and the content is measured **at that
 ## width, after the layout has been sorted** (`_sort_now`).
 ## 🛑 Measuring before the sort reads the *previous* width and density: a wrapping row (`HFlowContainer` of reward cards)
@@ -1647,10 +1713,35 @@ func relayout() -> void:
 ##    content ≤ 0.85·room while roomy content > room alternates forever.
 func _update_density(room := 0.0, width := 0.0) -> void:
 	var small := compact or get_viewport_rect().size.y < 420
-	if not small and room > 0.0:
+	if not small and (room > 0.0 or width > 0.0):
 		_apply_density(false, width)
-		small = _desired_height() > room
+		small = (room > 0.0 and _desired_height() > room) or _too_wide(width)
 	_apply_density(small, width)
+	# Still wider at the dense step: the segmented rows take their small cells (`GoStyle.tighten_segmented`), then measure again.
+	if _too_wide(width) and _tighten_segments(): _apply_density(small, width)
+
+
+## 📏 Is the content wider than the card's [param width] (0: not asked)? A wrapping label's minimum is its longest word,
+## so this reads the same at any width — it needs no sort.
+func _too_wide(width: float) -> bool:
+	return width > 0.0 and card.get_combined_minimum_size().x > width + 0.5
+
+
+## Gives every segmented row in the toolbar, body, status and footer its small cells — the last step before a card is wider
+## than its screen: a segmented cell is one word or an icon, so wrapping never narrows it (`_wrap_to_width`), but its padding
+## and its 1.5 × touch floor can give way (`GoStyle.tighten_segmented`). True when a row changed.
+func _tighten_segments() -> bool:
+	var changed := false
+	for section: Control in [toolbar, body, status, footer]:
+		changed = _tighten_in(section) or changed
+	return changed
+
+
+static func _tighten_in(node: Node) -> bool:
+	var changed := false
+	if node is HBoxContainer and node.has_meta(&"go_segmented"): changed = GoStyle.tighten_segmented(node as HBoxContainer)
+	for child in node.get_children(): changed = _tighten_in(child) or changed
+	return changed
 
 
 func _apply_density(small: bool, width: float) -> void:

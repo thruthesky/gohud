@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD 와 게임 모양 <small>(30)</small></h2>
+  <h2>HUD 와 게임 모양 <small>(31)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -973,6 +973,15 @@ skill.<wbr>cooldown = 0.4</code></pre>
       <pre><code>var spot := GoSpotlight.<wbr>new(<wbr>)
 hud.<wbr>add_child(<wbr>spot)
 spot.<wbr>follow(<wbr>jump_button,<wbr> true)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="goeditframe"><code>GoEditFrame</code></h3>
+      <p>레이아웃 편집기가 플레이어가 옮길 수 있는 것마다 두르는 테두리: 기본, 핸들이 달린 선택, 경고, 숨김. 입력을 받지 않는다.</p>
+      <p class="catalog-base">바탕 <code>Control</code></p>
+      <pre><code>var frame := GoEditFrame.<wbr>new(<wbr>)
+editor.<wbr>add_child(<wbr>frame)
+frame.<wbr>circle = true
+frame.<wbr>state = GoEditFrame.<wbr>State.<wbr>SELECTED</code></pre>
     </div>
     <div class="card">
       <h3 id="gogesturehint"><code>GoGestureHint</code></h3>

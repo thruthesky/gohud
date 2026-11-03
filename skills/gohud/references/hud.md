@@ -47,6 +47,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 38. [GoGestureHint — ghost fingers that play a gesture](#38-gogesturehint--ghost-fingers-that-play-a-gesture)
 39. [GoRewardRow — a quest or achievement in a list](#39-gorewardrow--a-quest-or-achievement-in-a-list)
 40. [GoSideButton — a picture key down a menu's side](#40-gosidebutton--a-picture-key-down-a-menus-side)
+41. [GoEditFrame — the frame of a layout editor](#41-goeditframe--the-frame-of-a-layout-editor)
 
 ## 1. GoHudAnchor
 
@@ -1055,6 +1056,7 @@ drop.badge = "×%d" % charges_left       # the count on its rim; empty hides it
 | `caption` · `held_caption` · `caption_size` · `held_caption_size` · `caption_drop` | · · `11` · `12` · `28` | A hint under the button at rest / while held (`GoStyle.fit_font_size`) |
 | `cooling` · `cooldown` · `pulse_scale` | `false` · `0` · `1.15` | Dims it and rings the share still to run; ready again it pulses once (not under `reduce_motion`) |
 | `drag_aim` · `aim_radius` · `aim_knob_radius` | `false` · `50` · `24` | Hold and drag: a ring and knob under the thumb; `aim()` and `aimed(pull)` give the pull, 0~1 |
+| `stick` · `stick_icon` · `stick_ink` · `stick_knob_share` · `stick_icon_share` · `stick_label_drop` | `false` · null · skin's `touch_stick_ink()` · `0.44` · `0.8` · `20` | With `drag_aim`: drawn as the skin's joystick (the dish stays put, the icon on the knob, the knob leaning with the pull, the skin's `draw_aim_wedge` pointing there); the name under the dish |
 | `press_scale` · `press_tint` · `cooling_tint` · `hit_slop` | `0.93` · · · `8` | A held button shrinks and darkens; the press reaches `hit_slop` past the rim |
 | `pressed_down` · `released(canceled)` · `cancel()` · `is_held()` | | The press, the lift, and letting go without a lift (focus lost) |
 | `driven` · `drive_press(at)` · `drive_drag(at)` · `drive_release(canceled)` | `false` | The owner routes the fingers (below) |
@@ -1432,3 +1434,34 @@ they read on a pale sky; the count's badge sits on the sticker's top-right corne
 - Under arcade_light it stays out of the focus order like the look's other keys (`GoStyle.skin_focus`); a look that
   keeps focus draws its `Button` focus ring round the whole key. It follows a look change (`GoUi.watch`).
 - 🛑 Display only: the key reports `pressed`, and the count is the caller's.
+
+## 41. GoEditFrame — the frame of a layout editor
+
+`class_name GoEditFrame extends Control` · a "customize controls" screen (PUBG Mobile, COD Mobile, Brawl Stars) shows
+every thumb button and HUD box in its place, each in a frame that says it can be moved; a tap selects one, a drag
+moves it. One that overlaps another turns to warning ink, and one the player hid stays as a ghost so it can be found
+and shown again. The editor places and sizes the frame on the thing it frames and routes every touch itself.
+
+```gdscript
+var frame := GoEditFrame.new()
+editor.add_child(frame)
+frame.circle = true                               # a round thumb button: a ring, not a box
+frame.position = jump.position
+frame.size = jump.size
+frame.state = GoEditFrame.State.SELECTED          # tapped
+frame.state = GoEditFrame.State.WARNING           # overlaps another control
+frame.state = GoEditFrame.State.GHOST             # hidden by the player
+```
+
+| Member | Default | Notes |
+|---|---|---|
+| `enum State { IDLE, SELECTED, WARNING, GHOST }` · `state` | `IDLE` | IDLE dashed, SELECTED solid with a wash and handles, WARNING the same in `warning` ink, GHOST dashed `muted` over a `scrim` veil with `EYE_OFF` |
+| `pad` | `6.0` | How far the outline stands off the node's rect — `frame_rect()` |
+| `circle` | `false` | A ring round a round thing; its handles sit on the compass points |
+| `handles` · `handle_points()` | `true` | The four handles of a SELECTED or WARNING frame (local points; empty otherwise) |
+| `ink()` | | The state's ink (`GoSkin.edit_frame_ink()`) |
+| `paint_count` | | How many times it was painted |
+
+- Skin hooks: `edit_frame_ink(state)` and `draw_edit_frame(canvas, rect, state, circle, handles)`; arcade_light draws
+  the selected frame in the training spotlight's gold. It follows a look change (`GoUi.watch`).
+- 🛑 Display only: `MOUSE_FILTER_IGNORE` — the editor decides what a press selects or drags.

@@ -39,10 +39,12 @@ func _initialize() -> void:
 		await _joystick_art(look)
 		await _touch_lifecycle(look)
 		await _touch_driven(look)
+		await _touch_stick(look)
 		await _joystick_driven(look)
 		await _task_card(look)
 		await _spotlight(look)
 		await _gesture_hint(look)
+		await _edit_frame(look)
 		await _perf_readout(look)
 		await _signal_bars(look)
 		await _slot_touch(look)
@@ -1100,6 +1102,33 @@ func _touch_driven(look: StringName) -> void:
 	await frames(1)
 
 
+func _touch_stick(look: StringName) -> void:
+	var attract := GoTouchButton.make(&"btn_attract", "ATTRACT", 120.0)
+	attract.drag_aim = true
+	attract.driven = true
+	attract.stick = true
+	attract.stick_icon = GoUi.icons().texture(GoIconSet.MAGNET)
+	var holder := _host(attract)
+	holder.position = Vector2(100, 200)
+	await frames(1)
+	var c := attract.size / 2.0
+	check(attract.knob() == c, "touch stick: at rest the knob sits in the dish's middle (%s)" % look)
+	var at := attract.button_center()
+	attract.drive_press(at + Vector2(10, 10))
+	check(attract.knob() == c, "touch stick: the dish stays put, the knob too until the thumb moves")
+	attract.drive_drag(at + Vector2(10, 10) + Vector2(-200, 0))
+	var r := attract.radius()
+	check(attract.aim() == Vector2(-1, 0) and attract.knob().is_equal_approx(c + Vector2(-(r - r * attract.stick_knob_share), 0)),
+		"touch stick: a full pull leans the knob to the rim, the way of the pull (%s)" % attract.knob())
+	attract.drive_drag(at + Vector2(10, 10) + Vector2(0, -25))
+	check(attract.knob().y < c.y and is_equal_approx(attract.knob().x, c.x), "touch stick: a half pull up leans it up")
+	await frames(1) # draws the dish, the wedge and the icon without an error
+	attract.drive_release(false)
+	check(attract.knob() == c and attract.aim() == Vector2.ZERO, "touch stick: released, back to the middle")
+	holder.queue_free()
+	await frames(1)
+
+
 func _joystick_driven(look: StringName) -> void:
 	var stick := GoJoystick.new()
 	stick.mode = GoJoystick.Mode.FOLLOW
@@ -1302,6 +1331,57 @@ func _spotlight(look: StringName) -> void:
 		check(ring != null and ring.border_width_left == 4 and ring.border_color == Color("#ffc928")
 			and ring.corner_radius_top_left == 12 and not ring.draw_center, "spotlight: arcade_light: the 4 dp gold ring")
 		check(skin.spotlight_dim() == Color(0.04, 0.06, 0.14, 0.55), "spotlight: arcade_light: the game's navy dim")
+	holder.queue_free()
+	await frames(1)
+
+
+# ── An edit frame (GoEditFrame) ─────────────────────────────────────
+
+func _edit_frame(look: StringName) -> void:
+	var skin := GoUi.skin()
+	var frame := GoEditFrame.new()
+	var holder := _host(frame, 300.0)
+	frame.position = Vector2(40, 60)
+	frame.size = Vector2(80, 50)
+	await frames(1)
+	check(frame.mouse_filter == Control.MOUSE_FILTER_IGNORE, "edit frame: never takes input")
+	check(frame.state == GoEditFrame.State.IDLE and not frame.circle, "edit frame: idle and boxed by default")
+	check(frame.frame_rect() == Rect2(-6, -6, 92, 62), "edit frame: stands pad off its rect (%s)" % frame.frame_rect())
+	check(frame.handle_points().is_empty(), "edit frame: idle shows no handles")
+	check(frame.paint_count > 0, "edit frame: draws")
+	frame.state = GoEditFrame.State.SELECTED
+	var corners := frame.handle_points()
+	check(corners.size() == 4 and corners[0] == Vector2(-6, -6) and corners[2] == Vector2(86, 56),
+		"edit frame: selected shows a handle on each corner")
+	frame.circle = true
+	frame.size = Vector2(60, 60)
+	var compass := frame.handle_points()
+	check(compass.size() == 4 and compass[0] == Vector2(30, -6) and compass[1] == Vector2(66, 30),
+		"edit frame: a ring's handles sit on its compass points (%s)" % compass)
+	frame.handles = false
+	check(frame.handle_points().is_empty(), "edit frame: handles can be turned off")
+	frame.handles = true
+	frame.state = GoEditFrame.State.WARNING
+	check(frame.handle_points().size() == 4, "edit frame: a warning keeps the handles")
+	check(frame.ink() == GoUi.color(GoTheme.WARNING), "edit frame: a warning is in warning ink")
+	frame.state = GoEditFrame.State.GHOST
+	check(frame.handle_points().is_empty() and frame.ink() == GoUi.color(GoTheme.MUTED),
+		"edit frame: a ghost is muted, without handles")
+	check(skin.edit_frame_ink(GoEditFrame.State.IDLE) == GoUi.color(GoTheme.ACCENT), "edit frame: idle in accent")
+	if look == GoThemePresets.ARCADE_LIGHT:
+		check(skin.edit_frame_ink(GoEditFrame.State.SELECTED) == Color("#ffc928"),
+			"edit frame: arcade_light: the one being edited in the spotlight's gold")
+	else:
+		check(skin.edit_frame_ink(GoEditFrame.State.SELECTED) == GoUi.color(GoTheme.ACCENT),
+			"edit frame: the one being edited in accent")
+	await frames(1) # the last state change has drawn
+	var painted := frame.paint_count
+	frame.state = GoEditFrame.State.GHOST
+	await frames(1)
+	check(frame.paint_count == painted, "edit frame: the same state again does not repaint")
+	frame.state = GoEditFrame.State.IDLE
+	await frames(1)
+	check(frame.paint_count > painted, "edit frame: a new state repaints")
 	holder.queue_free()
 	await frames(1)
 
@@ -1654,6 +1734,11 @@ func _look_follows() -> void:
 			feed.auto_advance = false
 			feed.push("RED knocked out BLUE")
 			return feed,
+		"edit frame": func() -> Control:
+			var frame := GoEditFrame.new()
+			frame.size = Vector2(80, 60)
+			frame.state = GoEditFrame.State.SELECTED
+			return frame,
 		"spotlight": func() -> Control:
 			var spot := GoSpotlight.new()
 			spot.auto_advance = false
@@ -1732,6 +1817,8 @@ func _look_sig(key: String, widget: Control) -> String:
 			return "%s" % (ring.border_color if ring != null else "none")
 		"gesture hint":
 			return "%s" % (widget as GoGestureHint).ink_color()
+		"edit frame":
+			return "%s" % (widget as GoEditFrame).ink()
 		"signal bars":
 			var bars := widget as GoSignalBars
 			bars.text = "48 ms"
@@ -1902,6 +1989,10 @@ func _device_simulation() -> void:
 	var kept_size := root.content_scale_size
 	var kept_factor := root.content_scale_factor
 	var kept_aspect := root.content_scale_aspect
+	# 🛑 A host that scales its own window answers each simulated resize with its own factor: its listeners stand
+	#    aside while the add-on's simulation is measured, and come back after.
+	var host_listeners := _host_resize_listeners()
+	for link: Dictionary in host_listeners: root.size_changed.disconnect(link["callable"])
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
 	GoUi.config.scale_enabled = true
 	GoUi.config.scale_profile = GoScale.Profile.PER_INCH
@@ -1976,7 +2067,18 @@ func _device_simulation() -> void:
 	root.content_scale_size = kept_size
 	root.content_scale_factor = kept_factor
 	root.content_scale_aspect = kept_aspect
+	for link: Dictionary in host_listeners: root.size_changed.connect(link["callable"], link["flags"])
 	await frames(1)
+
+
+## The window's `size_changed` links whose listener is the host project's own script, not the add-on's.
+func _host_resize_listeners() -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	for link: Dictionary in root.size_changed.get_connections():
+		var target: Object = (link["callable"] as Callable).get_object()
+		var script: Script = target.get_script() if target != null else null
+		if script != null and not script.resource_path.begins_with("res://addons/gohud/"): found.append(link)
+	return found
 
 
 ## 📷 `GoSafeArea.obstructions()` on simulated phones and the corner geometry — the HUD's edge-to-edge model: an iPhone's

@@ -722,7 +722,9 @@ func _place_columns(gap: int, tiny: int, coin: int) -> void:
 	_words.add_theme_constant_override(&"separation", tiny)
 	_pay.visible = _wide
 	_pay.custom_minimum_size.x = WIDE_PAY_WIDTH if _wide else 0.0
-	_row.add_theme_constant_override(&"separation", gap)
+	# A painted plate already holds its content off the edge: below [constant WIDE_WIDTH] its parts sit a tiny gap apart, so
+	# the row still fits a 320dp phone inside a form.
+	_row.add_theme_constant_override(&"separation", gap if _wide or not _painted() else tiny)
 	_text.add_theme_constant_override(&"separation", gap if _wide else 0 if _painted() else tiny)
 	_slot.add_theme_constant_override(&"separation", tiny)
 	reward_row.add_theme_constant_override(&"separation", tiny)

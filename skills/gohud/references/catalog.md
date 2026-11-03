@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (30)
+8. [HUD and game shapes](#hud-and-game-shapes) (31)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -993,6 +993,17 @@ Extends `Control`. Dims the screen round one control and rings it; the dim fades
 var spot := GoSpotlight.new()
 hud.add_child(spot)
 spot.follow(jump_button, true)
+```
+
+### `GoEditFrame`
+
+Extends `Control`. The outline a layout editor draws round each thing the player can move: idle, selected with handles, warning, ghost. Never takes input. Details: `hud.md` §41 (GoEditFrame).
+
+```gdscript
+var frame := GoEditFrame.new()
+editor.add_child(frame)
+frame.circle = true
+frame.state = GoEditFrame.State.SELECTED
 ```
 
 ### `GoGestureHint`

@@ -474,6 +474,15 @@ func touch_outline_ink() -> Color:
 	return INK
 
 
+## The game's ATTRACT stick: the painted glass in a light blue, and a cyan aim wedge.
+func touch_stick_ink() -> Color:
+	return Color("#bfe2ff")
+
+
+func touch_aim_ink() -> Color:
+	return Color("#5fe3ff")
+
+
 ## The game's REPULSE cooldown arc.
 func touch_cooldown_ink() -> Color:
 	return Color("#ff7a74")
@@ -491,6 +500,11 @@ func spotlight_ring_box() -> StyleBox:
 	ring.border_color = GOLD
 	ring.set_corner_radius_all(12)
 	return ring
+
+
+## The layout editor's frames: the training ring's GOLD for the one being edited, as the spotlight marks "this one".
+func edit_frame_ink(state: int) -> Color:
+	return GOLD if state == GoEditFrame.State.SELECTED else super(state)
 
 
 # 🎨 The training card's title gold (HUD_NAME) and hint red, and the clock's last seconds (READY_RED), are the
