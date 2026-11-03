@@ -2588,6 +2588,34 @@ func _anchor() -> void:
 		focus_win.queue_free()
 		await frames(2)
 
+	# ── The first focus key brings focus into a window that has none ───────────────
+	# 🛑 Opened after a game key (no ring, nothing focused — the rule above) on a CanvasLayer, the window could not be
+	#    steered: with no focus owner the engine looks for the key's start among the viewport's own top-level Controls
+	#    only, never inside a layer, so Tab did nothing until the mouse clicked into the window. The first Tab is the
+	#    player steering by keyboard: focus goes inside, with its ring, and the key is used up.
+	var key_layer := CanvasLayer.new()
+	root.add_child(key_layer)
+	var key_win := GoSurface.new()
+	var key_button := GoStyle.button("inside")
+	key_win.visible = false   # in the tree before the input — it is what watches the device
+	key_layer.add_child(key_win)
+	key_win.body.add_child(key_button)
+	await frames(2)
+	root.push_input(_key(KEY_W))   # a game key: not steering by keyboard
+	root.gui_release_focus()
+	key_win.visible = true   # a surface opens by showing
+	await frames(3)
+	var before_key := root.gui_get_focus_owner()
+	check(before_key == null, "a window opened after a game key holds no focus (%s)"
+		% (before_key.name if before_key != null else "none"))
+	root.push_input(_key(KEY_TAB))
+	await frames(2)
+	var after_key := root.gui_get_focus_owner()
+	check(after_key != null and key_win.is_ancestor_of(after_key) and after_key.has_focus(true),
+		"the first Tab brings focus inside the window, ring on (%s)" % (after_key.name if after_key != null else "none"))
+	key_layer.queue_free()
+	await frames(2)
+
 	# ── Tooltip ─────────────────────────────────────────────────────────
 	# 🛑 **For an icon button the tooltip is the only description there is.** The engine's default tooltip leaves wrapping on
 	#    and computes a maximum width of 1dp, which split `settings` **one character per line** (measured 2026-09-13: width 1 · height 186).

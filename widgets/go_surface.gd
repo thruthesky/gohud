@@ -2225,6 +2225,16 @@ func _input(event: InputEvent) -> void:
 		request_back()
 		get_viewport().set_input_as_handled()
 		return
+	# ⌨️ A window opened with no focus inside (by a pointer, or by a game key — `_track_device`) takes focus with the
+	#    first key that moves it: that key is the player saying "I steer by keyboard" (`_track_device` has just said so).
+	# 🛑 Left to the engine, nothing happens: with no focused control, `Viewport` looks for the key's starting control
+	#    among its own top-level Controls only (gdref 4.7.2 viewport.cpp "Control *from = gui.key_focus"), never inside
+	#    a CanvasLayer — so Tab and the arrows did nothing in a window on a layer until the mouse clicked into it.
+	#    Only when nothing has focus: a focused control elsewhere (an anchor a tap went through) is the engine's start.
+	if _is_focus_key(event) and get_viewport().gui_get_focus_owner() == null:
+		_focus_default()
+		get_viewport().set_input_as_handled()
+		return
 	if not _dragging: return
 	var dy := 0.0
 	if event is InputEventScreenDrag and event.index == _touch_index: dy = event.relative.y
@@ -2270,6 +2280,14 @@ const FOCUS_ACTIONS: Array[StringName] = [&"ui_focus_next", &"ui_focus_prev", &"
 	&"ui_right"]
 ## The actions that answer the focused control without moving focus.
 const ANSWER_ACTIONS: Array[StringName] = [&"ui_accept", &"ui_select", &"ui_cancel"]
+
+
+## A fresh press (a key or a gamepad button, not an echo) of an action that moves focus (`FOCUS_ACTIONS`) — the inputs
+## `_track_device` reads as steering by keyboard.
+static func _is_focus_key(event: InputEvent) -> bool:
+	if not (event is InputEventKey or event is InputEventJoypadButton): return false
+	if not event.is_pressed() or event.is_echo(): return false
+	return _is_any(event, FOCUS_ACTIONS)
 
 
 static func _is_any(event: InputEvent, actions: Array[StringName]) -> bool:

@@ -4,6 +4,7 @@ All notable changes to gohud are recorded here. Versions follow [Semantic Versio
 
 ## [Unreleased]
 
+- A window opened with nothing focused (after a click, or after a game key) takes focus with the first key that moves it (Tab, Shift+Tab, an arrow; a gamepad d-pad): its default control, with the ring. Before, that key did nothing for a window on a `CanvasLayer` — with no focus owner the engine never looks inside a layer — so it could not be steered without the mouse.
 - Translated label paragraphs follow the application locale even when a sentence starts with a Latin name or its layout is pinned LTR. `GoStyle.label_key` follows locale by default; `label` and `line` opt in with the trailing `follow_locale` argument, or `GoStyle.locale_paragraph(label)` for an existing label. Existing labels refresh on language changes and tree entry without polling or a required autoload. Raw user content retains AUTO.
 
 - **`GoEditFrame`** (`Control`): the outline a layout editor draws round each thing the player can move — the
