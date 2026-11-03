@@ -559,9 +559,9 @@ func _build() -> void:
 	theme = GoUi.theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	# Children scroll first. Unused wheel events stop at this window's edge — they never leak through to what is
-	# behind: not at the end of a list, not over the chrome, not when content is too short to scroll at all.
-	mouse_force_pass_scroll_events = false
+	# Children scroll first. Unused wheel turns and trackpad gestures stop at this window's edge — they never leak through
+	# to what is behind: not at the end of a list, not over the chrome, not when content is too short to scroll at all.
+	GoScroll.contain(self)
 	add_to_group(&"go_surfaces")
 
 	var veil := Scrim.new()
@@ -2194,12 +2194,6 @@ func _scrim_input(event: InputEvent) -> void:
 		if _scrim_pressed and _scrim_origin.distance_to(event.position) < GoUi.metric(GoTheme.SCROLL_DEADZONE):
 			request_close()
 		_scrim_pressed = false
-
-
-func _gui_input(event: InputEvent) -> void:
-	# `MOUSE_FILTER_STOP` does not swallow zoom and pan gestures in Godot.
-	# Nested controls see them first, so only what is left over is stopped here.
-	if event is InputEventGesture: accept_event()
 
 
 ## Drag to resize — grab the sheet's header and move it up or down.

@@ -389,6 +389,49 @@ static func scroll_through(control: Control) -> Control:
 	return control
 
 
+## 🔑 **Scrolling stops at [param boundary]** — a wheel turn, a trackpad swipe or a pinch over it scrolls whatever list
+## inside it can still move, and whatever is left over never goes on to what lies behind it: a game camera that zooms in
+## `_unhandled_input`, a page under a floating card. Call it on the panel that holds a scroll (a floating HUD card, a
+## window, a drawer); `GoSurface` and `GoDrawer` already do. Returns [param boundary]; a second call does nothing.
+## Why the engine needs it (Godot 4.7.2):
+## - a wheel passes a `MOUSE_FILTER_STOP` control while `mouse_force_pass_scroll_events` is on, the default
+##   (`Viewport::_gui_call_input`) — so nested lists chain, and a wheel nothing takes reaches `_unhandled_input`;
+## - a gesture (`InputEventPanGesture`, `InputEventMagnifyGesture`) is not a pointer event, so no mouse filter stops it;
+## - a `ScrollContainer` accepts a wheel or a swipe only when it actually moved.
+## So at the end of a list, over the panel's header or buttons, or with too little to scroll, the event went through.
+## 🛑 Not on a `ScrollContainer` itself: its `gui_input` signal runs before its own scrolling (`Control::_call_gui_input`),
+##    so accepting there would stop the scroll. The boundary must take the mouse (STOP or PASS) — an IGNOREd one never sees it.
+## 🛑 A boundary that sits inside another scroll lets the leftover go on, so the list around it still scrolls; the
+##    outermost boundary stops it.
+static func contain(boundary: Control) -> Control:
+	if boundary == null or boundary.has_meta(_CONTAINS): return boundary
+	assert(not boundary is ScrollContainer, "GoScroll.contain(): call it on the panel around the scroll, not on the scroll")
+	boundary.set_meta(_CONTAINS, true)
+	boundary.gui_input.connect(_contain_leftover.bind(boundary))
+	return boundary
+
+
+## Is [param event] one that scrolls — a wheel (either phase, any of the four directions) or a trackpad gesture?
+static func is_scroll_event(event: InputEvent) -> bool:
+	if event is InputEventGesture: return true
+	var button := event as InputEventMouseButton
+	return button != null and button.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN,
+		MOUSE_BUTTON_WHEEL_LEFT, MOUSE_BUTTON_WHEEL_RIGHT]
+
+
+## Meta that `contain()` leaves on a boundary.
+const _CONTAINS := &"go_scroll_contains"
+
+
+static func _contain_leftover(event: InputEvent, boundary: Control) -> void:
+	if not is_scroll_event(event): return
+	var node := boundary.get_parent()
+	while node != null:
+		if node is ScrollContainer: return   # the list around this panel takes it next
+		node = node.get_parent()
+	boundary.accept_event()
+
+
 static func _place_through(control: Control) -> void:
 	var inside := false
 	var node := control.get_parent()
