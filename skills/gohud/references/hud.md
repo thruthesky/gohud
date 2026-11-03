@@ -1407,7 +1407,8 @@ look's press feel (`GoStyle.press_feel`); disabled, the picture and the word fad
 look's outlined HUD text (`GoOutlineLabel` in arcade_light), so it reads on a painted backdrop; a look without it takes
 the name plate's ink and edge (`GoSkin.nameplate_ink`, `nameplate_outline_ink`). arcade_light's menu pictures are
 `menu_daily` (a calendar with a green check) and `menu_achievements` (a trophy with a rosette), both 192 px on the long
-side, in `assets/arcade_light/rewards/`.
+side, in `assets/arcade_light/rewards/`: die-cut stickers whose white band and thin navy line are baked into the art, so
+they read on a pale sky; the count's badge sits on the sticker's top-right corner.
 
 | Member | Default | Notes |
 |---|---|---|
