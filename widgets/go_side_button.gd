@@ -7,7 +7,7 @@
 ## daily.label_width = 120            # the word shrinks to this width, never under the fit floor
 ## daily.pressed.connect(open_quests.bind("daily"))
 ## menu.add_child(daily)
-## daily.set_badge(3)                  # a GoBadge on the picture's top-right corner; 0 hides it
+## daily.set_badge(3)                  # a GoBadge on the art's top-right corner; 0 hides it, a new count pops
 ## ```
 ##
 ## No plate: the picture is the key. It darkens to `GoSkin.picture_press_tint()` while held and pops with the look's
@@ -27,6 +27,10 @@ extends BaseButton
 const GAP := 2.0
 ## A disabled key's opacity.
 const DISABLED_ALPHA := 0.5
+## How far the count's centre sits in from the picture's top-right corner, as a share of `picture_size` (each way): a
+## painted picture rarely fills its square's corner, so a badge straddling the very corner floated beside the art (a
+## calendar's rounded top, a trophy's handle). Here it sits on the art's corner and hangs about a third past it.
+const BADGE_INSET := 0.12
 
 ## The word under the picture (already translated: the key shows it as it is, and says it to a screen reader).
 @export var text := "":
@@ -58,12 +62,12 @@ const DISABLED_ALPHA := 0.5
 		font_size = value
 		_queue_layout()
 
-## The text role of the count on the picture's corner: bigger than a list's badge, as the key is.
-@export var badge_role := GoTheme.ROLE_BODY:
+## The text role of the count on the picture's corner: bigger than a list's badge, as the key is — a bold count about
+## as big as the word, as a mobile game's event key wears it.
+@export var badge_role := GoTheme.ROLE_SUBTITLE:
 	set(value):
 		badge_role = value
-		var shown := badge()
-		if shown != null: shown.text_role = value
+		_dress_badge(badge())
 
 ## 🔔 What the player's press says through `GoFeedback`. Empty: silent.
 @export var feedback: StringName = GoFeedback.TAPPED
@@ -133,8 +137,15 @@ func _notification(what: int) -> void:
 ## ("NEW"), [param as_dot] only a dot. Returns the badge.
 func set_badge(count: int, words := "", as_dot := false) -> GoBadge:
 	var shown := GoBadge.attach(picture, count, words, as_dot)
-	if shown != null: shown.text_role = badge_role
+	_dress_badge(shown)
 	return shown
+
+
+## The count's role and its place on the picture's corner (`BADGE_INSET`).
+func _dress_badge(shown: GoBadge) -> void:
+	if shown == null: return
+	shown.text_role = badge_role
+	shown.corner_inset = Vector2.ONE * roundf(float(picture_size) * BADGE_INSET)
 
 
 ## The badge on the picture's corner, null before the first `set_badge`.
@@ -167,6 +178,7 @@ func refresh() -> void:
 	_fitted = GoStyle.fit_font_size(PackedStringArray([text]), base, label_room(), label.get_theme_font(&"font")) \
 		if not text.is_empty() else base
 	label.add_theme_font_size_override(&"font_size", _fitted)
+	_dress_badge(badge())
 	update_minimum_size()
 	_place()
 
@@ -208,8 +220,7 @@ func _restyle() -> void:
 		label.add_theme_color_override(&"font_outline_color", skin.nameplate_outline_ink())
 		label.add_theme_constant_override(&"outline_size", maxi(2, skin.nameplate_outline(false)))
 	GoStyle.skin_focus(self)
-	var shown := badge()
-	if shown != null: shown.text_role = badge_role
+	_dress_badge(badge())
 	refresh()
 
 

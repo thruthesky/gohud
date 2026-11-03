@@ -1057,6 +1057,19 @@ func badge_box(ink: Color) -> StyleBox:
 	return style
 
 
+## Dresses a badge's count or words (`GoBadge`, not a sticker) on the [param face] `badge_box(ink)` painted: the badge's
+## colour pushed until it reads **on the face the skin actually paints**, no outline. A look whose badge is painted
+## solid may outline the words instead (`GoSkinArcadePainted`: white with an ink edge).
+## 🛑 Measure against the painted face, not the badge colour. The text used to be picked against red while the skin
+##    paints the face in the surface colour: `on_accent` on `surface_high` is 1.69:1 in the default dark theme — the
+##    count could not be read (measured 2026-09-23). The slot's quantity badge already reads its face this way.
+func dress_badge(label: Label, ink: Color, face: StyleBox) -> void:
+	var back := blend(box_background(face), GoUi.color(GoTheme.SURFACE))
+	label.add_theme_color_override(&"font_color", readable_on(ink, back))
+	label.remove_theme_color_override(&"font_outline_color")
+	label.remove_theme_constant_override(&"outline_size")
+
+
 ## Caption plate on a world-tour map node. Skins may provide a smaller pill suited to the map artwork.
 func world_tour_caption_box() -> StyleBox:
 	return surface_box(GoTheme.BOX_CARD)

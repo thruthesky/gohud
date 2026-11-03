@@ -54,15 +54,24 @@ const KEYCAP_PAD := Vector3(9.0, 1.0, 5.0)
 ## The colour the keycap shows under its word — the centre pixel of `keycap.png` (#eff0f8), the generator's
 ## `FACES["keycap.png"]`, not plain white.
 const KEYCAP_FACE := Color(0.937255, 0.941176, 0.972549, 1.0)
-## The round badges (240 px; the game draws them whole, as the 3-2-1 / GO! discs): a 40 px strip is left in the middle
-## so a wide count stretches the plate into a pill instead of tearing the disc.
-const BADGE_EDGE := Vector4(100.0, 100.0, 100.0, 100.0)
+## The round badges (240 px; the game draws them whole, as the 3-2-1 / GO! discs): a 4 px strip through the middle is
+## all that stretches, so a wide count draws a pill with round ends and one digit a disc (`keep_corners`).
+## 🛑 Not a wider strip: a count is drawn far smaller than the edges, and dropping a 40 px middle band out of a disc
+##    joined its quarters at a point — the badge read as a lemon (measured 2026-11-03).
+const BADGE_EDGE := Vector4(118.0, 118.0, 118.0, 118.0)
 ## 🔑 The colour each badge shows under its count — sampled at the middle of the PNG, like the generator's `FACES`
 ##    (`tools/theme_arcade_painted.py`). `face_color` is never drawn; it is what the count's ink is measured against.
 ## 🛑 Not `CONTROL_BLUE` / `GREEN`: those are the paints' names, and the blue disc is darker under its count
 ##    (#1c63f8, 4.6:1 for white) than `CONTROL_BLUE` (4.43:1) — the badge check read the wrong face (2026-10-13).
 const BADGE_BLUE_FACE := Color("#1c63f8")
 const BADGE_GREEN_FACE := Color("#21d270")
+## The red disc's (`badge_red.png`, a claimable count): 6.4:1 for white.
+const BADGE_RED_FACE := Color("#be0f11")
+## What the painted disc's lower rim weighs more than its top: the count's bottom padding grows by this (dp), so a digit
+## sits on the face's middle instead of a hair low.
+const BADGE_LIFT := 1.0
+## The ink edge round a badge's white count, as a share of its font size (never under 2 px) — a mobile game's count.
+const BADGE_OUTLINE := 0.16
 ## How far an accent tints the white card (the arcade skin paints a frame in it; a sprite has no frame to paint).
 const CARD_ACCENT_TINT := 0.18
 ## The notification pill (`UiTheme` `Notif`: `chunky_box(PANEL, 16, 12, 2, 3, 5, CONTROL_BLUE, true)`).
@@ -225,17 +234,41 @@ static func _near(a: Color, b: Color) -> bool:
 
 # ── Badges ────────────────────────────────────────────────────────────
 
-## A badge is a round painted badge: green when its colour is a green (success, GO!), blue for every other colour
-## (the countdown's) — the game has those two.
+## A badge is a round painted badge: green when its colour is a green (success, GO!), red when it is a red (`danger`,
+## `GoBadge`'s default: a count to claim, unread mail), blue for every other colour (the countdown's).
+## 🔑 Tight round the count: the disc's own rim is the room above and below it (`badge_pad_y` 0 in arcade_light), so a
+##    digit fills the face as a mobile game's does; a wider count stretches the 4 px middle into a pill.
 func badge_box(ink_color: Color) -> StyleBox:
-	var green := ink_color.s >= 0.25 and ink_color.h >= 0.2 and ink_color.h <= 0.45
-	var face := _sprite("badge_green.png" if green else "badge_blue.png", BADGE_EDGE, PAINT_PPU)
-	face.face_color = BADGE_GREEN_FACE if green else BADGE_BLUE_FACE
+	var file := _badge_file(ink_color)
+	var face := _sprite(file, BADGE_EDGE, PAINT_PPU)
+	face.keep_corners = true
+	face.face_color = {"badge_green.png": BADGE_GREEN_FACE, "badge_red.png": BADGE_RED_FACE}.get(file, BADGE_BLUE_FACE)
 	face.content_margin_left = badge_pad_x
 	face.content_margin_right = badge_pad_x
 	face.content_margin_top = badge_pad_y
-	face.content_margin_bottom = badge_pad_y
+	face.content_margin_bottom = badge_pad_y + BADGE_LIFT
 	return face
+
+
+## Which painted disc a badge of [param ink_color] wears: a green, a red or (every other colour) the blue.
+static func _badge_file(ink_color: Color) -> String:
+	if ink_color.s < 0.25: return "badge_blue.png"
+	if ink_color.h >= 0.2 and ink_color.h <= 0.45: return "badge_green.png"
+	if ink_color.h <= 0.04 or ink_color.h >= 0.93: return "badge_red.png"
+	return "badge_blue.png"
+
+
+## A count on the red or blue disc is white with an ink edge, as bold as a mobile game's; on a face white does not read
+## on (the green), the count keeps the base's readable ink.
+func dress_badge(label: Label, ink_color: Color, face: StyleBox) -> void:
+	var back := GoSkin.box_background(face)
+	if GoSkin.contrast_ratio(Color.WHITE, back) < 4.5:
+		super(label, ink_color, face)
+		return
+	label.add_theme_color_override(&"font_color", Color.WHITE)
+	label.add_theme_color_override(&"font_outline_color", ink())
+	var size := label.get_theme_font_size(&"font_size")
+	label.add_theme_constant_override(&"outline_size", maxi(2, roundi(float(size) * BADGE_OUTLINE)))
 
 
 ## The white country pill under a world-tour badge: a thin navy rim and a soft drop shadow.

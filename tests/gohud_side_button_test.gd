@@ -130,12 +130,22 @@ func _badge() -> void:
 	await frames(2)
 	check(shown != null and shown.get_parent() == key.picture, "the count hangs on the picture")
 	check(shown.visible and shown.count() == 3, "it shows 3")
-	check(shown.text_role == GoTheme.ROLE_BODY, "in the key's bigger role")
+	check(shown.text_role == GoTheme.ROLE_SUBTITLE, "in the key's bigger role")
 	check(key.badge() == shown, "badge() finds it")
 	check(key.set_badge(5) == shown, "one badge, reused")
+	await frames(1)
+	# Pulled in onto the art (BADGE_INSET of the picture each way), not centred on the square's empty corner — and still
+	# hanging past it, as a count on a mobile game's event icon does.
 	var corner := key.picture.size
 	var centre := shown.position + shown.size * 0.5
-	check(absf(centre.x - corner.x) <= 1.0 and absf(centre.y) <= 1.0, "centred on the picture's top-right (%s)" % centre)
+	var inset := roundf(float(key.picture_size) * GoSideButton.BADGE_INSET)
+	check(inset > 0.0 and shown.corner_inset == Vector2.ONE * inset, "pulled in by %s (%s)" % [inset, shown.corner_inset])
+	check(absf(centre.x - (corner.x - inset)) <= 1.0 and absf(centre.y - inset) <= 1.0,
+		"centred %s in from the picture's top-right (%s)" % [inset, centre])
+	check(shown.position.x + shown.size.x > corner.x and shown.position.y < 0.0, "it still hangs past the corner")
+	key.picture_size = 120
+	await frames(2)
+	check(shown.corner_inset == Vector2.ONE * roundf(120.0 * GoSideButton.BADGE_INSET), "the inset follows the picture")
 	key.set_badge(0)
 	check(not shown.visible, "0 hides it")
 	key.badge_role = GoTheme.ROLE_CAPTION

@@ -14,6 +14,9 @@
 ## GoBadge.stick(cleared_card, "", GoUi.color(GoTheme.SUCCESS_FILL), 0.0, GoIconSet.CHECK)
 ## ```
 ##
+## Under arcade_light a count is the glossy red disc (`badge_red.png`) with a white, ink-edged number, tight round it —
+## a pill from two digits. A count that appears or changes pops (`pop_seconds`; not under `reduce_motion`).
+##
 ## ## 🏷 Badge or sticker
 ## A **badge** whispers a count on a faint plate (`badge_box`). A **sticker** (`solid`) is painted in its colour and
 ## is the loudest thing on its card (`GoSkin.sticker_box` — a small painted key with a lip and a gloss under the arcade
@@ -92,8 +95,23 @@ extends PanelContainer
 		hide_when_zero = value
 		_refresh()
 
+## How far the badge's centre sits in from the host's top-right corner (dp: x to the left, y down) when it is attached
+## (`attach`). Zero straddles the very corner; a picture whose art does not reach its box's corner (`GoSideButton`)
+## pulls it in so the badge sits on the art instead of floating beside it.
+@export var corner_inset := Vector2.ZERO:
+	set(value):
+		corner_inset = value
+		if has_meta(&"go_overlay"): _pin_to_corner()
+
+## 🎈 How long the pop lasts when the count appears or changes (s) — it lands at `pop_scale` and settles back, as
+## `GoCountdown`'s step does. 0, `reduce_motion`, or a badge outside the tree: no pop.
+@export_range(0.0, 1.0, 0.01) var pop_seconds := 0.25
+## How big the badge lands before it settles (1 = no pop).
+@export_range(1.0, 2.0, 0.01) var pop_scale := 1.3
+
 var _count := 0
 var _label: Label
+var _pop: Tween
 ## The icon drawn now (`GoUi.icons().node()` — a texture or a glyph), rebuilt when the name, size or colour changes.
 var _icon_node: Control
 var _icon_key := ""
@@ -135,10 +153,25 @@ func _exit_tree() -> void:
 	GoUi.unwatch(_on_ui_changed)
 
 
-## The count to show. At 0 (and with `hide_when_zero`) it hides.
+## The count to show. At 0 (and with `hide_when_zero`) it hides. A count that appears or changes pops (`pop_seconds`).
 func set_count(value: int) -> void:
+	var before := _count
 	_count = maxi(0, value)
 	_refresh()
+	if _count != before and _count > 0 and visible: pop()
+
+
+## 🎈 Lands the badge at `pop_scale` and settles it back over `pop_seconds` — the "something new" a count says. Called by
+## `set_count` when the count changes; call it to draw the eye again. Drawing only: the badge keeps its box.
+## Nothing under `reduce_motion`, outside the tree, or at 0 seconds.
+func pop() -> void:
+	if is_instance_valid(_pop) and _pop.is_valid(): _pop.kill()
+	scale = Vector2.ONE
+	if not is_inside_tree() or GoUi.config.reduce_motion or pop_seconds <= 0.0 or pop_scale <= 1.0: return
+	_place_tilt()
+	scale = Vector2.ONE * pop_scale
+	_pop = create_tween()
+	_pop.tween_property(self, "scale", Vector2.ONE, pop_seconds).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func count() -> int:
@@ -173,19 +206,19 @@ func _refresh() -> void:
 	if solid and not dot:
 		GoUi.skin().dress_sticker(_label, color)
 	else:
-		_label.remove_theme_color_override(&"font_outline_color")
-		_label.remove_theme_constant_override(&"outline_size")
-		_label.add_theme_color_override(&"font_color", _on_badge(face, color))
+		GoUi.skin().dress_badge(_label, color, face)
 	_show_icon(pictured)
 
 	if dot:
 		custom_minimum_size = Vector2(px, px)
 	else:
-		# Keep a single digit (or an icon) round too — narrower than it is tall and it reads as a squashed pill.
+		# Keep a single digit (or an icon) round too — narrower than it is tall and it reads as a squashed pill. Round
+		# means the whole badge, padding and all: never narrower than it is tall.
 		var box := _icon_node.get_combined_minimum_size() if pictured else _label.get_combined_minimum_size()
-		var side := maxf(box.y, box.x)
+		var tall := box.y + face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM)
+		var side := maxf(tall, box.x)
 		custom_minimum_size = Vector2(side, box.y)
-		if pictured: _round(face, box.y + face.get_margin(SIDE_TOP) + face.get_margin(SIDE_BOTTOM))
+		if pictured: _round(face, tall)
 	_place_tilt()
 
 	# ♿ Colour and position alone cannot be read — say in words how many of what there are.
@@ -194,16 +227,6 @@ func _refresh() -> void:
 	if not words.is_empty(): accessibility_name = words
 	elif dot: accessibility_name = GoUi.spoken([str(_count)]) if _count > 0 else ""
 	else: accessibility_name = ""
-
-
-## The text colour that stays legible on the badge panel — the badge's own colour, pushed until it reads **on the face
-## the skin actually paints**. The skin decides how the panel is painted, so no colour can be hard-coded.
-## 🛑 Measure against the painted face, not the badge colour. The text used to be picked against red while the skin
-##    paints the face in the surface colour: `on_accent` on `surface_high` is 1.69:1 in the default dark theme — the
-##    count could not be read (measured 2026-09-23). The slot's quantity badge already reads its face this way.
-func _on_badge(face: StyleBox, ink: Color) -> Color:
-	var back := GoSkin.blend(GoSkin.box_background(face), GoUi.color(GoTheme.SURFACE))
-	return GoSkin.readable_on(ink, back)
 
 
 func _on_ui_changed() -> void:
@@ -284,7 +307,8 @@ const _ATTACHED := &"gohud_badge"
 ## ```
 ##
 ## 🛑 **It straddles the top right corner** — placed inside it covers the icon, placed fully outside it
-##    widens the row spacing. Overlapping by half avoids both problems.
+##    widens the row spacing. Overlapping by half avoids both problems. A host whose picture stops short of its
+##    box's corner pulls the badge in onto the art with `corner_inset`.
 ## 🔑 The host only has to be a `Control` — it attaches to a button, an icon, a slot, a tab, anything.
 static func attach(host: Control, count := 0, words := "", as_dot := false,
 		color := Color.TRANSPARENT) -> GoBadge:
@@ -326,12 +350,14 @@ static func attach(host: Control, count := 0, words := "", as_dot := false,
 ##    (Before that, adding the parent width to `position` flung it one width off the other way.)
 ## 🛑 From the minimum size, and again whenever it changes — measured once at attach time, the offsets froze and a count
 ##    that grew from `3` to `128` hung off-center.
+## 🔑 `corner_inset` moves that centre in from the corner (left and down), the badge's size staying the same.
 func _pin_to_corner() -> void:
 	var half := get_combined_minimum_size() * 0.5
-	offset_left = -half.x
-	offset_top = -half.y
-	offset_right = half.x
-	offset_bottom = half.y
+	var at := Vector2(-corner_inset.x, corner_inset.y)
+	offset_left = at.x - half.x
+	offset_top = at.y - half.y
+	offset_right = at.x + half.x
+	offset_bottom = at.y + half.y
 
 
 ## Detach the attached badge. Does nothing if there is none.

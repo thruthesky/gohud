@@ -19,7 +19,7 @@
 ## ## 🛑 Same pixels as the game's `SpriteBox`
 ## `dest_rects`, `source_rects` and `_draw` are the Magnet Mayhem `SpriteBox` line for line — the same maths in the same
 ## order and the same `canvas_item_add_texture_rect_region` call — so a screen moved onto gohud draws exactly what it
-## drew before. Change them only together with that reference.
+## drew before. Change them only together with that reference. (`keep_corners`, off by default, is gohud's own.)
 ## 🔑 A texture has no `bg_color`, so `face_color` carries the plate's nominal colour for the contrast checks.
 ## 🔑 Padding is the built-in `content_margin_*` (set it per use); `frame_margin()` reports the painted edge so a
 ##    scroll inside clips under the frame (`GoSkin.frame_margin`).
@@ -57,14 +57,30 @@ extends StyleBox
 	set(value):
 		face_color = value
 		emit_changed()
+## ⭕ The corners keep their shape: in a rect smaller than the edges, all four shrink by the **same** factor (the
+## tighter side's), so a round badge stays round and a wider one is a pill with round ends. Off (the game's
+## `SpriteBox`), each side shrinks on its own: a disc drawn 30×22 came out as a pointed eye (measured 2026-11-03).
+@export var keep_corners := false:
+	set(value):
+		keep_corners = value
+		emit_changed()
 
 
-## The nine destination rects (row by row) for `rect`. Edges shrink together when the rect is smaller than they are.
+## The nine destination rects (row by row) for `rect`. Edges shrink together when the rect is smaller than they are
+## (every edge by one factor under `keep_corners`).
 func dest_rects(rect: Rect2) -> Array[Rect2]:
 	var l: float = edge.x / pixels_per_unit
 	var t: float = edge.y / pixels_per_unit
 	var r: float = edge.z / pixels_per_unit
 	var b: float = edge.w / pixels_per_unit
+	if keep_corners:
+		var k: float = 1.0
+		if l + r > 0.0: k = minf(k, rect.size.x / (l + r))
+		if t + b > 0.0: k = minf(k, rect.size.y / (t + b))
+		l *= k
+		r *= k
+		t *= k
+		b *= k
 	if l + r > rect.size.x:
 		var k: float = rect.size.x / (l + r)
 		l *= k

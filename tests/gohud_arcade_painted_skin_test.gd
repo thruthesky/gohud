@@ -170,14 +170,28 @@ func _sprites(skin: GoSkinArcadePainted) -> void:
 	_is_sprite(kbd, "keycap.png", Vector4(70, 70, 70, 80), 5.5, "kbd_box")
 	if kbd != null: check(_margins(kbd) == Vector4(9, 1, 9, 5), "kbd_box: KeycapPanel's margins")
 
-	_is_sprite(skin.badge_box(Color("#3ecf5a")), "badge_green.png", Vector4(100, 100, 100, 100), 3.0, "badge_box(green)")
-	_is_sprite(skin.badge_box(Color("#2fa84f")), "badge_green.png", Vector4(100, 100, 100, 100), 3.0,
+	_is_sprite(skin.badge_box(Color("#3ecf5a")), "badge_green.png", Vector4(118, 118, 118, 118), 3.0, "badge_box(green)")
+	_is_sprite(skin.badge_box(Color("#2fa84f")), "badge_green.png", Vector4(118, 118, 118, 118), 3.0,
 		"badge_box(deep green)")
-	_is_sprite(skin.badge_box(Color("#3d6bff")), "badge_blue.png", Vector4(100, 100, 100, 100), 3.0, "badge_box(blue)")
-	_is_sprite(skin.badge_box(Color("#ff4d4d")), "badge_blue.png", Vector4(100, 100, 100, 100), 3.0, "badge_box(red)")
+	_is_sprite(skin.badge_box(Color("#3d6bff")), "badge_blue.png", Vector4(118, 118, 118, 118), 3.0, "badge_box(blue)")
+	_is_sprite(skin.badge_box(Color("#ff4d4d")), "badge_red.png", Vector4(118, 118, 118, 118), 3.0, "badge_box(red)")
+	_is_sprite(skin.badge_box(GoUi.color(GoTheme.DANGER)), "badge_red.png", Vector4(118, 118, 118, 118), 3.0,
+		"badge_box(danger): GoBadge's default count is the red disc")
+	_is_sprite(skin.badge_box(Color("#ff9800")), "badge_blue.png", Vector4(118, 118, 118, 118), 3.0, "badge_box(orange)")
 	var badge := skin.badge_box(Color("#3d6bff"))
-	check(badge.content_margin_left == skin.badge_pad_x and badge.content_margin_top == skin.badge_pad_y,
-		"badge_box: the badge padding dials")
+	check(badge is GoStyleBoxSprite and badge.keep_corners, "badge_box: the disc keeps its round corners at any size")
+	check(badge.content_margin_left == skin.badge_pad_x and badge.content_margin_top == skin.badge_pad_y
+		and badge.content_margin_bottom == skin.badge_pad_y + GoSkinArcadePainted.BADGE_LIFT,
+		"badge_box: the badge padding dials, the bottom lifted")
+	var count := Label.new()
+	count.add_theme_font_size_override(&"font_size", 20)
+	skin.dress_badge(count, GoUi.color(GoTheme.DANGER), skin.badge_box(GoUi.color(GoTheme.DANGER)))
+	check(count.get_theme_color(&"font_color") == Color.WHITE and count.get_theme_constant(&"outline_size") >= 2,
+		"dress_badge: a count on the red disc is white with an ink edge")
+	skin.dress_badge(count, GoUi.color(GoTheme.SUCCESS), skin.badge_box(Color("#3ecf5a")))
+	check(count.get_theme_color(&"font_color") != Color.WHITE and not count.has_theme_constant_override(&"outline_size"),
+		"dress_badge: on the green disc it keeps the readable ink")
+	count.free()
 
 
 ## The centre pixel of the painted PNG [param file] — what the art shows under a label. Read from the PNG itself,
@@ -197,7 +211,8 @@ func _same(a: Color, b: Color) -> bool:
 ## 🔑 `face_color` is what the contrast checks measure text against, so it must be the art's own colour under the
 ##    label: a badge's is its PNG's centre pixel, a board's is the card's centre pixel times the tint (alpha too).
 func _faces(skin: GoSkinArcadePainted) -> void:
-	for pair: Array in [[Color("#3ecf5a"), "badge_green.png"], [Color("#3d6bff"), "badge_blue.png"]]:
+	for pair: Array in [[Color("#3ecf5a"), "badge_green.png"], [Color("#3d6bff"), "badge_blue.png"],
+			[Color("#e8332f"), "badge_red.png"]]:
 		var centre := _centre(pair[1])
 		check(centre.a > 0.0, "faces: %s loads and has a centre pixel" % pair[1])
 		var badge := skin.badge_box(pair[0]) as GoStyleBoxSprite

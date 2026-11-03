@@ -20,7 +20,7 @@ const DARK := "res://addons/gohud/themes/presets/arcade_dark.tres"
 
 ## Every painted sprite → does the game import it with mipmaps (its `.import` says `mipmaps/generate`).
 const SPRITES := {
-	"badge_blue": false, "badge_green": false, "btn_blue": true, "btn_white": true, "btn_black": true, "btn_green": true, "btn_grey": true, "btn_red": true,
+	"badge_blue": false, "badge_green": false, "badge_red": false, "btn_blue": true, "btn_white": true, "btn_black": true, "btn_green": true, "btn_grey": true, "btn_red": true,
 	"card": true, "close_key": true, "inset": true, "keycap": true, "ribbon_gold": true, "ribbon_red": false, "slider_blue": true,
 	"slider_cyan": true, "slider_green": true, "slider_handle": true, "slider_track": true, "toggle_off": true,
 	"toggle_on": true,

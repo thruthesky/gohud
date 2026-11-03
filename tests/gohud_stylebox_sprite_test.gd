@@ -69,6 +69,17 @@ func _dest_rects() -> void:
 		Rect2(0, 2.5, 5, 1.5), Rect2(5, 2.5, 0, 1.5), Rect2(5, 2.5, 4, 1.5),
 	]
 	check(_rects_equal(got, want), "dest: a rect smaller than the edges shrinks them proportionally (%s)" % str(got))
+	# keep_corners: 30 wide fits 10 + 8, but 4 tall against 5 + 3 halves every edge — the corners keep their shape.
+	box.keep_corners = true
+	got = box.dest_rects(Rect2(0, 0, 30, 4))
+	want = [
+		Rect2(0, 0, 5, 2.5), Rect2(5, 0, 21, 2.5), Rect2(26, 0, 4, 2.5),
+		Rect2(0, 2.5, 5, 0), Rect2(5, 2.5, 21, 0), Rect2(26, 2.5, 4, 0),
+		Rect2(0, 2.5, 5, 1.5), Rect2(5, 2.5, 21, 1.5), Rect2(26, 2.5, 4, 1.5),
+	]
+	check(_rects_equal(got, want), "dest: keep_corners shrinks every edge by the tighter side's factor (%s)" % str(got))
+	got = box.dest_rects(Rect2(100, 50, 200, 40))
+	check(got[0].size.is_equal_approx(Vector2(10, 5)), "dest: keep_corners leaves a roomy rect's edges alone")
 
 
 func _source_rects() -> void:

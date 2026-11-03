@@ -406,18 +406,27 @@ GoBadge.stick(stage_card, "PLAY!", GoUi.color(GoTheme.SUCCESS_FILL), -8.0)   # a
 GoBadge.stick(stage_card, "", Color.TRANSPARENT, 0.0, &"check")               # a round sticker with an icon
 ```
 
-`cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger) · `hide_when_zero` ·
+`cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger: arcade_light's red disc) · `hide_when_zero` ·
 `set_count(value)` / `count()` (change a badge you hold — `attach()` again does the same for an attached one) ·
 `GoBadge.make(count, words, as_dot, color)` · `solid` (a sticker — `GoSkin.sticker_box()`, a glossy key under the
 arcade looks) · `icon` (a `GoIconSet` name drawn instead of the words; the badge turns round) · `tilt` (−45–45°,
 round its centre — layout keeps the upright size) · `text_role` (`ROLE_MICRO`) ·
-`GoBadge.stick(host, words, color, degrees, icon)` (attach + solid + `ROLE_BODY`; colour defaults to `SUCCESS_FILL`).
+`GoBadge.stick(host, words, color, degrees, icon)` (attach + solid + `ROLE_BODY`; colour defaults to `SUCCESS_FILL`) ·
+`corner_inset` (dp the attached badge's centre moves in from the corner, left and down) · `pop()` · `pop_seconds`
+(0.25) · `pop_scale` (1.3).
 
 - `attach()` pins it to the **top-right corner of the host**, half outside, with anchors — so it follows a
-  host whose size is decided later. Attaching twice returns the same badge.
+  host whose size is decided later. Attaching twice returns the same badge. A host whose picture stops short of its
+  box's corner pulls it onto the art with `corner_inset` (`GoSideButton` does).
+- 🎈 A count that appears or changes **pops**: it lands at `pop_scale` and settles back over `pop_seconds`, as a
+  `GoCountdown` step does. Drawing only (the box never moves); nothing under `GoConfig.reduce_motion`.
+- One digit is a disc: the badge is never narrower than it is tall, padding included; a longer count is a pill.
 - 🔑 A number when the count changes what the player does; a dot when only "there is something" matters.
-- ♿ The badge carries an `accessibility_name`, and its text colour is its own colour pushed until it reads on the
-  face the skin **actually paints** — never assumed white, never measured against a colour that is not drawn.
+- ♿ The badge carries an `accessibility_name`, and its words are dressed by the skin (`GoSkin.dress_badge`): by
+  default its own colour pushed until it reads on the face the skin **actually paints** — never assumed white, never
+  measured against a colour that is not drawn. arcade_light paints a glossy disc (`badge_red.png` for a red or the
+  default danger ink, `badge_green.png` for a green, `badge_blue.png` otherwise) tight round the count, and writes a
+  count white with an ink edge where white reads on it (red, blue).
 - It stays one line and re-centres on the corner when its size changes (`3` → `128`). A dot badge is a solid dot.
 
 ## 13. GoRewardCalendar — daily attendance
@@ -1390,7 +1399,7 @@ daily.picture_size = 76                   # the picture's square (dp)
 daily.label_width = 120                   # the word shrinks into this, never under the fit floor
 daily.pressed.connect(open_quests.bind("daily"))
 menu.add_child(daily)
-daily.set_badge(3)                        # 0 hides it
+daily.set_badge(3)                        # 0 hides it; a new count pops
 ```
 
 There is no plate: the picture is the key. While held it darkens to `GoSkin.picture_press_tint()` and pops with the
@@ -1408,8 +1417,8 @@ side, in `assets/arcade_light/rewards/`.
 | `picture_size` | `72` | The square's side (dp) |
 | `label_width` | `0.0` | The room the word shrinks into (dp); 0 = one and a half pictures (`label_room()`) |
 | `font_size` | `0` | The word's size before it shrinks; 0 = the look's `button` role. `fitted_font_size()` is the size drawn |
-| `set_badge(count, words = "", as_dot = false)` · `badge()` | | `GoBadge.attach` on the picture: centred on its top-right corner, hidden at 0 |
-| `badge_role` | `GoTheme.ROLE_BODY` | The count's text role: bigger than a list's badge, as the key is |
+| `set_badge(count, words = "", as_dot = false)` · `badge()` | | `GoBadge.attach` on the picture, on the art's top-right corner (`BADGE_INSET` = 0.12 of `picture_size` in from the square's corner each way, so it sits on the art and hangs past it), hidden at 0 |
+| `badge_role` | `GoTheme.ROLE_SUBTITLE` | The count's text role: a bold count as big as the key's word, as a mobile game's event key wears it |
 | `feedback` | `GoFeedback.TAPPED` | What a press says through `GoFeedback` |
 | `face_tint()` | | The tint the picture and the word take now (white, the press tint, or faded) |
 | `refresh()` | | Applies pending changes now; the setters batch to the end of the frame |
