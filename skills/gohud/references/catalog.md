@@ -18,7 +18,7 @@ against the code (`tools/check_docs_api.py`).
 5. [Buttons, chips and choices](#buttons-chips-and-choices) (10)
 6. [Inputs and pickers](#inputs-and-pickers) (14)
 7. [Lists, cards and data](#lists-cards-and-data) (8)
-8. [HUD and game shapes](#hud-and-game-shapes) (31)
+8. [HUD and game shapes](#hud-and-game-shapes) (32)
 9. [Looks and system](#looks-and-system) (9)
 
 ## Layout
@@ -1061,6 +1061,20 @@ quest.set_reward(50, GoIconSet.COIN)
 quest.set_claim_text("CLAIM")
 quest.set_state(GoRewardRow.State.READY)
 quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))
+```
+
+### `GoRewardBurst`
+
+Extends `Control`. The moment a reward is claimed: the screen dims, the coin rises from the key and bursts in turning light, +N stamps in, then COLLECT sends the coins into the balance, which counts up. Details: `hud.md` §42 (GoRewardBurst).
+
+```gdscript
+var burst := GoRewardBurst.new()
+screen.add_child(burst)
+burst.collect_text = "COLLECT"
+burst.target = coin_pill
+burst.target_label = coin_label
+burst.push(claim_button.get_global_rect(), "win_3", 20)
+burst.resolve("win_3", 20, 140)
 ```
 
 ### `GoSideButton`

@@ -21,3 +21,11 @@ Painted art for the quest and reward rows. Icons are full colour, about 160 px o
 - `bar_blue.png` 240x44 - glossy blue progress fill, same outline and size as the track; nine-patch 28/28/0/0
 - `bar_green.png` 240x44 - glossy green progress fill (complete), same outline and size as the track; nine-patch 28/28/0/0
 - `value_pill.png` 240x76 - empty pale cyan rimmed chip behind the coin balance and "resets in" text; nine-patch 44/44/0/0 (stretch horizontally only)
+- `coin_heap.png` 320x310 - a heap of seven gold crown coins, the same coin as `coin.png` (`GoRewardBurst` from `heap_from` coins on); generated with OpenAI image generation from `coin.png` and `gift.png` as style references, trimmed and fitted to 320 px by `tools/paint_arcade_reward_fx.gd`
+- `fx_rays.png` 512x512 - 16 soft warm-white wedges fading out to the rim; drawn additively and turned (`GoRewardBurst`'s long ray layer)
+- `fx_rays_thin.png` 512x512 - 10 narrower, brighter wedges (the short layer turning the other way)
+- `fx_glow.png` 256x256 - a round warm glow, white at the heart
+- `fx_ring.png` 256x256 - a thin bright ring with a gold fringe (the burst's shockwave)
+- `fx_sparkle.png` 64x64 - a four-point twinkle (the trail, the burst and the twinkles)
+- `fx_glint.png` 128x128 - a crisp four-point star with long thin arms (the glint on the coin's rim)
+- The six `fx_*` pieces are painted by `tools/paint_arcade_reward_fx.gd` (warm white #fff1b8 to gold #ffd75a, alpha the light's strength) and drawn with an additive blend over the burst's navy dim.

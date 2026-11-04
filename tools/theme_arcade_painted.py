@@ -123,6 +123,9 @@ REWARD_PLATE_PAD = (12.0, 4.0, 4.0)
 #    still reads well over the cyan, gold and grey plates.
 REWARD_NOTE_SIZE = 17
 REWARD_NOTE_INK = (0.133, 0.2, 0.431, 1.0)                # #22336e
+# 🪙 The reward burst's "+N": its size and its ink edge (the preview the owner approved: 62 and 11).
+REWARD_AMOUNT_SIZE = 62
+REWARD_AMOUNT_EDGE = 11
 REWARD_BAR_EDGE = (28, 0, 28, 0)
 REWARD_BAR_PPU = 1.7
 ROW_CYAN_FACE = (0.709804, 0.890196, 0.984314, 1.0)     # #b5e3fb (the art's centre pixel, as below)
@@ -227,6 +230,8 @@ BASES = {
     # 🎁 The quest rows (GoRewardRow): their plates, and the bar's track and fills under ProgressBar's own part names.
     "GoRewardRow": "PanelContainer", "GoRewardRowGold": "PanelContainer", "GoRewardRowDone": "PanelContainer",
     "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar", "GoRewardRowNote": "Label",
+    # 🪙 The reward burst's "+N" (GoRewardBurst): gold on the ink edge.
+    "GoRewardAmount": "Label",
 }
 # 🏆 The leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoBoardTitle): `leaderboard_controls()`.
 LEADERBOARD_CONTROL_BASES = {
@@ -565,6 +570,12 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoRewardRowNote/font_sizes/font_size", REWARD_NOTE_SIZE)
     setT("GoRewardRowNote/colors/font_color", C(REWARD_NOTE_INK))
     setT("GoRewardRowNote/constants/outline_size", 0)
+    # 🪙 The reward burst's "+N" (`GoRewardBurst`): the look's gold on a thick ink edge, as big as a title and bigger, so
+    #    it reads over the burst's light and the navy dim.
+    setT("GoRewardAmount/font_sizes/font_size", REWARD_AMOUNT_SIZE)
+    setT("GoRewardAmount/colors/font_color", C(GOLD))
+    setT("GoRewardAmount/colors/font_outline_color", C(INK))
+    setT("GoRewardAmount/constants/outline_size", REWARD_AMOUNT_EDGE)
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,

@@ -133,6 +133,9 @@ const ART_NUMBER_SHARE := 0.9
 ## What a described row's measure keeps back from each text's width (dp), so the words it measured always fit the
 ## width they are drawn in.
 const MEASURE_SLACK := 4.0
+## The claimed stamp (`stamp_claimed`): the check lands from this scale; under reduce motion it fades in this long.
+const STAMP_FROM := 2.4
+const STAMP_FADE := 0.15
 
 ## The row's words, wrapped and shrunk to fit.
 @export var title := "":
@@ -786,6 +789,26 @@ func _number_size(painted: bool, role: StringName) -> int:
 ## Applies the pending changes now instead of at the end of the frame.
 func refresh() -> void:
 	_refresh()
+
+
+## 🏷 **The claimed stamp**: a row just paid (its state already `CLAIMED`) stamps its check in — big, a squash, settled —
+## as a reward collected lands (`GoRewardBurst`). Under `GoConfig.reduce_motion` the check only fades in. Nothing on a
+## row in any other state, so a list that bound the row to other data meanwhile shows nothing. True when it played.
+func stamp_claimed() -> bool:
+	if _queued: _refresh()
+	if state != State.CLAIMED or not is_instance_valid(check_host): return false
+	var mark := check_host
+	mark.pivot_offset = mark.size * 0.5
+	var t := mark.create_tween().set_parallel(true)
+	if GoUi.config.reduce_motion:
+		t.tween_property(mark, "modulate:a", 1.0, STAMP_FADE).from(0.0)
+		return true
+	t.tween_property(mark, "modulate:a", 1.0, 0.06).from(0.0)
+	t.tween_property(mark, "scale", Vector2(1.15, 0.85), 0.14).from(Vector2.ONE * STAMP_FROM) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	t.tween_property(mark, "scale", Vector2.ONE, 0.2).set_delay(0.14).set_trans(Tween.TRANS_BACK) \
+			.set_ease(Tween.EASE_OUT)
+	return true
 
 
 ## 🛑 A finger may already be down on the pill: the engine forgets a press when its button is disabled.

@@ -98,6 +98,9 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_game_hud_test.gd" \
 step "①-rr unit tests — GoRewardRow (the four states, the fixed height, a row reused by a list)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_row_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-rb unit tests — GoRewardBurst (the claim played and flown, the taps, \"+N\", refused, queued, reduce motion, the band)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_burst_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
 step "①-sb unit tests — GoSideButton (the picture over its word, the touch floor, the fit, the count, a press anywhere)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_side_button_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

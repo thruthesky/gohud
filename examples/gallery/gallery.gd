@@ -356,6 +356,33 @@ func _build_new_widgets(page: VBoxContainer) -> void:
 		quests.add_child(reward)
 	page.add_child(quests)
 
+	page.add_child(GoStyle.section("Reward burst", false))
+	# GoRewardBurst: a full-screen layer; CLAIM pushes the build at once, the "server" answers 0.4 s later, COLLECT flies
+	# the coins into the balance chip. The game says what was paid.
+	var wallet := GoStyle.wrap_row()
+	var balance_label := Label.new()
+	balance_label.text = "100"
+	wallet.add_child(balance_label)
+	var claim := GoGlyphButton.make("CLAIM 20", &"", GoTheme.VAR_PRIMARY_BUTTON)
+	var claim_big := GoGlyphButton.make("CLAIM 150", &"", GoTheme.VAR_PRIMARY_BUTTON)
+	wallet.add_child(claim)
+	wallet.add_child(claim_big)
+	page.add_child(wallet)
+	for pair: Array in [[claim, 20], [claim_big, 150]]:
+		var key: GoGlyphButton = pair[0]
+		var coins: int = pair[1]
+		key.pressed.connect(func() -> void:
+			var burst := GoRewardBurst.new()
+			page.get_tree().root.add_child(burst)
+			burst.collect_text = "COLLECT"
+			burst.target = balance_label
+			burst.target_label = balance_label
+			burst.balance = int(balance_label.text)
+			burst.finished.connect(burst.queue_free)
+			burst.push(key.get_global_rect(), "demo", coins)
+			page.get_tree().create_timer(0.4).timeout.connect(func() -> void:
+				burst.resolve("demo", coins, int(balance_label.text) + coins)))
+
 	page.add_child(GoStyle.section("Side menu keys", false))
 	# GoSideButton: a big picture, its word and a count; arcade_light paints menu_daily and menu_achievements, other
 	# looks show the icon set's picture in their place.

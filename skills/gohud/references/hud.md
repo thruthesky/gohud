@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint, GoRewardRow and GoSideButton.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint, GoRewardRow, GoSideButton, GoEditFrame and GoRewardBurst.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -48,6 +48,7 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 39. [GoRewardRow — a quest or achievement in a list](#39-gorewardrow--a-quest-or-achievement-in-a-list)
 40. [GoSideButton — a picture key down a menu's side](#40-gosidebutton--a-picture-key-down-a-menus-side)
 41. [GoEditFrame — the frame of a layout editor](#41-goeditframe--the-frame-of-a-layout-editor)
+42. [GoRewardBurst — the claim of a reward, from the key to the balance](#42-gorewardburst--the-claim-of-a-reward-from-the-key-to-the-balance)
 
 ## 1. GoHudAnchor
 
@@ -1465,3 +1466,68 @@ frame.state = GoEditFrame.State.GHOST             # hidden by the player
 - Skin hooks: `edit_frame_ink(state)` and `draw_edit_frame(canvas, rect, state, circle, handles)`; arcade_light draws
   the selected frame in the training spotlight's gold. It follows a look change (`GoUi.watch`).
 - 🛑 Display only: `MOUSE_FILTER_IGNORE` — the editor decides what a press selects or drags.
+
+## 42. GoRewardBurst — the claim of a reward, from the key to the balance
+
+`class_name GoRewardBurst extends Control` · the moment a mobile game pays a quest (Clash Royale, Brawl Stars, Royal
+Match): the screen dims, the coin rises from the CLAIM key the player pressed, bursts in a ring of light with rays
+turning behind it, "+N" stamps in, COLLECT appears, and on COLLECT the coins curve into the balance pill, which bumps
+and counts up as each lands. A full-screen layer over the screen it plays on; the caller owns what is paid.
+
+```gdscript
+var burst := GoRewardBurst.new()
+screen.add_child(burst)
+burst.collect_text = tr("COLLECT")
+burst.target = coin_pill                       # the coins fly here; it bumps on each landing
+burst.target_label = coin_label                # counted up, whole numbers
+burst.balance = 120                            # what the label shows now
+row.claim_pressed.connect(func(key: Variant) -> void:
+	burst.push(row.claim_button.get_global_rect(), key, row_coins)   # the build covers the server's wait
+	server.claim(key))
+# the server answered:
+burst.resolve(key, reply.coins, reply.balance)  # "+20" stamps in, COLLECT follows
+burst.refuse(key)                               # refused or paid before: it fades, nothing is shown
+burst.finished.connect(func() -> void: row.stamp_claimed())
+```
+
+| t (s) | Beat |
+|---|---|
+| 0–0.25 | the look's scrim and a navy dim (`dim`) fade in |
+| 0–0.6 | the coin rises from `push`'s rect on a curve, 0.2 → 0.9×, spinning on its edge, a gold trail |
+| 0.6–0.75 | anticipation: it draws in to 0.72×, the glow gathers, short faint rays |
+| 0.75 | burst to 1.25× (→ 1 by 1.2): a flash, the shockwave ring 0.4 → 2.3×, 28 sparkles, a jolt; `GoFeedback.fanfare()` |
+| 0.75–1.9 | two ray layers turn opposite ways, grow to 1.22× and brighten; twinkles, six orbiting coins, a shine sweep |
+| 1.2 | "+N" stamps in (2.6× → 1, a squash, a jolt, a sparkle pop), reading the whole amount from its first frame |
+| 1.5 | a glint on the rim |
+| 1.6–1.9 | COLLECT fades and grows in; presses from 1.9 s; it breathes |
+| COLLECT | the coin gives out its coins; they curve into `target`, each landing bumps it and counts `target_label` on |
+
+| Member | Default | Notes |
+|---|---|---|
+| `push(from, id, hint)` | | A claim tapped: `from` the pressed key's global rect, `id` the caller's name, `hint` the expected amount (picks the coin or the heap only). Plays now or after the ones before |
+| `resolve(id, amount, new_balance)` | | What was paid and the balance after (-1: old + amount). "+N" stamps when the build reaches 1.2 s; a build already there idles in its light until this comes |
+| `refuse(id)` | | Refused, failed or paid before: it fades with no reward (a queued one is dropped). `entry_finished(id, false)` |
+| `stop()` | | Ends everything at once (the screen closed): `entry_finished(id, false)` for each (true for one already collected), then `finished`; nothing fades |
+| `tap()` · `skip()` · `collect()` | | `tap()` is what a press on the layer does: `"ignored"` inside `tap_lock`, `"skipped"` (to the reveal, never collecting) until COLLECT is up, then `"none"` |
+| `target` · `target_label` · `balance` | | The pill the coins fly to, the label it counts on, the number it shows now |
+| `collect_text` | `""` | The COLLECT key's word (the caller translates it) |
+| `amount_format` | `"+%d"` | How the amount reads (`%d` the whole number); a caller may write it its own way |
+| `unit` | `1.0` | Every base size (`COIN_SIZE` 150, `AMOUNT_FONT` 62, `COLLECT_SIZE` 230×70 …) times this |
+| `bottom_reserve` · `fits()` · `collect_rect()` | `0` | A band kept clear at the bottom (an ad banner and its gap): the coin and COLLECT move up above it; only a screen too short even then scales the group down, and `fits()` turns false |
+| `dim` | `0.55` | The navy dim's depth over the look's scrim (the arcade scrim frosts but barely darkens) |
+| `heap_from` | `50` | From this amount a heap of coins instead of one (`coin_heap`) |
+| `tap_lock` | `0.3` | Seconds after each push before a tap counts |
+| `is_active()` · `current_id()` · `phase()` | | `Phase { IDLE, BUILD, WAITING, REVEAL, SHOWN, COLLECTING, ENDING }` |
+| signals | | `revealed(id)` COLLECT up · `collected(id)` · `counted(value)` each landing · `entry_finished(id, was_collected)` · `finished` the queue is empty and the layer gone |
+| `static bump(node)` | | The landing's punch on any control (nothing under reduce motion) |
+
+- 🔁 Pushes while one plays wait their turn; each later one plays `QUICK_BEATS` (no anticipation, stamp at 0.6 s,
+  COLLECT pressable at 1.1 s) and the dim stays up between them. One `finished` for the whole run.
+- ♿ `GoConfig.reduce_motion`: fades only (0.15 s) — no rise, rays, spin, orbit, jolt or flying coins; COLLECT presses
+  from `tap_lock`; the balance changes once.
+- 🎨 arcade_light paints it: `coin`, `coin_heap`, `fx_rays`, `fx_rays_thin`, `fx_glow`, `fx_ring`, `fx_sparkle`,
+  `fx_glint` (`assets/arcade_light/rewards/`, `tools/paint_arcade_reward_fx.gd`), all drawn additively over the dim, and
+  "+N" in `GoRewardAmount` (the look's gold on an 11 px ink edge). Another look lights it from its `warning_fill`, draws
+  the coin from its icon set and letters "+N" as its title in that gold.
+- 🛑 Display only: it decides nothing — "+N", the count and the balance are what `resolve` is given.
+- `GoRewardRow.stamp_claimed()` stamps a just-paid row's check in (big, a squash, settled; a fade under reduce motion).

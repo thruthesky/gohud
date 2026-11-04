@@ -2251,6 +2251,30 @@ quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))""", T(
 		"Рядок для того, що гравець здобуває прогресом: завдання чи досягнення зі смугою, нагородою та кнопкою отримання, галочкою або замком за станом. Стала висота для GoListView.",
 		"แถวสำหรับสิ่งที่ผู้เล่นได้รับจากความคืบหน้า: ภารกิจหรือความสำเร็จพร้อมแถบ รางวัล และปุ่มรับ เครื่องหมายถูก หรือแม่กุญแจตามสถานะ ความสูงคงที่สำหรับ GoListView",
 		"صف لما يكسبه اللاعب بالتقدم: مهمة أو إنجاز مع شريط وجائزة وزر استلام أو علامة صح أو قفل حسب الحالة. ارتفاع ثابت يناسب GoListView.")),
+	("hud", "GoRewardBurst", "Control", """var burst := GoRewardBurst.new()
+screen.add_child(burst)
+burst.collect_text = "COLLECT"
+burst.target = coin_pill
+burst.target_label = coin_label
+burst.push(claim_button.get_global_rect(), "win_3", 20)
+burst.resolve("win_3", 20, 140)""", T(
+		"The moment a reward is claimed: the screen dims, the coin rises from the key and bursts in turning light, +N stamps in, then COLLECT sends the coins into the balance, which counts up.",
+		"보상을 받는 순간 — 화면이 어두워지고 코인이 키에서 솟아 도는 빛 속에 터지며 +N 이 찍히고, COLLECT 를 누르면 코인이 잔액으로 날아가 숫자가 오른다.",
+		"報酬を受け取る瞬間。画面が暗くなり、コインがキーから昇って回る光の中で弾け、+N が押され、COLLECT でコインが残高へ飛んで数字が増える。",
+		"领取奖励的瞬间：画面变暗，金币从按键升起，在旋转的光中迸发，+N 盖印出现，按 COLLECT 后金币飞入余额，数字随之增加。",
+		"領取獎勵的瞬間：畫面變暗，金幣從按鍵升起，在旋轉的光中迸發，+N 蓋印出現，按 COLLECT 後金幣飛入餘額，數字隨之增加。",
+		"El momento de reclamar una recompensa: la pantalla se oscurece, la moneda sube desde la tecla y estalla en una luz giratoria, aparece +N y COLLECT manda las monedas al saldo, que sube.",
+		"O momento de resgatar uma recompensa: a tela escurece, a moeda sobe da tecla e explode numa luz girando, +N aparece e COLLECT manda as moedas para o saldo, que sobe.",
+		"Момент получения награды: экран темнеет, монета поднимается от кнопки и вспыхивает во вращающемся свете, появляется +N, а COLLECT отправляет монеты в баланс, который растёт.",
+		"Le moment où l'on réclame une récompense : l'écran s'assombrit, la pièce monte de la touche et éclate dans une lumière tournante, +N s'imprime, puis COLLECT envoie les pièces au solde, qui monte.",
+		"Bir ödülün alındığı an: ekran kararır, para tuştan yükselip dönen ışıkta patlar, +N basılır, sonra COLLECT paraları bakiyeye gönderir ve sayı artar.",
+		"Chwila odbioru nagrody: ekran ciemnieje, moneta wznosi się z klawisza i wybucha w wirującym świetle, pojawia się +N, a COLLECT wysyła monety do salda, które rośnie.",
+		"Il momento in cui si riscatta una ricompensa: lo schermo si scurisce, la moneta sale dal tasto ed esplode in una luce rotante, appare +N e COLLECT manda le monete al saldo, che sale.",
+		"Khoảnh khắc nhận thưởng: màn hình tối lại, đồng xu bay lên từ phím và bùng sáng trong vầng sáng xoay, +N hiện ra, rồi COLLECT đưa xu vào số dư đang tăng.",
+		"Saat hadiah diklaim: layar meredup, koin naik dari tombol dan meledak dalam cahaya berputar, +N muncul, lalu COLLECT mengirim koin ke saldo yang bertambah.",
+		"Мить отримання нагороди: екран темнішає, монета здіймається від клавіші й спалахує в обертовому світлі, з'являється +N, а COLLECT відправляє монети в баланс, що зростає.",
+		"ช่วงเวลารับรางวัล: หน้าจอมืดลง เหรียญลอยขึ้นจากปุ่มและระเบิดในแสงที่หมุน +N ปรากฏขึ้น แล้ว COLLECT ส่งเหรียญเข้ายอดคงเหลือที่เพิ่มขึ้น",
+		"لحظة استلام مكافأة: تُعتم الشاشة وتصعد العملة من المفتاح وتنفجر في ضوء دوّار ويظهر ‎+N، ثم يرسل COLLECT العملات إلى الرصيد فيرتفع.")),
 	("hud", "GoSideButton", "BaseButton", """var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
 daily.picture_size = 76
 daily.label_width = 120
