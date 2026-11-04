@@ -713,6 +713,7 @@ func _build_parts() -> void:
 	collect_button.z_index = 4
 	collect_button.mouse_filter = Control.MOUSE_FILTER_IGNORE # pressable only once fully shown (_arm)
 	collect_button.pressed.connect(collect)
+	collect_button.resized.connect(func() -> void: if _fx != null: _place())
 	_fx.add_child(collect_button)
 	_hit = _particles(10, 0.45, 200.0)
 	_hit.name = "Pop"
@@ -821,7 +822,8 @@ func _place() -> void:
 				else Rect2(Vector2.ZERO, size)
 	var top := _box * 0.5
 	var amount_h := maxf(AMOUNT_COIN * unit, _amount_label.size.y if _amount_label.size.y > 0.0 else AMOUNT_FONT * unit)
-	var bottom := _below + amount_h + COLLECT_GAP * unit + COLLECT_SIZE.y * unit
+	# The key as tall as it really is: its look's face (or a long word's fit) can make it taller than COLLECT_SIZE.
+	var bottom := _below + amount_h + COLLECT_GAP * unit + maxf(COLLECT_SIZE.y * unit, collect_button.size.y)
 	var floor_y := room.end.y - bottom_reserve
 	var ceiling := room.position.y + TOP_MARGIN * unit
 	var y := room.get_center().y - room.size.y * 0.06

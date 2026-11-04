@@ -268,6 +268,18 @@ func _bottom_reserve() -> void:
 	burst.refuse("b")
 	await wait(0.4)
 	burst.free()
+	# A small unit: the look's key is taller than COLLECT_SIZE × unit, and the band is kept from its real height.
+	var small := _burst()
+	small.unit = 0.5
+	small.bottom_reserve = 200.0
+	small.push(_from(), "s", 20)
+	small.resolve("s", 20, 120)
+	await frames(2)
+	check(small.collect_button.size.y > GoRewardBurst.COLLECT_SIZE.y * 0.5, "the look's key is taller here (%s)" % small.collect_button.size)
+	check(small.collect_rect().end.y <= small.size.y - 200.0 + 0.5, "…and still above the band (%s)" % small.collect_rect())
+	small.refuse("s")
+	await wait(0.4)
+	small.free()
 
 
 func _painted_pieces() -> void:
