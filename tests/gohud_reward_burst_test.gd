@@ -280,6 +280,25 @@ func _bottom_reserve() -> void:
 	small.refuse("s")
 	await wait(0.4)
 	small.free()
+	# A large unit (a tablet): the word on COLLECT grows with its key.
+	var base := _burst()
+	base.push(_from(), "u1", 20)
+	base.resolve("u1", 20, 120)
+	await frames(2)
+	var base_px := base.collect_button.get_theme_font_size(&"font_size")
+	base.refuse("u1")
+	await wait(0.4)
+	base.free()
+	var big := _burst()
+	big.unit = 2.0
+	big.push(_from(), "u2", 20)
+	big.resolve("u2", 20, 120)
+	await frames(2)
+	var big_px := big.collect_button.get_theme_font_size(&"font_size")
+	check(big_px >= roundi(base_px * 1.8), "a unit of 2 doubles COLLECT's word (%d, was %d)" % [big_px, base_px])
+	big.refuse("u2")
+	await wait(0.4)
+	big.free()
 
 
 func _painted_pieces() -> void:

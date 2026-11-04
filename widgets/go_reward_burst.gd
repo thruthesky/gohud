@@ -730,6 +730,9 @@ func _build_parts() -> void:
 	collect_button.pressed.connect(collect)
 	collect_button.resized.connect(func() -> void: if _fx != null: _place())
 	_fx.add_child(collect_button)
+	# The word grows with the key: a larger unit (a tablet) would leave the look's own size small in a big key. Never
+	# below the look's size (a small unit's key is the look's own height); fit_label still shrinks a long word.
+	collect_button.fit_base_size = roundi(collect_button.get_theme_font_size(&"font_size") * maxf(1.0, unit))
 	_hit = _particles(10, 0.45, 200.0)
 	_hit.name = "Pop"
 	_hit.scale_amount_min = 0.25 * unit
