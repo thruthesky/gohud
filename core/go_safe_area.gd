@@ -18,6 +18,156 @@
 class_name GoSafeArea
 extends Control
 
+const VIEW_FOLLOWERS := &"_gohud_view_size_followers"
+const VIEW_QUEUE := &"_gohud_view_size_queue"
+const RESIZE_QUIET_MS := 50
+
+## One deadline and ordered dispatch per viewport. A polling fallback must
+## not move only the scale handler's deadline behind its layout consumers.
+class ViewSizeQueue extends RefCounted:
+	var _view: WeakRef
+	var _followers: Array[WeakRef] = []
+	var _pending := false
+	var _requested_ms := 0
+
+	func _init(view: Viewport) -> void:
+		_view = weakref(view)
+		view.size_changed.connect(request_all)
+
+	func add(follower: ViewSizeFollower) -> void:
+		for i in _followers.size():
+			var other: ViewSizeFollower = _followers[i].get_ref()
+			if other != null and follower._priority < other._priority:
+				_followers.insert(i, weakref(follower))
+				return
+		_followers.append(weakref(follower))
+
+	func remove(follower: ViewSizeFollower) -> void:
+		for i in range(_followers.size() - 1, -1, -1):
+			var other: ViewSizeFollower = _followers[i].get_ref()
+			if other == null or other == follower: _followers.remove_at(i)
+
+	func request_all() -> void:
+		for ref: WeakRef in _followers:
+			var follower: ViewSizeFollower = ref.get_ref()
+			if follower != null: follower._pending = true
+		_request()
+
+	func request(follower: ViewSizeFollower) -> void:
+		follower._pending = true
+		_request()
+
+	func _request() -> void:
+		_requested_ms = Time.get_ticks_msec()
+		if _pending or _followers.is_empty(): return
+		_pending = true
+		_wait(RESIZE_QUIET_MS)
+
+	func _wait(delay_ms: int) -> void:
+		var view: Viewport = _view.get_ref()
+		if view == null or not view.is_inside_tree():
+			_pending = false
+			return
+		view.get_tree().create_timer(delay_ms / 1000.0, true, false, true).timeout.connect(_flush)
+
+	func _flush() -> void:
+		var remaining := RESIZE_QUIET_MS - (Time.get_ticks_msec() - _requested_ms)
+		if remaining > 0:
+			_wait(remaining)
+			return
+		_pending = false
+		# A callback may detach/free another follower or register a new one.
+		for ref: WeakRef in _followers.duplicate():
+			var follower: ViewSizeFollower = ref.get_ref()
+			if follower != null: follower.dispatch()
+
+
+## Node metadata owns the follower; weak references never keep its node or
+## viewport alive. Leaving the tree removes it from any pending batch.
+class ViewSizeFollower extends RefCounted:
+	var _owner: WeakRef
+	var _view: WeakRef
+	var _queue: ViewSizeQueue
+	var _handler: Callable
+	var _priority: int
+	var _pending := false
+
+	func _init(node: Node, handler: Callable, priority: int) -> void:
+		_owner = weakref(node)
+		_handler = handler
+		_priority = priority
+		node.tree_entered.connect(_entered)
+		node.tree_exiting.connect(_exiting)
+		if node.is_inside_tree(): _attach(false)
+
+	func _entered() -> void:
+		_attach(true)
+
+	func _attach(relayout: bool) -> void:
+		var node: Node = _owner.get_ref()
+		if node == null or not node.is_inside_tree(): return
+		var view := node.get_viewport()
+		if view == null: return
+		_view = weakref(view)
+		_queue = GoSafeArea._queue_for(view)
+		_queue.add(self)
+		if relayout: _queue.request(self)
+
+	func _exiting() -> void:
+		_pending = false
+		if _queue != null: _queue.remove(self)
+		_queue = null
+		_view = null
+
+	func dispatch() -> void:
+		if not _pending: return
+		_pending = false
+		var node: Node = _owner.get_ref()
+		var view: Viewport = _view.get_ref() if _view != null else null
+		if node == null or not node.is_inside_tree() or view == null or node.get_viewport() != view: return
+		if _handler.is_valid(): _handler.call()
+
+
+static func _queue_for(view: Viewport) -> ViewSizeQueue:
+	var queue: ViewSizeQueue = null
+	if view.has_meta(VIEW_QUEUE): queue = view.get_meta(VIEW_QUEUE) as ViewSizeQueue
+	if queue == null:
+		queue = ViewSizeQueue.new(view)
+		view.set_meta(VIEW_QUEUE, queue)
+	return queue
+
+
+## Initial layout is the caller's; re-entry and resize storms get one final
+## layout. Lower priorities run first (coordinate transforms before layout).
+## Repeated registration of the same handler is idempotent.
+static func follow_view_size(node: Node, handler: Callable, priority := 0) -> void:
+	var followers: Dictionary = node.get_meta(VIEW_FOLLOWERS, {})
+	if followers.has(handler): return
+	followers[handler] = ViewSizeFollower.new(node, handler, priority)
+	node.set_meta(VIEW_FOLLOWERS, followers)
+
+
+static func unfollow_view_size(node: Node, handler: Callable) -> void:
+	var followers: Dictionary = node.get_meta(VIEW_FOLLOWERS, {})
+	if not followers.has(handler): return
+	var follower: ViewSizeFollower = followers[handler]
+	follower._exiting()
+	if node.tree_entered.is_connected(follower._entered): node.tree_entered.disconnect(follower._entered)
+	if node.tree_exiting.is_connected(follower._exiting): node.tree_exiting.disconnect(follower._exiting)
+	followers.erase(handler)
+	if followers.is_empty(): node.remove_meta(VIEW_FOLLOWERS)
+
+
+## A physical-size polling fallback requests the whole viewport batch. A
+## local safe-area/re-entry request may queue just its own follower.
+static func request_view_size(node: Node, handler: Callable, all_followers := false) -> void:
+	follow_view_size(node, handler)
+	var followers: Dictionary = node.get_meta(VIEW_FOLLOWERS)
+	var follower: ViewSizeFollower = followers[handler]
+	if follower._queue == null: return
+	if all_followers: follower._queue.request_all()
+	else: follower._queue.request(follower)
+
 
 func _init() -> void:
 	name = "SafeArea"
@@ -30,12 +180,7 @@ func _ready() -> void:
 	layout_direction = Control.LAYOUT_DIRECTION_LTR
 	# 🛑 Window resizes only while in the tree (null viewport outside it → a release-build crash in an override that reads
 	#    the window). Re-entering lays out once for any resize missed while out.
-	get_viewport().size_changed.connect(_layout)
-	tree_entered.connect(func() -> void:
-		if not get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.connect(_layout)
-		_layout())
-	tree_exiting.connect(func() -> void:
-		if get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.disconnect(_layout))
+	follow_view_size(self, _layout)
 	# A 180° turn or a simulated device moves the safe area with no resize.
 	var runtime := GoUi.runtime()
 	if runtime != null and runtime.has_signal(&"safe_area_changed"): runtime.connect(&"safe_area_changed", _on_safe_area)
@@ -344,7 +489,7 @@ static func corner_keep(screen: Rect2, radius: float) -> Array[Rect2]:
 
 
 func _on_safe_area(_margins: Vector4) -> void:
-	_layout()
+	request_view_size(self, _layout)
 
 
 func _layout() -> void:

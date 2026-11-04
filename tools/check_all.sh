@@ -22,6 +22,10 @@ step() { printf "\n\033[1m── %s\033[0m\n" "$1"; }
 step "① unit tests"
 bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-resize viewport batching and lifetime"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_resize_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-a unit tests — later widgets"
 # 🔑 Later arrivals such as the snackbar, spinner, badge and table live in a separate file
 #    (`gohud_test.gd` is already over 2000 lines). **Two entry points means forgetting one** — so they are called side by side here.
