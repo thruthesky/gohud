@@ -13,6 +13,8 @@
 ## on purpose and must be caught before the gallery's clean result means anything.
 extends SceneTree
 
+const TEST_CANVAS := preload("res://addons/gohud/tests/test_canvas.gd")
+
 const ADDON := "res://addons/gohud"
 const GALLERY := "res://addons/gohud/examples/gallery/gallery.tscn"
 
@@ -21,19 +23,11 @@ var failed: Array[String] = []
 
 
 func _initialize() -> void:
-	# 🛑 The default `--headless` window is 64×64, and `content_scale_size` only moves the screen while stretch is on.
-	#    laryen3d turns stretch on in its project.godot; an empty host project (CI) leaves it off, so every size these
-	#    checks asked for stayed 64×64 and the layout verdicts failed there only (CI, 2026-10-03). Turn it on here with
-	#    the phone portrait `gohud_test.gd` starts from — a host that already stretches keeps its own setting.
-	if root.content_scale_mode == Window.CONTENT_SCALE_MODE_DISABLED:
-		root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-		root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
-		root.content_scale_size = Vector2i(390, 844)
-		await frames(2)
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	GoUi.config.reduce_motion = true
 	GoUi.config.surface_fade_in = false
+	await TEST_CANVAS.configure(self, Vector2i(390, 844))
 	create_timer(420.0).timeout.connect(func() -> void:
 		print("FAIL watchdog — did not finish within 420 seconds")
 		quit(2))

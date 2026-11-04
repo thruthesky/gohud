@@ -9,6 +9,8 @@
 ## with it; `tools/check_all.sh` calls it.
 extends SceneTree
 
+const TEST_CANVAS := preload("res://addons/gohud/tests/test_canvas.gd")
+
 var passed := 0
 var failed: Array[String] = []
 
@@ -17,15 +19,12 @@ func _initialize() -> void:
 	# The same stretch the other gohud tests turn on (a bare host project leaves it off and every size stays 64×64).
 	# 🛑 Orientation is the point here, so the aspect is IGNORE for the run: a host that stretches with `expand` (a game host)
 	#    keeps the window's own shape, and asking for 844×390 on a portrait window still came out taller than wide.
-	var kept := [root.content_scale_mode, root.content_scale_aspect, root.content_scale_size]
-	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
-	root.content_scale_size = Vector2i(390, 844)
-	await frames(2)
+	var kept := [root.content_scale_mode, root.content_scale_aspect, root.content_scale_size, root.content_scale_factor]
 	GoUi.reset()
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
 	GoUi.config.reduce_motion = true
 	GoBackPolicy.reset(self)
+	await TEST_CANVAS.configure(self, Vector2i(390, 844))
 
 	await _open_close()
 	await _tabs()
@@ -47,6 +46,7 @@ func _initialize() -> void:
 	root.content_scale_mode = kept[0]
 	root.content_scale_aspect = kept[1]
 	root.content_scale_size = kept[2]
+	root.content_scale_factor = kept[3]
 	print("gohud page tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
 	quit(0 if failed.is_empty() else 1)

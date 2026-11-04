@@ -14,6 +14,8 @@
 ##    That is why expectations are computed from the viewport and safe area instead of written as fixed pixels.
 extends SceneTree
 
+const TEST_CANVAS := preload("res://addons/gohud/tests/test_canvas.gd")
+
 const ADDON := "res://addons/gohud"
 
 var checks := 0
@@ -45,8 +47,6 @@ func _initialize() -> void:
 	#    inside that, a card's minimum size is already bigger than the screen and every layout check fails falsely.
 	#    Set the **stretch base size** to a phone portrait instead of the window and the logical viewport becomes that size.
 	#    Expectations still do not hard-code this value — they are **computed from the real viewport and safe area**.
-	root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
-	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
 	# 🛑 **Check one screen only and the code that runs on the other screens goes entirely unchecked.**
 	#    The form width cap was such a case — on a phone the cap is "none", so the rule never fired at all (iteration 15).
 	#    Re-run the same checks at another size with `GOHUD_VIEWPORT=1280x800`.
@@ -55,16 +55,7 @@ func _initialize() -> void:
 	if asked.contains("x"):
 		var parts := asked.split("x")
 		wanted = Vector2i(maxi(200, int(parts[0])), maxi(200, int(parts[1])))
-	root.content_scale_size = wanted
-	await frames(2)
-	# 🛑 The **host project** scales the UI on top of this: laryen3d's UiScale autoload sets
-	#    `content_scale_factor` to 1.265, so a request for 844x390 came out as a 667x308 viewport and the size
-	#    check failed for a reason outside gohud (measured 2026-09-23). The factor belongs to the host, but the
-	#    stretch base is ours — ask for the base that lands on the wanted size under that factor.
-	var factor := maxf(0.1, root.content_scale_factor)
-	if not is_equal_approx(factor, 1.0):
-		root.content_scale_size = Vector2i((Vector2(wanted) * factor).round())
-		await frames(2)
+	await TEST_CANVAS.configure(self, wanted)
 	var view := root.get_visible_rect().size
 	print("  viewport %s" % str(view))
 	check(minf(view.x, view.y) >= 320.0, "test viewport is large enough (%s)" % str(view))
