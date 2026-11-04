@@ -249,6 +249,12 @@ func fits() -> bool:
 	return not _shrunk
 
 
+## The group's scale in the room: 1 at its full size, less when even moved up it had to shrink (a caller keeping a
+## band clear can weigh it against its readability floor).
+func fit_scale() -> float:
+	return _fx.scale.x if _fx != null else 1.0
+
+
 ## A tap on the layer: "ignored" inside [member tap_lock] (or when idle), "skipped" when it jumped the build to its
 ## reveal, "none" otherwise. Never collects.
 func tap() -> String:

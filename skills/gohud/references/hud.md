@@ -1513,7 +1513,7 @@ burst.finished.connect(func() -> void: row.stamp_claimed())
 | `collect_text` | `""` | The COLLECT key's word (the caller translates it) |
 | `amount_format` | `"+%d"` | How the amount reads (`%d` the whole number); a caller may write it its own way |
 | `unit` | `1.0` | Every base size (`COIN_SIZE` 150, `AMOUNT_FONT` 62, `COLLECT_SIZE` 230×70 …) times this |
-| `bottom_reserve` · `fits()` · `collect_rect()` | `0` | A band kept clear at the bottom (an ad banner and its gap): the coin and COLLECT move up above it; only a screen too short even then scales the group down, and `fits()` turns false |
+| `bottom_reserve` · `fits()` · `fit_scale()` · `collect_rect()` | `0` | A band kept clear at the bottom (an ad banner and its gap): the coin and COLLECT move up above it; only a screen too short even then scales the group down, `fits()` turns false and `fit_scale()` says by how much |
 | `dim` | `0.55` | The navy dim's depth over the look's scrim (the arcade scrim frosts but barely darkens) |
 | `heap_from` | `50` | From this amount a heap of coins instead of one (`coin_heap`) |
 | `tap_lock` | `0.3` | Seconds after each push before a tap counts |

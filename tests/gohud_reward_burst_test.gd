@@ -264,7 +264,7 @@ func _bottom_reserve() -> void:
 	burst.bottom_reserve = 520.0
 	await frames(1)
 	check(burst.collect_rect().end.y <= burst.size.y - 520.0 + 0.5, "a band too tall: still above it")
-	check(not burst.fits(), "…shrunk, and it says so")
+	check(not burst.fits() and burst.fit_scale() < 1.0, "…shrunk, and it says so (%.2f)" % burst.fit_scale())
 	burst.refuse("b")
 	await wait(0.4)
 	burst.free()
