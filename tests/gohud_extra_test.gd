@@ -922,6 +922,8 @@ func _drawer() -> void:
 	rtl_heading.free()
 	await _drawer_scroll_owner()
 	section("drawer")
+	await _scroll_contain()
+	section("scroll contain")
 
 
 class _DrawerWorld extends Node:
@@ -1012,6 +1014,102 @@ func _drawer_scroll_owner() -> void:
 	_drawer_gestures(point)
 	check(world.events == before_closed + 4, "drawer: closing releases wheel and gesture ownership")
 	drawer.queue_free()
+	world.queue_free()
+	await frames(1)
+
+
+## `GoScroll.contain()` — a floating card that holds a list (a desktop chat box over a game) keeps every wheel turn and
+## trackpad gesture: the list scrolls first, and what is left over at either end, over the card's header, or with a list
+## too short to scroll never reaches `_unhandled_input` (where a game camera zooms). Inside another scroll it lets the
+## leftover go on, so the list around it still scrolls.
+func _scroll_contain() -> void:
+	var world := _DrawerWorld.new()
+	root.add_child(world)
+	var card := PanelContainer.new()
+	card.position = Vector2(40, 40)
+	card.size = Vector2(300, 260)
+	var column := GoStyle.column()
+	card.add_child(column)
+	var header := GoStyle.label("Chat")
+	column.add_child(header)
+	var list := GoScroll.new()
+	list.custom_minimum_size.y = 200.0
+	var rows := GoStyle.column()
+	list.add_child(rows)
+	for index in 40: rows.add_child(GoStyle.label("Row %d" % index))
+	column.add_child(list)
+	root.add_child(card)
+	await frames(3)
+	var centre := list.get_global_rect().get_center()
+	var limit := int(list.get_v_scroll_bar().max_value - list.get_v_scroll_bar().page)
+	check(limit > 0, "contain: fixture list overflows its card")
+	# Negative control — the engine's own behaviour: a STOP card lets a wheel at the list end and every gesture through.
+	list.scroll_vertical = limit
+	await frames(1)
+	_drawer_wheel(centre)
+	_drawer_gestures(centre)
+	check(world.events == 4, "contain: without it a STOP card leaks the wheel at the list end, pan and magnify (%d)" % world.events)
+	check(GoScroll.contain(card) == card and GoScroll.contain(card) == card, "contain: returns the boundary; a second call is harmless")
+	var before := world.events
+	_drawer_wheel(centre)
+	_drawer_gestures(centre)
+	await frames(1)
+	check(world.events == before and list.scroll_vertical == limit, "contain: the wheel and gestures at the list end stay in the card")
+	list.scroll_vertical = 0
+	await frames(1)
+	var up := InputEventPanGesture.new()
+	up.position = centre
+	up.delta = Vector2(0, -3)
+	root.push_input(up, true)
+	for down in [true, false]:
+		var wheel_up := InputEventMouseButton.new()
+		wheel_up.position = centre
+		wheel_up.global_position = centre
+		wheel_up.button_index = MOUSE_BUTTON_WHEEL_UP
+		wheel_up.pressed = down
+		root.push_input(wheel_up, true)
+	await frames(1)
+	check(world.events == before and list.scroll_vertical == 0, "contain: the wheel and a swipe at the list top stay in the card")
+	list.scroll_vertical = limit / 2
+	await frames(1)
+	var middle := list.scroll_vertical
+	_drawer_wheel(centre)
+	await frames(1)
+	var pan := InputEventPanGesture.new()
+	pan.position = centre
+	pan.delta = Vector2(0, 3)
+	root.push_input(pan, true)
+	await frames(1)
+	check(list.scroll_vertical > middle and world.events == before, "contain: the list inside still scrolls by wheel and swipe")
+	_drawer_wheel(header.get_global_rect().get_center())
+	_drawer_gestures(header.get_global_rect().get_center())
+	check(world.events == before, "contain: the header keeps the wheel and gestures")
+	card.mouse_filter = Control.MOUSE_FILTER_PASS
+	_drawer_wheel(header.get_global_rect().get_center())
+	_drawer_gestures(header.get_global_rect().get_center())
+	check(world.events == before, "contain: a PASS boundary keeps them too")
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Nested — a contained card inside a page list hands its leftover on, so the page still scrolls.
+	var page := GoScroll.new()
+	page.position = Vector2(400, 40)
+	page.size = Vector2(320, 300)
+	var page_rows := GoStyle.column()
+	page.add_child(page_rows)
+	var inner := PanelContainer.new()
+	inner.custom_minimum_size = Vector2(280, 120)
+	GoScroll.contain(inner)
+	page_rows.add_child(inner)
+	for index in 30: page_rows.add_child(GoStyle.label("Page row %d" % index))
+	root.add_child(page)
+	await frames(3)
+	_drawer_wheel(inner.get_global_rect().get_center())
+	await frames(1)
+	check(page.scroll_vertical > 0, "contain: a card inside another scroll lets the page scroll on")
+	var coach := GoCoachMark.new()
+	check(coach.card.has_meta(&"go_scroll_contains"), "contain: a coach mark's card keeps its scrolls (GoCoachMark)")
+	coach.free()
+	page.queue_free()
+	card.queue_free()
 	world.queue_free()
 	await frames(1)
 

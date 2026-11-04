@@ -40,6 +40,9 @@ enum AnchorAlign { AUTO, START, END }
 ## How a card too big for the screen stays on it (`fit_mode`): its body scrolls, or the whole card shrinks.
 enum FitMode { SCROLL, SCALE }
 
+## Preferred plain-title line budget while fitting its font. At the floor, all remaining lines stay visible.
+const TITLE_FIT_LINES := 2
+
 ## How many surfaces are open right now. Used to decide whether to pause game input.
 static var _open_count := 0
 ## Is nobody steering the menus by keyboard or gamepad right now (last input a pointer, or a game key — `_track_device`)?
@@ -225,6 +228,8 @@ var title_width := 0.0:
 		if not is_instance_valid(title_label): return
 		title_label.size_flags_horizontal = Control.SIZE_EXPAND | Control.SIZE_SHRINK_CENTER if title_width > 0.0 else Control.SIZE_EXPAND_FILL
 		_fit_title.call_deferred()
+## True while the plain title tries its sizes (`_fit_title_size`) — the `resized` they raise must not start it over.
+var _sizing_title := false
 ## The title's starting font size; 0 uses the look's. It still shrinks to the configured fit floor.
 var title_font_size := 0:
 	set(value):
@@ -557,9 +562,9 @@ func _build() -> void:
 	theme = GoUi.theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	# Children scroll first. Unused wheel events stop at this window's edge — they never leak through to what is
-	# behind: not at the end of a list, not over the chrome, not when content is too short to scroll at all.
-	mouse_force_pass_scroll_events = false
+	# Children scroll first. Unused wheel turns and trackpad gestures stop at this window's edge — they never leak through
+	# to what is behind: not at the end of a list, not over the chrome, not when content is too short to scroll at all.
+	GoScroll.contain(self)
 	add_to_group(&"go_surfaces")
 
 	var veil := Scrim.new()
@@ -567,6 +572,7 @@ func _build() -> void:
 	_scrim = veil
 	_scrim.name = "Scrim"
 	_scrim.color = GoUi.color(GoTheme.SCRIM)
+	_scrim.set_meta(&"go_scrim", true)   # a scrim says it is one (`GoStyle.style_scrim`)
 	_scrim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_scrim.gui_input.connect(_scrim_input)
 	add_child(_scrim)
@@ -603,8 +609,9 @@ func _build() -> void:
 
 	title_label = GoStyle.label("", GoTheme.ROLE_SUBTITLE)
 	title_label.name = "Title"
-	title_label.max_lines_visible = 2
-	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	title_label.max_lines_visible = -1
+	# Unlimited wrapped text needs its full natural height; an ellipsis setting would collapse that minimum.
+	title_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title_label.resized.connect(func() -> void: _fit_title())
@@ -795,10 +802,10 @@ func _variation_plate() -> StyleBox:
 
 ## On a title plate the title stays on one line: past the plate's room it shrinks, down to
 ## `GoSkin.title_plate_min_size()`, and only then folds — or, under a `SCALE` fit, widens the card instead (the game's
-## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate the title keeps the
-## size its role gives it.
+## ribbon title never wraps: the card grows and the fit shrinks the whole window). Without a plate it fits toward
+## TITLE_FIT_LINES at the configured font floor, then grows the header to show every remaining line.
 func _fit_title() -> void:
-	if title_label == null: return
+	if title_label == null or _sizing_title: return
 	_fit_title_size()
 	_place_title_glyph()
 	_place_corner()
@@ -809,13 +816,33 @@ func _fit_title_size() -> void:
 	var role_size := GoUi.font_size(title_label.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
 	if plate == null or title_label.size.x <= 0.0 or title_label.text.is_empty():
 		# 🔑 A plain title (no plate) still takes an asked `title_font_size` — "the title's starting size" — instead of
-		#    its role's (14 dp body type on a phone under a 22 dp heading look). Nothing to fit: a plain title wraps.
-		if title_font_size > 0:
-			title_label.set_meta(&"go_title_fit", true)
-			title_label.add_theme_font_size_override(&"font_size", title_font_size)
-		elif title_label.has_meta(&"go_title_fit"):
-			title_label.remove_meta(&"go_title_fit")
-			title_label.remove_theme_font_size_override(&"font_size")
+		#    its role's (14 dp body type on a phone under a 22 dp heading look). A plain title wraps.
+		var fitted := title_font_size if title_font_size > 0 else role_size
+		# Fit toward a preferred line budget, never below the configured font floor. The default label keeps every
+		# line: if its complete title still needs more room at the floor, the header grows instead of cutting words
+		# after two lines (a detail title beside Back on a narrow phone). A caller's explicit line cap remains its own.
+		# 🛑 Measured with the font, never by trying sizes on the label: each size set resizes the label, and `resized`
+		#    calls this again — trying sizes there recursed until the stack ran out.
+		var lines := title_label.max_lines_visible if title_label.max_lines_visible > 0 else TITLE_FIT_LINES
+		var width := title_label.size.x - title_label.get_theme_stylebox(&"normal").get_minimum_size().x
+		if width > 0.0 and lines > 0 and not title_label.text.is_empty():
+			var font := title_label.get_theme_font(&"font")
+			var words := title_label.atr(title_label.text)
+			var floor_size := GoStyle.fit_floor(fitted)
+			var breaks := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+			while fitted > floor_size and font.get_multiline_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, width, fitted,
+					-1, breaks).y > font.get_height(fitted) * (lines + 0.5):
+				fitted -= 1
+		# The label has the last word: its own wrap can break a line the font measure kept (rounding, its frame).
+		# 🔑 `_sizing_title` stops the `resized` each size raises from starting this over in the middle.
+		_sizing_title = true
+		_size_title(fitted, role_size)
+		if width > 0.0 and lines > 0:
+			while fitted > GoStyle.fit_floor(title_font_size if title_font_size > 0 else role_size) \
+					and title_label.get_line_count() > lines:
+				fitted -= 1
+				_size_title(fitted, role_size)
+		_sizing_title = false
 		_widen_title(0.0)
 		return
 	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
@@ -853,6 +880,17 @@ func _widen_title(wide: float) -> void:
 	if is_equal_approx(title_label.custom_minimum_size.x, wide): return
 	title_label.custom_minimum_size.x = wide
 	_mark_layout_dirty()
+
+
+## The plain title's font size: no override at its role's own size (unless one was asked), one marked `go_title_fit` else.
+func _size_title(font_size: int, role_size: int) -> void:
+	if font_size == role_size and title_font_size <= 0:
+		if title_label.has_meta(&"go_title_fit"):
+			title_label.remove_meta(&"go_title_fit")
+			title_label.remove_theme_font_size_override(&"font_size")
+	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != font_size:
+		title_label.set_meta(&"go_title_fit", true)
+		title_label.add_theme_font_size_override(&"font_size", font_size)
 
 
 ## The title's size before it shrinks: the look's plate size (`GoSkin.title_plate_font_size`) on a plate, else its role's.
@@ -1629,9 +1667,11 @@ func relayout() -> void:
 			room = maxf(room, minf(cap_height, area.size.y * settings.surface_fit_max_height_ratio))
 		# If it looks like overflowing, try one step less padding and gap — then measure again.
 		_update_density(room, width)
+		_wrap_rows_to_width(width)
 		height = clampf(_desired_height(), 1.0, room)
 	else:
 		_update_density(0.0, width)
+		_wrap_rows_to_width(width)
 	# 🛑 Size and position are given as integers — at a fractional position (centered · logical width 349.09) the size is
 	#    stored as "position + size" and 184 becomes 183.99997, the card's inner padding (MarginContainer) floors child
 	#    sizes to integers, and the body came out 1px short — a scrollbar appeared beside the one-line body of the first
@@ -1677,6 +1717,48 @@ static func _wrap_buttons(node: Node, inside: float) -> void:
 		if button.autowrap_mode == TextServer.AUTOWRAP_OFF and button.get_combined_minimum_size().x > inside + 0.5:
 			GoStyle.fit_words(button)
 	for child in node.get_children(): _wrap_buttons(child, inside)
+
+
+## 📏 **The last step before a card hangs off the screen: a row that is too wide folds its own buttons.** After the
+## one-line buttons wider than the card (`_wrap_to_width`) and the dense step (`_update_density`), content can still be
+## wider than [param width] because of a *row* — no button in it is wider than the card, together they are: a chat line
+## `[input] [mic] [Send · Run]` in Urdu on a 341 dp phone (2026-11-02: the card stood a few dp past both screen edges).
+## Then every one-line button whose row leaves it less room than its one-line width is re-fitted from its words
+## (`GoStyle.fit_words`: several words fold, never narrower than the longest; one word stays).
+## 🔑 Last, not first: `_wrap_to_width` leaves such rows alone on purpose — a row that the dense step makes fit keeps its
+##    labels on one line ("Find party" beside two cells). Only content still too wide gets here; a window that fits is
+##    never touched.
+func _wrap_rows_to_width(width: float) -> void:
+	if not GoUi.config.autowrap_text or card.get_combined_minimum_size().x <= width + 0.5: return
+	var inside := width - (card.get_combined_minimum_size().x - _column.get_combined_minimum_size().x)
+	for section: Control in [toolbar, body, status, footer]:
+		if section.visible: _wrap_rows(section, inside)
+
+
+## [param room] is the width [param node] may take. It is handed down the tree: a container's own frame (margins, a
+## panel's face, a scroll's edge — its minimum over its widest child) comes off it, and in a horizontal row a child gets
+## what its siblings and the gaps leave. A plain `Control` places its children itself: they get its room.
+static func _wrap_rows(node: Node, room: float) -> void:
+	if node.has_meta(&"go_no_wrap"): return
+	var control := node as Control
+	if control is Button:
+		var button := control as Button
+		if button.autowrap_mode == TextServer.AUTOWRAP_OFF and button.get_combined_minimum_size().x > room + 0.5:
+			GoStyle.fit_words(button)
+	if not control is Container:
+		for child in node.get_children(): _wrap_rows(child, room)
+		return
+	if control is ScrollContainer and (control as ScrollContainer).horizontal_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED:
+		return   # a sideways scroll is as wide as it likes inside
+	var need := control.get_combined_minimum_size().x
+	var row := control is BoxContainer and not (control as BoxContainer).vertical
+	var widest := 0.0
+	for child in control.get_children():
+		if child is Control and (child as Control).visible: widest = maxf(widest, (child as Control).get_combined_minimum_size().x)
+	for child in control.get_children():
+		if not child is Control or not (child as Control).visible: continue
+		var own := (child as Control).get_combined_minimum_size().x
+		_wrap_rows(child, room - (need - own) if row else room - (need - widest))
 
 
 ## 🛑 A card wider than its width costs a screen ("why is my title cut on phones?") — say so once, in debug builds, with
@@ -1850,12 +1932,21 @@ func _relayout_anchor(area: Rect2) -> void:
 	else:
 		width = clampf(space_left, anchor_min_width, wide)
 		x = anchor.end.x - width
+	# Anchored cards need the same overflow recovery as centred cards. Otherwise a row can force the
+	# assigned anchor width wider even though each of its labels can wrap within the requested card.
+	_wrap_to_width(width)
+	_wrap_rows_to_width(width)
 	var below := area.end.y - anchor.end.y - gap - edge
 	var above := anchor.position.y - area.position.y - gap - edge
 	var opens_up := below < above
 	var cap := minf(anchor_max_height, area.size.y * height_ratio_cap())
 	var height := clampf(above if opens_up else below, 0, cap)
 	if fit_content: height = minf(height, _desired_height())
+	# A long anchored list still needs one usable touch row. If the preferred side is
+	# too short, borrow room across the anchor and let the normal safe-area clamp place it.
+	var body_height := body.get_combined_minimum_size().y
+	var chrome := _desired_height() - body_height
+	height = maxf(height, minf(cap, chrome + minf(body_height, GoUi.metric(GoTheme.TOUCH))))
 	card.size = Vector2(maxf(1, width), maxf(1, height)).round()
 	# When the pinned header and footer are bigger than the room left, the card grows to its minimum size — then it is pushed inside the screen.
 	var y := anchor.position.y - gap - card.size.y if opens_up else anchor.end.y + gap
@@ -2106,12 +2197,6 @@ func _scrim_input(event: InputEvent) -> void:
 		if _scrim_pressed and _scrim_origin.distance_to(event.position) < GoUi.metric(GoTheme.SCROLL_DEADZONE):
 			request_close()
 		_scrim_pressed = false
-
-
-func _gui_input(event: InputEvent) -> void:
-	# `MOUSE_FILTER_STOP` does not swallow zoom and pan gestures in Godot.
-	# Nested controls see them first, so only what is left over is stopped here.
-	if event is InputEventGesture: accept_event()
 
 
 ## Drag to resize — grab the sheet's header and move it up or down.

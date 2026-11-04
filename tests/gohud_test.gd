@@ -1040,6 +1040,38 @@ func _i18n() -> void:
 	check(GoUi.text(&"cancel") == "إلغاء", "ar translation")
 	TranslationServer.set_locale("ja")
 	check(GoUi.text(&"confirm") == "確認", "ja translation")
+	var prose := GoStyle.label_key("Latin token")
+	var raw := GoStyle.label("Latin token")
+	var key_auto := GoStyle.label_key("Latin token", GoTheme.ROLE_BODY, Color.TRANSPARENT, false)
+	var line := GoStyle.line("Latin token", GoTheme.ROLE_BODY, Color.TRANSPARENT, true)
+	var ltr_parent := Control.new()
+	ltr_parent.layout_direction = Control.LAYOUT_DIRECTION_LTR
+	root.add_child(ltr_parent)
+	for node in [prose, raw, line, key_auto]: ltr_parent.add_child(node)
+	TranslationServer.set_locale("ur")
+	await frames()
+	check(prose.text_direction == Control.TEXT_DIRECTION_RTL, "translated paragraphs follow Urdu inside an LTR layout")
+	check(raw.text_direction == Control.TEXT_DIRECTION_AUTO and key_auto.text_direction == Control.TEXT_DIRECTION_AUTO,
+		"raw user content and an explicitly opted-out key keep AUTO")
+	check(line.text_direction == Control.TEXT_DIRECTION_RTL, "line trailing argument follows Urdu immediately")
+	GoStyle.locale_paragraph(raw)
+	GoStyle.locale_paragraph(raw)
+	GoStyle.locale_paragraph(line)
+	check(raw.get_child_count(true) == 1 and raw.get_child_count() == 0,
+		"locale paragraph binding is idempotent and private to the label")
+	check(raw.text_direction == Control.TEXT_DIRECTION_RTL and line.text_direction == Control.TEXT_DIRECTION_RTL,
+		"already translated label and line opt into locale paragraphs")
+	TranslationServer.set_locale("en")
+	await frames()
+	check(prose.text_direction == Control.TEXT_DIRECTION_LTR and raw.text_direction == Control.TEXT_DIRECTION_LTR,
+		"existing paragraphs follow a live switch back to English")
+	TranslationServer.set_locale("ur")
+	var detached := GoStyle.label_key("Latin first")
+	TranslationServer.set_locale("en")
+	ltr_parent.add_child(detached)
+	await frames()
+	check(detached.text_direction == Control.TEXT_DIRECTION_LTR, "a detached paragraph refreshes when entering the tree")
+	ltr_parent.free()
 	var overrides: Dictionary[StringName, String] = {&"close": "X"}
 	GoUi.config.text_overrides = overrides
 	check(GoUi.text(&"close") == "X", "text_overrides wins over the translation")
@@ -1381,6 +1413,29 @@ func _style() -> void:
 	await frames(1)
 	check(flowing.autowrap_mode == TextServer.AUTOWRAP_OFF, "a button in a flow row does not wrap")
 	check(flowing.get_combined_minimum_size().x > 48.0, "its natural width is as wide as its text — it does not split down the page (%.0f)" % flowing.get_combined_minimum_size().x)
+	var flowing_row := GoStyle.list_button(&"", "A complete action label with padding", Callable(), Color.TRANSPARENT, "", false)
+	flowing_row.custom_minimum_size.x = 144
+	wrap.add_child(flowing_row)
+	await frames(5)
+	var row_content := flowing_row.get_child(0) as Control
+	check(flowing_row.get_global_rect().grow(0.5).encloses(row_content.get_global_rect()),
+		"a flow list button contains its single-line child layout and padding")
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x,
+		"a flow list button inherits its content width")
+	var row_label := flowing_row.find_children("*", "Label", true, false)[0] as Label
+	row_label.text = "A longer translated action label with every word retained"
+	await frames(5)
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x,
+		"the flow list button follows a changed child label")
+	row_content.offset_left = 8
+	row_content.offset_right = -8
+	row_label.text += " with anchored padding"
+	await frames(5)
+	check(flowing_row.get_combined_minimum_size().x >= row_content.get_combined_minimum_size().x + 16,
+		"the flow list button preserves the child layout's anchored padding")
+	row_label.text = "OK"
+	await frames(5)
+	check(flowing_row.custom_minimum_size.x >= 144, "the flow list button preserves its declared width floor")
 	var fold := GoStyle.foldable("Advanced", true)
 	check(fold is FoldableContainer and fold.title == "Advanced" and fold.folded, "a FoldableContainer section")
 	fold.free()
@@ -1904,6 +1959,64 @@ func _surface() -> void:
 	a.relayout()
 	check(a.card.position.y >= anchor.get_global_rect().end.y,
 		"ANCHOR attaches below its target (card y %.0f · anchor end %.0f)" % [a.card.position.y, anchor.get_global_rect().end.y])
+
+	var anchored := GoSurface.new()
+	anchored.placement = GoSurface.Placement.ANCHOR
+	anchored.anchor_control = anchor
+	anchored.anchor_width = 252
+	root.add_child(anchored)
+	var anchored_row := GoStyle.row()
+	anchored.body.add_child(anchored_row)
+	for caption: String in ["Move this player to the next rank", "Remove this player from the party"]:
+		var action := GoStyle.button(caption)
+		action.autowrap_mode = TextServer.AUTOWRAP_OFF
+		anchored_row.add_child(action)
+	check(anchored_row.get_combined_minimum_size().x > anchored.anchor_width,
+		"the anchored-card row starts wider than the requested card")
+	anchored.show()
+	await frames(8)
+	anchored.relayout()
+	await frames(3)
+	check(anchored.card.size.x <= anchored.anchor_width + 1.0,
+		"an anchored card folds a wide row within its requested width")
+	for action: Button in anchored_row.get_children():
+		check(action.autowrap_mode != TextServer.AUTOWRAP_OFF,
+			"anchored row actions wrap rather than force a wider card")
+	anchored.queue_free()
+	await frames(2)
+
+	# A preferred side can leave only a sliver after pinned chrome. Borrow safe height
+	# rather than strand a long list in a viewport smaller than a touch target.
+	var saved_scale := root.content_scale_size
+	root.content_scale_size = Vector2i(760, 342)
+	await frames(4)
+	var middle := Button.new()
+	middle.position = Vector2(40, 130)
+	middle.size = Vector2(80, 40)
+	root.add_child(middle)
+	var short := GoSurface.new()
+	short.placement = GoSurface.Placement.ANCHOR
+	short.anchor_control = middle
+	short.anchor_width = 252
+	short.set_title("Members")
+	root.add_child(short)
+	for index in 20:
+		short.body.add_child(GoStyle.label("Member %d with a complete name" % index))
+	short.footer.visible = true
+	short.footer.add_child(GoStyle.button("Lead party"))
+	short.footer.add_child(GoStyle.button("Leave"))
+	short.show()
+	await frames(8)
+	short.relayout()
+	await frames(4)
+	check(short.scroll.size.y >= GoUi.metric(GoTheme.TOUCH),
+		"an anchored long list retains a full touch-row viewport (%s)" % short.scroll.size)
+	check(GoSafeArea.usable_rect(root).grow(1).encloses(short.card.get_global_rect()),
+		"borrowing room for an anchored list keeps its card in the safe area")
+	short.queue_free()
+	middle.queue_free()
+	root.content_scale_size = saved_scale
+	await frames(4)
 
 	a.hide()
 	await frames(1)
@@ -3149,9 +3262,18 @@ func _scroll_drag() -> void:
 		await frames(1)
 	check(ended[0], "the fling comes to rest")
 	check(column.mouse_behavior_recursive == Control.MOUSE_BEHAVIOR_INHERITED, "the rows take the mouse again once the list stops")
-	_pointer(point, false, false)
-	await frames(1)
-	check(rows.any(func(row: Button) -> bool: return row.is_hovered()), "hover works again after the drag")
+	# The fling changes which row occupies the old finger position; that point can now be in a row gap.
+	# Move onto a fully visible row and require that exact row's hover, not an arbitrary highlight.
+	var hover_row: Button = null
+	for row: Button in rows:
+		if scroll.get_global_rect().encloses(row.get_global_rect()):
+			hover_row = row
+			break
+	check(hover_row != null, "the rested list has a fully visible row for hover")
+	if hover_row != null:
+		_pointer(hover_row.get_global_rect().get_center(), false, false)
+		await frames(2)
+		check(hover_row.is_hovered(), "hover works again after the drag")
 	scroll.scroll_vertical = 0
 	await frames(1)
 	rows[15].grab_focus()

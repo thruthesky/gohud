@@ -71,6 +71,31 @@ static func natural_width(node: Node) -> void:
 	if control is Button: (control as Button).autowrap_mode = TextServer.AUTOWRAP_OFF
 	elif control is Label: (control as Label).autowrap_mode = TextServer.AUTOWRAP_OFF
 	for child in control.get_children(): natural_width(child)
+	# A button may draw its label in a child layout (list rows). Its own minimum does not include that layout.
+	# Once the flow makes those labels single-line, keep the entire padded layout inside the button too.
+	if control is Button and not control.has_meta(&"go_natural_width_fit"):
+		control.set_meta(&"go_natural_width_fit", true)
+		var update := _fit_natural_width.bind(weakref(control), control.custom_minimum_size.x)
+		for child in control.get_children():
+			if child is Control: (child as Control).minimum_size_changed.connect(update, CONNECT_DEFERRED)
+		update.call_deferred()
+
+
+static func _fit_natural_width(control_ref: WeakRef, baseline: float) -> void:
+	var control := control_ref.get_ref() as Control
+	if control == null: return
+	var width := baseline
+	for child in control.get_children():
+		if not child is Control: continue
+		var content := child as Control
+		var need := content.get_combined_minimum_size().x
+		var span := content.anchor_right - content.anchor_left
+		# A full-rect child may use offsets as padding instead of a MarginContainer (choice cards).
+		# Fit the space between those edges, rather than allowing this fitter to erase that padding.
+		if span > 0.0: need = (need + content.offset_left - content.offset_right) / span
+		else: need += maxf(0, content.offset_left)
+		width = maxf(width, need)
+	if not is_equal_approx(control.custom_minimum_size.x, width): control.custom_minimum_size.x = width
 
 
 ## 📂 **A foldable section** (Godot 4.5+ `FoldableContainer`). For groups that need not stay open,
@@ -410,11 +435,12 @@ static func glyph_width(icons: Array, size := -1, set: GoIconSet = null) -> floa
 
 
 ## A label holding a **translation key** — the engine redraws it on its own when the language changes.
-static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
+static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := true) -> Label:
 	var node := Label.new()
 	node.theme = GoUi.theme()
 	node.text = key
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
+	if follow_locale: locale_paragraph(node)
 	if GoUi.config.autowrap_text: node.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	node.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -423,10 +449,24 @@ static func label_key(key: String, role := GoTheme.ROLE_BODY, ink := Color.TRANS
 
 
 ## **Text shown as it is** — a person's name, a server value, an already translated phrase.
-static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
-	var node := label_key(text, role, ink)
+## Set [param follow_locale] for translated UI prose; names and user content keep AUTO.
+static func label(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := false) -> Label:
+	var node := label_key(text, role, ink, follow_locale)
 	node.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	return node
+
+
+## Make an already translated UI sentence follow the app locale, even inside an LTR layout.
+## User content should keep the default AUTO direction instead. Safe to call more than once.
+## The child observes translation notifications without an autoload, polling or captured label references.
+static func locale_paragraph(node: Label) -> void:
+	for child in node.get_children(true):
+		if child is GoLocaleParagraph:
+			(child as GoLocaleParagraph).apply()
+			return
+	var direction := GoLocaleParagraph.new()
+	node.add_child(direction, false, Node.INTERNAL_MODE_BACK)
+	direction.apply()
 
 
 ## One section title line (a small, dim, uppercase-feeling heading).
@@ -2305,8 +2345,8 @@ static func let_input_through(node: Node) -> void:
 
 ## **A one-line label** — never wraps, and cuts the overflow with an ellipsis (…). For name and number rows on narrow cards.
 ## 🛑 An ellipsized label's minimum width is nearly 0 — in a narrow cell the text looks as if it vanished entirely. The caller secures the cell width.
-static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT) -> Label:
-	var node := label(text, role, ink)
+static func line(text: String, role := GoTheme.ROLE_BODY, ink := Color.TRANSPARENT, follow_locale := false) -> Label:
+	var node := label(text, role, ink, follow_locale)
 	node.autowrap_mode = TextServer.AUTOWRAP_OFF
 	node.set_meta(&"go_no_wrap", true)
 	node.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -3325,6 +3365,9 @@ static func scrim(alpha := -1.0, ink := Color.TRANSPARENT) -> ColorRect:
 ## Resets the depth of a scrim already in place (a login background that veils only once the art has loaded).
 static func style_scrim(node: ColorRect, alpha := -1.0, ink := Color.TRANSPARENT) -> void:
 	if node == null: return
+	# 🏷 It says it is a scrim (`go_scrim`): a layer that holds one is a modal layer over what is behind it, so a fit or
+	#    tap check can tell it from a panel that merely stops taps (a card that grew over the buttons next to it).
+	node.set_meta(&"go_scrim", true)
 	# 🌫 The look may frost what is behind (`GoSkin.scrim_material` — `GoSkinArcade.arcade_scrim_blur`); a clear veil
 	#    (alpha 0) stays plain.
 	node.material = GoUi.skin().scrim_material_now() if alpha != 0.0 else null

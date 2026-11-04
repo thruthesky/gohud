@@ -32,6 +32,8 @@ func _initialize() -> void:
 	await _orientation_and_preview()
 	await _long_tab_labels()
 	await _card_follows_content()
+	await _wide_row_fits()
+	await _complete_plain_title()
 	await _back_and_stacking()
 	await _ownership_after_free()
 	await _rtl()
@@ -67,6 +69,17 @@ func frames(count: int) -> void:
 ## must not round the card's last row off the screen).
 func _fills(card: Rect2, area: Rect2) -> bool:
 	return area.grow(0.001).encloses(card) and card.size.x > area.size.x - 1.0 and card.size.y > area.size.y - 1.0
+
+
+## Adds words to [param button]'s text until its one-line minimum is at least [param width] wide.
+func _grow_words(button: Button, width: float) -> void:
+	# Stress the one-line width while keeping the wrapped word floors feasible. Long words such as "everyone"
+	# left this three-control row 325 dp wide even after wrapping, in a 296 dp content area.
+	var more := ["this", "line", "to", "the", "next", "row", "with", "all", "its", "keys"]
+	var at := 0
+	while button.get_minimum_size().x < width and at < 200:
+		button.text += " " + more[at % more.size()]
+		at += 1
 
 
 func _size(width: int, height: int) -> void:
@@ -293,6 +306,113 @@ func _card_follows_content() -> void:
 	await frames(2)
 
 
+## A row wider than the screen never widens the page: the page fills the safe area, so before the width fit one
+## one-line button wider than a 320 dp phone opened the card past the right edge and the ✕ went with it (a game's
+## settings page on a 341-unit phone, 2026-11-02). The page re-wraps the button at its own width, as a centred card does.
+func _wide_row_fits() -> void:
+	await _size(320, 640)
+	var page := GoPage.new()
+	page.open("Wide")
+	var wide := GoStyle.button("Collect every reward from today's events and the weekly board at once")
+	page.body.add_child(wide)
+	root.add_child(page)
+	await frames(4)
+	var area := GoSafeArea.usable_rect(page.surface.get_window())
+	var card := page.surface.card.get_global_rect()
+	check(_fills(card, area), "a page with a one-line button wider than the phone still fills the screen (card %s, area %s)"
+		% [card, area])
+	var close := page.surface.close_button.get_global_rect()
+	check(area.grow(0.5).encloses(close), "its ✕ stays on the screen (%s in %s)" % [close, area])
+	check(wide.get_global_rect().end.x <= area.end.x + 0.5, "the button wraps inside the page (ends at %.0f of %.0f)"
+		% [wide.get_global_rect().end.x, area.end.x])
+	page.queue_free()
+	# A row too wide only as a whole (no button in it wider than the page): after the dense step its buttons fold.
+	# 📏 The words are sized from the page itself — each button about 0.6 of it — so the row is too wide on any screen
+	#    the test runs on (a host project may hold its own window size).
+	var chat := GoPage.new()
+	chat.open("Row")
+	root.add_child(chat)
+	await frames(4)
+	area = GoSafeArea.usable_rect(chat.surface.get_window())
+	var line := GoStyle.row()
+	chat.body.add_child(line)
+	var input := LineEdit.new()
+	input.custom_minimum_size.x = 60
+	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	line.add_child(input)
+	var sends: Array[Button] = []
+	for first in ["Send", "Run"]:
+		var send := GoStyle.button(first)
+		send.autowrap_mode = TextServer.AUTOWRAP_OFF   # set to one line by its screen, as a chat line's send is
+		line.add_child(send)
+		_grow_words(send, area.size.x * 0.6)
+		sends.append(send)
+	check(line.get_combined_minimum_size().x > area.size.x, "fixture: the unwrapped row really is wider than the page")
+	var word_floor := input.get_combined_minimum_size().x + line.get_theme_constant(&"separation") * sends.size()
+	for send: Button in sends:
+		var wrapped := GoStyle.button(send.text)
+		word_floor += wrapped.get_combined_minimum_size().x
+		wrapped.free()
+	await frames(4)
+	card = chat.surface.card.get_global_rect()
+	var frame := chat.surface.card.get_combined_minimum_size().x - line.get_combined_minimum_size().x
+	check(word_floor + frame <= area.size.x, "fixture: the row's wrapped word floors fit (%.0f + %.0f in %.0f)" % [word_floor, frame, area.size.x])
+	var row_sizes := "input %.0f, buttons %s, row %.0f" % [input.get_combined_minimum_size().x,
+		sends.map(func(b: Button) -> float: return b.get_combined_minimum_size().x), line.get_combined_minimum_size().x]
+	check(sends.all(func(b: Button) -> bool: return b.get_minimum_size().x < area.size.x or b.autowrap_mode != TextServer.AUTOWRAP_OFF),
+		"no button of that row is wider than the page by itself")
+	check(_fills(card, area), "a page whose one row is too wide as a whole still fills the screen (card %s, area %s; %s)" % [card, area, row_sizes])
+	check(line.get_global_rect().end.x <= area.end.x + 0.5, "that row folds its buttons inside the page (ends at %.0f of %.0f)"
+		% [line.get_global_rect().end.x, area.end.x])
+	check(sends.any(func(b: Button) -> bool: return b.autowrap_mode != TextServer.AUTOWRAP_OFF), "a button in it is re-fitted from its words")
+	chat.queue_free()
+	# A long plain title steps its size down before it trims a word to "…" (a sub-page's labelled Back beside it).
+	# 📏 Its words are about (lines + 0.4) title widths long at its role's size: too long for its lines at that size, short
+	#    enough at the fit floor (0.7 of it) — on any screen.
+	var titled := GoPage.new()
+	titled.open("Where")
+	root.add_child(titled)
+	await frames(4)
+	var title := titled.surface.title_label
+	var role := GoUi.font_size(title.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var font := title.get_theme_font(&"font")
+	var words := "Where"
+	var more := ["every", "part", "of", "this", "set", "drops", "and", "which", "monsters", "carry", "it"]
+	var target := title.size.x * (GoSurface.TITLE_FIT_LINES + 0.4)
+	var at := 0
+	while font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, role).x < target:
+		words += " " + more[at % more.size()]
+		at += 1
+	titled.surface.set_title(words)
+	await frames(4)
+	check(title.get_visible_line_count() >= title.get_line_count(),
+		"a long title shows every line, including at the fit floor (%d of %d lines at %d, floor %d)"
+		% [title.get_visible_line_count(), title.get_line_count(), title.get_theme_font_size(&"font_size"), GoStyle.fit_floor(role)])
+	check(title.get_theme_font_size(&"font_size") < role, "it is set smaller than its role's %d to get there (%d)" % [role, title.get_theme_font_size(&"font_size")])
+	titled.queue_free()
+	# A page that does not scroll itself holds its own edge scroll: it borrows what the card pads now, dense step included.
+	var own := GoPage.new()
+	own.open("Own scroll")
+	own.set_scrolls(false)
+	var scroll := GoScroll.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	own.body.add_child(scroll)
+	var column := GoStyle.column()
+	scroll.add_child(column)
+	scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+	var stiff := Control.new()
+	stiff.custom_minimum_size = Vector2(900, 20)   # wider than the phone: the surface takes its dense step
+	column.add_child(stiff)
+	root.add_child(own)
+	await frames(4)
+	check(scroll._panel_padding == own.surface._content_padding,
+		"a page's own edge scroll borrows the card's current padding (%d, card %d)" % [scroll._panel_padding, own.surface._content_padding])
+	own.queue_free()
+	await _size(390, 844)
+	await frames(2)
+	section("a row wider than the screen never widens the page")
+
+
 ## A glyph icon (a Label marked `go_no_wrap`) never wraps on the rail and sits level with its words, in both orientations.
 func _icon_rows() -> void:
 	# 🔤 An icon-**font** set — its glyphs are `Label`s (a texture set draws TextureRects, which no label rule touches).
@@ -331,6 +451,48 @@ func _icon_rows() -> void:
 	page.queue_free()
 	GoUi.config.icons = null
 	await frames(2)
+
+
+## A detail title can still need more than the preferred two lines after it reaches the font floor.
+func _complete_plain_title() -> void:
+	await _size(327, 729)
+	var page := GoPage.new()
+	root.add_child(page)
+	page.open("Inbox")
+	var details := page.push("Subject")
+	var content := GoStyle.label("The complete detail body remains below its header.")
+	details.add_child(content)
+	await frames(4)
+	var title := page.surface.title_label
+	var role := GoUi.font_size(title.get_meta(&"go_text_role", GoTheme.ROLE_SUBTITLE))
+	var floor_size := GoStyle.fit_floor(role)
+	var font := title.get_theme_font(&"font")
+	var words := "A recovered shipment"
+	var width := title.size.x - title.get_theme_stylebox(&"normal").get_minimum_size().x
+	check(width > 0.0, "fixture: the detail header has a positive title width")
+	if width <= 0.0:
+		page.queue_free()
+		return
+	var breaks := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+	while font.get_multiline_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, width, floor_size, -1, breaks).y \
+			<= font.get_height(floor_size) * (GoSurface.TITLE_FIT_LINES + 1.5):
+		words += " from the frontier"
+	page.surface.set_title(words)
+	await frames(6)
+	check(title.get_line_count() > GoSurface.TITLE_FIT_LINES, "fixture: the detail subject needs more than two lines even at the floor")
+	check(title.get_visible_line_count() >= title.get_line_count(), "the detail header shows every line at the font floor (%d/%d)"
+		% [title.get_visible_line_count(), title.get_line_count()])
+	check(title.get_theme_font_size(&"font_size") >= floor_size, "the whole subject stays at or above the font floor")
+	check(content.get_global_rect().position.y >= title.get_global_rect().end.y - 0.5, "the taller complete header leaves the body below it")
+	check(page.surface.back_button.visible and page.surface.card.get_global_rect().encloses(page.surface.back_button.get_global_rect()), "Back stays inside the card beside the complete title")
+	check(page.surface.close_button.visible and page.surface.card.get_global_rect().encloses(page.surface.close_button.get_global_rect()), "close stays inside the card beside the complete title")
+	var tall := page.surface.header.size.y
+	page.surface.set_title("Subject")
+	await frames(6)
+	check(page.surface.header.size.y < tall and title.get_theme_font_size(&"font_size") == role, "a short replacement restores the natural title size and compact header")
+	page.queue_free()
+	await frames(2)
+	await _size(390, 844)
 
 
 # ── Rail in landscape, top tabs in portrait; the preview ───────────────
