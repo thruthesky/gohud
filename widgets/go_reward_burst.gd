@@ -86,6 +86,8 @@ const BEATS := {
 	"rise": 0.6, "burst": 0.75, "orbit": 0.95, "shine": 1.0, "stamp": 1.2, "glint": 1.5, "collect": 1.6, "collect_in": 0.3}
 const QUICK_BEATS := {
 	"rise": 0.35, "burst": 0.35, "orbit": 0.45, "shine": 0.5, "stamp": 0.6, "glint": 0.8, "collect": 0.85, "collect_in": 0.25}
+## The scrim's depth (the look's scrim ink), under [member dim].
+const SCRIM_ALPHA := 0.62
 ## Reduce motion's one fade.
 const FADE := 0.15
 
@@ -632,8 +634,15 @@ func _build_parts() -> void:
 	theme = GoUi.theme()
 	_sparkle = _art(&"fx_sparkle")
 	if _scrim == null:
-		# 🌫 The look's scrim (frosted where the tier blurs), then the navy dim that lets the light read.
-		_scrim = GoStyle.scrim()
+		# 🛑 The screen behind is read again here: a screen under the layer with a frosted scrim of its own (a backdrop)
+		#    took the first copy of the frame before its own rows were drawn, and the blur would show that copy.
+		var copy := BackBufferCopy.new()
+		copy.name = "Behind"
+		copy.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
+		add_child(copy)
+		# 🌫 The look's scrim (frosted where the tier blurs) in its scrim ink, a little deeper than a dialog's, then the
+		#    navy dim that lets the light read.
+		_scrim = GoStyle.scrim(SCRIM_ALPHA, GoUi.color(GoTheme.SCRIM))
 		_scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_scrim.modulate.a = 0.0
 		add_child(_scrim)

@@ -337,6 +337,9 @@ func _stop() -> void:
 	burst.push(_from(), "a", 20)
 	burst.push(_from(), "b", 20)
 	await wait(0.4)
+	var behind := burst.get_node_or_null("Behind")
+	check(behind is BackBufferCopy and behind.get_index() < burst._scrim.get_index(),
+		"the frame behind is copied again before the scrim reads it (a screen's own frost took the first copy)")
 	burst.stop()
 	check(ends == [["a", false], ["b", false]] and done[0] == 1, "stop ends all, finished once (%s)" % [ends])
 	check(not burst.visible and not burst.is_active() and burst.get_node_or_null("Fx") == null, "…and leaves nothing")
