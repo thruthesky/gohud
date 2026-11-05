@@ -87,6 +87,17 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		if not value: _drop_fit()
 		_queue_fit()
 
+## 🔤 With [member fit_label]: share the fit with the other `fit_with_row` keys of the same parent — one label size for
+## the row, the smallest any of them fits at, and one held width, the widest any of them needs at the floor (in a row
+## that stretches them alike, one width). `GoSurface.add_gloss` turns it on for a window's row of keys: Spanish CANCELAR
+## stood at 22 dp beside COMPRAR at 15.
+@export var fit_with_row := false:
+	set(value):
+		if fit_with_row == value: return
+		fit_with_row = value
+		_queue_fit()
+		for peer in _fit_peers(): if peer != self: peer._queue_fit()
+
 ## The size [member fit_label] shrinks from. 0 takes the look's `font_size` for this button's variation.
 @export_range(0, 128) var fit_base_size := 0:
 	set(value):
@@ -159,17 +170,19 @@ class ShiftedBox:
 		# A thin face (a flat look's few pixels) instead keeps the group centred and the glyph `edge` off its side.
 		var lead := SIDE_RIGHT if mirrored else SIDE_LEFT
 		var trail := SIDE_LEFT if mirrored else SIDE_RIGHT
-		var near := from.get_margin(lead)
-		var far := from.get_margin(trail)
-		if far >= maxf(edge, shift):
-			set_content_margin(lead, near + shift)
-			set_content_margin(trail, maxf(far - shift, 0.0))
-		else:
-			var outside := maxf(near - minf(shift, far), edge)
-			set_content_margin(lead, outside + 2.0 * shift)
-			set_content_margin(trail, outside - near + far)
+		var sides := margins(from, shift, mirrored, edge)
+		set_content_margin(lead, sides.x)
+		set_content_margin(trail, sides.y)
 		content_margin_top = from.get_margin(SIDE_TOP)
 		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
+
+	## The near and far content margins a face [param from] gets with [param shift] (see the class).
+	static func margins(from: StyleBox, shift: float, mirrored := false, edge := 0.0) -> Vector2:
+		var near := from.get_margin(SIDE_RIGHT if mirrored else SIDE_LEFT)
+		var far := from.get_margin(SIDE_LEFT if mirrored else SIDE_RIGHT)
+		if far >= maxf(edge, shift): return Vector2(near + shift, maxf(far - shift, 0.0))
+		var outside := maxf(near - minf(shift, far), edge)
+		return Vector2(outside + 2.0 * shift, outside - near + far)
 
 	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 		if base != null: base.draw(to_canvas_item, rect)
@@ -278,16 +291,51 @@ func _notification(what: int) -> void:
 
 
 ## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
-## minimum width (or [member fit_padding]) and `glyph_allowance()`, as Magnet Mayhem's screens measured it. Off: the size it is drawn at.
+## minimum width and the look's clear pad (`GoSkin.button_fit_pad()`; or [member fit_padding]) and `glyph_allowance()`,
+## as Magnet Mayhem's screens measured it; with [member fit_with_row], the smallest of its row's. Off: the size it is drawn at.
 func fitted_font_size() -> int:
 	if not fit_label: return get_theme_font_size(&"font_size")
+	var fitted := own_fit_size()
+	for peer in _fit_peers():
+		if peer != self and peer.is_inside_tree() and peer.size.x > 0.0: fitted = mini(fitted, peer.own_fit_size())
+	return fitted
+
+
+## The size this button's own label fits at, its row left out ([method fitted_font_size]).
+func own_fit_size() -> int:
 	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
 
 
 ## The width the label may take: the button's (or the width the fit holds it at) less the padding and the glyph.
 func _fit_room() -> float:
 	var width := maxf(size.x, _held_width) if get_parent() is Container else _given_width()
-	return width - (_face_width() if fit_padding < 0.0 else fit_padding) - glyph_allowance()
+	return width - _fit_padding_now() - glyph_allowance(_fit_tall())
+
+
+## The height the fit gives the glyph room for: the button's, but never under its height at the size the fit starts
+## from — a smaller label made a button sized by its label shorter, its glyph narrower and the label room wider, which
+## fitted it bigger again (a key row without a fixed height swung between two sizes forever).
+func _fit_tall() -> float:
+	var font := _base_font()
+	var face := get_theme_stylebox(&"normal")
+	var tall := (face.get_minimum_size().y if face != null else 0.0) + (font.get_height(_fit_base()) if font != null else 0.0)
+	return maxf(maxf(size.y, custom_minimum_size.y), tall)
+
+
+## The other `fit_with_row` keys this one fits with (itself included): its parent's visible ones.
+func _fit_peers() -> Array[GoGlyphButton]:
+	var peers: Array[GoGlyphButton] = [self]
+	var parent := get_parent()
+	if not fit_with_row or parent == null: return peers
+	for child in parent.get_children():
+		var key := child as GoGlyphButton
+		if key != null and key != self and key.fit_label and key.fit_with_row and key.visible: peers.append(key)
+	return peers
+
+
+## The width the label never takes: [member fit_padding], else the normal face's padding and the look's pad each side.
+func _fit_padding_now() -> float:
+	return _face_width() + 2.0 * GoUi.skin().button_fit_pad() if fit_padding < 0.0 else fit_padding
 
 
 ## Fits the label now instead of on the next frame (a test, or a screen measuring itself right after a change).
@@ -297,6 +345,10 @@ func fit_now() -> void:
 	_fit_text = text
 	var wanted := fitted_font_size()
 	_hold_floor_width()
+	# 🔑 Every key of the row works the same size and width out from the same keys: one that differs is fitted again,
+	#    and once they agree nothing is queued (no ping-pong).
+	for peer in _fit_peers():
+		if peer != self and (peer._fitted != wanted or not is_equal_approx(peer._held_width, _held_width)): peer._queue_fit()
 	_condense(wanted)
 	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
 	_fitted = wanted
@@ -308,11 +360,8 @@ func fit_now() -> void:
 func _hold_floor_width() -> void:
 	if not is_equal_approx(custom_minimum_size.x, _held_width): _asked_width = custom_minimum_size.x # the caller's
 	var need := 0.0
-	var font := _base_font()
-	if fit_label and font != null and not text.is_empty() and get_parent() is Container:
-		var tall := maxf(size.y, get_combined_minimum_size().y)
-		need = ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
-				+ (_face_width() if fit_padding < 0.0 else fit_padding) + glyph_allowance(tall))
+	if get_parent() is Container:
+		for peer in _fit_peers(): need = maxf(need, peer.floor_width())
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
@@ -363,6 +412,14 @@ func _drop_condense() -> void:
 	_condensed = null
 
 
+## The width this button's label needs at the fit floor beside its glyph, inside its padding (0: no fit, no text).
+func floor_width() -> float:
+	var font := _base_font()
+	if not fit_label or font == null or text.is_empty(): return 0.0
+	return ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
+			+ _fit_padding_now() + glyph_allowance(_fit_tall()))
+
+
 func _queue_fit() -> void:
 	if not fit_label or _fit_queued or _peeking: return
 	_fit_queued = true
@@ -393,9 +450,16 @@ func _base_font() -> Font:
 
 
 ## The normal face's minimum width, the padding the label never takes.
+## 🔑 With a glyph, the face as shifted for the glyph at the fit's height (`_fit_tall()`), not the button's height now:
+##    a thin face grows with the shift, so a width read at the fitted height swung the fit back and forth.
 func _face_width() -> float:
 	var face := get_theme_stylebox(&"normal")
-	return face.get_minimum_size().x if face != null else 0.0
+	if face == null: return 0.0
+	var wrapped := face as ShiftedBox
+	var from := wrapped.base if wrapped != null and wrapped.base != null else face
+	if wrapped == null: return face.get_minimum_size().x
+	var sides := ShiftedBox.margins(from, glyph_allowance(_fit_tall()) * 0.5, is_layout_rtl(), MIN_EDGE)
+	return from.get_minimum_size().x - from.get_margin(SIDE_LEFT) - from.get_margin(SIDE_RIGHT) + sides.x + sides.y
 
 
 func _drop_fit() -> void:

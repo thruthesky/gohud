@@ -571,6 +571,7 @@ func title_plate_ink() -> Color:
 const RIBBON_TITLE_SIZE := 34
 const RIBBON_HEIGHT := 57.0
 const RIBBON_TITLE_PAD := 12.0
+const KEY_FIT_PAD := 6.0
 
 
 func title_plate_font_size() -> int:
@@ -803,6 +804,11 @@ func window_button_height() -> float:
 
 func window_button_gap() -> int:
 	return WINDOW_BUTTON_GAP
+
+
+## A fitted key label keeps 6 dp more than the pill's padding from its rounded ends (German ABBRECHEN filled its key).
+func button_fit_pad() -> float:
+	return KEY_FIT_PAD
 
 
 ## The game's `FitBox`: a card fitted to the screen keeps 8 dp off the safe area, ribbon and magnet included

@@ -1022,14 +1022,17 @@ func add_row(parent: Control = null) -> HBoxContainer:
 
 
 ## A glyph button — [param variation], the icon set's [param icon], [param text] — at the look's window button height
-## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width.
+## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width, and with `fit_label` the
+## row's keys share one label size and one width (`GoGlyphButton.fit_with_row`).
 func add_gloss(variation: StringName, icon: StringName, text := "", parent: Control = null,
 		texture: Texture2D = null) -> GoGlyphButton:
 	var button := GoGlyphButton.make(text, icon, variation, texture)
 	var high := GoUi.skin().window_button_height()
 	if high > 0.0: button.custom_minimum_size.y = high
 	var to := parent if parent != null else body
-	if to is HBoxContainer: button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if to is HBoxContainer:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.fit_with_row = true
 	to.add_child(button)
 	return button
 

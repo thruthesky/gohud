@@ -41,6 +41,7 @@ func _initialize() -> void:
 		await _fit_share(look)
 		await _scale_title(look)
 		await _title_before_widen(look)
+		await _key_row_fit(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -1557,4 +1558,49 @@ func _click(at: Vector2) -> void:
 		event.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
 		Input.parse_input_event(event.xformed_by(root.get_final_transform()))
 		Input.flush_buffered_events()
+		await frames(1)
+
+
+## A window's row of fit keys (`add_gloss` in an `add_row`) shares one label size, the smallest any fits at, and one
+## width; every label keeps the look's clear pad from its key's ends (Spanish CANCELAR stood at 22 beside COMPRAR at
+## 15, German ABBRECHEN filled its key).
+func _key_row_fit(look: StringName) -> void:
+	var pad := GoUi.skin().button_fit_pad()
+	if look == GoThemePresets.ARCADE_LIGHT: check(pad > 0.0, "%s a fit key keeps a clear pad (%.0f)" % [look, pad])
+	for texts: Array in [["CANCELAR", "GANAR MONEDAS DE ORO"], ["ABBRECHEN", "KAUFEN"], ["OK", "NO"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			var key := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, GoIconSet.PLAY, text, row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(5)
+		var tag := "%s key row %s" % [look, " | ".join(texts)]
+		var at := keys[0].get_theme_font_size(&"font_size")
+		var smallest := 1000
+		for key in keys:
+			check(key.fit_with_row, "%s: add_gloss in a row fits with the row (%s)" % [tag, key.text])
+			smallest = mini(smallest, key.own_fit_size())
+		check(keys.all(func(key: GoGlyphButton) -> bool: return key.get_theme_font_size(&"font_size") == at),
+			"%s: one label size (%s)" % [tag, ", ".join(keys.map(func(key: GoGlyphButton) -> String:
+				return "%d" % key.get_theme_font_size(&"font_size")))])
+		check(at == smallest, "%s: the smallest any key fits at (%d, want %d)" % [tag, at, smallest])
+		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		for key in keys:
+			var face := key.get_theme_stylebox(&"normal").get_minimum_size().x
+			var words := key.get_theme_font(&"font").get_string_size(key.atr(key.text), HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+			check(words + face + 2.0 * pad + key.glyph_allowance() <= key.size.x + 0.5,
+				"%s: %s keeps the pad from its key's ends (%.1f + %.1f in %.1f)" % [tag, key.text, words, face + 2.0 * pad
+					+ key.glyph_allowance(), key.size.x])
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		view.queue_free()
 		await frames(1)

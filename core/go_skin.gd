@@ -1245,6 +1245,12 @@ func title_plate_min_size() -> int:
 	return 15
 
 
+## The clear room a `GoGlyphButton` label fitted to its key (`fit_label`) keeps inside the face's padding on each side
+## (dp): it shrinks before its letters reach the key's rounded ends.
+func button_fit_pad() -> float:
+	return 0.0
+
+
 ## The clear room a title on a plate keeps from each of the plate's ends (dp): it shrinks (or the `SCALE` card widens)
 ## before its words reach the plate's rounded ends.
 func title_plate_pad() -> float:
