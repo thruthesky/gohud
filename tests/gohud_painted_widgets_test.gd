@@ -490,7 +490,7 @@ func _glyph_fit(look: StringName) -> void:
 	check(not button.has_theme_font_size_override(&"font_size"), "%s glyph fit: off, a long label keeps its size" % look)
 	button.fit_label = true
 	await frames(2)
-	var font := button.get_theme_font(&"font")
+	var font := plain.get_theme_font(&"font")   # the look's, never a condensed one
 	var room := button.size.x - button.get_theme_stylebox(&"normal").get_minimum_size().x - button.glyph_allowance(46.0)
 	var want := GoStyle.fit_font_size(PackedStringArray([button.text]), base, room, font)
 	var got := button.get_theme_font_size(&"font_size")
@@ -515,18 +515,70 @@ func _glyph_fit(look: StringName) -> void:
 	await frames(2)
 	check(button.get_theme_font_size(&"font_size") <= 14, "%s glyph fit: fit_base_size sets where it shrinks from" % look)
 	button.fit_base_size = 0
-	# Too long even at the floor: the button is held as wide as the label there, the glyph and the padding, so the
-	# label never runs past the face; a short text gives the caller's width back.
+	# Too long even at the floor, placed by hand (no container): the button keeps its size and the label is condensed
+	# to the room, never narrower than the condense floor; a short text drops the condensing.
+	var pad := button.get_theme_stylebox(&"normal").get_minimum_size().x + button.glyph_allowance(46.0)
+	var floor_size := GoStyle.fit_floor(base)
+	var at_floor := font.get_string_size("MÜNZEN VERDIENEN", HORIZONTAL_ALIGNMENT_LEFT, -1, floor_size).x
+	var given := ceilf(at_floor * 0.9 + pad)   # a label that condenses into it
+	button.custom_minimum_size.x = given
+	button.text = "MÜNZEN VERDIENEN"
+	await frames(3)
+	var drawn := button.get_theme_font(&"font")
+	var condensed := drawn as FontVariation
+	var drawn_width := drawn.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, floor_size).x
+	var share := condensed.variation_transform.x.x if condensed != null else 1.0
+	check(button.get_theme_font_size(&"font_size") == floor_size and is_equal_approx(button.size.x, given)
+		and is_equal_approx(button.custom_minimum_size.x, given),
+		"%s glyph fit: placed by hand, the button keeps its size at the floor (%.1f)" % [look, button.size.x])
+	check(condensed != null and condensed.base_font == font and share < 1.0
+		and share >= GoUi.config.fit_condense_min - 0.005 and drawn_width <= given - pad + 0.5,
+		"%s glyph fit: and its label is condensed into the room (x%.2f, %.1f <= %.1f)"
+		% [look, share, drawn_width, given - pad])
 	button.text = "MÜNZEN VERDIENEN UND NOCH VIEL VIEL MEHR"
 	await frames(3)
-	var at_floor := font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(base)).x
-	var takes := at_floor + button.get_theme_stylebox(&"normal").get_minimum_size().x + button.glyph_allowance()
-	check(button.get_theme_font_size(&"font_size") == GoStyle.fit_floor(base) and button.size.x >= takes - 0.5,
-		"%s glyph fit: at the floor the button holds its label (%.1f >= %.1f)" % [look, button.size.x, takes])
+	var longer := button.get_theme_font(&"font") as FontVariation
+	check(longer != null and longer.variation_transform.x.x >= GoUi.config.fit_condense_min - 0.005,
+		"%s glyph fit: never condensed past fit_condense_min (x%.2f)"
+		% [look, longer.variation_transform.x.x if longer != null else 0.0])
+	var other := GoGlyphButton.make("MÜNZEN VERDIENEN", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	other.custom_minimum_size = Vector2(given, 46)
+	other.fit_label = true
+	holder.add_child(other)
+	await frames(3)
+	check(other.get_theme_font(&"font") == condensed, "%s glyph fit: two keys condensed alike share one font" % look)
+	other.queue_free()
 	button.text = "OK"
 	await frames(3)
-	check(is_equal_approx(button.custom_minimum_size.x, 150.0) and is_equal_approx(button.size.x, 150.0),
-		"%s glyph fit: a short text gives the asked width back (%.1f)" % [look, button.size.x])
+	check(not button.has_theme_font_override(&"font") and button.get_theme_font(&"font") == font
+		and is_equal_approx(button.size.x, given),
+		"%s glyph fit: a short text drops the condensing (%.1f)" % [look, button.size.x])
+	button.text = "MÜNZEN VERDIENEN"
+	await frames(3)
+	button.custom_minimum_size.x = 600.0
+	await frames(3)
+	check(not button.has_theme_font_override(&"font"), "%s glyph fit: a wider key drops the condensing too" % look)
+	button.custom_minimum_size.x = 150.0
+	await frames(3)
+	# In a container the key is held as wide as its label at the floor, the glyph and the padding instead, so the
+	# label never runs past the face; a short text gives the caller's width back.
+	var row := HBoxContainer.new()
+	holder.add_child(row)
+	var kept := GoGlyphButton.make("MÜNZEN VERDIENEN UND NOCH VIEL VIEL MEHR", &"", GoTheme.VAR_PRIMARY_BUTTON, glyph)
+	kept.custom_minimum_size = Vector2(150, 46)
+	kept.fit_label = true
+	row.add_child(kept)
+	await frames(3)
+	var row_floor := font.get_string_size(kept.text, HORIZONTAL_ALIGNMENT_LEFT, -1, floor_size).x
+	var takes := row_floor + kept.get_theme_stylebox(&"normal").get_minimum_size().x + kept.glyph_allowance()
+	check(kept.get_theme_font_size(&"font_size") == floor_size and kept.size.x >= takes - 0.5
+		and not kept.has_theme_font_override(&"font"),
+		"%s glyph fit: in a container the key holds its label at the floor (%.1f >= %.1f)" % [look, kept.size.x, takes])
+	kept.text = "OK"
+	await frames(3)
+	check(is_equal_approx(kept.custom_minimum_size.x, 150.0) and is_equal_approx(kept.size.x, 150.0),
+		"%s glyph fit: a short text gives the asked width back (%.1f)" % [look, kept.size.x])
+	row.queue_free()
 	button.text = "MÜNZEN VERDIENEN UND NOCH VIEL VIEL MEHR"
 	await frames(3)
 	button.fit_label = false

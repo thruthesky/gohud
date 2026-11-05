@@ -75,9 +75,11 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ## 🔤 Shrink the label to fit: from [member fit_base_size] (0: the look's size for this variation) down to
 ## `GoStyle.fit_floor()` at most, until it fits the button's width less its normal face's padding and the glyph's
 ## room (`glyph_allowance()`). Off, the label keeps its size (what the button does today).
-## 🔑 Still too long at the floor, the button is held as wide as its label there with the glyph and the padding
-##    (`custom_minimum_size.x` raised, the width a caller asked kept under it) — the label never runs past the face,
-##    and a `SCALE` window it sits in shrinks as one piece instead (German MÜNZEN VERDIENEN).
+## 🔑 Still too long at the floor, a button in a container is held as wide as its label there with the glyph and the
+##    padding (`custom_minimum_size.x` raised, the width a caller asked kept under it) — the label never runs past the
+##    face, and a `SCALE` window it sits in shrinks as one piece instead (German MÜNZEN VERDIENEN). A button placed by
+##    hand (its parent no container) keeps its size: its label is condensed instead, down to
+##    `GoConfig.fit_condense_min` of its width (glyphs drawn narrower, the advances closed up to match).
 @export var fit_label := false:
 	set(value):
 		if fit_label == value: return
@@ -127,6 +129,10 @@ var _fit_queued := false
 ## The width the fit holds the button at (`custom_minimum_size.x` as the fit set it; 0: none), and the caller's own.
 var _held_width := 0.0
 var _asked_width := 0.0
+## The condensed font the fit put on as the `font` override (null: none of ours). Shared per base font and step.
+var _condensed: FontVariation = null
+## Condensed fonts by base font and step, so a fit never makes a font of its own.
+static var _condense_cache := {}
 ## The text the fit last measured: a held width hides a new text's minimum size, but never its redraw.
 var _fit_text := ""
 ## The fit is peeking under its own override (the theme notices that brings are its own, not a change).
@@ -244,6 +250,7 @@ func _exit_tree() -> void:
 
 ## The look or the icon set changed: the glyph may be another size, so the shift is measured again.
 func _on_ui_changed() -> void:
+	_drop_condense() # the look's font may be another one: the fit condenses it again
 	_update_shift()
 	GoStyle.skin_focus(self)
 	_queue_fit()
@@ -274,8 +281,13 @@ func _notification(what: int) -> void:
 ## minimum width (or [member fit_padding]) and `glyph_allowance()`, as Magnet Mayhem's screens measured it. Off: the size it is drawn at.
 func fitted_font_size() -> int:
 	if not fit_label: return get_theme_font_size(&"font_size")
-	var room := size.x - (_face_width() if fit_padding < 0.0 else fit_padding) - glyph_allowance()
-	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), room, get_theme_font(&"font"))
+	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
+
+
+## The width the label may take: the button's (or the width the fit holds it at) less the padding and the glyph.
+func _fit_room() -> float:
+	var width := maxf(size.x, _held_width) if get_parent() is Container else _given_width()
+	return width - (_face_width() if fit_padding < 0.0 else fit_padding) - glyph_allowance()
 
 
 ## Fits the label now instead of on the next frame (a test, or a screen measuring itself right after a change).
@@ -285,23 +297,70 @@ func fit_now() -> void:
 	_fit_text = text
 	var wanted := fitted_font_size()
 	_hold_floor_width()
+	_condense(wanted)
 	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
 	_fitted = wanted
 	add_theme_font_size_override(&"font_size", wanted)
 
 
-## Holds the button as wide as its label at the fit floor beside the glyph and inside the padding (see [member fit_label]).
+## Holds the button as wide as its label at the fit floor beside the glyph and inside the padding (see [member fit_label]),
+## when a container lays it out; a button placed by hand keeps the width it was given.
 func _hold_floor_width() -> void:
 	if not is_equal_approx(custom_minimum_size.x, _held_width): _asked_width = custom_minimum_size.x # the caller's
 	var need := 0.0
-	var font := get_theme_font(&"font")
-	if fit_label and font != null and not text.is_empty():
+	var font := _base_font()
+	if fit_label and font != null and not text.is_empty() and get_parent() is Container:
 		var tall := maxf(size.y, get_combined_minimum_size().y)
 		need = ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
 				+ (_face_width() if fit_padding < 0.0 else fit_padding) + glyph_allowance(tall))
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
+
+
+## The width a button placed by hand was given — its anchors and offsets, before its minimum size widens it — so a
+## label too long even condensed never feeds its own width back into the room.
+func _given_width() -> float:
+	var given := (anchor_right - anchor_left) * get_parent_area_size().x + offset_right - offset_left
+	return minf(size.x, given) if given > 0.0 else size.x
+
+
+## Condenses the label at [param font_size] to the room when it is still wider (see [member fit_label]); drops the
+## condensing when it fits.
+func _condense(font_size: int) -> void:
+	var font := _base_font()
+	var label := atr(text)
+	var gaps := label.length() - 1 # the advances that close up (the last glyph's is trimmed off the line)
+	var wide := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x if font != null else 0.0
+	var step := 0
+	var over := wide - _fit_room()
+	if gaps > 0 and over > 0.5:
+		# 🔑 A transform draws the glyphs narrower but keeps their advances: the advances close up by whole pixels
+		#    (`spacing_glyph`), and the glyphs narrow by the same share, never below the condense floor.
+		step = mini(ceili(over / gaps), floori(wide * (1.0 - GoUi.config.fit_condense_min) / gaps))
+	if step <= 0:
+		_drop_condense()
+		return
+	var share := snappedf(1.0 - float(step * gaps) / wide, 0.01)
+	var by_font: Dictionary = _condense_cache.get(font, {})
+	var key := Vector2i(step, roundi(share * 100.0))
+	var condensed: FontVariation = by_font.get(key)
+	if condensed == null:
+		condensed = FontVariation.new()
+		condensed.base_font = font
+		condensed.spacing_glyph = -step
+		condensed.variation_transform = Transform2D(Vector2(share, 0.0), Vector2(0.0, 1.0), Vector2.ZERO)
+		by_font[key] = condensed
+		_condense_cache[font] = by_font
+	if condensed == _condensed and has_theme_font_override(&"font"): return
+	_condensed = condensed
+	add_theme_font_override(&"font", condensed)
+
+
+func _drop_condense() -> void:
+	if _condensed != null and has_theme_font_override(&"font") and get_theme_font(&"font") == _condensed:
+		remove_theme_font_override(&"font")
+	_condensed = null
 
 
 func _queue_fit() -> void:
@@ -326,6 +385,13 @@ func _fit_base() -> int:
 	return base
 
 
+## The font the label is drawn in before any condensing — the one under the condensed override the fit put on.
+func _base_font() -> Font:
+	if _condensed != null and has_theme_font_override(&"font") and get_theme_font(&"font") == _condensed:
+		return _condensed.base_font
+	return get_theme_font(&"font")
+
+
 ## The normal face's minimum width, the padding the label never takes.
 func _face_width() -> float:
 	var face := get_theme_stylebox(&"normal")
@@ -337,6 +403,7 @@ func _drop_fit() -> void:
 	_fitted = 0
 	if is_equal_approx(custom_minimum_size.x, _held_width) and _held_width > 0.0: custom_minimum_size.x = _asked_width
 	_held_width = 0.0
+	_drop_condense()
 
 
 ## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).
