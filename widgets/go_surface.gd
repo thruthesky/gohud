@@ -854,7 +854,7 @@ func _fit_title_size() -> void:
 	if fit_mode == FitMode.SCALE:
 		# 🔑 The label wraps inside its own margins (the plate's base margins), which can be narrower than the drawn
 		#    ribbon's room: measured against the narrower, the words never fold (Russian КУПИТЬ ПРЕДМЕТ).
-		room = minf(room, title_label.size.x - plate.get_minimum_size().x - 1.0)
+		room = minf(room, _title_wrap_room(title_label.size.x) - 1.0)
 	var font := title_label.get_theme_font(&"font")
 	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
@@ -875,6 +875,20 @@ func _fit_title_size() -> void:
 	if fit_mode == FitMode.SCALE:
 		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room))
 	_widen_title(wide)
+
+
+## The widest line the title label wraps at, [param width] wide, with no centring slack in its margins.
+## 🛑 Never read from the live plate's margins: `_place_title_glyph` sets them from the words' width, so a room taken
+##    from them changed with every fit, and the margins it set resized the label, which fitted it again — forever
+##    (a stack overflow in every SCALE window with a title glyph).
+func _title_wrap_room(width: float) -> float:
+	var plate := title_label.get_theme_stylebox(&"normal")
+	var over := plate as OverhangPlate
+	if over == null or over.base == null: return width - (plate.get_minimum_size().x if plate != null else 0.0)
+	if is_instance_valid(_title_glyph_rect) and title_label.has_meta(&"go_plate_align"):
+		# The glyph row (`_place_title_glyph`): the words start after the plate's end, the glyph and its gap.
+		return width - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - title_glyph_side() - TITLE_GLYPH_GAP
+	return width - over.base.get_margin(SIDE_LEFT) - over.base.get_margin(SIDE_RIGHT) - over.glyph_room
 
 
 ## The title's least width under a `SCALE` fit: its words at the size they shrank to, plus the plate's ends — the card

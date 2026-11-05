@@ -1138,26 +1138,40 @@ func _fit_share(look: StringName) -> void:
 ## onto two lines inside the ribbon.
 func _scale_title(look: StringName) -> void:
 	if look != GoThemePresets.ARCADE_LIGHT: return # a plain title (no plate) wraps by design
-	for title: String in ["КУПИТЬ ПРЕДМЕТ", "DIESEN LOOK ANLEGEN?", "MÜNZEN VERDIENEN UND NOCH MEHR"]:
-		var view := SubViewport.new()
-		view.size = Vector2i(1280, 720)
-		root.add_child(view)
-		var surface := GoSurface.new()
-		surface.fit_mode = GoSurface.FitMode.SCALE
-		surface.max_width = 300.0
-		surface.set_title(title)
-		var block := Control.new()
-		block.custom_minimum_size = Vector2(10, 120)
-		surface.body.add_child(block)
-		view.add_child(surface)
-		await frames(4)
-		var tl := surface.title_label
-		check(tl.get_line_count() == 1, "%s SCALE title %s: one line (got %d)" % [look, title, tl.get_line_count()])
-		var words := tl.get_theme_font(&"font").get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
-				tl.get_theme_font_size(&"font_size")).x
-		check(tl.size.x >= words, "%s SCALE title %s: the label holds its words (%.1f < %.1f)" % [look, title, tl.size.x, words])
-		view.queue_free()
-		await frames(1)
+	for glyph: Texture2D in [null, GoUi.icons().texture(GoIconSet.PLAY)]:
+		for title: String in ["КУПИТЬ ПРЕДМЕТ", "DIESEN LOOK ANLEGEN?", "MÜNZEN VERDIENEN UND NOCH MEHR", "ROOM"]:
+			var view := SubViewport.new()
+			view.size = Vector2i(1280, 720)
+			root.add_child(view)
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.max_width = 300.0
+			surface.title_glyph = glyph
+			surface.set_title(title)
+			var block := Control.new()
+			block.custom_minimum_size = Vector2(10, 120)
+			surface.body.add_child(block)
+			view.add_child(surface)
+			await frames(4)
+			var tl := surface.title_label
+			var tag := "%s SCALE title %s%s" % [look, title, " + glyph" if glyph != null else ""]
+			check(tl.get_line_count() == 1, "%s: one line (got %d)" % [tag, tl.get_line_count()])
+			var words := tl.get_theme_font(&"font").get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
+					tl.get_theme_font_size(&"font_size")).x
+			check(tl.size.x >= words, "%s: the label holds its words (%.1f < %.1f)" % [tag, tl.size.x, words])
+			# 🛑 A settled title fits to the same size and margins again, without resizing its label: a room read from
+			#    the margins the glyph row sets fitted, resized and fitted again until the stack ran out.
+			var resizes := [0]
+			tl.resized.connect(func() -> void: resizes[0] += 1)
+			var plate := tl.get_theme_stylebox(&"normal")
+			var before := [tl.get_theme_font_size(&"font_size"), plate.get_margin(SIDE_LEFT), plate.get_margin(SIDE_RIGHT)]
+			surface._fit_title()
+			surface._fit_title()
+			var after := [tl.get_theme_font_size(&"font_size"), plate.get_margin(SIDE_LEFT), plate.get_margin(SIDE_RIGHT)]
+			check(after == before, "%s: a second fit changes nothing (%s -> %s)" % [tag, before, after])
+			check(resizes[0] == 0, "%s: a second fit resizes nothing (%d resizes)" % [tag, resizes[0]])
+			view.queue_free()
+			await frames(1)
 
 
 func _fit_surface(look: StringName) -> void:
