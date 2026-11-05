@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _fit_surface(look)
 		await _fit_share(look)
 		await _scale_title(look)
+		await _title_before_widen(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -1172,6 +1173,56 @@ func _scale_title(look: StringName) -> void:
 			check(resizes[0] == 0, "%s: a second fit resizes nothing (%d resizes)" % [tag, resizes[0]])
 			view.queue_free()
 			await frames(1)
+
+
+## Under a `SCALE` fit a ribbon title shrinks, down to the floor, before the card grows, and keeps the look's clear pad
+## from the ribbon's ends — whatever came before: a title that once widened the card (or a first, narrow layout) gives
+## the width back. Italian EQUIPAGGIARE QUESTO LOOK? held a widened card at 26 dp where 24 dp fitted the look's width.
+func _title_before_widen(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	var pad := GoUi.skin().title_plate_pad()
+	check(pad > 0.0, "%s the ribbon keeps a clear pad (%.0f)" % [look, pad])
+	var sizes := {}
+	for path: Array in [["DIESEN LOOK ANLEGEN?"], ["MÜNZEN VERDIENEN UND NOCH VIEL MEHR DAZU", "DIESEN LOOK ANLEGEN?"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 440.0
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 120)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		for title: String in path:
+			surface.set_title(title)
+			await frames(4)
+		var tl := surface.title_label
+		var at := tl.get_theme_font_size(&"font_size")
+		var font := tl.get_theme_font(&"font")
+		var words := font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+		var room := surface._title_wrap_room(tl.size.x) - 2.0 * pad
+		var tag := "%s SCALE title %s" % [look, " -> ".join(path)]
+		check(is_equal_approx(surface.card.size.x, 440.0), "%s: shrinks before the card grows (card %.0f)" % [tag, surface.card.size.x])
+		check(at < GoUi.skin().title_plate_font_size() and at >= GoUi.skin().title_plate_min_size(),
+			"%s: shrunk within the floor (%d)" % [tag, at])
+		check(words <= room + 0.5, "%s: the words keep the pad (%.0f of %.0f)" % [tag, words, room])
+		check(font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at + 1).x > room,
+			"%s: as big as it fits (%d)" % [tag, at])
+		sizes[path.size()] = at
+		# Too long at the floor: the card grows to the words with the pad, never past it.
+		surface.set_title("MÜNZEN VERDIENEN UND NOCH VIEL MEHR DAZU")
+		await frames(4)
+		at = tl.get_theme_font_size(&"font_size")
+		words = font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+		room = surface._title_wrap_room(tl.size.x) - 2.0 * pad
+		check(at == GoUi.skin().title_plate_min_size() and surface.card.size.x > 440.0 and words <= room + 0.5
+				and words > room - 2.0,
+			"%s: too long at the floor, the card grows just to the padded words (at %d, words %.0f room %.0f card %.0f)"
+			% [tag, at, words, room, surface.card.size.x])
+		view.queue_free()
+		await frames(1)
+	check(sizes.get(1) == sizes.get(2), "%s the same title fits the same, fresh or after a wider one (%s)" % [look, sizes])
 
 
 func _fit_surface(look: StringName) -> void:

@@ -845,16 +845,22 @@ func _fit_title_size() -> void:
 		_sizing_title = false
 		_widen_title(0.0)
 		return
-	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
+	# 🔑 Under SCALE, the width the label has without its own widening: a title that widened the card while the label
+	#    was still narrow (its first layout) otherwise measured the room it made itself, grew back into it and held the
+	#    card wide (Italian EQUIPAGGIARE QUESTO LOOK? kept a 492 dp card at 26 dp when 24 dp fit the 476 dp one).
+	var label_width := _title_free_width()
+	var room := label_width - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
 	var over := plate as OverhangPlate
 	if over != null and over.base != null:
 		# Its left margin follows the words (see `_place_title_glyph`); the room is the plate's as drawn — past the
 		# card's sides by its bleed — less its ends and the glyph's room, the game's ribbon row.
-		room = title_label.size.x - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
+		room = label_width - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
 	if fit_mode == FitMode.SCALE:
 		# 🔑 The label wraps inside its own margins (the plate's base margins), which can be narrower than the drawn
 		#    ribbon's room: measured against the narrower, the words never fold (Russian КУПИТЬ ПРЕДМЕТ).
-		room = minf(room, _title_wrap_room(title_label.size.x) - 1.0)
+		room = minf(room, _title_wrap_room(label_width) - 1.0)
+	# The look's clear pad on each side: the words never meet the plate's rounded ends.
+	room -= 2.0 * GoUi.skin().title_plate_pad()
 	var font := title_label.get_theme_font(&"font")
 	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
@@ -873,8 +879,25 @@ func _fit_title_size() -> void:
 	if over != null: _sink_plate(over, font, fitted)
 	var wide := title_width
 	if fit_mode == FitMode.SCALE:
-		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room))
+		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + label_width - room))
 	_widen_title(wide)
+
+
+## The plate title's width before its own widening (`_widen_title`): its width now, unless a `SCALE` fit has the label
+## held at the least width the title set — then the width the card's other content and the look's width give it.
+func _title_free_width() -> float:
+	var width := title_label.size.x
+	var held := title_label.custom_minimum_size.x
+	if fit_mode != FitMode.SCALE or card == null or held <= title_width + 0.5 or width > held + 0.5: return width
+	if title_width > 0.0: return title_width
+	var look_width := GoUi.skin().window_width()
+	var base := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	var others := 0.0
+	for section in _column.get_children():
+		if section != header and section is Control and (section as Control).visible:
+			others = maxf(others, (section as Control).get_combined_minimum_size().x)
+	base = maxf(base, others + card.size.x - _column.size.x)
+	return clampf(width - maxf(0.0, card.size.x - base), 0.0, width)
 
 
 ## The widest line the title label wraps at, [param width] wide, with no centring slack in its margins.

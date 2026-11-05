@@ -570,6 +570,7 @@ func title_plate_ink() -> Color:
 ## The ribbon header's 34 dp title on its 57 dp ribbon (`RibbonHeader.FONT_SIZE`, `RIBBON_HEIGHT`)…
 const RIBBON_TITLE_SIZE := 34
 const RIBBON_HEIGHT := 57.0
+const RIBBON_TITLE_PAD := 12.0
 
 
 func title_plate_font_size() -> int:
@@ -583,6 +584,11 @@ func title_plate_height() -> float:
 ## …shrinking as the game's `fit_font_size` does: no lower than `fit_min_scale` of it (24).
 func title_plate_min_size() -> int:
 	return GoStyle.fit_floor(RIBBON_TITLE_SIZE)
+
+
+## …and keeps 12 dp clear of the ribbon's rounded ends (EQUIPAGGIARE QUESTO LOOK? ran end to end).
+func title_plate_pad() -> float:
+	return RIBBON_TITLE_PAD
 
 
 ## …with the ribbon header's ink outline.
