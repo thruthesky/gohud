@@ -936,7 +936,19 @@ func _font(theme: Theme) -> void:
 		check(GoStyle._fit_font() is FontVariation and (GoStyle._fit_font() as FontVariation).fallbacks.size() == 4,
 			"GoStyle's fit font under arcade_light keeps the four CJK fallbacks (got %s)" % GoStyle._fit_font())
 	GoUi.config.preset = &""
-	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt"]:
+	# 🔤 The world-tour headline font (Baloo 2, no Cyrillic) sets Russian in Nunito Black before the body font, so a
+	#    Russian headline is as heavy as a Latin one.
+	var tour := theme.get_font(&"font", &"GoStateHeading") as FontVariation
+	check(tour != null and tour.fallbacks.size() == 2 and tour.fallbacks[0] is FontFile
+		and tour.fallbacks[0].resource_path == FONTS + "nunito/Nunito-Black.ttf" and tour.fallbacks[1] == font,
+		"the world-tour font falls back to Nunito Black, then the body font (got %s)" % [tour.fallbacks if tour else null])
+	if tour != null and tour.fallbacks.size() == 2:
+		for text: String in ["МАГАЗИН", "КОСМЕТИКА", "ЁЖИК"]:
+			var heavy: Font = tour.fallbacks[0]
+			var all := true
+			for i in text.length(): all = all and heavy.has_char(text.unicode_at(i))
+			check(all, "Nunito Black draws %s" % text)
+	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt", FONTS + "baloo2/OFL.txt"]:
 		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
 
 

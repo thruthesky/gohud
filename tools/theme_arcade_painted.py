@@ -29,6 +29,9 @@ STAGE = RES + "/assets/arcade_light/stage/"
 FONTS = RES + "/assets/fonts/"
 FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
 FONT_TOUR = ("font_baloo2", FONTS + "baloo2/Baloo2.ttf")
+# 🔤 Baloo 2 has no Cyrillic: the world-tour font falls back to Nunito Black (the game's build, Cyrillic only) before
+#    the body font, so a Russian headline is as heavy as a Latin one rather than Nunito Bold's lighter strokes.
+FONT_TOUR_CYRILLIC = ("font_nunito_black", FONTS + "nunito/Nunito-Black.ttf")
 FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
                   for code in ("KR", "JP", "SC", "TC")]
 # 🔤 The language each fallback leads for (`UiTheme.CJK_FONTS`): `GoUi.set_locale(code)` moves that language's font to
@@ -341,7 +344,8 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     boxes["world_tour_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_TOUR[0],
                                                  'variation_opentype = {2003265652: 800.0}', # TextServer.name_to_tag("wght")
                                                  'variation_embolden = 0.6', # the reference's extra-heavy lettering
-                                                 'fallbacks = Array[Font]([SubResource("painted_font")])'])
+                                                 'fallbacks = Array[Font]([ExtResource("%s"), SubResource("painted_font")])'
+                                                 % FONT_TOUR_CYRILLIC[0]])
     setT("default_font", 'SubResource("painted_font")')
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
     #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
@@ -971,7 +975,7 @@ def ext_resources(boxes):
     if 'script = ExtResource("sprite_icon")' in heads:
         lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
     if any(body[:1] == ['base_font = ExtResource("%s")' % FONT_BASE[0]] for _, body in boxes.values()):
-        for rid, path in [FONT_BASE, FONT_TOUR] + FONT_FALLBACKS:
+        for rid, path in [FONT_BASE, FONT_TOUR, FONT_TOUR_CYRILLIC] + FONT_FALLBACKS:
             lines.append('[ext_resource type="FontFile" path="%s" id="%s"]' % (path, rid))
     if not lines:
         return []
