@@ -514,6 +514,9 @@ class BalancedLines:
 
 	const BREAKS := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE \
 			| TextServer.BREAK_TRIM_START_EDGE_SPACES | TextServer.BREAK_TRIM_END_EDGE_SPACES
+	## The wider widths tried for a break on punctuation, and what counts as one.
+	const PUNCTUATION_STEPS := 8
+	const CLEAN_BREAKS := ["。", "、", "，", "！", "？", "：", "；", ".", ",", "!", "?", ":", ";", "」", "）", ")"]
 	var _measured := ""
 	var _lines := TextParagraph.new()
 
@@ -560,7 +563,9 @@ class BalancedLines:
 		_measured = key
 		_set_inset(label, _inset_for(words, font, font_size, full, label.language) if wraps and font != null else 0.0)
 
-	## Half the width the lines can give up and still be as many: found by halving, one line layout per step.
+	## Half the width the lines can give up and still be as many: found by halving, one line layout per step. Then a
+	## few wider steps up to the full width: one whose lines end on more punctuation wins (Japanese breaks between any
+	## two characters — 試着中で|す。 — so the narrowest width can split a word; 試着中です。| reads right).
 	func _inset_for(words: String, font: Font, font_size: int, full: float, language: String) -> float:
 		if full <= 1.0 or words.strip_edges().is_empty(): return 0.0
 		_lines.clear()
@@ -576,8 +581,33 @@ class BalancedLines:
 			_lines.width = middle
 			if _lines.get_line_count() <= count: fits = middle
 			else: short = middle
+		var best := fits
+		_lines.width = fits
+		var best_ends := _clean_ends(words)
+		for step in range(1, PUNCTUATION_STEPS + 1):
+			var width := floorf(lerpf(fits, full, float(step) / PUNCTUATION_STEPS))
+			_lines.width = width
+			if _lines.get_line_count() != count: continue
+			var last := _lines.get_line_size(count - 1).x
+			var widest := 0.0
+			for line in count: widest = maxf(widest, _lines.get_line_size(line).x)
+			if last < 0.5 * widest: continue # a lone last line again
+			var ends := _clean_ends(words)
+			if ends > best_ends:
+				best = width
+				best_ends = ends
 		# A pixel kept spare: the label lays its lines out on its own and may round a hair the other way.
-		return maxf(0.0, floorf((full - fits - 2.0) * 0.5))
+		return maxf(0.0, floorf((full - best - 2.0) * 0.5))
+
+	## How many of the lines as laid out now (all but the last) end on punctuation or a space.
+	func _clean_ends(words: String) -> int:
+		var ends := 0
+		for line in _lines.get_line_count() - 1:
+			var end := _lines.get_line_range(line).y
+			var tail := words.substr(end - 1, 1) if end > 0 else ""
+			var next := words.substr(end, 1)
+			if tail in CLEAN_BREAKS or next == " " or tail == " ": ends += 1
+		return ends
 
 	func _set_inset(label: Label, inset: float) -> void:
 		var face := label.get_theme_stylebox(&"normal")
