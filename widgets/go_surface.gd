@@ -1000,7 +1000,8 @@ func add_inset(parent: Control = null) -> VBoxContainer:
 
 
 ## A centred line of [param text] at [param font_size] (0: the theme's). [param wrap] is for sentences (SMART, so
-## ja/zh wrap in an export too); a short one-line stat must not wrap — a wrapping label keeps the tall minimum of its
+## ja/zh wrap in an export too), their lines balanced (`GoStyle.balance_lines`: no lone last word); a short one-line
+## stat must not wrap — a wrapping label keeps the tall minimum of its
 ## first, narrow layout.
 func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) -> Label:
 	var line := Label.new()
@@ -1009,6 +1010,7 @@ func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) 
 	if wrap: line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if font_size > 0: line.add_theme_font_size_override(&"font_size", font_size)
 	(parent if parent != null else body).add_child(line)
+	if wrap: GoStyle.balance_lines(line)
 	return line
 
 

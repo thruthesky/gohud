@@ -469,6 +469,134 @@ static func locale_paragraph(node: Label) -> void:
 	direction.apply()
 
 
+## ⚖️ **Balanced lines** for a wrapped, centred label: it wraps at the narrowest width that keeps its line count, so
+## the lines come out about even and the last one never holds a lone short word (Italian "partite?", Japanese "よう。").
+## The label keeps its width and its minimum size; the narrower wrap is an inset on its `normal` face, measured with the
+## label's own break rules on the same text server (an export without ICU break data measures as it draws). Safe to
+## call more than once; [code]false[/code] takes it off.
+static func balance_lines(node: Label, on := true) -> void:
+	for child in node.get_children(true):
+		if child is BalancedLines:
+			if not on: (child as BalancedLines).release()
+			else: (child as BalancedLines).refresh()
+			return
+	if not on: return
+	node.add_child(BalancedLines.new(), false, Node.INTERNAL_MODE_BACK)
+
+
+## The face a balanced label draws: [member base] as it is, with [member inset] more padding on each side.
+class BalancedBox:
+	extends StyleBox
+
+	var base: StyleBox
+	var inset := 0.0
+	## The face it wraps was the label's own override (put back when the wrapper comes off).
+	var was_override := false
+
+	func _init(from: StyleBox = null, side := 0.0) -> void:
+		base = from
+		inset = side
+		for edge in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			var margin := from.get_margin(edge) if from != null else 0.0
+			set_content_margin(edge, margin + (side if edge == SIDE_LEFT or edge == SIDE_RIGHT else 0.0))
+
+	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
+		if base != null: base.draw(to_canvas_item, rect)
+
+	func _get_draw_rect(rect: Rect2) -> Rect2:
+		return base.get_draw_rect(rect) if base != null else rect
+
+
+## Keeps its parent label's lines balanced ([method GoStyle.balance_lines]): measured again when the label's width,
+## text, font or size changes — a draw with nothing changed costs one string compare.
+class BalancedLines:
+	extends Node
+
+	const BREAKS := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE \
+			| TextServer.BREAK_TRIM_START_EDGE_SPACES | TextServer.BREAK_TRIM_END_EDGE_SPACES
+	var _measured := ""
+	var _lines := TextParagraph.new()
+
+	func _notification(what: int) -> void:
+		var label := get_parent() as Label
+		if label == null: return
+		if what == NOTIFICATION_ENTER_TREE:
+			if not label.draw.is_connected(_check): label.draw.connect(_check)
+			if not label.resized.is_connected(_check): label.resized.connect(_check)
+			_check()
+		elif what == NOTIFICATION_EXIT_TREE:
+			if label.draw.is_connected(_check): label.draw.disconnect(_check)
+			if label.resized.is_connected(_check): label.resized.disconnect(_check)
+
+	func refresh() -> void:
+		_measured = ""
+		_check()
+
+	## Takes the balancing off: the label's own face back, this node gone.
+	func release() -> void:
+		var label := get_parent() as Label
+		if label != null:
+			if label.draw.is_connected(_check): label.draw.disconnect(_check)
+			if label.resized.is_connected(_check): label.resized.disconnect(_check)
+			_set_inset(label, 0.0)
+			label.remove_child(self)
+		queue_free()
+
+	func _check() -> void:
+		var label := get_parent() as Label
+		if label == null or not is_inside_tree(): return
+		var face := label.get_theme_stylebox(&"normal")
+		var wrapper := face as BalancedBox
+		var base := wrapper.base if wrapper != null else face
+		var full := label.size.x - (base.get_minimum_size().x if base != null else 0.0)
+		var font := label.get_theme_font(&"font")
+		var font_size := label.get_theme_font_size(&"font_size")
+		var words := label.atr(label.text)
+		if label.uppercase: words = words.to_upper()
+		var wraps := label.autowrap_mode != TextServer.AUTOWRAP_OFF and label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER
+		var key := "%s|%d|%d|%.1f|%s|%s" % [words, font_size, font.get_rid().get_id() if font != null else 0, full,
+				wraps, label.language]
+		if key == _measured: return
+		_measured = key
+		_set_inset(label, _inset_for(words, font, font_size, full, label.language) if wraps and font != null else 0.0)
+
+	## Half the width the lines can give up and still be as many: found by halving, one line layout per step.
+	func _inset_for(words: String, font: Font, font_size: int, full: float, language: String) -> float:
+		if full <= 1.0 or words.strip_edges().is_empty(): return 0.0
+		_lines.clear()
+		_lines.break_flags = BREAKS
+		_lines.add_string(words, font, font_size, language)
+		_lines.width = full
+		var count := _lines.get_line_count()
+		if count < 2: return 0.0
+		var fits := floorf(full)
+		var short := maxf(0.0, floorf(full / count) - 1.0)
+		while fits - short > 1.0:
+			var middle := floorf((fits + short) * 0.5)
+			_lines.width = middle
+			if _lines.get_line_count() <= count: fits = middle
+			else: short = middle
+		# A pixel kept spare: the label lays its lines out on its own and may round a hair the other way.
+		return maxf(0.0, floorf((full - fits - 2.0) * 0.5))
+
+	func _set_inset(label: Label, inset: float) -> void:
+		var face := label.get_theme_stylebox(&"normal")
+		var wrapper := face as BalancedBox
+		if wrapper != null and is_equal_approx(wrapper.inset, inset): return
+		if wrapper == null and inset <= 0.0: return
+		var base := wrapper.base if wrapper != null else face
+		var own := wrapper.was_override if wrapper != null else label.has_theme_stylebox_override(&"normal")
+		label.begin_bulk_theme_override()
+		label.remove_theme_stylebox_override(&"normal")
+		if inset > 0.0:
+			var box := BalancedBox.new(base, inset)
+			box.was_override = own
+			label.add_theme_stylebox_override(&"normal", box)
+		elif own and base != null:
+			label.add_theme_stylebox_override(&"normal", base)
+		label.end_bulk_theme_override()
+
+
 ## One section title line (a small, dim, uppercase-feeling heading).
 ## 🛑 A face knows nothing about text direction (the `edge_card` rule): a skin that marks the heading on one side (the
 ##    sci-fi accent bar down the left) must stand it where the text starts — in RTL (Arabic, Urdu) on the **right**. The

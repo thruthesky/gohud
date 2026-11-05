@@ -42,6 +42,7 @@ func _initialize() -> void:
 		await _scale_title(look)
 		await _title_before_widen(look)
 		await _key_row_fit(look)
+		await _balanced_lines(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -1610,3 +1611,49 @@ func _key_row_fit(look: StringName) -> void:
 		view.queue_free()
 		await frames(1)
 
+
+## A wrapped `add_line` sentence wraps at the narrowest width that keeps its line count: the lines come out about even
+## and the last never holds a lone short word, while the label keeps its width and its minimum size.
+func _balanced_lines(look: StringName) -> void:
+	for text: String in ["Vuoi scartare questo look e tornare alle tue partite?",
+			"Bu görünümü bırakıp maçlarına geri dönmek istiyor musun? Değişiklikler kaydedilmeyecek misin?",
+			"この見た目を外して、いつもの試合に戻りますか?変更は保存されません。よう。", "ONE LINE"]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.max_width = 440.0
+		view.add_child(surface)
+		var line := surface.add_line(text, 22)
+		line.custom_minimum_size.x = 400.0
+		await frames(4)
+		var tag := "%s balanced %s" % [look, text.left(16)]
+		var face := line.get_theme_stylebox(&"normal")
+		var box := face as GoStyle.BalancedBox
+		var base := box.base if box != null else face
+		var full := line.size.x - (base.get_minimum_size().x if base != null else 0.0)
+		var room := line.size.x - face.get_minimum_size().x
+		var paragraph := TextParagraph.new()
+		paragraph.break_flags = GoStyle.BalancedLines.BREAKS
+		paragraph.add_string(text, line.get_theme_font(&"font"), 22)
+		paragraph.width = full
+		var plain := paragraph.get_line_count()
+		paragraph.width = room
+		var widths: Array[float] = []
+		for i in paragraph.get_line_count(): widths.append(paragraph.get_line_size(i).x)
+		check(paragraph.get_line_count() == plain and line.get_line_count() == plain,
+			"%s: as many lines as unbalanced (%d, %d, %d)" % [tag, plain, paragraph.get_line_count(), line.get_line_count()])
+		check(line.size.x >= 400.0 and is_equal_approx(line.get_combined_minimum_size().x, 400.0),
+			"%s: the label keeps its width and its minimum (%.0f, %.0f)" % [tag, line.size.x, line.get_combined_minimum_size().x])
+		if plain < 2:
+			check(box == null, "%s: one line, no inset" % tag)
+		else:
+			check(box != null and box.inset > 0.0, "%s: an inset (%.0f)" % [tag, box.inset if box != null else 0.0])
+			check(widths[widths.size() - 1] >= 0.5 * widths.max(), "%s: no lone last line (%s)" % [tag, widths])
+			paragraph.width = room - 4.0
+			check(paragraph.get_line_count() > plain, "%s: as narrow as it keeps the lines (%.0f)" % [tag, room])
+			GoStyle.balance_lines(line, false)
+			await frames(2)
+			check(not (line.get_theme_stylebox(&"normal") is GoStyle.BalancedBox), "%s: off, the label's own face" % tag)
+		view.queue_free()
+		await frames(1)
