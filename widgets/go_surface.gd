@@ -851,6 +851,10 @@ func _fit_title_size() -> void:
 		# Its left margin follows the words (see `_place_title_glyph`); the room is the plate's as drawn — past the
 		# card's sides by its bleed — less its ends and the glyph's room, the game's ribbon row.
 		room = title_label.size.x - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
+	if fit_mode == FitMode.SCALE:
+		# 🔑 The label wraps inside its own margins (the plate's base margins), which can be narrower than the drawn
+		#    ribbon's room: measured against the narrower, the words never fold (Russian КУПИТЬ ПРЕДМЕТ).
+		room = minf(room, title_label.size.x - plate.get_minimum_size().x - 1.0)
 	var font := title_label.get_theme_font(&"font")
 	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)

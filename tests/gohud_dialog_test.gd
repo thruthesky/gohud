@@ -39,6 +39,7 @@ func _initialize() -> void:
 		await _fit_box(look)
 		await _fit_surface(look)
 		await _fit_share(look)
+		await _scale_title(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -1128,6 +1129,33 @@ func _fit_share(look: StringName) -> void:
 		surface.fit_screen_share = 0.0
 		await frames(3)
 		check(is_equal_approx(card.scale.x, 1.0), "%s: share 0 never grows it (scale %.3f)" % [tag, card.scale.x])
+		view.queue_free()
+		await frames(1)
+
+
+## Under a `SCALE` fit a ribbon title never folds (the game's painted dialogs): too long for the card, the card grows
+## to it and the fit shrinks the whole window — Russian КУПИТЬ ПРЕДМЕТ and German DIESEN LOOK ANLEGEN? once folded
+## onto two lines inside the ribbon.
+func _scale_title(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return # a plain title (no plate) wraps by design
+	for title: String in ["КУПИТЬ ПРЕДМЕТ", "DIESEN LOOK ANLEGEN?", "MÜNZEN VERDIENEN UND NOCH MEHR"]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 300.0
+		surface.set_title(title)
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 120)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		await frames(4)
+		var tl := surface.title_label
+		check(tl.get_line_count() == 1, "%s SCALE title %s: one line (got %d)" % [look, title, tl.get_line_count()])
+		var words := tl.get_theme_font(&"font").get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
+				tl.get_theme_font_size(&"font_size")).x
+		check(tl.size.x >= words, "%s SCALE title %s: the label holds its words (%.1f < %.1f)" % [look, title, tl.size.x, words])
 		view.queue_free()
 		await frames(1)
 
