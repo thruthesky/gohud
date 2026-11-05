@@ -75,6 +75,9 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ## 🔤 Shrink the label to fit: from [member fit_base_size] (0: the look's size for this variation) down to
 ## `GoStyle.fit_floor()` at most, until it fits the button's width less its normal face's padding and the glyph's
 ## room (`glyph_allowance()`). Off, the label keeps its size (what the button does today).
+## 🔑 Still too long at the floor, the button is held as wide as its label there with the glyph and the padding
+##    (`custom_minimum_size.x` raised, the width a caller asked kept under it) — the label never runs past the face,
+##    and a `SCALE` window it sits in shrinks as one piece instead (German MÜNZEN VERDIENEN).
 @export var fit_label := false:
 	set(value):
 		if fit_label == value: return
@@ -121,6 +124,11 @@ var _shifting := false
 ## The `font_size` override [member fit_label] put on (0: none of ours).
 var _fitted := 0
 var _fit_queued := false
+## The width the fit holds the button at (`custom_minimum_size.x` as the fit set it; 0: none), and the caller's own.
+var _held_width := 0.0
+var _asked_width := 0.0
+## The text the fit last measured: a held width hides a new text's minimum size, but never its redraw.
+var _fit_text := ""
 ## The fit is peeking under its own override (the theme notices that brings are its own, not a change).
 var _peeking := false
 ## A resize or theme change came while the faces were being re-wrapped (that re-wrap may have caused it).
@@ -254,6 +262,7 @@ func _notification(what: int) -> void:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_queue_fit()
 		NOTIFICATION_DRAW:
+			if fit_label and text != _fit_text: _queue_fit()
 			_draw_glyph()
 			_draw_badge()
 			if glow: _update_glow()
@@ -273,10 +282,26 @@ func fitted_font_size() -> int:
 func fit_now() -> void:
 	_fit_queued = false
 	if not fit_label or not is_inside_tree() or size.x <= 0.0: return
+	_fit_text = text
 	var wanted := fitted_font_size()
+	_hold_floor_width()
 	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
 	_fitted = wanted
 	add_theme_font_size_override(&"font_size", wanted)
+
+
+## Holds the button as wide as its label at the fit floor beside the glyph and inside the padding (see [member fit_label]).
+func _hold_floor_width() -> void:
+	if not is_equal_approx(custom_minimum_size.x, _held_width): _asked_width = custom_minimum_size.x # the caller's
+	var need := 0.0
+	var font := get_theme_font(&"font")
+	if fit_label and font != null and not text.is_empty():
+		var tall := maxf(size.y, get_combined_minimum_size().y)
+		need = ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
+				+ (_face_width() if fit_padding < 0.0 else fit_padding) + glyph_allowance(tall))
+	var want := maxf(_asked_width, need)
+	_held_width = want
+	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
 
 
 func _queue_fit() -> void:
@@ -310,6 +335,8 @@ func _face_width() -> float:
 func _drop_fit() -> void:
 	if _fitted != 0 and has_theme_font_size_override(&"font_size"): remove_theme_font_size_override(&"font_size")
 	_fitted = 0
+	if is_equal_approx(custom_minimum_size.x, _held_width) and _held_width > 0.0: custom_minimum_size.x = _asked_width
+	_held_width = 0.0
 
 
 ## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).

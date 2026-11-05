@@ -515,7 +515,25 @@ func _glyph_fit(look: StringName) -> void:
 	await frames(2)
 	check(button.get_theme_font_size(&"font_size") <= 14, "%s glyph fit: fit_base_size sets where it shrinks from" % look)
 	button.fit_base_size = 0
+	# Too long even at the floor: the button is held as wide as the label there, the glyph and the padding, so the
+	# label never runs past the face; a short text gives the caller's width back.
+	button.text = "MÜNZEN VERDIENEN UND NOCH VIEL VIEL MEHR"
+	await frames(3)
+	var at_floor := font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(base)).x
+	var takes := at_floor + button.get_theme_stylebox(&"normal").get_minimum_size().x + button.glyph_allowance()
+	check(button.get_theme_font_size(&"font_size") == GoStyle.fit_floor(base) and button.size.x >= takes - 0.5,
+		"%s glyph fit: at the floor the button holds its label (%.1f >= %.1f)" % [look, button.size.x, takes])
+	button.text = "OK"
+	await frames(3)
+	check(is_equal_approx(button.custom_minimum_size.x, 150.0) and is_equal_approx(button.size.x, 150.0),
+		"%s glyph fit: a short text gives the asked width back (%.1f)" % [look, button.size.x])
+	button.text = "MÜNZEN VERDIENEN UND NOCH VIEL VIEL MEHR"
+	await frames(3)
 	button.fit_label = false
+	await frames(2)
+	check(is_equal_approx(button.custom_minimum_size.x, 150.0), "%s glyph fit: off, the asked width again (%.1f)"
+		% [look, button.custom_minimum_size.x])
+	button.text = "SAVE"
 	await frames(1)
 	check(not button.has_theme_font_size_override(&"font_size") and button.get_theme_font_size(&"font_size") == base,
 		"%s glyph fit: off again, the look's size" % look)
