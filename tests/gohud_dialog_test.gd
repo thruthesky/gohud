@@ -1593,7 +1593,12 @@ func _key_row_fit(look: StringName) -> void:
 			"%s: one label size (%s)" % [tag, ", ".join(keys.map(func(key: GoGlyphButton) -> String:
 				return "%d" % key.get_theme_font_size(&"font_size")))])
 		check(at == smallest, "%s: the smallest any key fits at (%d, want %d)" % [tag, at, smallest])
-		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		var half := (row.size.x - row.get_theme_constant(&"separation")) * 0.5
+		if keys.all(func(key: GoGlyphButton) -> bool: return key.floor_width() <= half + 0.5):
+			check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		else:
+			check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.floor_width() - 0.5),
+				"%s: too long for halves, each key as wide as its label needs (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
 		for key in keys:
 			var face := key.get_theme_stylebox(&"normal").get_minimum_size().x
 			var words := key.get_theme_font(&"font").get_string_size(key.atr(key.text), HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
@@ -1604,3 +1609,4 @@ func _key_row_fit(look: StringName) -> void:
 		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
 		view.queue_free()
 		await frames(1)
+
