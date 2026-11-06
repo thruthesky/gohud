@@ -275,7 +275,9 @@ func glyph_rect() -> Rect2:
 	# Only the glyph's own side is clamped (the game's maxf): a cramped button lets the glyph meet the label.
 	x = minf(x, size.x - MIN_EDGE - drawn.x) if is_layout_rtl() else maxf(x, MIN_EDGE)
 	var pressed := get_draw_mode() == DRAW_PRESSED or get_draw_mode() == DRAW_HOVER_PRESSED
-	return Rect2(Vector2(x, (size.y - drawn.y) * 0.5 - 1.0 + (PRESS_DROP if pressed else 0.0)), drawn)
+	# 🔑 The glyph moves down with its label (`_drop`: accents kept under the gloss, or the row's one baseline) — a
+	#    French ÉQUIPER's check stood 5 px over its word.
+	return Rect2(Vector2(x, (size.y - drawn.y) * 0.5 - 1.0 + _drop + (PRESS_DROP if pressed else 0.0)), drawn)
 
 
 func _enter_tree() -> void:

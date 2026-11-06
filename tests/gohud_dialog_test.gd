@@ -1930,6 +1930,11 @@ func _key_row_full(look: StringName) -> void:
 			var top := face.get_margin(SIDE_TOP)
 			var bottom := face.get_margin(SIDE_BOTTOM)
 			lines.append(top + (key.size.y - top - bottom - font.get_height(at)) * 0.5 + font.get_ascent(at))
+			# The glyph moves down with its label (French ÉQUIPER's check stood over its word).
+			if key.glyph_texture() != null:
+				var rect := key.glyph_rect()
+				check(absf(rect.position.y - ((key.size.y - rect.size.y) * 0.5 - 1.0 + key._drop)) <= 0.01,
+					"%s: %s's glyph moves with its label (%.2f, drop %.1f)" % [tag, key.text, rect.position.y, key._drop])
 		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
 		check(absf(lines[0] - lines[1]) <= 0.01, "%s: one baseline (%.2f, %.2f)" % [tag, lines[0], lines[1]])
 		if look != GoThemePresets.ARCADE_LIGHT or texts[0] in ["CANCEL", "ABBRECHEN"]:
