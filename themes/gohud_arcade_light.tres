@@ -774,19 +774,19 @@ fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"
 
 [sub_resource type="FontVariation" id="world_tour_font_noto_kr"]
 base_font = ExtResource("font_noto_kr")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="world_tour_font_noto_jp"]
 base_font = ExtResource("font_noto_jp")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="world_tour_font_noto_sc"]
 base_font = ExtResource("font_noto_sc")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="world_tour_font_noto_tc"]
 base_font = ExtResource("font_noto_tc")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="world_tour_font"]
 base_font = ExtResource("font_baloo2")
@@ -1450,19 +1450,19 @@ band = 0
 
 [sub_resource type="FontVariation" id="painted_score_font_noto_kr"]
 base_font = ExtResource("font_noto_kr")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="painted_score_font_noto_jp"]
 base_font = ExtResource("font_noto_jp")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="painted_score_font_noto_sc"]
 base_font = ExtResource("font_noto_sc")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="painted_score_font_noto_tc"]
 base_font = ExtResource("font_noto_tc")
-variation_embolden = 0.6
+variation_embolden = 0.4
 
 [sub_resource type="FontVariation" id="painted_score_font"]
 base_font = SubResource("painted_font")
@@ -1721,19 +1721,19 @@ bg_color = Color(1, 0.940706, 0.763922, 1)
 
 [sub_resource type="FontVariation" id="painted_row_font_noto_kr"]
 base_font = ExtResource("font_noto_kr")
-variation_embolden = 0.4
+variation_embolden = 0.3
 
 [sub_resource type="FontVariation" id="painted_row_font_noto_jp"]
 base_font = ExtResource("font_noto_jp")
-variation_embolden = 0.4
+variation_embolden = 0.3
 
 [sub_resource type="FontVariation" id="painted_row_font_noto_sc"]
 base_font = ExtResource("font_noto_sc")
-variation_embolden = 0.4
+variation_embolden = 0.3
 
 [sub_resource type="FontVariation" id="painted_row_font_noto_tc"]
 base_font = ExtResource("font_noto_tc")
-variation_embolden = 0.4
+variation_embolden = 0.3
 
 [sub_resource type="FontVariation" id="painted_row_font"]
 base_font = SubResource("painted_font")

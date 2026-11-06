@@ -42,13 +42,17 @@ LOCALE_FONTS = {"ko": "font_noto_kr", "ja": "font_noto_jp", "zh_CN": "font_noto_
 #    fallback is shaped from its own RID, and a variation with no fallbacks of its own uses its base font's fallbacks
 #    raw (Godot 4.7 `FontVariation::_update_rids`, `Font::_update_rids_fb`). So every heavy chain carries its own four
 #    CJK fallbacks — one FontVariation per Noto file (`cjk_chain()`) at the chain's weight — or its Korean, Japanese
-#    and Chinese draw in plain Noto Sans CJK Bold, visibly thinner than its Latin. The values are tuned by eye at 48 px
-#    with the arcade outline so the CJK stroke matches the Latin one: Noto's bold stems are already thicker than
-#    Nunito's, and a dense Han glyph fills its counters well before the Latin value.
+#    and Chinese draw in plain Noto Sans CJK Bold, visibly thinner than its Latin. Noto's bold stems are already
+#    thicker than Nunito's, and a dense Han glyph fills its counters well before the Latin value.
+#    🛑 Tuned at the **smallest size the chain sets**, not at a title's size: rendered 2026-11-06 with the dense
+#    需 鐵 接 続 磁 購 買 賺 at 24/28/30/40/60 px beside the Latin heavy face, under both arcade outlines (navy on a
+#    white 6 px outline, white on a dark one). The old 0.6 (tuned at 48 px) closes 買's 目 and 需's 雨 dots at 28 px
+#    — a shop key or a score at that size read as ink blots; 0.45 starts closing them under the dark outline; 0.4 is
+#    the highest value whose counters stay open at 28 px in both looks.
 SCORE_EMBOLDEN = 1.2           # `painted_score_font`: the scoreboard's heavy Nunito
-SCORE_CJK_EMBOLDEN = 0.6       # … its Korean, Japanese and Chinese (0.7 fills 設 and 置)
+SCORE_CJK_EMBOLDEN = 0.4       # … its Korean, Japanese and Chinese (0.45 starts closing 買 and 需 at 28 px)
 TOUR_EMBOLDEN = 0.6            # `world_tour_font`: Baloo 2 at wght 800, the reference's extra-heavy lettering
-TOUR_CJK_EMBOLDEN = 0.6        # … its Korean, Japanese and Chinese (0.7 fills 設)
+TOUR_CJK_EMBOLDEN = 0.4        # … its Korean, Japanese and Chinese (0.45 starts closing 買 and 需 at 28 px)
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
@@ -266,7 +270,7 @@ STRIPE_MARGINS = (10, 0, 16, 0)
 STRIPE_GOLD_MIX = 0.28
 # The rows' medium weight: lighter than the scoreboard's heavy 1.2 (`painted_score_font`), heavier than the body's 0.
 ROW_EMBOLDEN = 0.5
-ROW_CJK_EMBOLDEN = 0.4         # … its Korean, Japanese and Chinese (it sets small rows: kept under the Latin 0.5)
+ROW_CJK_EMBOLDEN = 0.3         # … its Korean, Japanese and Chinese (a step under the scoreboard's 0.4, the 28 px ceiling)
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
 
 

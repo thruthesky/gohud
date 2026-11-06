@@ -17,9 +17,9 @@
     },
     "locale_chains": {
       "_help": "The heavy fonts (theme metadata go_locale_chains) with CJK fallbacks of their own at this weight; set_font_locale reorders them as the body's.",
-      "world_tour_font": 0.6,
-      "painted_score_font": 0.6,
-      "painted_row_font": 0.4
+      "world_tour_font": 0.4,
+      "painted_score_font": 0.4,
+      "painted_row_font": 0.3
     }
   },
   "_font_sizes": {
