@@ -811,6 +811,23 @@ func button_fit_pad() -> float:
 	return KEY_FIT_PAD
 
 
+## The white glare across the top of the painted pills (`painted/btn_*.png`, 137 px high, drawn at 3 px a dp) ends at
+## this texture row: down the stretched middle column of every colour the glare runs from row 19 to row 30 and the
+## face starts at row 31 (measured 2026-11-06) — 10.3 dp down a 46 dp window key, inside the pill's top edge slice.
+const KEY_GLOSS_BOTTOM_PX := 31.0
+
+
+## The pills' glare (`KEY_GLOSS_BOTTOM_PX`), scaled as the face's top edge is drawn: a key shorter than its two edge
+## slices squeezes them, and the glare with them. Other faces (the keycap, a flat face): 0.
+func button_gloss_bottom(face: StyleBox, height: float) -> float:
+	var sprite := face as GoStyleBoxSprite
+	if sprite == null or sprite.texture == null or not sprite.texture.resource_path.contains("/painted/btn_"): return 0.0
+	var top := sprite.edge.y / sprite.pixels_per_unit
+	var ends := top + sprite.edge.w / sprite.pixels_per_unit
+	var squeeze := minf(1.0, height / ends) if ends > 0.0 else 1.0
+	return minf(KEY_GLOSS_BOTTOM_PX / sprite.pixels_per_unit, top) * squeeze
+
+
 ## The game's `FitBox`: a card fitted to the screen keeps 8 dp off the safe area, ribbon and magnet included
 ## (`Cfg.Ui.WINDOW_FIT_PAD`), and its list keeps 96 dp before the card shrinks below the fit floor
 ## (`Cfg.Ui.FLEX_MIN_HEIGHT`).

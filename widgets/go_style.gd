@@ -4057,25 +4057,36 @@ static func ink_top_gap(text: String, font: Font, size: int) -> float:
 ## narrower than its advance, so a title centred on its advance sits left of centre. Read from the glyphs' outlines,
 ## so it is exact. Empty text, or a face with no outlines: the advance box, `Vector2(0, width)`.
 static func ink_span(text: String, font: Font, size: int) -> Vector2:
-	if font == null: return Vector2.ZERO
+	var box := ink_box(text, font, size)
+	return Vector2(box.position.x, box.end.x)
+
+
+## 🔤 The box round [param text]'s ink on its one line at [param size] in [param font] (its fallbacks included), from
+## the pen's start on the baseline, y down: `position.y` is how far the tallest mark rises over the baseline (negative —
+## an accent, É Ć Ż, rises past the font's ascent, which `ink_top_gap` cannot see), `end.y` how far the lowest drops
+## under it (Ę's ogonek, Q's tail). Read from the glyphs' outlines, so it is exact; a text outline (`outline_size`) is
+## drawn outside it. Empty text, or a face with no outlines: the advance box from the ascent to the descent.
+static func ink_box(text: String, font: Font, size: int) -> Rect2:
+	if font == null: return Rect2()
 	var ts := TextServerManager.get_primary_interface()
 	var shaped := ts.create_shaped_text()
 	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
 	var pen := 0.0
-	var lo := INF
-	var hi := -INF
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
 	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
 		var rid := glyph.font_rid as RID
-		var x := pen + (glyph.offset as Vector2).x
+		var at := Vector2(pen, 0.0) + (glyph.offset as Vector2)
 		pen += float(glyph.advance) * int(glyph.repeat)
 		if int(glyph.index) == 0 or not rid.is_valid(): continue
 		var contours: Dictionary = ts.font_get_glyph_contours(rid, size, int(glyph.index))
 		for point: Vector3 in contours.get("points", PackedVector3Array()):
-			lo = minf(lo, x + point.x)
-			hi = maxf(hi, x + point.x)
+			lo = lo.min(at + Vector2(point.x, point.y))
+			hi = hi.max(at + Vector2(point.x, point.y))
 	var width := ts.shaped_text_get_width(shaped)
 	ts.free_rid(shaped)
-	return Vector2(lo, hi) if lo <= hi else Vector2(0.0, width)
+	if lo.x > hi.x: return Rect2(0.0, -font.get_ascent(size), width, font.get_height(size))
+	return Rect2(lo, hi - lo)
 
 
 ## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]

@@ -44,6 +44,7 @@ func _initialize() -> void:
 		await _title_before_widen(look)
 		await _title_hold_steady(look)
 		await _key_row_fit(look)
+		await _key_gloss(look)
 		await _small_key_fit(look)
 		await _balanced_lines(look)
 		await _popover_card(look)
@@ -1666,6 +1667,92 @@ func _click(at: Vector2) -> void:
 		Input.parse_input_event(event.xformed_by(root.get_final_transform()))
 		Input.flush_buffered_events()
 		await frames(1)
+
+
+## A window key's label keeps its ink — accents and outline included — under the painted pill's top gloss: French
+## ÉQUIPER and Polish ODRZUĆ / ZAŁÓŻ reached up into the white glare. They move down, their size kept, and never run
+## past the face's bottom padding; an unaccented key (DISCARD) keeps its size and place. The gloss line is measured
+## from the art here (the last glare row down the pill's stretched middle) and must match the skin's.
+func _key_gloss(look: StringName) -> void:
+	for variation: StringName in [GoTheme.VAR_PRIMARY_BUTTON, &"GoInfoButton"]:
+		var sizes := {}
+		for words: String in ["DISCARD", "ÉQUIPER", "ODRZUĆ", "ZAŁÓŻ"]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.set_title("KEYS")
+			root.add_child(surface)
+			var row := surface.add_row()
+			var key := surface.add_gloss(variation, &"", words, row)
+			key.fit_label = true
+			var peer := surface.add_gloss(variation, &"", "OK", row)
+			peer.fit_label = true
+			await frames(5)
+			var tag := "%s key gloss %s %s" % [look, variation, words]
+			var theme_face := GoUi.theme().get_stylebox(&"normal", variation) if GoUi.theme().has_stylebox(&"normal", variation) else null
+			var gloss := GoUi.skin().button_gloss_bottom(theme_face, key.size.y)
+			var sprite := theme_face as GoStyleBoxSprite
+			if look != GoThemePresets.ARCADE_LIGHT or sprite == null:
+				check(gloss == 0.0, "%s: a look without painted pills has no gloss (%.1f)" % [tag, gloss])
+				check(not (key.get_theme_stylebox(&"normal") is GoGlyphButton.ShiftedBox),
+					"%s: and the label is never moved" % tag)
+				surface.queue_free()
+				await frames(1)
+				continue
+			# The glare, read from the art: the last row over the top edge slice clearly lighter than the face below it.
+			var art := sprite.texture.get_image()
+			if art.is_compressed(): art.decompress()
+			var x := art.get_width() / 2
+			var face_light := art.get_pixel(x, int(sprite.edge.y)).get_luminance()
+			var last := -1
+			for y in int(sprite.edge.y):
+				if art.get_pixel(x, y).get_luminance() > face_light + 0.15: last = y
+			var measured := float(last + 1) / sprite.pixels_per_unit
+			check(last > 0 and gloss >= measured - 0.01 and gloss - measured <= 1.0 / sprite.pixels_per_unit + 0.01,
+				"%s: the skin's gloss line (%.2f dp) is the art's (glare to row %d, %.2f dp)" % [tag, gloss, last, measured])
+			# Where the label is drawn now (Button: centred in the face's content height), and its ink.
+			var font := key.get_theme_font(&"font")
+			var size := key.get_theme_font_size(&"font_size")
+			var face := key.get_theme_stylebox(&"normal")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			var baseline := top + (key.size.y - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+			var ink := _outline_box(words, font, size)
+			var reach := key.get_theme_constant(&"outline_size") * 0.25
+			var ink_top := baseline + ink.position.y - reach
+			var ink_bottom := baseline + ink.end.y + reach
+			sizes[words] = size
+			check(ink_top >= gloss - 0.01, "%s: the ink's top %.2f is under the gloss %.2f" % [tag, ink_top, gloss])
+			check(ink_bottom <= key.size.y - theme_face.get_margin(SIDE_BOTTOM) + 0.01,
+				"%s: and its bottom %.2f inside the face's bottom padding (%.2f)"
+				% [tag, ink_bottom, key.size.y - theme_face.get_margin(SIDE_BOTTOM)])
+			if words == "DISCARD":
+				check(is_equal_approx(top, theme_face.get_margin(SIDE_TOP)) and is_equal_approx(bottom, theme_face.get_margin(SIDE_BOTTOM)),
+					"%s: an unaccented label keeps its place (margins %.1f / %.1f)" % [tag, top, bottom])
+			else:
+				check(top > theme_face.get_margin(SIDE_TOP), "%s: the accented label moved down (top margin %.1f)" % [tag, top])
+			check(size == sizes["DISCARD"], "%s: at the unaccented key's size (%d, DISCARD %d)" % [tag, size, sizes["DISCARD"]])
+			surface.queue_free()
+			await frames(1)
+
+
+## The box round [param text]'s outlines from the pen's start on the baseline (y down) — measured here from the
+## glyphs' contours, apart from `GoStyle.ink_box`.
+func _outline_box(text: String, font: Font, size: int) -> Rect2:
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var lo := Vector2(INF, INF)
+	var hi := -lo
+	for g: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var points: PackedVector3Array = ts.font_get_glyph_contours(g.font_rid, size, int(g.index)).get("points", PackedVector3Array())
+		for p in points:
+			var at := Vector2(pen + (g.offset as Vector2).x + p.x, (g.offset as Vector2).y + p.y)
+			lo = lo.min(at)
+			hi = hi.max(at)
+		pen += float(g.advance) * int(g.repeat)
+	ts.free_rid(shaped)
+	return Rect2(lo, hi - lo)
 
 
 ## A window's row of fit keys (`add_gloss` in an `add_row`) shares one label size, the smallest any fits at, and one

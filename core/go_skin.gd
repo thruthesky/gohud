@@ -1251,6 +1251,13 @@ func button_fit_pad() -> float:
 	return 0.0
 
 
+## How far down from a key's top edge the painted gloss across its top reaches (dp), on [param face] drawn
+## [param height] tall — a `GoGlyphButton` label fitted to its key (`fit_label`) keeps its ink, accents included, under
+## it (ÉQUIPER, ODRZUĆ, ZAŁÓŻ). 0: the face has no gloss to keep clear of.
+func button_gloss_bottom(_face: StyleBox, _height: float) -> float:
+	return 0.0
+
+
 ## The clear room a title on a plate keeps from each of the plate's ends (dp): it shrinks (or the `SCALE` card widens)
 ## before its words reach the plate's rounded ends.
 func title_plate_pad() -> float:

@@ -39,6 +39,9 @@ const BADGE_SHARE := 0.74
 const BADGE_CENTRE := Vector2(0.2, 0.1)
 ## How far the glow reaches out of the button, as a share of its height.
 const GLOW_SHARE := 0.22
+## How far a text outline reaches past the glyphs' own outlines, as a share of `outline_size`: FreeType strokes it
+## `outline_size` × 16 / 64 px out (`text_server_adv.cpp`, `FT_Stroker_Set`).
+const OUTLINE_REACH := 0.25
 ## The faces that place the label (focus is drawn over them and places nothing).
 const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]
 
@@ -82,6 +85,9 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ##    `GoConfig.fit_condense_min` of its width (glyphs drawn narrower, the advances closed up to match).
 ##    A button whose label may trim (`text_overrun_behavior` not `OVERRUN_NO_TRIMMING`, or `clip_text`) keeps its
 ##    size too: condensed the same way, then trimmed (GoRewardRow's claim pill).
+## 🔑 On a pill with a painted top gloss (`GoSkin.button_gloss_bottom`) a label whose accents would reach into it —
+##    French ÉQUIPER, Polish ODRZUĆ, ZAŁÓŻ — moves down until its ink is under the gloss, its size kept; an unaccented
+##    label keeps its size and place (`_gloss_drop`).
 @export var fit_label := false:
 	set(value):
 		if fit_label == value: return
@@ -134,6 +140,8 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		_update_glow()
 
 var _shift := 0.0
+## How far [member fit_label] moves the label down, so its accents clear the key's top gloss (`_gloss_drop`).
+var _drop := 0.0
 ## The canvas item the glow is drawn on, behind the button's own (created on the first glow).
 var _glow_item := RID()
 var _shifting := false
@@ -164,9 +172,16 @@ class ShiftedBox:
 	## The face it wraps was the button's own override (put back when the wrapper comes off).
 	var was_override := false
 
-	func _init(from: StyleBox = null, shift := 0.0, mirrored := false, edge := 0.0) -> void:
+	func _init(from: StyleBox = null, shift := 0.0, mirrored := false, edge := 0.0, drop := 0.0) -> void:
 		base = from
 		if from == null: return
+		# `drop` moves the label down by moving that much padding from the bottom to the top (`_gloss_drop`).
+		content_margin_top = from.get_margin(SIDE_TOP) + drop
+		content_margin_bottom = maxf(from.get_margin(SIDE_BOTTOM) - drop, 0.0)
+		if shift <= 0.0:
+			content_margin_left = from.get_margin(SIDE_LEFT)
+			content_margin_right = from.get_margin(SIDE_RIGHT)
+			return
 		# The label's centre moves away from the glyph by `shift`. On a face with real padding (the far side at least
 		# `edge` and the full shift) that much padding goes from the far side to the near one, exactly as the
 		# game's GlossButton does; past the far padding the button grows (a negative margin would read as "unset").
@@ -176,8 +191,6 @@ class ShiftedBox:
 		var sides := margins(from, shift, mirrored, edge)
 		set_content_margin(lead, sides.x)
 		set_content_margin(trail, sides.y)
-		content_margin_top = from.get_margin(SIDE_TOP)
-		content_margin_bottom = from.get_margin(SIDE_BOTTOM)
 
 	## The near and far content margins a face [param from] gets with [param shift] (see the class).
 	static func margins(from: StyleBox, shift: float, mirrored := false, edge := 0.0) -> Vector2:
@@ -304,9 +317,44 @@ func fitted_font_size() -> int:
 	return fitted
 
 
-## The size this button's own label fits at, its row left out ([method fitted_font_size]).
+## The size this button's own label fits at, its row left out ([method fitted_font_size]): the widest that fits the
+## room, and no bigger than lets its accents clear the key's top gloss (`_gloss_drop`) — in practice the drop alone
+## clears them and the size stays; only a key too short to drop them far enough steps down, never under the floor.
 func own_fit_size() -> int:
-	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
+	var fitted := GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
+	var floor_size := GoStyle.fit_floor(_fit_base())
+	while fitted > floor_size and _gloss_drop(fitted) < 0.0:
+		fitted -= 1
+	return fitted
+
+
+## 🔤 How far the label at [param font_size] moves down so its ink — accents and outline included — stays under the
+## key's painted top gloss (`GoSkin.button_gloss_bottom`): 0 for a label already under it (an unaccented word, which
+## keeps its place), negative when the room under the label (its lowest ink to the face's bottom padding) is too small
+## to drop it that far. 🛑 Measured on the normal face as the theme gives it, never on this button's wrapped one —
+##    a drop read from the dropped face would undo itself.
+func _gloss_drop(font_size: int) -> float:
+	var face := _theme_face()
+	var font := _base_font()
+	if face == null or font == null or text.is_empty() or size.y <= 0.0: return 0.0
+	var gloss := GoUi.skin().button_gloss_bottom(face, size.y)
+	if gloss <= 0.0: return 0.0
+	var top := face.get_margin(SIDE_TOP)
+	var bottom := face.get_margin(SIDE_BOTTOM)
+	var baseline := top + (size.y - top - bottom - font.get_height(font_size)) * 0.5 + font.get_ascent(font_size)
+	var ink := GoStyle.ink_box(atr(text), font, font_size)
+	var reach := float(get_theme_constant(&"outline_size")) * OUTLINE_REACH
+	var need := ceilf(gloss - (baseline + ink.position.y - reach))
+	if need <= 0.0: return 0.0
+	var room := (size.y - bottom) - (baseline + ink.end.y + reach)
+	return need if need <= room else -1.0
+
+
+## The normal face as the theme gives it — under the `ShiftedBox` this button wraps it in.
+func _theme_face() -> StyleBox:
+	var face := get_theme_stylebox(&"normal")
+	var wrapped := face as ShiftedBox
+	return wrapped.base if wrapped != null and wrapped.base != null else face
 
 
 ## The width the label may take: the button's (or the width the fit holds it at) less the padding and the glyph.
@@ -365,6 +413,10 @@ func fit_now() -> void:
 		if peer != self and (peer._fitted != wanted or not is_equal_approx(peer._held_width, _held_width)):
 			peer._queue_fit()
 	_condense(wanted)
+	var drop := maxf(0.0, _gloss_drop(wanted))
+	if not is_equal_approx(drop, _drop):
+		_drop = drop
+		_update_shift()
 	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
 	_fitted = wanted
 	add_theme_font_size_override(&"font_size", wanted)
@@ -493,9 +545,12 @@ func _drop_fit() -> void:
 	if is_equal_approx(custom_minimum_size.x, _held_width) and _held_width > 0.0: custom_minimum_size.x = _asked_width
 	_held_width = 0.0
 	_drop_condense()
+	if _drop > 0.0:
+		_drop = 0.0
+		_update_shift()
 
 
-## Re-wraps the theme's faces with the current shift (or drops the wrappers when there is no glyph).
+## Re-wraps the theme's faces with the current shift and gloss drop (or drops the wrappers when there is neither).
 func _update_shift() -> void:
 	if _shifting:
 		_missed = true
@@ -509,11 +564,11 @@ func _update_shift() -> void:
 			var wrapper := get_theme_stylebox(state) as ShiftedBox
 			remove_theme_stylebox_override(state)
 			if wrapper.was_override and wrapper.base != null: add_theme_stylebox_override(state, wrapper.base)
-	if _shift > 0.0:
+	if _shift > 0.0 or _drop > 0.0:
 		for state in TEXT_STATES:
 			var face := get_theme_stylebox(state)
 			if face == null: continue
-			var wrapper := ShiftedBox.new(face, _shift, is_layout_rtl(), MIN_EDGE)
+			var wrapper := ShiftedBox.new(face, _shift, is_layout_rtl(), MIN_EDGE, _drop)
 			wrapper.was_override = has_theme_stylebox_override(state)
 			add_theme_stylebox_override(state, wrapper)
 	end_bulk_theme_override()
