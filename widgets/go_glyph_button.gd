@@ -88,9 +88,9 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		_queue_fit()
 
 ## 🔤 With [member fit_label]: share the fit with the other `fit_with_row` keys of the same parent — one label size for
-## the row, the smallest any of them fits at. Each holds only the width its own label needs at the floor, so a row
-## that stretches them alike (`SIZE_EXPAND_FILL`) gives them one width whenever the row is wide enough, and a window
-## never widens for a short key. `GoSurface.add_gloss` turns it on for a window's row of keys: Spanish CANCELAR stood
+## the row, the smallest any of them fits at. Each holds the width the row's longest label needs at the floor, so a
+## row that stretches them alike (`SIZE_EXPAND_FILL`) always gives them one width, and a window widens only when its
+## longest key needs it. `GoSurface.add_gloss` turns it on for a window's row of keys: Spanish CANCELAR stood
 ## at 22 dp beside COMPRAR at 15.
 @export var fit_with_row := false:
 	set(value):
@@ -360,7 +360,8 @@ func fit_now() -> void:
 	# 🔑 Every key of the row works the same size out from the same keys: one that differs is fitted again, and once
 	#    they agree nothing is queued (no ping-pong).
 	for peer in _fit_peers():
-		if peer != self and peer._fitted != wanted: peer._queue_fit()
+		if peer != self and (peer._fitted != wanted or not is_equal_approx(peer._held_width, _held_width)):
+			peer._queue_fit()
 	_condense(wanted)
 	if wanted == _fitted and has_theme_font_size_override(&"font_size"): return
 	_fitted = wanted
@@ -372,7 +373,10 @@ func fit_now() -> void:
 func _hold_floor_width() -> void:
 	if not is_equal_approx(custom_minimum_size.x, _held_width): _asked_width = custom_minimum_size.x # the caller's
 	var need := 0.0
-	if get_parent() is Container: need = floor_width()
+	# 🔑 A row's keys hold the widest one's floor, so they stay one width even when a key's label and glyph need more
+	#    than its half (Spanish CANCELAR beside a coin and COMPRAR came out 256 and 269 dp wide).
+	if get_parent() is Container:
+		for peer in _fit_peers(): need = maxf(need, peer.floor_width())
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want

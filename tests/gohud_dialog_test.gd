@@ -1613,7 +1613,7 @@ func _click(at: Vector2) -> void:
 func _key_row_fit(look: StringName) -> void:
 	var pad := GoUi.skin().button_fit_pad()
 	if look == GoThemePresets.ARCADE_LIGHT: check(pad > 0.0, "%s a fit key keeps a clear pad (%.0f)" % [look, pad])
-	for texts: Array in [["CANCELAR", "GANAR MONEDAS DE ORO"], ["ABBRECHEN", "KAUFEN"], ["OK", "NO"]]:
+	for texts: Array in [["CANCELAR", "GANAR MONEDAS DE ORO"], ["ABBRECHEN", "KAUFEN"], ["OK", "NO"], ["CANCELAR", "+COMPRAR"]]:
 		var view := SubViewport.new()
 		view.size = Vector2i(1280, 720)
 		root.add_child(view)
@@ -1625,7 +1625,9 @@ func _key_row_fit(look: StringName) -> void:
 		var row := surface.add_row()
 		var keys: Array[GoGlyphButton] = []
 		for text: String in texts:
-			var key := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, GoIconSet.PLAY, text, row)
+			# "+": only this key has a glyph (a shop's BUY beside a bare CANCEL).
+			var glyph: StringName = GoIconSet.PLAY if texts.any(func(t: String) -> bool: return t.begins_with("+")) == text.begins_with("+") else &""
+			var key := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, glyph, text.trim_prefix("+"), row)
 			key.fit_label = true
 			keys.append(key)
 		await frames(5)
@@ -1639,12 +1641,9 @@ func _key_row_fit(look: StringName) -> void:
 			"%s: one label size (%s)" % [tag, ", ".join(keys.map(func(key: GoGlyphButton) -> String:
 				return "%d" % key.get_theme_font_size(&"font_size")))])
 		check(at == smallest, "%s: the smallest any key fits at (%d, want %d)" % [tag, at, smallest])
-		var half := (row.size.x - row.get_theme_constant(&"separation")) * 0.5
-		if keys.all(func(key: GoGlyphButton) -> bool: return key.floor_width() <= half + 0.5):
-			check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
-		else:
-			check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.floor_width() - 0.5),
-				"%s: too long for halves, each key as wide as its label needs (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.floor_width() - 0.5),
+			"%s: each key as wide as its label needs (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
 		for key in keys:
 			var face := key.get_theme_stylebox(&"normal").get_minimum_size().x
 			var words := key.get_theme_font(&"font").get_string_size(key.atr(key.text), HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
