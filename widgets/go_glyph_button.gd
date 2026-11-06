@@ -80,6 +80,8 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ##    face, and a `SCALE` window it sits in shrinks as one piece instead (German MÜNZEN VERDIENEN). A button placed by
 ##    hand (its parent no container) keeps its size: its label is condensed instead, down to
 ##    `GoConfig.fit_condense_min` of its width (glyphs drawn narrower, the advances closed up to match).
+##    A button whose label may trim (`text_overrun_behavior` not `OVERRUN_NO_TRIMMING`, or `clip_text`) keeps its
+##    size too: condensed the same way, then trimmed (GoRewardRow's claim pill).
 @export var fit_label := false:
 	set(value):
 		if fit_label == value: return
@@ -375,11 +377,19 @@ func _hold_floor_width() -> void:
 	var need := 0.0
 	# 🔑 A row's keys hold the widest one's floor, so they stay one width even when a key's label and glyph need more
 	#    than its half (Spanish CANCELAR beside a coin and COMPRAR came out 256 and 269 dp wide).
-	if get_parent() is Container:
+	# 🔑 A label the caller lets trim (`text_overrun_behavior` or `clip_text`) ends in an ellipsis in the width it
+	#    was given instead: GoRewardRow's claim pill is a fixed slot (ABHOLEN UND SOFORT BEHALTEN held it 373 dp wide
+	#    in a 336 dp row).
+	if get_parent() is Container and not _trims_label():
 		for peer in _fit_peers(): need = maxf(need, peer.floor_width())
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
+
+
+## The caller lets the label trim (an ellipsis, or clipped) instead of widening the button.
+func _trims_label() -> bool:
+	return clip_text or text_overrun_behavior != TextServer.OVERRUN_NO_TRIMMING
 
 
 ## The width a button placed by hand was given — its anchors and offsets, before its minimum size widens it — so a
