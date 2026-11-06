@@ -88,6 +88,61 @@ func _fit() -> void:
 	check(GoStyle.fit_floor(20) == 10, "fit: the floor follows GoConfig.fit_min_scale")
 	GoUi.config.fit_min_scale = 0.7
 	check(GoStyle.fit_font_size(PackedStringArray(["X"]), 20, 5.0) >= 14, "fit: a null font takes the theme's")
+	_fit_search()
+
+
+## The size every size measured from the base down gives — fit_font_size's answer before its search jumped.
+static func _fit_by_scan(width_at: Callable, base: int, floor_size: int, room: float) -> int:
+	var size := base
+	while size > floor_size and float(width_at.call(size)) > room:
+		size -= 1
+	return size
+
+
+func _fit_search() -> void:
+	# A made-up width that is not quite linear (a rim, each size's rounding): the search lands where the scan does.
+	var measured: Array[int] = [0]
+	var wobbly := func(size: int) -> float:
+		measured[0] += 1
+		return 6.0 + size * 9.3 + float((size * 7) % 5) * 0.4
+	var same := true
+	var most := 0
+	for base: int in range(1, 90):
+		for floor_size: int in [1, ceili(base * 0.7), base]:
+			for room: float in [-5.0, 0.0, 3.0, 40.0, 97.5, 150.0, 333.3, 600.0, 900.0, 2000.0]:
+				var want := _fit_by_scan(wobbly, base, floor_size, room)
+				measured[0] = 0
+				var got := GoStyle.fit_size_search(wobbly, base, floor_size, room)
+				most = maxi(most, measured[0])
+				if got != want:
+					same = false
+					print("  fit search: base %d floor %d room %.1f → %d, the scan says %d" % [base, floor_size, room,
+						got, want])
+	check(same, "fit: the search gives the size the scan from the base down gives")
+	check(most <= 4, "fit: the search measures a few sizes, not one per size (at most %d)" % most)
+	var scanned := _fit_by_scan(wobbly, 60, 30, 400.0)
+	measured[0] = 0
+	var searched := GoStyle.fit_size_search(wobbly, 60, 30, 400.0)
+	check(searched == scanned and scanned == 42 and measured[0] <= 3,
+		"fit: shrinking 60 → 42 measures 3 sizes, not 19 (%d → %d in %d)" % [scanned, searched, measured[0]])
+	measured[0] = 0
+	check(GoStyle.fit_size_search(wobbly, 30, 21, 1000.0) == 30 and measured[0] == 1, "fit: room at the base: one measure")
+	check(GoStyle.fit_size_search(wobbly, 30, 21, NAN) == 30, "fit: a NaN room keeps the base, as the scan did")
+	# A real face, words and rooms: the same size as the scan, size for size.
+	var font := ThemeDB.fallback_font
+	var texts: Array[PackedStringArray] = [PackedStringArray(["OK"]), PackedStringArray(["EQUIPPED"]),
+		PackedStringArray(["ВЫБРАТЬ СЛУЧАЙНО"]), PackedStringArray(["Ÿ É Ç", "1,500"]),
+		PackedStringArray(["A VERY LONG TRANSLATION\nOF A STAGE NAME"])]
+	var real_same := true
+	for row: PackedStringArray in texts:
+		var at := func(size: int) -> float: return GoStyle.row_width(font, row, size)
+		for base: int in [12, 22, 31, 48, 64]:
+			for room: float in [10.0, 60.0, 120.5, 200.0, 333.0]:
+				var want := _fit_by_scan(at, base, GoStyle.fit_floor(base, 0.5), room)
+				if GoStyle.fit_font_size(row, base, room, font, 0.5) != want:
+					real_same = false
+					print("  fit: %s at %d in %.1f → not %d" % [row, base, room, want])
+	check(real_same, "fit: a real face's words get the scan's sizes")
 
 
 # ── Cover image ────────────────────────────────────────────────────────

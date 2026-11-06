@@ -4095,18 +4095,51 @@ static func ink_box(text: String, font: Font, size: int) -> Rect2:
 ## breaks counts its widest line. [param font] null takes the theme's default font.
 ## 🛑 It never goes under the floor — text that still does not fit there runs over, so the art must grow instead.
 ##    Call it again when the language or the room changes: the size is measured, not followed.
+## It measures about three sizes, not every size from the base down ([method fit_size_search]).
+static var fit_stats := {"calls": 0, "measures": 0, "usec": 0}
 static func fit_font_size(texts: PackedStringArray, base: int, room: float, font: Font = null,
 		min_scale := -1.0) -> int:
+	var __t := Time.get_ticks_usec()
+	var __r := _fit_font_size_x(texts, base, room, font, min_scale)
+	fit_stats.calls += 1
+	fit_stats.usec += Time.get_ticks_usec() - __t
+	return __r
+
+
+static func _fit_font_size_x(texts: PackedStringArray, base: int, room: float, font: Font = null,
+		min_scale := -1.0) -> int:
 	var face := font if font != null else _fit_font()
-	var floor_size := fit_floor(base, min_scale)
-	var size := base
-	while size > floor_size and row_width(face, texts, size) > room:
-		size -= 1
+	return fit_size_search(func(size: int) -> float: return row_width(face, texts, size), base,
+		fit_floor(base, min_scale), room)
+
+
+## 🔤 The search behind [method fit_font_size]: the biggest size from [param base] down to (not under)
+## [param floor_size] at which [param width_at] (a Callable: size → width) is no wider than [param room]; the
+## [param floor_size] when no size above it is (the floor itself is never measured).
+## The answer is the one measuring every size from the base down gives, for a width that never shrinks as the size
+## grows (a font's), in about three measures instead of one per size: measured at the base, it jumps to the size the
+## room's share of that width points at, then steps a size at a time to the answer (a size's width is not quite
+## linear: the hinting, each glyph's rounding). Each size a font is measured at shapes and caches its glyphs at that
+## size, which the first time costs a phone milliseconds per size.
+static func fit_size_search(width_at: Callable, base: int, floor_size: int, room: float) -> int:
+	if base <= floor_size: return base
+	var widest: float = width_at.call(base)
+	if not (widest > room): return base # (a NaN room keeps the base, as the scan down did)
+	var size := floor_size
+	if widest > 0.0: size = clampi(floori(float(base) * room / widest), floor_size, base - 1)
+	if size > floor_size and float(width_at.call(size)) > room:
+		size -= 1 # too wide at the guess: down a size at a time
+		while size > floor_size and float(width_at.call(size)) > room:
+			size -= 1
+		return size
+	while size + 1 < base and float(width_at.call(size + 1)) <= room:
+		size += 1 # it fits at the guess (or the guess is the floor): up while the next size fits too
 	return size
 
 
 ## 🔤 How wide [param texts] stand side by side at [param size] — each text's widest line, summed.
 static func row_width(font: Font, texts: PackedStringArray, size: int) -> float:
+	fit_stats.measures += 1
 	var face := font if font != null else _fit_font()
 	var total := 0.0
 	for text in texts:
