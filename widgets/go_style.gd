@@ -4032,6 +4032,25 @@ static func fit_floor(base: int, min_scale := -1.0) -> int:
 	return maxi(1, ceili(float(base) * share))
 
 
+## 🔤 The empty space between the top of [param text]'s line box and the top of its tallest letter, in pixels at
+## [param size] in [param font] (its fallbacks included). The display face leaves a tall gap over Latin capitals; a
+## fallback face (Japanese, Korean…) leaves far less, so a layout that pulls a line up into that gap measures it here
+## instead of assuming the display face's. Empty text or no letters: the font's whole ascent.
+static func ink_top_gap(text: String, font: Font, size: int) -> float:
+	var ts := TextServerManager.get_primary_interface()
+	var ascent := font.get_ascent(size)
+	if text.strip_edges().is_empty(): return ascent
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var top := 0.0
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		if int(glyph.index) == 0 or not (glyph.font_rid as RID).is_valid(): continue
+		top = minf(top, ts.font_get_glyph_offset(glyph.font_rid, Vector2i(size, 0), int(glyph.index)).y)
+	ascent = ts.shaped_text_get_ascent(shaped)
+	ts.free_rid(shaped)
+	return maxf(0.0, ascent + top) if top < 0.0 else ascent
+
+
 ## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]
 ## at which [param texts], set side by side on one row, are no wider than [param room].
 ## Pass every text that shares the row (a label and its value, say) so they shrink together; a text with line

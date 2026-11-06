@@ -69,6 +69,9 @@ const BUTTON_FONT_SHARE := 0.42
 const HEADING_TUCK_SHARE := 0.44
 ## How far the heading rises into the space over its letters (the display face's tall line), as a share of its size.
 const HEADING_LIFT_SHARE := 0.4
+## The clear space kept on each side of the heading, as a share of its base size: a long heading (German, Russian)
+## shrinks before it runs to the card's rim.
+const HEADING_SIDE_SHARE := 0.5
 ## How much of the header title's line box is trimmed above and below its letters, as a share of its size.
 const HEADER_TITLE_TRIM_SHARE := 0.25
 
@@ -394,9 +397,12 @@ func fit_now() -> void:
 	var inner := size.x - (face.get_minimum_size().x if face != null else 0.0)
 	var base := float(_base_size(heading_label)) * (LOADING_HEADING_SHARE if loading else 1.0) * heading_scale
 	if heading_variation == VAR_TITLE: base *= BOARD_HEADING_SHARE
-	_fit_to(heading_label, int(base), inner - padding * 2.0)
+	_fit_to(heading_label, int(base), inner - padding * 2.0 - base * HEADING_SIDE_SHARE * 2.0)
 	var heading_size := heading_label.get_theme_font_size(&"font_size")
-	_heading_box.add_theme_constant_override(&"margin_top", -roundi(heading_size * HEADING_LIFT_SHARE))
+	# Rise into the gap over the letters, never past it: a fallback face (Japanese, Korean) has a far smaller gap
+	# than the display face's, and a fixed lift pushed its letters into the picture.
+	var gap := GoStyle.ink_top_gap(atr(heading_label.text), heading_label.get_theme_font(&"font"), heading_size)
+	_heading_box.add_theme_constant_override(&"margin_top", -roundi(minf(heading_size * HEADING_LIFT_SHARE, gap)))
 	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(heading_size * HEADING_TUCK_SHARE))
 	if not header.visible: return
 	var title_base := int(_base_size(header_title) * HEADER_TITLE_SHARE)
