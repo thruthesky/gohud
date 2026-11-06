@@ -4051,6 +4051,30 @@ static func ink_top_gap(text: String, font: Font, size: int) -> float:
 	return maxf(0.0, ascent + top) if top < 0.0 else ascent
 
 
+## 🔤 The empty space between the bottom of [param text]'s tallest-reaching ink below the baseline and the bottom of its
+## line box, in pixels at [param size] in [param font] (its fallbacks included) — [method ink_top_gap]'s other end. The
+## display face's deep descent leaves a wide gap under Latin capitals; a Japanese or Korean fallback sets its letters
+## lower, into it, so a layout that tucks the next line up under a heading measures it here. Empty text or no letters:
+## the line's whole descent.
+static func ink_bottom_gap(text: String, font: Font, size: int) -> float:
+	var ts := TextServerManager.get_primary_interface()
+	var descent := font.get_descent(size)
+	if text.strip_edges().is_empty(): return descent
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var bottom := -INF
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var rid := glyph.font_rid as RID
+		if int(glyph.index) == 0 or not rid.is_valid(): continue
+		var at := Vector2i(size, 0)
+		var glyph_size := ts.font_get_glyph_size(rid, at, int(glyph.index))
+		if glyph_size.y <= 0.0: continue
+		bottom = maxf(bottom, ts.font_get_glyph_offset(rid, at, int(glyph.index)).y + glyph_size.y + (glyph.offset as Vector2).y)
+	descent = ts.shaped_text_get_descent(shaped)
+	ts.free_rid(shaped)
+	return maxf(0.0, descent - bottom) if bottom > -INF else descent
+
+
 ## 🔤 Where [param text]'s ink starts and ends along its one line, in pixels from the pen's start at [param size] in
 ## [param font] (its fallbacks included): x is the left edge of the leftmost outline, y the right edge of the
 ## rightmost. The advance box can hold far more than the ink — the Simplified Chinese face draws a full-width ？

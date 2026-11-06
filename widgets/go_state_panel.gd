@@ -67,6 +67,9 @@ const BUTTON_FONT_SHARE := 0.42
 ## How far the body tucks up under the heading, as a share of the heading's font size (the display face has a
 ## deep descent; the painted cards set the body right under the heading's letters).
 const HEADING_TUCK_SHARE := 0.44
+## The letters `HEADING_TUCK_SHARE` was tuned under: the display face's Latin capitals, standing on the baseline. A
+## heading whose ink reaches lower (a Japanese or Korean fallback, a descender) tucks less by the difference.
+const HEADING_TUCK_REFERENCE := "H"
 ## How far the heading rises into the space over its letters (the display face's tall line), as a share of its size.
 const HEADING_LIFT_SHARE := 0.4
 ## The clear space kept on each side of the heading, as a share of its base size: a long heading (German, Russian)
@@ -403,7 +406,15 @@ func fit_now() -> void:
 	# than the display face's, and a fixed lift pushed its letters into the picture.
 	var gap := GoStyle.ink_top_gap(atr(heading_label.text), heading_label.get_theme_font(&"font"), heading_size)
 	_heading_box.add_theme_constant_override(&"margin_top", -roundi(minf(heading_size * HEADING_LIFT_SHARE, gap)))
-	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(heading_size * HEADING_TUCK_SHARE))
+	# 🔑 Tuck under the letters by the gap under their ink, as the lift rises by the gap over it: the share is the
+	#    display face's under Latin capitals, and a heading whose ink sits lower (Japanese, Korean: the fallback's
+	#    letters reach far deeper than the capitals' baseline) tucks that much less, so its body line keeps the same
+	#    clear space under the heading's letters — a fixed tuck set ショップには接続が必要です onto the body line.
+	var font := heading_label.get_theme_font(&"font")
+	var deeper := GoStyle.ink_bottom_gap(HEADING_TUCK_REFERENCE, font, heading_size) \
+			- GoStyle.ink_bottom_gap(atr(heading_label.text), font, heading_size)
+	var tuck := maxf(0.0, heading_size * HEADING_TUCK_SHARE - maxf(0.0, deeper))
+	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(tuck))
 	if not header.visible: return
 	var title_base := int(_base_size(header_title) * HEADER_TITLE_SHARE)
 	var strip := header.get_theme_stylebox(&"panel")

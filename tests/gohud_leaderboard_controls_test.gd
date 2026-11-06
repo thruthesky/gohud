@@ -139,6 +139,34 @@ func _state_panel(host: Control) -> void:
 	var latin := GoStyle.ink_top_gap("NO TIMES YET", face, 60)
 	var cjk := GoStyle.ink_top_gap("ショップには接続が必要です", face, 60)
 	check(cjk < latin, "a Japanese line has less room over its letters than a Latin one (%.0f < %.0f)" % [cjk, latin])
+	# The body tucks up under the heading by the gap under its ink, as the lift rises by the gap over it: a Japanese or
+	# Korean heading (its letters set deeper than Latin capitals) keeps the same clear space to the body line.
+	var clear := {}
+	for words: String in ["NO TIMES YET", "ショップには接続が必要です", "상점은 연결이 필요해요"]:
+		panel.heading = words
+		panel.fit_now()
+		await process_frame
+		await process_frame
+		var size := panel.heading_label.get_theme_font_size(&"font_size")
+		var label := panel.heading_label
+		var top_pad := label.get_theme_stylebox(&"normal").get_margin(SIDE_TOP) if label.has_theme_stylebox(&"normal") else 0.0
+		var ts := TextServerManager.get_primary_interface()
+		var shaped := ts.create_shaped_text()
+		ts.shaped_text_add_string(shaped, words, face.get_rids(), size)
+		var line := ts.shaped_text_get_ascent(shaped) + ts.shaped_text_get_descent(shaped)
+		ts.free_rid(shaped)
+		var ink_bottom := label.global_position.y + top_pad + line - GoStyle.ink_bottom_gap(words, face, size)
+		var body := panel.body_label
+		var body_pad := body.get_theme_stylebox(&"normal").get_margin(SIDE_TOP) if body.has_theme_stylebox(&"normal") else 0.0
+		var body_ink := body.global_position.y + body_pad \
+				+ GoStyle.ink_top_gap(panel.body, body.get_theme_font(&"font"), body.get_theme_font_size(&"font_size"))
+		clear[words] = (body_ink - ink_bottom) / float(size)
+		check(label.get_line_count() == 1, "%s: the heading is one line (the gap is read on one)" % words)
+	for words: String in clear:
+		check(absf(clear[words] - clear["NO TIMES YET"]) <= 1.5 / 60.0 + 0.01,
+				"%s: the clear space under the heading's letters is the Latin one's (%.3f, %.3f of the size)"
+				% [words, clear[words], clear["NO TIMES YET"]])
+	check(clear["NO TIMES YET"] > 0.0, "the body line sits clear under the heading's letters (%.3f)" % clear["NO TIMES YET"])
 	# A long heading keeps clear space from the card's rim on both sides.
 	panel.heading = "DER SHOP BRAUCHT EINE VERBINDUNG"
 	panel.fit_now()
