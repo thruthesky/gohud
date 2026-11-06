@@ -1017,11 +1017,31 @@ func _locale_lead() -> void:
 		"ja_JP": ["JP", "KR", "SC", "TC"], "zh": ["SC", "KR", "JP", "TC"], "zh_HK": ["TC", "KR", "JP", "SC"],
 		"zh_Hant": ["TC", "KR", "JP", "SC"], "zh_Hans_HK": ["SC", "KR", "JP", "TC"], "fr": ["KR", "JP", "SC", "TC"],
 	}
+	# 🔤 Every heavy face (`go_locale_chains`) leads the same language among its own CJK, so a Han character keeps the
+	#    language's shape in the world-tour, scoreboard and row fonts too; their other fallbacks keep their slots.
+	var chains: Array = look.get_meta(GoUi.LOCALE_CHAINS_META, [])
+	var heavy_names: Array = []
+	for chain: Variant in chains: heavy_names.append(str(chain))
+	check(chains.size() == 3 and chains.has(look.get_font(&"font", &"GoWorldTourTitle"))
+		and chains.has(look.get_font(&"font", &"GoScoreLabel")) and chains.has(look.get_font(&"font", &"GoScoreRowLabel")),
+		"go_locale_chains: the world-tour, scoreboard and row fonts (got %s)" % [heavy_names])
 	for code: String in want:
 		GoUi.set_font_locale(code)
 		var got: Array = []
 		for f: Font in font.fallbacks: got.append(f.resource_path.get_file().trim_prefix("NotoSans").trim_suffix("-Bold.ttf"))
 		check(got == want[code], "set_font_locale(%s): fallbacks %s (got %s)" % [code, want[code], got])
+		for chain: Variant in chains:
+			if not (chain is FontVariation): continue
+			var written: Array = (chain as FontVariation).get_meta(&"go_fallbacks_written", [])
+			var heavy: Array = []
+			var kept := written.size() == (chain as FontVariation).fallbacks.size()
+			for i in (chain as FontVariation).fallbacks.size():
+				var f: Font = (chain as FontVariation).fallbacks[i]
+				if _is_cjk(f):
+					heavy.append((f as FontVariation).base_font.resource_path.get_file().trim_prefix("NotoSans").trim_suffix("-Bold.ttf"))
+				elif kept: kept = written[i] == f
+			check(heavy == want[code] and kept, "set_font_locale(%s): %s's CJK %s, other fallbacks in place (got %s)" % [
+				code, chain, want[code], heavy])
 	# Only a real change reassigns (every reassignment re-shapes all the text on screen).
 	GoUi.set_font_locale("ja")
 	changes[0] = 0
@@ -1035,6 +1055,9 @@ func _locale_lead() -> void:
 	GoUi.set_locale("zh_TW")
 	check(TranslationServer.get_locale() == "zh_TW" and font.fallbacks[0].resource_path.ends_with("NotoSansTC-Bold.ttf"),
 		"set_locale(zh_TW): the locale and Traditional Chinese first")
+	var score := look.get_font(&"font", &"GoScoreLabel") as FontVariation
+	check(score != null and (score.fallbacks[0] as FontVariation).base_font.resource_path.ends_with("NotoSansTC-Bold.ttf"),
+		"set_locale(zh_TW): the scoreboard's heavy Traditional Chinese first")
 	check(GoUi.skin().symbol_font() == font.fallbacks[0], "arcade_light's symbol font is the leading CJK font")
 	# A look chosen later follows the language already set.
 	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
