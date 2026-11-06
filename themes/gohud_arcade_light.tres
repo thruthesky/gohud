@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=248 format=3]
+[gd_resource type="Theme" load_steps=260 format=3]
 
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_arcade.gd" id="arcade"]
 [ext_resource type="Script" path="res://addons/gohud/widgets/go_stylebox_sprite.gd" id="sprite"]
@@ -772,11 +772,27 @@ expand_margin_bottom = -3
 base_font = ExtResource("font_nunito")
 fallbacks = Array[Font]([ExtResource("font_noto_kr"), ExtResource("font_noto_jp"), ExtResource("font_noto_sc"), ExtResource("font_noto_tc")])
 
+[sub_resource type="FontVariation" id="world_tour_font_noto_kr"]
+base_font = ExtResource("font_noto_kr")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="world_tour_font_noto_jp"]
+base_font = ExtResource("font_noto_jp")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="world_tour_font_noto_sc"]
+base_font = ExtResource("font_noto_sc")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="world_tour_font_noto_tc"]
+base_font = ExtResource("font_noto_tc")
+variation_embolden = 0.6
+
 [sub_resource type="FontVariation" id="world_tour_font"]
 base_font = ExtResource("font_baloo2")
 variation_opentype = {2003265652: 800.0}
 variation_embolden = 0.6
-fallbacks = Array[Font]([ExtResource("font_nunito_black"), SubResource("painted_font")])
+fallbacks = Array[Font]([ExtResource("font_nunito_black"), ExtResource("font_nunito"), SubResource("world_tour_font_noto_kr"), SubResource("world_tour_font_noto_jp"), SubResource("world_tour_font_noto_sc"), SubResource("world_tour_font_noto_tc")])
 
 [sub_resource type="StyleBox" id="painted_GoButton_normal"]
 script = ExtResource("sprite")
@@ -1432,9 +1448,26 @@ lip = 3
 shine = 0.9
 band = 0
 
+[sub_resource type="FontVariation" id="painted_score_font_noto_kr"]
+base_font = ExtResource("font_noto_kr")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="painted_score_font_noto_jp"]
+base_font = ExtResource("font_noto_jp")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="painted_score_font_noto_sc"]
+base_font = ExtResource("font_noto_sc")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="painted_score_font_noto_tc"]
+base_font = ExtResource("font_noto_tc")
+variation_embolden = 0.6
+
 [sub_resource type="FontVariation" id="painted_score_font"]
 base_font = SubResource("painted_font")
 variation_embolden = 1.2
+fallbacks = Array[Font]([SubResource("painted_score_font_noto_kr"), SubResource("painted_score_font_noto_jp"), SubResource("painted_score_font_noto_sc"), SubResource("painted_score_font_noto_tc")])
 
 [sub_resource type="StyleBox" id="painted_GoCategoryButton_normal"]
 script = ExtResource("arcade")
@@ -1686,9 +1719,26 @@ content_margin_right = 16
 content_margin_bottom = 0
 bg_color = Color(1, 0.940706, 0.763922, 1)
 
+[sub_resource type="FontVariation" id="painted_row_font_noto_kr"]
+base_font = ExtResource("font_noto_kr")
+variation_embolden = 0.4
+
+[sub_resource type="FontVariation" id="painted_row_font_noto_jp"]
+base_font = ExtResource("font_noto_jp")
+variation_embolden = 0.4
+
+[sub_resource type="FontVariation" id="painted_row_font_noto_sc"]
+base_font = ExtResource("font_noto_sc")
+variation_embolden = 0.4
+
+[sub_resource type="FontVariation" id="painted_row_font_noto_tc"]
+base_font = ExtResource("font_noto_tc")
+variation_embolden = 0.4
+
 [sub_resource type="FontVariation" id="painted_row_font"]
 base_font = SubResource("painted_font")
 variation_embolden = 0.5
+fallbacks = Array[Font]([SubResource("painted_row_font_noto_kr"), SubResource("painted_row_font_noto_jp"), SubResource("painted_row_font_noto_sc"), SubResource("painted_row_font_noto_tc")])
 
 [sub_resource type="StyleBoxFlat" id="painted_GoScoreTable"]
 content_margin_left = 19
@@ -3696,4 +3746,5 @@ VSlider/styles/slider = SubResource("slider_track")
 default_font = SubResource("painted_font")
 default_font_size = 16
 metadata/go_body_font_baked = SubResource("painted_font")
+metadata/go_locale_chains = Array[Font]([SubResource("world_tour_font"), SubResource("painted_score_font"), SubResource("painted_row_font")])
 metadata/go_locale_fonts = {"ko": ExtResource("font_noto_kr"), "ja": ExtResource("font_noto_jp"), "zh_CN": ExtResource("font_noto_sc"), "zh_TW": ExtResource("font_noto_tc")}

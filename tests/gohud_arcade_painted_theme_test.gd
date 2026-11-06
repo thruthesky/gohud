@@ -641,7 +641,8 @@ func _score_stripes(theme: Theme) -> void:
 		"the stripes stack edge to edge, each its label's height, the label 10 in (%s)" % [rows.map(
 			func(r: Control) -> Rect2: return r.get_rect())])
 	column.free()
-	# The rows' lettering: the body font at embolden 0.5 — lighter than the scoreboard's heavy face, the same languages.
+	# The rows' lettering: the body font at embolden 0.5 — lighter than the scoreboard's heavy face, the same languages,
+	# its CJK at a medium weight of its own (`_heavy_cjk`).
 	var body := _body_font(theme)
 	var heavy := theme.get_font(&"font", &"GoScoreLabel") as FontVariation
 	for type: StringName in [&"GoScoreRowLabel", &"GoScoreRowMutedLabel"]:
@@ -653,6 +654,10 @@ func _score_stripes(theme: Theme) -> void:
 				"%s: lighter than GoScoreLabel's heavy face, heavier than the body" % type)
 			for character: String in ["한", "日", "中"]:
 				check(font.has_char(character.unicode_at(0)), "%s: the medium face can display %s" % [type, character])
+			var cjk := _heavy_cjk(font, "%s's row font" % type)
+			var score_cjk := _cjk_weight(heavy)
+			check(cjk > 0.0 and score_cjk > 0.0 and cjk < score_cjk,
+				"%s: its CJK is lighter than the scoreboard's CJK (%s < %s)" % [type, cjk, score_cjk])
 		check(theme.get_constant(&"outline_size", type) == 0, "%s: no outline" % type)
 		check(theme.get_font_size_list(type).is_empty(), "%s: no font size of its own — the caller sizes its rows" % type)
 	check(theme.get_color(&"font_color", &"GoScoreRowLabel") == theme.get_color(&"font_color", &"GoScoreLabel"),
@@ -674,6 +679,37 @@ func _contrast(a: Color, b: Color) -> float:
 	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
 
 
+## 🔤 [param font]'s own CJK fallbacks: KR JP SC TC in order, each a `FontVariation` over the Noto Sans CJK file at
+##    one weight above the body's 0 — an outer embolden never reaches a fallback (each draws from its own RID), so a
+##    heavy face needs heavy CJK of its own. Returns that weight (0 when they are missing).
+func _heavy_cjk(font: FontVariation, what: String) -> float:
+	var got: Array = []
+	var weights: Array = []
+	for f: Font in font.fallbacks:
+		if _is_cjk(f):
+			got.append((f as FontVariation).base_font.resource_path.get_file())
+			weights.append((f as FontVariation).variation_embolden)
+	check(got == ["NotoSansKR-Bold.ttf", "NotoSansJP-Bold.ttf", "NotoSansSC-Bold.ttf", "NotoSansTC-Bold.ttf"],
+		"%s: its own CJK fallbacks, KR JP SC TC (got %s)" % [what, got])
+	var weight: float = weights[0] if not weights.is_empty() else 0.0
+	check(weight > 0.0 and weights.all(func(w: float) -> bool: return is_equal_approx(w, weight)),
+		"%s: its CJK is emboldened, one weight for the four (got %s)" % [what, weights])
+	return weight
+
+
+## The embolden of [param font]'s first own CJK fallback, 0 when it has none.
+func _cjk_weight(font: FontVariation) -> float:
+	for f: Font in font.fallbacks:
+		if _is_cjk(f): return (f as FontVariation).variation_embolden
+	return 0.0
+
+
+## Is [param f] a FontVariation over one of the Noto Sans CJK files (a heavy face's own CJK)?
+func _is_cjk(f: Font) -> bool:
+	return f is FontVariation and (f as FontVariation).base_font is FontFile \
+		and (f as FontVariation).base_font.resource_path.contains("/noto_sans_cjk/")
+
+
 ## Real scroll containers inherit painted bars even when the caller never supplies a variation or an override.
 ## The body face the score fonts are built on. `default_font` normally; in a host project with a font of its own
 ## (Project Settings → GUI → Theme), `GoUi` stands the baked body font down and leaves `default_font` empty, while the
@@ -689,10 +725,13 @@ func _scoreboard(theme: Theme) -> void:
 			&"GoScoreButton", &"GoScorePrimaryButton", &"GoScoreTab", &"GoScoreTabSelected", &"GoScoreGoldButton"]:
 		var font := theme.get_font(&"font", type) as FontVariation
 		check(font != null and font.variation_embolden >= 1.0 and font.base_font == normal_font,
-			"%s: heavy lettering shares the multilingual body's locale order" % type)
+			"%s: heavy lettering over the multilingual body font" % type)
 		if font != null:
 			for character: String in ["한", "日", "中"]:
 				check(font.has_char(character.unicode_at(0)), "%s: the heavy face can display %s" % [type, character])
+			# 🔤 Its own heavy CJK fallbacks. It had none and used the body's — which the engine draws raw, so the
+			#    scoreboard's Korean, Japanese and Chinese were plain Noto Bold under emboldened Latin.
+			_heavy_cjk(font, "%s's score font" % type)
 	check(normal_font.variation_embolden == 0.0, "the heavier scoreboard does not change ordinary UI font weight")
 	check(theme.get_color(&"font_color", &"GoScoreGoldButton").b < 0.3
 		and theme.get_color(&"font_outline_color", &"GoScoreGoldButton") == Color.WHITE,
@@ -936,18 +975,21 @@ func _font(theme: Theme) -> void:
 		check(GoStyle._fit_font() is FontVariation and (GoStyle._fit_font() as FontVariation).fallbacks.size() == 4,
 			"GoStyle's fit font under arcade_light keeps the four CJK fallbacks (got %s)" % GoStyle._fit_font())
 	GoUi.config.preset = &""
-	# 🔤 The world-tour headline font (Baloo 2, no Cyrillic) sets Russian in Nunito Black before the body font, so a
-	#    Russian headline is as heavy as a Latin one.
+	# 🔤 The world-tour headline font (Baloo 2, no Cyrillic) sets Russian in Nunito Black, any other missing mark in
+	#    Nunito Bold, then its own heavy CJK (`_heavy_cjk`). It used to fall back to the whole body font after Nunito
+	#    Black, whose CJK the engine draws raw — Korean, Japanese and Chinese headlines came out thinner than the Latin.
 	var tour := theme.get_font(&"font", &"GoStateHeading") as FontVariation
-	check(tour != null and tour.fallbacks.size() == 2 and tour.fallbacks[0] is FontFile
-		and tour.fallbacks[0].resource_path == FONTS + "nunito/Nunito-Black.ttf" and tour.fallbacks[1] == font,
-		"the world-tour font falls back to Nunito Black, then the body font (got %s)" % [tour.fallbacks if tour else null])
-	if tour != null and tour.fallbacks.size() == 2:
+	check(tour != null and tour.fallbacks.size() == 6 and tour.fallbacks[0] is FontFile
+		and tour.fallbacks[0].resource_path == FONTS + "nunito/Nunito-Black.ttf" and tour.fallbacks[1] == font.base_font,
+		"the world-tour font falls back to Nunito Black, Nunito Bold, then its own CJK (got %s)" % [
+			tour.fallbacks if tour else null])
+	if tour != null and tour.fallbacks.size() == 6:
 		for text: String in ["МАГАЗИН", "КОСМЕТИКА", "ЁЖИК"]:
 			var heavy: Font = tour.fallbacks[0]
 			var all := true
 			for i in text.length(): all = all and heavy.has_char(text.unicode_at(i))
 			check(all, "Nunito Black draws %s" % text)
+	if tour != null: _heavy_cjk(tour, "the world-tour font")
 	for path: String in [FONTS + "nunito/OFL.txt", FONTS + "noto_sans_cjk/OFL.txt", FONTS + "baloo2/OFL.txt"]:
 		check(FileAccess.file_exists(path), "%s ships with the font files" % path)
 
