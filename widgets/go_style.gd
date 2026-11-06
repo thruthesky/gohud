@@ -4096,17 +4096,7 @@ static func ink_box(text: String, font: Font, size: int) -> Rect2:
 ## 🛑 It never goes under the floor — text that still does not fit there runs over, so the art must grow instead.
 ##    Call it again when the language or the room changes: the size is measured, not followed.
 ## It measures about three sizes, not every size from the base down ([method fit_size_search]).
-static var fit_stats := {"calls": 0, "measures": 0, "usec": 0}
 static func fit_font_size(texts: PackedStringArray, base: int, room: float, font: Font = null,
-		min_scale := -1.0) -> int:
-	var __t := Time.get_ticks_usec()
-	var __r := _fit_font_size_x(texts, base, room, font, min_scale)
-	fit_stats.calls += 1
-	fit_stats.usec += Time.get_ticks_usec() - __t
-	return __r
-
-
-static func _fit_font_size_x(texts: PackedStringArray, base: int, room: float, font: Font = null,
 		min_scale := -1.0) -> int:
 	var face := font if font != null else _fit_font()
 	return fit_size_search(func(size: int) -> float: return row_width(face, texts, size), base,
@@ -4139,7 +4129,6 @@ static func fit_size_search(width_at: Callable, base: int, floor_size: int, room
 
 ## 🔤 How wide [param texts] stand side by side at [param size] — each text's widest line, summed.
 static func row_width(font: Font, texts: PackedStringArray, size: int) -> float:
-	fit_stats.measures += 1
 	var face := font if font != null else _fit_font()
 	var total := 0.0
 	for text in texts:
