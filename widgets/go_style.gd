@@ -4051,6 +4051,33 @@ static func ink_top_gap(text: String, font: Font, size: int) -> float:
 	return maxf(0.0, ascent + top) if top < 0.0 else ascent
 
 
+## 🔤 Where [param text]'s ink starts and ends along its one line, in pixels from the pen's start at [param size] in
+## [param font] (its fallbacks included): x is the left edge of the leftmost outline, y the right edge of the
+## rightmost. The advance box can hold far more than the ink — the Simplified Chinese face draws a full-width ？
+## narrower than its advance, so a title centred on its advance sits left of centre. Read from the glyphs' outlines,
+## so it is exact. Empty text, or a face with no outlines: the advance box, `Vector2(0, width)`.
+static func ink_span(text: String, font: Font, size: int) -> Vector2:
+	if font == null: return Vector2.ZERO
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var lo := INF
+	var hi := -INF
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var rid := glyph.font_rid as RID
+		var x := pen + (glyph.offset as Vector2).x
+		pen += float(glyph.advance) * int(glyph.repeat)
+		if int(glyph.index) == 0 or not rid.is_valid(): continue
+		var contours: Dictionary = ts.font_get_glyph_contours(rid, size, int(glyph.index))
+		for point: Vector3 in contours.get("points", PackedVector3Array()):
+			lo = minf(lo, x + point.x)
+			hi = maxf(hi, x + point.x)
+	var width := ts.shaped_text_get_width(shaped)
+	ts.free_rid(shaped)
+	return Vector2(lo, hi) if lo <= hi else Vector2(0.0, width)
+
+
 ## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]
 ## at which [param texts], set side by side on one row, are no wider than [param room].
 ## Pass every text that shares the row (a label and its value, say) so they shrink together; a text with line

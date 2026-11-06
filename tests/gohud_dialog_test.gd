@@ -40,6 +40,7 @@ func _initialize() -> void:
 		await _fit_surface(look)
 		await _fit_share(look)
 		await _scale_title(look)
+		await _title_ink_centre(look)
 		await _title_before_widen(look)
 		await _title_hold_steady(look)
 		await _key_row_fit(look)
@@ -1136,6 +1137,66 @@ func _fit_share(look: StringName) -> void:
 		check(is_equal_approx(card.scale.x, 1.0), "%s: share 0 never grows it (scale %.3f)" % [tag, card.scale.x])
 		view.queue_free()
 		await frames(1)
+
+
+## The ribbon title centres its **ink**, not its advance box: the Simplified Chinese face draws a full-width ？ well
+## inside its advance, and centring the advance left 装备这套造型？ about 4 dp left of the ribbon's middle (14 px on a
+## 1920 x 1080 phone shot). Its ink now sits on the middle within 1 dp, with and without a title glyph, and a Latin
+## title — whose bearings are near even — stays where it was, within 1 dp.
+func _title_ink_centre(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	for glyph: bool in [false, true]:
+		for words: String in ["离开商店？", "装备这套造型？", "EQUIP THIS LOOK?", "ROOM"]:
+			var surface := _dialog()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			if glyph: surface.title_glyph = ImageTexture.create_from_image(Image.create(16, 16, false, Image.FORMAT_RGBA8))
+			surface.set_title(words)
+			await frames(4)
+			var title := surface.title_label
+			var font := title.get_theme_font(&"font")
+			var size := title.get_theme_font_size(&"font_size")
+			var advance := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+			var ink := _outline_span(words, font, size)
+			var pen := title.get_character_bounds(0).position.x
+			var plate := title.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+			# The ribbon as drawn: the label grown by its bleed on each side.
+			var middle := (title.size.x + plate.bleed_right - plate.bleed_left) * 0.5
+			var row_left := pen
+			if glyph:
+				var rect := title.get_node(^"TitleGlyph") as TextureRect
+				row_left = rect.position.x
+			var ink_middle := (row_left + pen + ink.y) * 0.5 if glyph else pen + (ink.x + ink.y) * 0.5
+			var cjk := words.unicode_at(0) > 127
+			if cjk:
+				check(advance - ink.y > 2.0, "%s title ink: %s ends in a glyph with a trailing bearing (advance %.1f ink to %.1f)"
+					% [look, words, advance, ink.y])
+			check(absf(ink_middle - middle) <= 1.0, "%s title ink: %s%s is centred on its ink (ink middle %.1f ribbon %.1f)"
+				% [look, words, " with a glyph" if glyph else "", ink_middle, middle])
+			if not cjk:
+				# Where the advance box centred them before: a Latin title moves no more than a pixel.
+				var was := (row_left + pen + advance) * 0.5 if glyph else pen + advance * 0.5
+				check(absf(was - middle) <= 1.0, "%s title ink: Latin %s%s stays put (advance middle %.1f ribbon %.1f)"
+					% [look, words, " with a glyph" if glyph else "", was, middle])
+			surface.queue_free()
+			await frames(1)
+
+
+## The left and right edge of [param text]'s outlines from the pen's start — measured here from the glyphs' contours,
+## apart from `GoStyle.ink_span`.
+func _outline_span(text: String, font: Font, size: int) -> Vector2:
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var span := Vector2(INF, -INF)
+	for g: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var points: PackedVector3Array = ts.font_get_glyph_contours(g.font_rid, size, int(g.index)).get("points", PackedVector3Array())
+		for p in points:
+			span.x = minf(span.x, pen + (g.offset as Vector2).x + p.x)
+			span.y = maxf(span.y, pen + (g.offset as Vector2).x + p.x)
+		pen += float(g.advance) * int(g.repeat)
+	ts.free_rid(shaped)
+	return span
 
 
 ## Under a `SCALE` fit a ribbon title never folds (the game's painted dialogs): too long for the card, the card grows

@@ -808,6 +808,7 @@ func _fit_title() -> void:
 	if title_label == null or _sizing_title: return
 	_fit_title_size()
 	_place_title_glyph()
+	_centre_title_ink()
 	_place_corner()
 
 
@@ -1197,6 +1198,46 @@ func _title_words_width() -> float:
 			title_label.get_theme_font_size(&"font_size")).x
 
 
+## Where the title's ink starts and ends from its pen's start at its size now (`GoStyle.ink_span`).
+func _title_ink() -> Vector2:
+	var font := title_label.get_theme_font(&"font")
+	if font == null: return Vector2.ZERO
+	return GoStyle.ink_span(title_label.atr(title_label.text), font, title_label.get_theme_font_size(&"font_size"))
+
+
+## 🔤 A title on a plate, with no glyph, centres its **ink** on the label, not its advance box. The Simplified Chinese
+## face draws a full-width ？ narrower than its advance, which left 装备这套造型？ several dp left of the ribbon's centre;
+## a Latin title's bearings are near even and it moves under a pixel. 🛑 A centred Label centres its words over its
+## whole width and ignores the face's side margins, so (as the glyph row in `_place_title_glyph` does) the words are
+## laid from the start side with the start margin set where centred ink begins. A title that does not fit one line,
+## or an empty one, goes back to the plate's own margins, centred.
+func _centre_title_ink() -> void:
+	if title_label == null or is_instance_valid(_title_glyph_rect) or not title_label.has_meta(&"go_plate_align"): return
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	if plate == null or plate.base == null: return
+	var left := plate.base.get_margin(SIDE_LEFT) + plate.glyph_room
+	var right := plate.base.get_margin(SIDE_RIGHT)
+	var width := title_label.size.x
+	var words := _title_words_width() if not title_label.text.is_empty() else 0.0
+	var align := HORIZONTAL_ALIGNMENT_CENTER
+	if words > 0.0 and words < width - left - right:
+		var rtl := title_label.is_inside_tree() and title_label.is_layout_rtl()
+		var ink := _title_ink()
+		# How far right the ink's middle must move to sit where the advance box's middle sits now.
+		var shift := (words - ink.x - ink.y) * 0.5
+		var start := roundf((width - words) * 0.5 + (-shift if rtl else shift))
+		if rtl: right = start
+		else: left = start
+		align = HORIZONTAL_ALIGNMENT_LEFT
+	var changed := not is_equal_approx(plate.content_margin_left, left) \
+			or not is_equal_approx(plate.content_margin_right, right) or title_label.horizontal_alignment != align
+	if not changed: return
+	plate.content_margin_left = left
+	plate.content_margin_right = right
+	title_label.horizontal_alignment = align
+	title_label.queue_redraw()
+
+
 ## Puts the glyph just before the title's words, on the start side (the right in a right-to-left layout) — centred
 ## with them on a plate, at the start otherwise. 🔑 A Label's LEFT alignment lays the words from the right edge in RTL,
 ## and a stylebox's margins do not mirror, so the room for the glyph is moved to the start side here.
@@ -1224,9 +1265,15 @@ func _place_title_glyph() -> void:
 		# The plate's ends as drawn — past the card's sides by the bleed — so the row centres on the plate one sees.
 		var base_left := _plate_end(plate, SIDE_LEFT)
 		var base_right := _plate_end(plate, SIDE_RIGHT)
-		var group := side + TITLE_GLYPH_GAP + _title_words_width()
+		var words := _title_words_width()
+		var group := side + TITLE_GLYPH_GAP + words
+		# 🔑 Centred on the ink: the glyph keeps its gap to the words' pen, and the empty bearing after the last
+		#    letter (a Simplified Chinese ？) is left out of the group, so the row reads centred on the ribbon.
+		var ink := _title_ink()
+		var trail := (words - ink.y) if not rtl else ink.x
 		var start := floorf((base_right if rtl else base_left) \
-				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)
+				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP \
+				+ (trail * 0.5 if group - trail < width - base_left - base_right else 0.0))
 		var want_left := base_left if rtl else start
 		var want_right := start if rtl else base_right
 		if not is_equal_approx(plate.content_margin_left, want_left): plate.content_margin_left = want_left
