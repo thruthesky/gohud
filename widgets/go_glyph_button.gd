@@ -87,7 +87,8 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ##    size too: condensed the same way, then trimmed (GoRewardRow's claim pill).
 ## 🔑 On a pill with a painted top gloss (`GoSkin.button_gloss_bottom`) a label whose accents would reach into it —
 ##    French ÉQUIPER, Polish ODRZUĆ, ZAŁÓŻ — moves down until its ink is under the gloss, its size kept; an unaccented
-##    label keeps its size and place (`_gloss_drop`).
+##    label keeps its size and place (`_gloss_drop`). Only a key too short to drop them that far steps down, by the
+##    least that clears them, and only that key (its row keeps its size).
 @export var fit_label := false:
 	set(value):
 		if fit_label == value: return
@@ -95,11 +96,15 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 		if not value: _drop_fit()
 		_queue_fit()
 
-## 🔤 With [member fit_label]: share the fit with the other `fit_with_row` keys of the same parent — one label size for
-## the row, the smallest any of them fits at. Each holds the width the row's longest label needs at the floor, so a
-## row that stretches them alike (`SIZE_EXPAND_FILL`) always gives them one width, and a window widens only when its
-## longest key needs it. `GoSurface.add_gloss` turns it on for a window's row of keys: Spanish CANCELAR stood
-## at 22 dp beside COMPRAR at 15.
+## 🔤 With [member fit_label]: share the fit with the other `fit_with_row` keys of the same parent. Each holds the
+## width the row's longest label needs at its full size (`base_width()`), so a row that stretches them alike
+## (`SIZE_EXPAND_FILL`) always gives them one width and every label its full size: the window widens for its longest
+## key (a `SCALE` window then shrinks as one piece when it outgrows the screen) instead of its labels shrinking. Only
+## when the row still cannot give them that room (a key held narrower by its parent) do they share one label size,
+## the smallest any of them fits at. Their labels stand on one baseline: an accented key's drop under the gloss
+## (`_gloss_drop`) moves its row's labels with it. `GoSurface.add_gloss` turns it on for a window's row of keys.
+## 🛑 Held only at the floor's width, the window widened just enough for its longest label at the floor, the fit
+##    landed there and its row shared it: German KAUFEN, Turkish İPTAL, Japanese 閉じる came out at 70 %.
 @export var fit_with_row := false:
 	set(value):
 		if fit_with_row == value: return
@@ -309,19 +314,24 @@ func _notification(what: int) -> void:
 ## With [member fit_label]: the label's size for the button as it is now — the room is its width less the normal face's
 ## minimum width and the look's clear pad (`GoSkin.button_fit_pad()`; or [member fit_padding]) and `glyph_allowance()`,
 ## as Magnet Mayhem's screens measured it; with [member fit_with_row], the smallest of its row's. Off: the size it is drawn at.
+## The row's share is the width's alone; the gloss then steps this key down by itself, if it must (`_gloss_size`).
 func fitted_font_size() -> int:
 	if not fit_label: return get_theme_font_size(&"font_size")
 	var fitted := own_fit_size()
 	for peer in _fit_peers():
 		if peer != self and peer.is_inside_tree() and peer.size.x > 0.0: fitted = mini(fitted, peer.own_fit_size())
-	return fitted
+	return _gloss_size(fitted)
 
 
-## The size this button's own label fits at, its row left out ([method fitted_font_size]): the widest that fits the
-## room, and no bigger than lets its accents clear the key's top gloss (`_gloss_drop`) — in practice the drop alone
-## clears them and the size stays; only a key too short to drop them far enough steps down, never under the floor.
+## The size this button's own label fits its width at, its row and the gloss left out ([method fitted_font_size]).
 func own_fit_size() -> int:
-	var fitted := GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
+	return GoStyle.fit_font_size(PackedStringArray([atr(text)]), _fit_base(), _fit_room(), _base_font())
+
+
+## [param from], or the largest size under it whose accents the drop can still clear the gloss at (`_gloss_drop`) —
+## in practice the drop alone clears them and the size stays; never under the floor.
+func _gloss_size(from: int) -> int:
+	var fitted := from
 	var floor_size := GoStyle.fit_floor(_fit_base())
 	while fitted > floor_size and _gloss_drop(fitted) < 0.0:
 		fitted -= 1
@@ -334,20 +344,52 @@ func own_fit_size() -> int:
 ## to drop it that far. 🛑 Measured on the normal face as the theme gives it, never on this button's wrapped one —
 ##    a drop read from the dropped face would undo itself.
 func _gloss_drop(font_size: int) -> float:
+	var need := _gloss_need(font_size)
+	if need.x <= 0.0: return 0.0
+	return need.x if need.x <= need.y else -1.0
+
+
+## The label at [param font_size] on the normal face as the theme gives it: x how far it must move down to clear the
+## gloss (0 or less: it is under it already, or the face has no gloss), y how far it can (its lowest ink, outline
+## included, to the face's bottom padding).
+func _gloss_need(font_size: int) -> Vector2:
 	var face := _theme_face()
 	var font := _base_font()
-	if face == null or font == null or text.is_empty() or size.y <= 0.0: return 0.0
+	if face == null or font == null or text.is_empty() or size.y <= 0.0: return Vector2.ZERO
 	var gloss := GoUi.skin().button_gloss_bottom(face, size.y)
-	if gloss <= 0.0: return 0.0
-	var top := face.get_margin(SIDE_TOP)
-	var bottom := face.get_margin(SIDE_BOTTOM)
-	var baseline := top + (size.y - top - bottom - font.get_height(font_size)) * 0.5 + font.get_ascent(font_size)
+	if gloss <= 0.0: return Vector2.ZERO
+	var baseline := _label_baseline(font_size)
 	var ink := GoStyle.ink_box(atr(text), font, font_size)
 	var reach := float(get_theme_constant(&"outline_size")) * OUTLINE_REACH
-	var need := ceilf(gloss - (baseline + ink.position.y - reach))
-	if need <= 0.0: return 0.0
-	var room := (size.y - bottom) - (baseline + ink.end.y + reach)
-	return need if need <= room else -1.0
+	return Vector2(ceilf(gloss - (baseline + ink.position.y - reach)),
+		(size.y - face.get_margin(SIDE_BOTTOM)) - (baseline + ink.end.y + reach))
+
+
+## Where the label's baseline sits at [param font_size] on the normal face as the theme gives it (Button centres the
+## line in the face's content height).
+func _label_baseline(font_size: int) -> float:
+	var face := _theme_face()
+	var font := _base_font()
+	if face == null or font == null: return 0.0
+	var top := face.get_margin(SIDE_TOP)
+	var bottom := face.get_margin(SIDE_BOTTOM)
+	return top + (size.y - top - bottom - font.get_height(font_size)) * 0.5 + font.get_ascent(font_size)
+
+
+## How far the label at [param font_size] moves down: as far as its own accents need (`_gloss_drop`), and with
+## [member fit_with_row] as far as it takes to stand on its row's lowest baseline, so the row reads as one line
+## (French ÉQUIPER sat 3 px under PLUS TARD) — never past its own room.
+func _row_drop(font_size: int) -> float:
+	var own := maxf(0.0, _gloss_drop(font_size))
+	var peers := _fit_peers()
+	if peers.size() < 2 or size.y <= 0.0: return own
+	var line := _label_baseline(font_size) + own
+	for peer in peers:
+		if peer == self or not peer.is_inside_tree() or peer.size.y <= 0.0: continue
+		var at := peer.fitted_font_size()
+		line = maxf(line, peer._label_baseline(at) + maxf(0.0, peer._gloss_drop(at)))
+	var room := _gloss_need(font_size).y if GoUi.skin().button_gloss_bottom(_theme_face(), size.y) > 0.0 else 0.0
+	return maxf(own, minf(line - _label_baseline(font_size), maxf(own, room)))
 
 
 ## The normal face as the theme gives it — under the `ShiftedBox` this button wraps it in.
@@ -407,13 +449,16 @@ func fit_now() -> void:
 	_fit_text = text
 	var wanted := fitted_font_size()
 	_hold_floor_width()
-	# 🔑 Every key of the row works the same size out from the same keys: one that differs is fitted again, and once
-	#    they agree nothing is queued (no ping-pong).
+	# 🔑 Every key of the row works its size and drop out from the same keys: one that differs is fitted again, and
+	#    once they agree nothing is queued (no ping-pong).
 	for peer in _fit_peers():
-		if peer != self and (peer._fitted != wanted or not is_equal_approx(peer._held_width, _held_width)):
+		if peer == self: continue
+		var at := peer.fitted_font_size()
+		if peer._fitted != at or not is_equal_approx(peer._held_width, _held_width) \
+				or not is_equal_approx(peer._drop, peer._row_drop(at)):
 			peer._queue_fit()
 	_condense(wanted)
-	var drop := maxf(0.0, _gloss_drop(wanted))
+	var drop := _row_drop(wanted)
 	if not is_equal_approx(drop, _drop):
 		_drop = drop
 		_update_shift()
@@ -427,13 +472,17 @@ func fit_now() -> void:
 func _hold_floor_width() -> void:
 	if not is_equal_approx(custom_minimum_size.x, _held_width): _asked_width = custom_minimum_size.x # the caller's
 	var need := 0.0
-	# 🔑 A row's keys hold the widest one's floor, so they stay one width even when a key's label and glyph need more
-	#    than its half (Spanish CANCELAR beside a coin and COMPRAR came out 256 and 269 dp wide).
+	# 🔑 A row's keys hold the widest one's full-size width (`base_width()`), so they stay one width even when a key's
+	#    label and glyph need more than its half (Spanish CANCELAR beside a coin and COMPRAR came out 256 and 269 dp
+	#    wide), and no label shrinks for want of a window wide enough.
 	# 🔑 A label the caller lets trim (`text_overrun_behavior` or `clip_text`) ends in an ellipsis in the width it
 	#    was given instead: GoRewardRow's claim pill is a fixed slot (ABHOLEN UND SOFORT BEHALTEN held it 373 dp wide
 	#    in a 336 dp row).
 	if get_parent() is Container and not _trims_label():
-		for peer in _fit_peers(): need = maxf(need, peer.floor_width())
+		if fit_with_row:
+			for peer in _fit_peers(): need = maxf(need, peer.base_width())
+		else:
+			need = floor_width()
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
@@ -491,9 +540,19 @@ func _drop_condense() -> void:
 
 ## The width this button's label needs at the fit floor beside its glyph, inside its padding (0: no fit, no text).
 func floor_width() -> float:
+	return _width_at(GoStyle.fit_floor(_fit_base()))
+
+
+## The width this button's label needs at its full size (the size the fit starts from) beside its glyph, inside its
+## padding (0: no fit, no text) — what a `fit_with_row` key holds (see [member fit_with_row]).
+func base_width() -> float:
+	return _width_at(_fit_base())
+
+
+func _width_at(font_size: int) -> float:
 	var font := _base_font()
 	if not fit_label or font == null or text.is_empty(): return 0.0
-	return ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
+	return ceilf(font.get_string_size(atr(text), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 			+ _fit_padding_now() + glyph_allowance(_fit_tall()))
 
 

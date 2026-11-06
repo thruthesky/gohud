@@ -45,6 +45,7 @@ func _initialize() -> void:
 		await _title_hold_steady(look)
 		await _key_row_fit(look)
 		await _key_gloss(look)
+		await _key_row_full(look)
 		await _small_key_fit(look)
 		await _balanced_lines(look)
 		await _popover_card(look)
@@ -1798,6 +1799,56 @@ func _key_row_fit(look: StringName) -> void:
 			check(words + face + 2.0 * pad + key.glyph_allowance() <= key.size.x + 0.5,
 				"%s: %s keeps the pad from its key's ends (%.1f + %.1f in %.1f)" % [tag, key.text, words, face + 2.0 * pad
 					+ key.glyph_allowance(), key.size.x])
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		view.queue_free()
+		await frames(1)
+
+
+## A window's row of fit keys widens the window rather than shrinking its labels: a short label beside a long one
+## (German KAUFEN beside ABBRECHEN, Turkish İPTAL, Japanese 閉じる beside コインを集める) is as big as an English one,
+## and the row's labels stand on one baseline even when only one of them drops its accents under the gloss (French
+## ÉQUIPER sat 3 px under PLUS TARD). 🛑 Held at the floor's width, the window widened just enough for the longest
+## label at the floor and the whole row came out at 70 %.
+func _key_row_full(look: StringName) -> void:
+	for texts: Array in [["CANCEL", "+BUY"], ["ABBRECHEN", "+KAUFEN"], ["İPTAL", "+SATIN AL"], ["SPÄTER", "+ANLEGEN"],
+			["SCHLIESSEN", "+MÜNZEN VERDIENEN"], ["PLUS TARD", "+ÉQUIPER"], ["PÓŹNIEJ", "+ZAŁÓŻ"],
+			["閉じる", "+コインを集める"], ["СБРОСИТЬ", "+НАДЕТЬ"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			var glyph: StringName = GoIconSet.CHECK if text.begins_with("+") else &""
+			var variation: StringName = GoTheme.VAR_PRIMARY_BUTTON if text.begins_with("+") else &"GoInfoButton"
+			var key := surface.add_gloss(variation, glyph, text.trim_prefix("+"), row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(6)
+		var tag := "%s full key row %s" % [look, " | ".join(texts)]
+		var lines: Array[float] = []
+		for key in keys:
+			var base := GoUi.theme().get_font_size(&"font_size", key.theme_type_variation)
+			var at := key.get_theme_font_size(&"font_size")
+			check(at == base, "%s: %s at the look's size (%d, want %d)" % [tag, key.text, at, base])
+			# Where Button draws the baseline: centred in the live face's content height.
+			var face := key.get_theme_stylebox(&"normal")
+			var font := key.get_theme_font(&"font")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			lines.append(top + (key.size.y - top - bottom - font.get_height(at)) * 0.5 + font.get_ascent(at))
+		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		check(absf(lines[0] - lines[1]) <= 0.01, "%s: one baseline (%.2f, %.2f)" % [tag, lines[0], lines[1]])
+		if look != GoThemePresets.ARCADE_LIGHT or texts[0] in ["CANCEL", "ABBRECHEN"]:
+			check(keys.all(func(key: GoGlyphButton) -> bool: return key._drop == 0.0),
+				"%s: no accent, no gloss: nothing moves" % tag)
+		check(surface.card.size.x >= 400.0 - 0.5, "%s: the window keeps at least the look's width (%.0f)" % [tag, surface.card.size.x])
 		await frames(3)
 		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
 		view.queue_free()
