@@ -530,6 +530,8 @@ var _holds_back := false
 var _warned_height_cap := false
 ## Said once: the content was wider than the card could be (`_warn_too_wide`).
 var _warned_width := false
+## `free_width` per control (instance id), as last read at the normal padding.
+var _free_widths := {}
 ## 🔑 Something the layout reads has changed since the last `relayout()` — a section's minimum size or visibility, or a
 ##    layout field above. A `fit_content` surface re-measures on the next frame **only then**.
 ## 🛑 It used to re-measure **every frame** while open: 50–220 µs a frame on a desktop CPU for the 23-row Laryen Guide
@@ -694,6 +696,11 @@ func _ready() -> void:
 		_column.move_child(scroll, slot)
 		body.reparent(scroll)
 		scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+		# 🔑 The scroll's edge is the section the column now holds: its scrollbar coming and going changes the card's
+		#    width without the body's minimum changing (a row of fit keys narrowing under it left the card 18 dp wide).
+		var edge := _column.get_child(slot) as Control
+		if edge != null and edge != body and not edge.minimum_size_changed.is_connected(_mark_layout_dirty):
+			edge.minimum_size_changed.connect(_mark_layout_dirty)
 		# 🔑 The body clips only while it scrolls. A body that fits has nothing to clip, and the clip would cut a
 		#    part's antialiased rim on a half pixel (the painted inset's top edge at 1.5x) the game's column never cuts.
 		scroll.sort_children.connect(_sync_body_clip)
@@ -895,15 +902,50 @@ func _title_free_width() -> float:
 	var held := title_label.custom_minimum_size.x
 	if fit_mode != FitMode.SCALE or card == null or held <= title_width + 0.5: return width
 	if title_width > 0.0: return title_width
-	var look_width := GoUi.skin().window_width()
-	var base := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
-	base = maxf(base, card.custom_minimum_size.x)
+	var base := standard_width()
 	var others := 0.0
 	for section in _column.get_children():
 		if section != header and section is Control and (section as Control).visible:
 			others = maxf(others, (section as Control).get_combined_minimum_size().x)
 	base = maxf(base, others + card.size.x - _column.size.x)
 	return clampf(width - maxf(0.0, card.size.x - base), 0.0, width)
+
+
+## The card's standard width (dp): [member max_width], else the look's window width (`GoSkin.window_width()`), else
+## `GoConfig.surface_max_width` — never under the card's own least width. What its content widens it past is excess.
+func standard_width() -> float:
+	var look_width := GoUi.skin().window_width()
+	var base := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	return maxf(base, card.custom_minimum_size.x if card != null else 0.0)
+
+
+## The width [param control] (inside the card) has with the card no wider than its [method standard_width] or its other
+## content needs: its width now, less what the card is wider than that. A row of fit keys holds no more
+## (`GoGlyphButton.fit_with_row`), so a long translation shrinks its labels instead of widening the window — and a card
+## its content widened still gives its keys that width. 0 or less: the card is not laid out yet.
+func free_width(control: Control) -> float:
+	if card == null or card.size.x <= 0.0 or control == null or not card.is_ancestor_of(control): return 0.0
+	var base := standard_width()
+	# What the content beside it needs: each stacked sibling on the way up to the card, with the frame around it.
+	var node: Control = control
+	while node != card and node.get_parent() is Control:
+		var parent := node.get_parent() as Control
+		var stacked := not (parent is BoxContainer and not (parent as BoxContainer).vertical) and not parent is GridContainer
+		if stacked:
+			for sibling in parent.get_children():
+				var other := sibling as Control
+				if other == null or other == node or not other.visible or other.top_level: continue
+				base = maxf(base, other.get_combined_minimum_size().x + card.size.x - parent.size.x)
+		node = parent
+	var free := control.size.x - maxf(0.0, card.size.x - base)
+	# 🔑 Read at the normal padding. The dense step (`_update_density`) narrows the padding when the content is too
+	#    wide, which widened the row, which raised the keys' hold, which made the content too wide again: default_dark's
+	#    Japanese key row climbed 178 → 189 dp and fell back every frame. While the card is dense only for its width,
+	#    the width last read at the normal padding stands. A window always dense (compact, a short screen) never toggles.
+	var id := control.get_instance_id()
+	if _dense and not _always_dense() and _free_widths.has(id): return _free_widths[id]
+	if not _dense: _free_widths[id] = free
+	return free
 
 
 ## The widest line the title label wraps at, [param width] wide, with no centring slack in its margins.
@@ -1892,13 +1934,18 @@ func _warn_too_wide(width: float) -> void:
 ##    function of (width, room, content). The old slack rule (return to normal density only below 0.85·room) could not stop this: dense
 ##    content ≤ 0.85·room while roomy content > room alternates forever.
 func _update_density(room := 0.0, width := 0.0) -> void:
-	var small := compact or get_viewport_rect().size.y < 420
+	var small := _always_dense()
 	if not small and (room > 0.0 or width > 0.0):
 		_apply_density(false, width)
 		small = (room > 0.0 and _desired_height() > room) or _too_wide(width)
 	_apply_density(small, width)
 	# Still wider at the dense step: the segmented rows take their small cells (`GoStyle.tighten_segmented`), then measure again.
 	if _too_wide(width) and _tighten_segments(): _apply_density(small, width)
+
+
+## Dense whatever its content: [member compact], or a screen under 420 dp tall.
+func _always_dense() -> bool:
+	return compact or get_viewport_rect().size.y < 420
 
 
 ## 📏 Is the content wider than the card's [param width] (0: not asked)? A wrapping label's minimum is its longest word,

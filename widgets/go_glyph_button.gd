@@ -103,6 +103,9 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ## when the row still cannot give them that room (a key held narrower by its parent) do they share one label size,
 ## the smallest any of them fits at. Their labels stand on one baseline: an accented key's drop under the gloss
 ## (`_gloss_drop`) moves its row's labels with it. `GoSurface.add_gloss` turns it on for a window's row of keys.
+## In a `GoSurface`, the hold never passes the key's share of the card's standard width (`GoSurface.free_width`):
+## a long translation shrinks the row's labels (Latin condenses first, `condensed_floor_width()`) before it widens the
+## window, and only a label too long even at the floor widens it (German SCHLIESSEN / MÜNZEN VERDIENEN: 14 % wider).
 ## 🛑 Held only at the floor's width, the window widened just enough for its longest label at the floor, the fit
 ##    landed there and its row shared it: German KAUFEN, Turkish İPTAL, Japanese 閉じる came out at 70 %.
 @export var fit_with_row := false:
@@ -480,12 +483,47 @@ func _hold_floor_width() -> void:
 	#    in a 336 dp row).
 	if get_parent() is Container and not _trims_label():
 		if fit_with_row:
-			for peer in _fit_peers(): need = maxf(need, peer.base_width())
+			var share := _row_share()
+			var least := 0.0
+			for peer in _fit_peers():
+				need = maxf(need, peer.base_width())
+				least = maxf(least, peer.condensed_floor_width() if share > 0.0 else peer.floor_width())
+			# 🔑 …but never past the row's share of its window's standard width (`GoSurface.free_width`): there the
+			#    labels shrink (to one size, `fitted_font_size`), then condense (`_condense`), instead — German
+			#    MÜNZEN VERDIENEN beside a coin held both keys 309 dp and the card 628 dp, far wider than every other
+			#    language. Only a label too long even condensed at the floor widens the window, by that much.
+			if share > 0.0: need = maxf(least, minf(need, share))
 		else:
 			need = floor_width()
 	var want := maxf(_asked_width, need)
 	_held_width = want
 	if not is_equal_approx(custom_minimum_size.x, want): custom_minimum_size.x = want
+
+
+## The width each `fit_with_row` key of this row has with its window (the nearest `GoSurface`) at its standard width:
+## the row's free width (`GoSurface.free_width`) less its gaps and its other content, split evenly. 0: no window, or not laid out yet.
+func _row_share() -> float:
+	var row := get_parent() as Container
+	var surface: GoSurface = null
+	var node := get_parent()
+	while node != null and surface == null:
+		surface = node as GoSurface
+		node = node.get_parent()
+	if row == null or surface == null: return 0.0
+	var free := surface.free_width(row)
+	if free <= 0.0: return 0.0
+	var keys := 0
+	var shown := 0
+	for child in row.get_children():
+		var control := child as Control
+		if control == null or not control.visible: continue
+		shown += 1
+		var key := control as GoGlyphButton
+		if key != null and key.fit_label and key.fit_with_row: keys += 1
+		else: free -= control.get_combined_minimum_size().x # a row's other content keeps its own width
+	if keys == 0: return 0.0
+	var gap := float(row.get_theme_constant(&"separation")) if row is BoxContainer else 0.0
+	return floorf((free - gap * maxf(0.0, shown - 1)) / keys)
 
 
 ## The caller lets the label trim (an ellipsis, or clipped) instead of widening the button.
@@ -541,6 +579,27 @@ func _drop_condense() -> void:
 ## The width this button's label needs at the fit floor beside its glyph, inside its padding (0: no fit, no text).
 func floor_width() -> float:
 	return _width_at(GoStyle.fit_floor(_fit_base()))
+
+
+## The width this button's label needs at the fit floor condensed as far as `_condense` goes
+## (`GoConfig.fit_condense_min`), beside its glyph, inside its padding — the least a window's row key is held at.
+## 🛑 A label any of whose characters a fallback draws (Japanese コインを集める) is the floor's width: the condensing
+##    FontVariation's spacing and transform reach its own face only, never a fallback (as `variation_embolden`).
+func condensed_floor_width() -> float:
+	var font := _base_font()
+	if not fit_label or font == null or text.is_empty(): return 0.0
+	var label := atr(text)
+	var rids := font.get_rids()
+	if rids.is_empty(): return floor_width()
+	var ts := TextServerManager.get_primary_interface()
+	for i in label.length():
+		var code := label.unicode_at(i)
+		if code > 32 and not ts.font_has_char(rids[0], code): return floor_width()
+	var wide := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, GoStyle.fit_floor(_fit_base())).x
+	var gaps := label.length() - 1
+	# The advances close up by whole pixels, as far as `_condense` takes them.
+	var step := floori(wide * (1.0 - GoUi.config.fit_condense_min) / gaps) if gaps > 0 else 0
+	return ceilf(wide - step * gaps + _fit_padding_now() + glyph_allowance(_fit_tall()))
 
 
 ## The width this button's label needs at its full size (the size the fit starts from) beside its glyph, inside its
