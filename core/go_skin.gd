@@ -1258,6 +1258,12 @@ func button_gloss_bottom(_face: StyleBox, _height: float) -> float:
 	return 0.0
 
 
+## How far down from a title plate's top edge its painted gloss reaches (dp), on [param face] drawn [param height]
+## tall — a window's title on it keeps its ink, accents included, under it (Russian ТЕПЕРЬ ТВОЁ!). 0: no gloss.
+func title_plate_gloss_bottom(_face: StyleBox, _height: float) -> float:
+	return 0.0
+
+
 ## The clear room a title on a plate keeps from each of the plate's ends (dp): it shrinks (or the `SCALE` card widens)
 ## before its words reach the plate's rounded ends.
 func title_plate_pad() -> float:

@@ -45,6 +45,7 @@ func _initialize() -> void:
 		await _title_hold_steady(look)
 		await _key_row_fit(look)
 		await _key_gloss(look)
+		await _title_gloss(look)
 		await _key_row_full(look)
 		await _small_key_fit(look)
 		await _balanced_lines(look)
@@ -1732,6 +1733,69 @@ func _key_gloss(look: StringName) -> void:
 			else:
 				check(top > theme_face.get_margin(SIDE_TOP), "%s: the accented label moved down (top margin %.1f)" % [tag, top])
 			check(size == sizes["DISCARD"], "%s: at the unaccented key's size (%d, DISCARD %d)" % [tag, size, sizes["DISCARD"]])
+			surface.queue_free()
+			await frames(1)
+
+
+## A window's title on a painted ribbon keeps its ink, accents included, under the ribbon's light top band: Russian
+## ТЕПЕРЬ ТВОЁ!'s Ё crossed it. The words move down, their size kept, as far as the room under their lowest ink allows
+## (ÉQUIPER ?'s Q holds it 1 dp short); an unaccented title keeps its place.
+func _title_gloss(look: StringName) -> void:
+	for variation: StringName in [&"", &"GoRibbonRed"]:
+		var sizes := {}
+		for words: String in ["NOW YOURS!", "ТЕПЕРЬ ТВОЁ!", "ÉQUIPER ?", "ZAŁÓŻ"]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.title_variation = variation
+			surface.set_title(words)
+			root.add_child(surface)
+			surface.add_line("Body")
+			await frames(5)
+			var tag := "%s title gloss %s %s" % [look, variation, words]
+			var label := surface.title_label
+			var plate := label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+			var base: StyleBox = plate.base if plate != null else null
+			var gloss := GoUi.skin().title_plate_gloss_bottom(base, label.size.y + (plate.sink if plate != null else 0.0))
+			var sprite := base as GoStyleBoxSprite
+			if look != GoThemePresets.ARCADE_LIGHT or sprite == null:
+				check(gloss == 0.0, "%s: a look without a painted ribbon has no gloss (%.1f)" % [tag, gloss])
+				check(plate == null or plate.drop == 0.0, "%s: and the title is never moved" % tag)
+				surface.queue_free()
+				await frames(1)
+				continue
+			# The band, read from the art: the last row of the top edge slice where the light falls sharply to the face.
+			var art := sprite.texture.get_image()
+			if art.is_compressed(): art.decompress()
+			var x := art.get_width() / 2
+			var last := -1
+			for y in int(sprite.edge.y) - 1:
+				if art.get_pixel(x, y).get_luminance() - art.get_pixel(x, y + 1).get_luminance() > 0.05: last = y
+			var measured := float(last + 1) / sprite.pixels_per_unit
+			check(last > 0 and absf(gloss - measured) <= 0.01,
+				"%s: the skin's band line (%.2f dp) is the art's (to row %d, %.2f dp)" % [tag, gloss, last, measured])
+			var font := label.get_theme_font(&"font")
+			var size := label.get_theme_font_size(&"font_size")
+			var top := plate.get_margin(SIDE_TOP)
+			var bottom := plate.get_margin(SIDE_BOTTOM)
+			var baseline := top + (label.size.y - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+			var ink := _outline_box(label.atr(words), font, size)
+			var reach := label.get_theme_constant(&"outline_size") * 0.25
+			var ink_top := baseline + ink.position.y - reach
+			var ink_bottom := baseline + ink.end.y + reach
+			sizes[words] = size
+			# The room's end: the plate's own bottom padding (less its sink), where the drop takes its room from.
+			var room_end := label.size.y - (base.get_margin(SIDE_BOTTOM) - plate.sink)
+			var at_room := ink_bottom > room_end - 1.0
+			check(ink_top >= gloss - 0.01 or at_room,
+				"%s: the ink's top %.2f is under the band %.2f, or its bottom %.2f at the room's end" % [tag, ink_top, gloss, ink_bottom])
+			if words == "ТЕПЕРЬ ТВОЁ!": check(ink_top >= gloss - 0.01, "%s: the Ё is under the band (%.2f, %.2f)" % [tag, ink_top, gloss])
+			check(ink_bottom <= room_end + 0.01 or plate.drop == 0.0,
+				"%s: and its bottom %.2f inside the plate's bottom padding (%.2f)" % [tag, ink_bottom, room_end])
+			if words == "NOW YOURS!":
+				check(plate.drop == 0.0, "%s: an unaccented title keeps its place (drop %.1f)" % [tag, plate.drop])
+			check(size == sizes["NOW YOURS!"], "%s: at the unaccented title's size (%d, NOW YOURS! %d)" % [tag, size, sizes["NOW YOURS!"]])
+			check(plate.drop <= maxf(0.0, ceilf(gloss - (baseline - plate.drop + ink.position.y - reach))) + 0.01,
+				"%s: moved no further than the band needs (drop %.1f)" % [tag, plate.drop])
 			surface.queue_free()
 			await frames(1)
 

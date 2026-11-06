@@ -884,7 +884,9 @@ func _fit_title_size() -> void:
 	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != fitted:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
-	if over != null: _sink_plate(over, font, fitted)
+	if over != null:
+		_sink_plate(over, font, fitted)
+		_drop_plate_title(over, _title_gloss_drop(over, font, fitted))
 	var wide := title_width
 	if fit_mode == FitMode.SCALE:
 		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + label_width - room))
@@ -1006,9 +1008,45 @@ func _sink_plate(plate: OverhangPlate, font: Font, size: int) -> void:
 		sink = maxf(0.0, plate.base.get_margin(SIDE_TOP) + plate.base.get_margin(SIDE_BOTTOM) + font.get_height(size) - tall)
 	if not is_equal_approx(plate.sink, sink):
 		plate.sink = sink
-		plate.content_margin_bottom = (plate.base.get_margin(SIDE_BOTTOM) if plate.base != null else 0.0) - sink
+		plate.place_words()
 		title_label.update_minimum_size()
 		title_label.queue_redraw()
+
+
+## 🔤 How far the title at [param size] moves down so its ink — accents and outline included — stays under the plate's
+## painted top gloss (`GoSkin.title_plate_gloss_bottom`): 0 for a title already under it (an unaccented one keeps its
+## place), and never further than its lowest ink has room above the plate's bottom padding. Russian ТЕПЕРЬ ТВОЁ!'s Ё
+## crossed the gold ribbon's light top edge (1 dp). 🔑 The title keeps its size: a key steps its label down when the
+## drop has no room, but a title with an accent and a descender (French ÉQUIPER ?) would fall from 34 to 28 dp for
+## 2 dp of band — it goes as far as its room allows instead.
+## 🛑 Read at the plate's own margins, never the dropped ones — a drop read from itself would undo itself.
+func _title_gloss_drop(plate: OverhangPlate, font: Font, size: int) -> float:
+	var tall := title_label.size.y
+	if plate.base == null or font == null or tall <= 0.0 or title_label.text.is_empty(): return 0.0
+	var gloss := GoUi.skin().title_plate_gloss_bottom(plate.base, tall + plate.sink)
+	if gloss <= 0.0: return 0.0
+	var top := plate.base.get_margin(SIDE_TOP)
+	var bottom := plate.base.get_margin(SIDE_BOTTOM) - plate.sink
+	var baseline := top + (tall - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+	var ink := GoStyle.ink_box(title_label.atr(title_label.text), font, size)
+	var reach := float(title_label.get_theme_constant(&"outline_size")) * GoGlyphButton.OUTLINE_REACH
+	var need := ceilf(gloss - (baseline + ink.position.y - reach))
+	if need <= 0.0: return 0.0
+	var room := floorf((tall - bottom) - (baseline + ink.end.y + reach))
+	return clampf(need, 0.0, maxf(room, 0.0))
+
+
+## Moves the plate title's words [param drop] dp down: that much of its bottom padding goes to the top.
+func _drop_plate_title(plate: OverhangPlate, drop: float) -> void:
+	if is_equal_approx(plate.drop, drop): return
+	plate.drop = drop
+	# 🛑 Each margin set resizes the label, and `resized` fits the title again — between the two sets, at a height the
+	#    drop does not hold: guarded as `_fit_title_size` guards its own size steps.
+	_sizing_title = true
+	plate.place_words()
+	_sizing_title = false
+	title_label.queue_redraw()
+	_place_title_glyph()
 
 
 ## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
@@ -1102,6 +1140,8 @@ class OverhangPlate:
 	var glyph_room := 0.0
 	## How far the plate is drawn below the label (dp) — a title taller than a fixed-height plate.
 	var sink := 0.0
+	## How far the words sit lower than the plate's own padding puts them (dp): accents kept under its gloss.
+	var drop := 0.0
 
 	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
 		base = from
@@ -1117,6 +1157,12 @@ class OverhangPlate:
 
 	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, sink))
+
+	## The top and bottom padding from the base's, the sink and the drop (their sum unchanged by the drop).
+	func place_words() -> void:
+		if base == null: return
+		content_margin_top = base.get_margin(SIDE_TOP) + drop
+		content_margin_bottom = base.get_margin(SIDE_BOTTOM) - sink - drop
 
 
 ## The side of the title glyph (dp): `title_glyph_size`, or the game's 26 dp beside a 34 dp title scaled to the title's

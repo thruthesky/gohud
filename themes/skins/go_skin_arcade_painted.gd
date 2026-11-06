@@ -828,6 +828,25 @@ func button_gloss_bottom(face: StyleBox, height: float) -> float:
 	return minf(KEY_GLOSS_BOTTOM_PX / sprite.pixels_per_unit, top) * squeeze
 
 
+## The light band across the top of the painted ribbons ends at this texture row: down the stretched middle columns
+## (100–134 of 234) of `ribbon_gold.png` the pale gloss runs from row 20 to row 30 and the gold face starts at row 31;
+## on `ribbon_red.png` it runs from row 15 to 26, row 26 half lit (measured 2026-11-06) — 9.1 and 7.9 dp down the 57 dp
+## ribbon.
+const RIBBON_GLOSS_BOTTOM_PX := {"ribbon_gold.png": 31.0, "ribbon_red.png": 27.0}
+
+
+## The ribbons' light band (`RIBBON_GLOSS_BOTTOM_PX`), scaled as the face's top edge is drawn. Other plates: 0.
+func title_plate_gloss_bottom(face: StyleBox, height: float) -> float:
+	var sprite := face as GoStyleBoxSprite
+	if sprite == null or sprite.texture == null: return 0.0
+	var row: float = RIBBON_GLOSS_BOTTOM_PX.get(sprite.texture.resource_path.get_file(), 0.0)
+	if row <= 0.0: return 0.0
+	var top := sprite.edge.y / sprite.pixels_per_unit
+	var ends := top + sprite.edge.w / sprite.pixels_per_unit
+	var squeeze := minf(1.0, height / ends) if ends > 0.0 else 1.0
+	return minf(row / sprite.pixels_per_unit, top) * squeeze
+
+
 ## The game's `FitBox`: a card fitted to the screen keeps 8 dp off the safe area, ribbon and magnet included
 ## (`Cfg.Ui.WINDOW_FIT_PAD`), and its list keeps 96 dp before the card shrinks below the fit floor
 ## (`Cfg.Ui.FLEX_MIN_HEIGHT`).
