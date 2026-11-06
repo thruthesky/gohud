@@ -334,9 +334,20 @@ func _fit_peers() -> Array[GoGlyphButton]:
 	return peers
 
 
-## The width the label never takes: [member fit_padding], else the normal face's padding and the look's pad each side.
+## The width the label never takes: [member fit_padding], else the normal face's padding and the clear pad each side.
 func _fit_padding_now() -> float:
-	return _face_width() + 2.0 * GoUi.skin().button_fit_pad() if fit_padding < 0.0 else fit_padding
+	return _face_width() + 2.0 * fit_clear_pad() if fit_padding < 0.0 else fit_padding
+
+
+## The clear room a fitted label keeps inside the face's padding on each side (dp): the look's `GoSkin.button_fit_pad()`
+## at its window key height (`GoSkin.window_button_height()`), less half of how much shorter this key is — the face's
+## padding is fixed while a shorter key's rounded ends are narrower, so they are clear sooner. 🔑 A 28 dp lobby chip
+## (EASY / NORMAL / HARD, 90 dp) needs none: the 46 dp key's 6 dp shrank it to 10 dp and held it 100 dp wide.
+func fit_clear_pad() -> float:
+	var pad := GoUi.skin().button_fit_pad()
+	var key := GoUi.skin().window_button_height()
+	if pad <= 0.0 or key <= 0.0: return pad
+	return maxf(0.0, pad - maxf(0.0, key - _fit_tall()) * 0.5)
 
 
 ## Fits the label now instead of on the next frame (a test, or a screen measuring itself right after a change).

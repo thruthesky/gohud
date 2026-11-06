@@ -43,6 +43,7 @@ func _initialize() -> void:
 		await _title_before_widen(look)
 		await _title_hold_steady(look)
 		await _key_row_fit(look)
+		await _small_key_fit(look)
 		await _balanced_lines(look)
 		await _popover_card(look)
 		await _os_back(look)
@@ -1652,6 +1653,46 @@ func _key_row_fit(look: StringName) -> void:
 					+ key.glyph_allowance(), key.size.x])
 		await frames(3)
 		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		view.queue_free()
+		await frames(1)
+
+
+## A small fixed key (a lobby room row's 90 x 28 EASY / NORMAL / HARD chip, beside its count in a row) keeps its base
+## size and its width: the clear pad is the look's at its window key height and shrinks with a shorter key's ends — the
+## 46 dp key's 6 dp shrank NORMAL to 10 dp and held the chip 100 dp wide.
+func _small_key_fit(look: StringName) -> void:
+	var pad := GoUi.skin().button_fit_pad()
+	for text: String in ["EASY", "NORMAL", "HARD"]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var row := HBoxContainer.new()
+		row.theme = GoUi.theme()
+		view.add_child(row)
+		var chip := GoGlyphButton.make(text, &"", GoTheme.VAR_PRIMARY_BUTTON)
+		chip.custom_minimum_size = Vector2(90, 28)
+		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		chip.fit_label = true
+		chip.fit_base_size = 14
+		row.add_child(chip)
+		var count := Label.new()
+		count.text = "2 / 6"
+		row.add_child(count)
+		await frames(3)
+		chip.fit_now()
+		var tag := "%s small key %s" % [look, text]
+		check(not chip.fit_with_row, "%s: a row of its own, not a window's keys" % tag)
+		check(chip.fit_clear_pad() < pad or pad <= 0.0, "%s: a shorter key keeps a smaller pad (%.1f of %.1f)" % [tag,
+			chip.fit_clear_pad(), pad])
+		check(chip.fitted_font_size() == 14, "%s: at its base size (%d)" % [tag, chip.fitted_font_size()])
+		check(chip.custom_minimum_size == Vector2(90, 28), "%s: keeps its size (%s)" % [tag, chip.custom_minimum_size])
+		var key := GoGlyphButton.make(text, &"", GoTheme.VAR_PRIMARY_BUTTON)
+		key.custom_minimum_size.y = GoUi.skin().window_button_height()
+		key.fit_label = true
+		row.add_child(key)
+		await frames(1)
+		check(is_equal_approx(key.fit_clear_pad(), pad), "%s: a window-height key keeps the look's pad (%.1f)" % [tag,
+			key.fit_clear_pad()])
 		view.queue_free()
 		await frames(1)
 
