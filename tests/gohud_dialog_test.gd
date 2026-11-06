@@ -1855,8 +1855,8 @@ func _key_row_fit(look: StringName) -> void:
 				return "%d" % key.get_theme_font_size(&"font_size")))])
 		check(at == smallest, "%s: the smallest any key fits at (%d, want %d)" % [tag, at, smallest])
 		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
-		# Never narrower than its label condensed at the floor: a window's row is held to its share of the window's width.
-		check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.condensed_floor_width() - 0.5),
+		# Never narrower than its label at the floor: a window's row is held to its share of the window's width.
+		check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.floor_width() - 0.5),
 			"%s: each key as wide as its label needs (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
 		for key in keys:
 			var face := key.get_theme_stylebox(&"normal").get_minimum_size().x
@@ -1878,7 +1878,8 @@ func _key_row_fit(look: StringName) -> void:
 func _key_row_full(look: StringName) -> void:
 	for texts: Array in [["CANCEL", "+BUY"], ["ABBRECHEN", "+KAUFEN"], ["İPTAL", "+SATIN AL"], ["SPÄTER", "+ANLEGEN"],
 			["SCHLIESSEN", "+MÜNZEN VERDIENEN"], ["PLUS TARD", "+ÉQUIPER"], ["PÓŹNIEJ", "+ZAŁÓŻ"],
-			["閉じる", "+コインを集める"], ["СБРОСИТЬ", "+НАДЕТЬ"]]:
+			["閉じる", "+コインを集める"], ["СБРОСИТЬ", "+НАДЕТЬ"], ["CERRAR", "+GANAR MONEDAS"],
+			["FERMER", "+GAGNER DES PIÈCES"], ["CANCELAR", "+COMPRAR"], ["FERMER", "+OK"]]:
 		var view := SubViewport.new()
 		view.size = Vector2i(1280, 720)
 		root.add_child(view)
@@ -1900,10 +1901,18 @@ func _key_row_full(look: StringName) -> void:
 		var lines: Array[float] = []
 		# A row whose full-size labels fit the window's standard width keeps them at full size; one that does not
 		# (German MÜNZEN VERDIENEN beside a coin) shares one smaller size, never under the floor.
-		var full := keys.all(func(key: GoGlyphButton) -> bool: return key.base_width() <= key.size.x + 0.5)
+		# Full when every key's full-size label fits its share of the window's standard width (two short labels).
+		var share := keys[0]._row_share()
+		var full := keys.all(func(key: GoGlyphButton) -> bool: return key.base_width() <= share + 0.5)
+		check(share > 0.0, "%s: a window's row has a share (%.0f)" % [tag, share])
 		var sizes := keys.map(func(key: GoGlyphButton) -> int: return key.get_theme_font_size(&"font_size"))
-		if not full:
-			check(sizes.min() == sizes.max(), "%s: a row too long for the window shares one size (%s)" % [tag, sizes])
+		check(sizes.min() == sizes.max(), "%s: a row shares one size (%s)" % [tag, sizes])
+		# 🛑 Never condensed: no fit key draws its label narrower or closes up its letters (GANARMONEDAS).
+		for key in keys:
+			var drawn := key.get_theme_font(&"font") as FontVariation
+			var scale_x := drawn.variation_transform.x.x if drawn != null else 1.0
+			var spacing := drawn.spacing_glyph if drawn != null else 0
+			check(scale_x >= 1.0 and spacing >= 0, "%s: %s is never condensed (x%.2f, spacing %d)" % [tag, key.text, scale_x, spacing])
 		for key in keys:
 			var base := GoUi.theme().get_font_size(&"font_size", key.theme_type_variation)
 			var at := key.get_theme_font_size(&"font_size")
@@ -1913,7 +1922,7 @@ func _key_row_full(look: StringName) -> void:
 				check(at >= GoStyle.fit_floor(base) and at < base, "%s: %s shrinks, never under the floor (%d of %d)" % [
 					tag, key.text, at, base])
 				var ink := key.get_theme_font(&"font").get_string_size(key.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
-				check(ink <= key._fit_room() + 1.0, "%s: %s fits its face, condensed if it must (%.0f in %.0f)" % [
+				check(ink <= key._fit_room() + 1.0, "%s: %s fits its face (%.0f in %.0f)" % [
 					tag, key.text, ink, key._fit_room()])
 			# Where Button draws the baseline: centred in the live face's content height.
 			var face := key.get_theme_stylebox(&"normal")
@@ -1929,7 +1938,7 @@ func _key_row_full(look: StringName) -> void:
 		check(surface.card.size.x >= 400.0 - 0.5, "%s: the window keeps at least the look's width (%.0f)" % [tag, surface.card.size.x])
 		await frames(3)
 		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
-		var least := keys.reduce(func(most: float, key: GoGlyphButton) -> float: return maxf(most, key.condensed_floor_width()), 0.0)
+		var least := keys.reduce(func(most: float, key: GoGlyphButton) -> float: return maxf(most, key.floor_width()), 0.0)
 		check(surface.card.size.x <= 400.0 + 0.5 or absf(keys[0].size.x - least) <= 1.0,
 			"%s: the keys never widen the window past its width, the floor permitting (%.0f; keys %.0f, least %.0f)" % [
 				tag, surface.card.size.x, keys[0].size.x, least])
