@@ -41,6 +41,7 @@ func _initialize() -> void:
 		await _fit_share(look)
 		await _scale_title(look)
 		await _title_before_widen(look)
+		await _title_hold_steady(look)
 		await _key_row_fit(look)
 		await _balanced_lines(look)
 		await _popover_card(look)
@@ -1225,6 +1226,49 @@ func _title_before_widen(look: StringName) -> void:
 		view.queue_free()
 		await frames(1)
 	check(sizes.get(1) == sizes.get(2), "%s the same title fits the same, fresh or after a wider one (%s)" % [look, sizes])
+
+
+## A `SCALE` ribbon title's free width (the room it fits in) hangs on the card, never on how far the label's own hold
+## sits under its width: a fit that lowered the hold, the label still wide until the card lays out again, read a wider
+## room, grew the words back and raised the hold — each step resizing the label inside the last until the stack ran
+## out (Spanish ¡JUEGO COMPLETADO! on the result card flipped between 25 and 26 dp). A refit settles at once.
+func _title_hold_steady(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	var view := SubViewport.new()
+	view.size = Vector2i(1280, 720)
+	root.add_child(view)
+	var surface := GoSurface.new()
+	surface.fit_mode = GoSurface.FitMode.SCALE
+	surface.max_width = 400.0
+	surface.title_glyph = GoUi.icons().texture(GoIconSet.SKULL)
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(10, 120)
+	surface.body.add_child(block)
+	view.add_child(surface)
+	surface.set_title("¡JUEGO COMPLETADO Y MUCHO MÁS!")
+	await frames(5)
+	var tl := surface.title_label
+	var tag := "%s SCALE title hold" % look
+	check(surface.card.size.x > 400.5, "%s: the long title widened the card (%.0f)" % [tag, surface.card.size.x])
+	var free := surface._title_free_width()
+	var at := tl.get_theme_font_size(&"font_size")
+	var hold := tl.custom_minimum_size.x
+	# The hold lowered, the label not laid out again yet: the free width stays.
+	tl.custom_minimum_size.x = hold - 11.0
+	check(absf(surface._title_free_width() - free) <= 0.5,
+		"%s: the free width never follows the hold (%.1f, was %.1f)" % [tag, surface._title_free_width(), free])
+	tl.custom_minimum_size.x = hold
+	var resizes := [0]
+	var count := func() -> void: resizes[0] += 1
+	tl.resized.connect(count)
+	surface._fit_title()
+	await frames(4)
+	tl.resized.disconnect(count)
+	check(resizes[0] <= 4, "%s: a refit settles (%d resizes)" % [tag, resizes[0]])
+	check(tl.get_theme_font_size(&"font_size") == at, "%s: and keeps its size (%d, was %d)" % [tag,
+		tl.get_theme_font_size(&"font_size"), at])
+	view.queue_free()
+	await frames(1)
 
 
 func _fit_surface(look: StringName) -> void:

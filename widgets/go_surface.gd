@@ -884,14 +884,19 @@ func _fit_title_size() -> void:
 
 
 ## The plate title's width before its own widening (`_widen_title`): its width now, unless a `SCALE` fit has the label
-## held at the least width the title set — then the width the card's other content and the look's width give it.
+## held at a least width the title set — then the width the card's other content and the look's width give it.
+## 🛑 Never "only while the label sits at its held width": a fit that shrank the words lowers the hold, the label keeps
+##    its old width until the card lays out again, and the room read from it grew the words back — which raised the
+##    hold, which shrank them again, each step resizing the label inside the last (a stack overflow: Spanish
+##    ¡JUEGO COMPLETADO! flipped between 25 and 26 dp). The free width depends on the card, never on the hold's size.
 func _title_free_width() -> float:
 	var width := title_label.size.x
 	var held := title_label.custom_minimum_size.x
-	if fit_mode != FitMode.SCALE or card == null or held <= title_width + 0.5 or width > held + 0.5: return width
+	if fit_mode != FitMode.SCALE or card == null or held <= title_width + 0.5: return width
 	if title_width > 0.0: return title_width
 	var look_width := GoUi.skin().window_width()
 	var base := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	base = maxf(base, card.custom_minimum_size.x)
 	var others := 0.0
 	for section in _column.get_children():
 		if section != header and section is Control and (section as Control).visible:
