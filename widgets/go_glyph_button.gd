@@ -101,8 +101,9 @@ const TEXT_STATES: Array[StringName] = [&"normal", &"hover", &"pressed", &"hover
 ## (`SIZE_EXPAND_FILL`) always gives them one width and every label its full size: the window widens for its longest
 ## key (a `SCALE` window then shrinks as one piece when it outgrows the screen) instead of its labels shrinking. Only
 ## when the row still cannot give them that room (a key held narrower by its parent) do they share one label size,
-## the smallest any of them fits at. Their labels stand on one baseline: an accented key's drop under the gloss
-## (`_gloss_drop`) moves its row's labels with it. `GoSurface.add_gloss` turns it on for a window's row of keys.
+## the smallest any of them fits at. Their labels stand on one capital baseline, the normal line: only a key whose
+## accents need the room drops under the gloss (`_gloss_drop`), its row's other keys stay put (`_row_drop`).
+## `GoSurface.add_gloss` turns it on for a window's row of keys.
 ## In a `GoSurface`, the hold never passes the key's share of the card's standard width (`GoSurface.free_width`):
 ## a long translation shrinks the row's labels to one smaller size (never under the floor) before it widens the
 ## window, and only a label too long even at the floor widens it, just enough for that label at the floor.
@@ -275,7 +276,7 @@ func glyph_rect() -> Rect2:
 	# Only the glyph's own side is clamped (the game's maxf): a cramped button lets the glyph meet the label.
 	x = minf(x, size.x - MIN_EDGE - drawn.x) if is_layout_rtl() else maxf(x, MIN_EDGE)
 	var pressed := get_draw_mode() == DRAW_PRESSED or get_draw_mode() == DRAW_HOVER_PRESSED
-	# 🔑 The glyph moves down with its label (`_drop`: accents kept under the gloss, or the row's one baseline) — a
+	# 🔑 The glyph moves down with its label (`_drop`: its accents kept under the gloss) — a
 	#    French ÉQUIPER's check stood 5 px over its word.
 	return Rect2(Vector2(x, (size.y - drawn.y) * 0.5 - 1.0 + _drop + (PRESS_DROP if pressed else 0.0)), drawn)
 
@@ -383,20 +384,13 @@ func _label_baseline(font_size: int) -> float:
 	return top + (size.y - top - bottom - font.get_height(font_size)) * 0.5 + font.get_ascent(font_size)
 
 
-## How far the label at [param font_size] moves down: as far as its own accents need (`_gloss_drop`), and with
-## [member fit_with_row] as far as it takes to stand on its row's lowest baseline, so the row reads as one line
-## (French ÉQUIPER sat 3 px under PLUS TARD) — never past its own room.
+## How far the label at [param font_size] moves down: as far as its own accents need (`_gloss_drop`) and no further.
+## 🔑 With [member fit_with_row] only the key whose mark needs the room moves: its row's other keys stay on the normal
+##    line, the capital baseline an English row stands on (French ABANDONNER stays put beside a dropped ÉQUIPER).
+## 🛑 The row once followed its lowest key: Turkish İPTAL / SATIN AL sat 3 px low, French ABANDONNER 7 px, Polish
+##    ODRZUĆ / ZAŁÓŻ 4 px, PLUS TARD beside ÉQUIPER 4 px — every key of the row off the line its English one keeps.
 func _row_drop(font_size: int) -> float:
-	var own := maxf(0.0, _gloss_drop(font_size))
-	var peers := _fit_peers()
-	if peers.size() < 2 or size.y <= 0.0: return own
-	var line := _label_baseline(font_size) + own
-	for peer in peers:
-		if peer == self or not peer.is_inside_tree() or peer.size.y <= 0.0: continue
-		var at := peer.fitted_font_size()
-		line = maxf(line, peer._label_baseline(at) + maxf(0.0, peer._gloss_drop(at)))
-	var room := _gloss_need(font_size).y if GoUi.skin().button_gloss_bottom(_theme_face(), size.y) > 0.0 else 0.0
-	return maxf(own, minf(line - _label_baseline(font_size), maxf(own, room)))
+	return maxf(0.0, _gloss_drop(font_size))
 
 
 ## The normal face as the theme gives it — under the `ShiftedBox` this button wraps it in.

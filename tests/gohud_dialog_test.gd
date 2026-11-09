@@ -48,6 +48,7 @@ func _initialize() -> void:
 		await _key_gloss(look)
 		await _title_gloss(look)
 		await _key_row_full(look)
+		await _key_row_own_drop(look)
 		await _small_key_fit(look)
 		await _balanced_lines(look)
 		await _popover_card(look)
@@ -1910,8 +1911,7 @@ func _key_row_fit(look: StringName) -> void:
 
 ## A window's row of fit keys widens the window rather than shrinking its labels: a short label beside a long one
 ## (German KAUFEN beside ABBRECHEN, Turkish İPTAL, Japanese 閉じる beside コインを集める) is as big as an English one,
-## and the row's labels stand on one baseline even when only one of them drops its accents under the gloss (French
-## ÉQUIPER sat 3 px under PLUS TARD). 🛑 Held at the floor's width, the window widened just enough for the longest
+## and only a key whose accents need the room drops under the gloss (`_key_row_own_drop`). 🛑 Held at the floor's width, the window widened just enough for the longest
 ## label at the floor and the whole row came out at 70 %.
 func _key_row_full(look: StringName) -> void:
 	for texts: Array in [["CANCEL", "+BUY"], ["ABBRECHEN", "+KAUFEN"], ["İPTAL", "+SATIN AL"], ["SPÄTER", "+ANLEGEN"],
@@ -1974,7 +1974,13 @@ func _key_row_full(look: StringName) -> void:
 				check(absf(rect.position.y - ((key.size.y - rect.size.y) * 0.5 - 1.0 + key._drop)) <= 0.01,
 					"%s: %s's glyph moves with its label (%.2f, drop %.1f)" % [tag, key.text, rect.position.y, key._drop])
 		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
-		check(absf(lines[0] - lines[1]) <= 0.01, "%s: one baseline (%.2f, %.2f)" % [tag, lines[0], lines[1]])
+		# 🔑 One capital baseline: a key that drops its accents under the gloss moves alone, its partner stays put.
+		for i in keys.size():
+			var own := maxf(0.0, keys[i]._gloss_drop(keys[i].get_theme_font_size(&"font_size")))
+			check(is_equal_approx(keys[i]._drop, own), "%s: %s drops only for its own accents (%.1f, own %.1f)" % [
+				tag, keys[i].text, keys[i]._drop, own])
+		if keys.all(func(key: GoGlyphButton) -> bool: return key._drop == 0.0):
+			check(absf(lines[0] - lines[1]) <= 0.01, "%s: one baseline (%.2f, %.2f)" % [tag, lines[0], lines[1]])
 		if look != GoThemePresets.ARCADE_LIGHT or texts[0] in ["CANCEL", "ABBRECHEN"]:
 			check(keys.all(func(key: GoGlyphButton) -> bool: return key._drop == 0.0),
 				"%s: no accent, no gloss: nothing moves" % tag)
@@ -1985,6 +1991,71 @@ func _key_row_full(look: StringName) -> void:
 		check(surface.card.size.x <= 400.0 + 0.5 or absf(keys[0].size.x - least) <= 1.0,
 			"%s: the keys never widen the window past its width, the floor permitting (%.0f; keys %.0f, least %.0f)" % [
 				tag, surface.card.size.x, keys[0].size.x, least])
+		view.queue_free()
+		await frames(1)
+
+
+## In a window's row of fit keys only the key whose İ dot or accent reaches the pill's top gloss moves down; its partner
+## stays on the normal capital baseline, the one the English row (CANCEL / BUY) stands on. 🛑 The row followed its
+## lowest key: Turkish İPTAL / SATIN AL sat 3 px low, French ABANDONNER / ÉQUIPER 7 px, Polish ODRZUĆ / ZAŁÓŻ 4 px.
+func _key_row_own_drop(look: StringName) -> void:
+	var english := []
+	for texts: Array in [["CANCEL", "+BUY"], ["İPTAL", "+SATIN AL"], ["ABANDONNER", "+ÉQUIPER"], ["ODRZUĆ", "+ZAŁÓŻ"],
+			["PLUS TARD", "+ÉQUIPER"], ["ABBRECHEN", "+KAUFEN"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			var glyph: StringName = GoIconSet.CHECK if text.begins_with("+") else &""
+			var variation: StringName = GoTheme.VAR_PRIMARY_BUTTON if text.begins_with("+") else &"GoInfoButton"
+			var key := surface.add_gloss(variation, glyph, text.trim_prefix("+"), row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(6)
+		var tag := "%s own drop %s" % [look, " | ".join(texts)]
+		var unmarked: Array[float] = []
+		for key in keys:
+			var at := key.get_theme_font_size(&"font_size")
+			var theme_face := GoUi.theme().get_stylebox(&"normal", key.theme_type_variation)
+			var gloss := GoUi.skin().button_gloss_bottom(theme_face, key.size.y)
+			var face := key.get_theme_stylebox(&"normal")
+			var font := key.get_theme_font(&"font")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			var line := top + (key.size.y - top - bottom - font.get_height(at)) * 0.5 + font.get_ascent(at)
+			var normal := key._label_baseline(at)
+			var ink := _outline_box(key.text, font, at)
+			var reach := key.get_theme_constant(&"outline_size") * 0.25
+			# Does this key's own ink reach the gloss on the normal line?
+			var marked := gloss > 0.0 and normal + ink.position.y - reach < gloss - 0.01
+			if marked:
+				check(line > normal + 0.5, "%s: %s moves down for its own mark (%.2f from %.2f)" % [tag, key.text, line, normal])
+				check(line + ink.position.y - reach >= gloss - 0.01, "%s: %s clears the gloss (ink top %.2f, gloss %.2f)" % [
+					tag, key.text, line + ink.position.y - reach, gloss])
+				check(line + ink.end.y + reach <= key.size.y - theme_face.get_margin(SIDE_BOTTOM) + 0.01,
+					"%s: %s is not clipped below (ink bottom %.2f)" % [tag, key.text, line + ink.end.y + reach])
+			else:
+				check(key._drop == 0.0 and absf(line - normal) <= 0.01,
+					"%s: %s stays on the normal line (%.2f, normal %.2f, drop %.1f)" % [tag, key.text, line, normal, key._drop])
+				# At the English row's size it stands on the English row's line (a row that shares a smaller size
+				# centres its own, smaller line the same way).
+				if english.is_empty(): english = [at, line]
+				if at == english[0]:
+					check(absf(line - english[1]) <= 0.01, "%s: %s shares the English line (%.2f, CANCEL %.2f)" % [
+						tag, key.text, line, english[1]])
+				if not unmarked.is_empty():
+					check(absf(line - unmarked[0]) <= 0.01, "%s: the row's unmarked keys share one line (%.2f, %.2f)" % [
+						tag, line, unmarked[0]])
+				unmarked.append(line)
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
 		view.queue_free()
 		await frames(1)
 
