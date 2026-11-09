@@ -454,6 +454,19 @@ var fit_screen_share := 0.0:
 		if is_equal_approx(fit_screen_share, value): return
 		fit_screen_share = value
 		_layout_dirty = true
+## 📏 `SCALE`, centred: the least card height (dp) the fit measures. A taller card shrinks as it always does; a shorter
+## one keeps its own height but takes the scale a card this tall gets, so a family of windows given the same value
+## (their tallest's height) shows at one scale — one width on screen — on any screen that has to shrink the tallest.
+## 0: each card is measured at its own height.
+## ```gdscript
+## for w in [confirm, bought, notice]: w.fit_min_height = 420.0   # the tallest of them
+## ```
+var fit_min_height := 0.0:
+	set(value):
+		value = maxf(0.0, value)
+		if is_equal_approx(fit_min_height, value): return
+		fit_min_height = value
+		_layout_dirty = true
 ## The scale the card got from a `SCALE` fit (1: its own size).
 var fit_scale := 1.0
 ## 📏 Canvas units kept clear at the bottom of the safe area — a host's docked strip the window must not cover (an
@@ -2201,7 +2214,7 @@ func _relayout_scale(area: Rect2) -> void:
 	var least := card.get_combined_minimum_size()
 	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
 	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
-	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share, fit_min_height)
 	if _keyboard_px > 0: _keep_focus_above_keyboard(area, need, reach, margin)
 	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
 	#    body scrolled by one (see `relayout`).
@@ -2218,10 +2231,10 @@ func _keep_focus_above_keyboard(area: Rect2, need: Vector2, reach: Vector4, marg
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus == null or not card.is_ancestor_of(focus): return
 	var squeezed := fit_scale
-	var resting := GoFitBox.place(card, GoSafeArea.usable_rect(get_viewport()), need, reach, margin, fit_screen_share)
+	var resting := GoFitBox.place(card, GoSafeArea.usable_rect(get_viewport()), need, reach, margin, fit_screen_share, fit_min_height)
 	var factor := maxf(squeezed, resting * GoUi.config.fit_min_scale)
 	if factor <= squeezed + 0.001:
-		fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+		fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share, fit_min_height)
 		return
 	# Where the field's bottom edge is on the card, at scale 1.
 	var field_bottom := (card.get_global_transform().affine_inverse() * focus.get_global_rect().end).y

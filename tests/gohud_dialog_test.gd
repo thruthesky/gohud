@@ -39,6 +39,7 @@ func _initialize() -> void:
 		await _fit_box(look)
 		await _fit_surface(look)
 		await _fit_share(look)
+		await _fit_min_height(look)
 		await _scale_title(look)
 		await _title_ink_centre(look)
 		await _title_before_widen(look)
@@ -1138,6 +1139,43 @@ func _fit_share(look: StringName) -> void:
 		surface.fit_screen_share = 0.0
 		await frames(3)
 		check(is_equal_approx(card.scale.x, 1.0), "%s: share 0 never grows it (scale %.3f)" % [tag, card.scale.x])
+		view.queue_free()
+		await frames(1)
+
+
+## `fit_min_height`: windows of different heights given their tallest's height show at one scale (one width on screen)
+## where the tallest has to shrink, each keeping its own height; where the tallest fits, none shrinks; 0 measures each
+## at its own height.
+func _fit_min_height(look: StringName) -> void:
+	for view_size: Vector2i in [Vector2i(1280, 420), Vector2i(1600, 900)]:
+		var view := SubViewport.new()
+		view.size = view_size
+		root.add_child(view)
+		var windows: Array[GoSurface] = []
+		for tall: float in [360.0, 120.0]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.max_width = 476.0
+			surface.set_title("SHOP")
+			var block := Control.new()
+			block.custom_minimum_size = Vector2(10, tall)
+			surface.body.add_child(block)
+			view.add_child(surface)
+			windows.append(surface)
+		await frames(4)
+		var tag := "%s min height %dx%d" % [look, view_size.x, view_size.y]
+		var big := windows[0]
+		var small := windows[1]
+		for w: GoSurface in windows: w.fit_min_height = big.card.size.y
+		await frames(3)
+		check(view_size.y > 600 or big.fit_scale < 0.95, "%s: the tallest shrinks (%.3f)" % [tag, big.fit_scale])
+		check(is_equal_approx(big.fit_scale, small.fit_scale) and small.card.size.y < big.card.size.y - 100.0,
+				"%s: one scale (%.3f, %.3f), each its own height" % [tag, big.fit_scale, small.fit_scale])
+		check(view_size.y < 600 or is_equal_approx(small.fit_scale, 1.0), "%s: where the tallest fits, none shrinks" % tag)
+		small.fit_min_height = 0.0
+		await frames(3)
+		check(view_size.y > 600 or small.fit_scale > big.fit_scale + 0.05,
+				"%s: 0 measures it at its own height (%.3f against %.3f)" % [tag, small.fit_scale, big.fit_scale])
 		view.queue_free()
 		await frames(1)
 
