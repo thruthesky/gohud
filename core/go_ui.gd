@@ -671,3 +671,17 @@ static func reset() -> void:
 	GoScale.simulate({})
 	GoThemePresets.reset()
 	_watchers.clear()
+
+
+## Focus a control after layout, only if it can still accept focus at that point.
+## Holding a weak reference also makes closing/freeing its screen in this frame safe.
+static func focus_later(control: Control, quiet := false) -> void:
+	if is_instance_valid(control): _focus_held.call_deferred(weakref(control), quiet)
+
+
+static func _focus_held(held: WeakRef, quiet: bool) -> void:
+	var control := held.get_ref() as Control
+	if not is_instance_valid(control) or not control.is_inside_tree() or not control.is_visible_in_tree(): return
+	if control.get_focus_mode_with_override() == Control.FOCUS_NONE: return
+	if control is BaseButton and (control as BaseButton).disabled: return
+	control.grab_focus(quiet)

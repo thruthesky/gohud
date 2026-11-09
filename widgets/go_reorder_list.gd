@@ -391,7 +391,7 @@ class _Grip extends Control:
 		var at := list._slots().find(slot)
 		list.move_row(at, at + (1 if event.is_action_pressed(&"ui_down") else -1))
 		accept_event()
-		grab_focus.call_deferred()
+		GoUi.focus_later(self)
 
 	func _notification(what: int) -> void:
 		if what == NOTIFICATION_FOCUS_ENTER or what == NOTIFICATION_FOCUS_EXIT: queue_redraw()

@@ -1588,8 +1588,8 @@ func _restore_focus() -> void:
 	if _previous_focus == null: return
 	var previous := _previous_focus.get_ref() as Control
 	_previous_focus = null
-	if is_instance_valid(previous) and previous.is_inside_tree() and previous.is_visible_in_tree():
-		previous.grab_focus.call_deferred()
+	# The opener can leave or hide with its parent before deferred layout finishes.
+	GoUi.focus_later(previous)
 
 
 func _enter_tree() -> void:

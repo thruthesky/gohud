@@ -155,7 +155,7 @@ func open() -> void:
 	_open = true
 	visible = true
 	_relayout()
-	input.grab_focus.call_deferred()
+	GoUi.focus_later(input)
 
 
 func close() -> void:
