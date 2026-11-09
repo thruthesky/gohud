@@ -22,6 +22,10 @@ step() { printf "\n\033[1m── %s\033[0m\n" "$1"; }
 step "① unit tests"
 bash "$ADDON/tools/run_tests.sh" || FAILED=1
 
+step "①-meta optional host-theme metadata"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_metadata_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-focus deferred focus lifetime"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_focus_lifetime_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

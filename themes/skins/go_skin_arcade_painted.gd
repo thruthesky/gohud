@@ -493,7 +493,7 @@ func perf_font() -> Font:
 ## put it first (the same files, shipped beside the art).
 func symbol_font() -> Font:
 	var look := GoUi.theme()
-	var baked: Variant = look.get_meta(&"go_body_font_baked", null) if look != null else null
+	var baked: Variant = look.get_meta(&"go_body_font_baked") if look != null and look.has_meta(&"go_body_font_baked") else null
 	if baked is FontVariation and not (baked as FontVariation).fallbacks.is_empty():
 		return (baked as FontVariation).fallbacks[0]
 	if _symbol_font == null: _symbol_font = load("res://addons/gohud/assets/fonts/noto_sans_cjk/NotoSansKR-Bold.ttf")
