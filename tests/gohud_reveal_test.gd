@@ -22,6 +22,8 @@ func _initialize() -> void:
 	await _reduced()
 	await _freed_item()
 	await _slam_and_pulse()
+	await _slide_and_key_keep_their_place()
+	await _enter_and_fx()
 	_star_access()
 	host.free()
 	GoUi.config.reduce_motion = false
@@ -129,7 +131,7 @@ func _finish_early() -> void:
 	r3.settle(k)
 	check(r3.is_shown(k) and k.modulate.a == 1.0 and r3.is_playing(), "settle ends one item's steps, the rest play on")
 	k.modulate.a = 0.0 # the caller takes it over
-	await wait(0.8)
+	await wait(1.0)
 	check(k.modulate.a == 0.0 and a.modulate.a == 1.0 and not r3.is_playing(), "a settled item is left to its caller")
 	a.free()
 	k.free()
@@ -191,6 +193,74 @@ func _slam_and_pulse() -> void:
 	GoUi.config.reduce_motion = false
 	a.free()
 	b.free()
+
+
+func _slide_and_key_keep_their_place() -> void:
+	var a := _box("ROW")
+	var k := Button.new()
+	k.text = "NEXT"
+	host.add_child(k)
+	await frames(2)
+	var row_place := a.position
+	var key_place := k.position
+	var r := GoReveal.new(host)
+	r.slide(a, 0.0).key(k, 0.0)
+	r.play()
+	await frames(3)
+	check(a.position.x < row_place.x, "a slide comes in from the left (%.1f < %.1f)" % [a.position.x, row_place.x])
+	check(k.position.y > key_place.y, "a key springs up from below (%.1f > %.1f)" % [k.position.y, key_place.y])
+	var landed: Array[Control] = []
+	r.landed.connect(func(item: Control) -> void: landed.append(item))
+	await wait(0.6)
+	check(a.position == row_place and k.position == key_place and k.scale == Vector2.ONE,
+			"both end on their container's place")
+	check(landed.is_empty(), "a slide and a key never land")
+	a.free()
+	k.free()
+
+
+func _enter_and_fx() -> void:
+	var window := GoSurface.new()
+	window.fit_mode = GoSurface.FitMode.SCALE
+	window.set_title("WIN")
+	root.add_child(window)
+	var star := Label.new()
+	star.text = "★"
+	window.body.add_child(star)
+	window.visible = true
+	await frames(3)
+	var rest_position := window.card.position
+	var rest_scale := window.card.scale
+	var fx := GoRevealFx.mount(window)
+	check(GoRevealFx.mount(window) == fx, "a window has one fx pair")
+	check(fx.under.get_index() < window.card.get_index() and fx.get_index() > window.card.get_index(),
+			"the fx sit behind and over the card")
+	var r := GoReveal.new(host)
+	r.fx = fx
+	var landed: Array[Control] = []
+	r.landed.connect(func(item: Control) -> void: landed.append(item))
+	r.enter(window, 0.0).slam(star, 0.1)
+	check(window.card.modulate.a == 0.0, "an entrance hides the card at once")
+	r.play()
+	await frames(2)
+	check(window.card.scale.x < rest_scale.x, "the card springs in from small (%.2f)" % window.card.scale.x)
+	await wait(0.32)
+	check(landed.has(window) and landed.has(star), "the entrance and the slam both landed")
+	check(fx.get_child_count() > 0, "a slam's landing bursts over the card")
+	check(not window.pose_offset.is_zero_approx() or fx.is_playing(), "the landing jolts the window")
+	fx.rays(star)
+	check(fx.under.get_child_count() == 1, "rays go behind the card")
+	await wait(0.6)
+	check(window.card.scale == rest_scale and window.card.position.distance_to(rest_position) < 0.01
+			and window.card.rotation == 0.0, "the card ends exactly where its fit put it")
+	fx.breathe(star)
+	await wait(0.3)
+	check(star.scale.x > 1.0, "a breathing item grows")
+	fx.clear()
+	await frames(2)
+	check(star.scale == Vector2.ONE and fx.under.get_child_count() == 0 and not fx.is_playing()
+			and window.pose_offset == Vector2.ZERO, "clear puts everything back")
+	window.free()
 
 
 func _star_access() -> void:

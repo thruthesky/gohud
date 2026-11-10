@@ -771,7 +771,7 @@ func _build_hero() -> void:
 	_hero.add_child(_hero_art)
 	_glint = _art_rect(_art(&"fx_glint") if _art(&"fx_glint") != null else _sparkle, _box * 0.42)
 	_glint.name = "Glint"
-	_glint.material = _additive()
+	_glint.material = GoFx.additive()
 	_glint.position = Vector2(-_box * 0.27, -_box * 0.3) - _glint.pivot_offset
 	_glint.scale = Vector2.ZERO
 	_hero.add_child(_glint)
@@ -870,8 +870,8 @@ func collect_rect() -> Rect2:
 
 func _light(art_name: StringName, side: float) -> TextureRect:
 	var rect := _art_rect(_art(art_name), side)
-	if rect.texture == null: rect.texture = _fallback_light(art_name)
-	rect.material = _additive()
+	if rect.texture == null: rect.texture = GoFx.fallback_light(art_name)
+	rect.material = GoFx.additive()
 	if rect.texture is GradientTexture2D: rect.self_modulate = GoUi.color(GoTheme.WARNING_FILL).lerp(Color.WHITE, 0.4)
 	_fx.add_child(rect)
 	return rect
@@ -894,61 +894,8 @@ func _art(art_name: StringName) -> Texture2D:
 	return GoUi.skin().widget_art(art_name)
 
 
-## A look without the painted light: a soft white radial (or ring) the light's tint colours.
-func _fallback_light(art_name: StringName) -> Texture2D:
-	var g := Gradient.new()
-	if art_name == &"fx_ring":
-		g.offsets = PackedFloat32Array([0.0, 0.8, 0.9, 1.0])
-		g.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 0.9), Color(1, 1, 1, 0)])
-	elif art_name == &"fx_glow":
-		g.offsets = PackedFloat32Array([0.0, 0.3, 1.0])
-		g.colors = PackedColorArray([Color(1, 1, 1, 1), Color(1, 1, 1, 0.5), Color(1, 1, 1, 0)])
-	else:
-		g.offsets = PackedFloat32Array([0.0, 1.0])
-		g.colors = PackedColorArray([Color(1, 1, 1, 0.5), Color(1, 1, 1, 0)])
-	var tex := GradientTexture2D.new()
-	tex.gradient = g
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = Vector2(0.5, 0.5)
-	tex.fill_to = Vector2(1.0, 0.5)
-	tex.width = 128
-	tex.height = 128
-	return tex
-
-
-static func _additive() -> CanvasItemMaterial:
-	var m := CanvasItemMaterial.new()
-	m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	return m
-
-
 func _particles(count: int, life: float, speed: float) -> CPUParticles2D:
-	var p := CPUParticles2D.new()
-	p.emitting = false
-	p.one_shot = true
-	p.amount = count
-	p.lifetime = life
-	p.explosiveness = 1.0
-	p.texture = _sparkle if _sparkle != null else _fallback_light(&"fx_glow")
-	p.spread = 180.0
-	p.gravity = Vector2.ZERO
-	p.initial_velocity_min = speed * 0.45 * unit
-	p.initial_velocity_max = speed * unit
-	p.damping_min = speed * 0.8 * unit
-	p.damping_max = speed * 1.2 * unit
-	p.scale_amount_min = 0.6 * unit
-	p.scale_amount_max = 1.4 * unit
-	var curve := Curve.new()
-	curve.add_point(Vector2(0.0, 0.2))
-	curve.add_point(Vector2(0.2, 1.0))
-	curve.add_point(Vector2(1.0, 0.0))
-	p.scale_amount_curve = curve
-	var fade := Gradient.new()
-	fade.offsets = PackedFloat32Array([0.0, 0.7, 1.0])
-	fade.colors = PackedColorArray([Color.WHITE, Color.WHITE, Color(1, 1, 1, 0)])
-	p.color_ramp = fade
-	p.material = _additive()
-	return p
+	return GoFx.sparkles(count, life, speed, unit)
 
 
 func _twinkles(big: float) -> CPUParticles2D:

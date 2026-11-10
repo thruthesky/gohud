@@ -469,6 +469,26 @@ var fit_min_height := 0.0:
 		_layout_dirty = true
 ## The scale the card got from a `SCALE` fit (1: its own size).
 var fit_scale := 1.0
+## 🎬 **The card's entrance pose under a `SCALE` fit** — a reveal's spring-in or a jolt (`GoReveal.enter`,
+## `GoRevealFx.shake`) moves the placed card by this, about its centre, on top of the fit: `pose_scale` times the fit's
+## scale, `pose_turn` radians, `pose_offset` dp (at scale 1). A relayout while it plays keeps it (the new place with
+## the same pose); all three at rest (1, 0, zero) leave the card exactly where the fit put it. A caller that places the card
+## itself (`GoFitBox.place(card, …)`) calls `repose()` after.
+var pose_scale := 1.0:
+	set(value):
+		pose_scale = value
+		_apply_pose()
+var pose_turn := 0.0:
+	set(value):
+		pose_turn = value
+		_apply_pose()
+var pose_offset := Vector2.ZERO:
+	set(value):
+		pose_offset = value
+		_apply_pose()
+var _pose_base_position := Vector2.ZERO
+var _pose_base_scale := Vector2.ONE
+var _pose_placed := false
 ## 📏 Canvas units kept clear at the bottom of the safe area — a host's docked strip the window must not cover (an
 ## anchored ad banner, a bar it draws itself). A centred or anchored window lays out above it; under `SCALE` its list
 ## gives up height first, so read `fit_scale` after a `relayout()` to know whether the card still reads well. 0: the
@@ -2220,6 +2240,34 @@ func _relayout_scale(area: Rect2) -> void:
 	#    body scrolled by one (see `relayout`).
 	card.position = card.position.round()
 	_scaled = true
+	repose()
+
+
+## The card was just placed (by this window's fit, or by a caller's `GoFitBox.place(card, …)`): that place becomes the
+## rest the entrance pose (`pose_scale`, `pose_turn`, `pose_offset`) moves the card from.
+func repose() -> void:
+	if card == null: return
+	_pose_base_position = card.position
+	_pose_base_scale = card.scale
+	_pose_placed = true
+	_apply_pose()
+
+
+func _apply_pose() -> void:
+	if card == null or not _pose_placed: return
+	var at_rest := is_equal_approx(pose_scale, 1.0) and is_zero_approx(pose_turn) and pose_offset.is_zero_approx()
+	if at_rest:
+		card.pivot_offset = Vector2.ZERO
+		card.rotation = 0.0
+		card.scale = _pose_base_scale
+		card.position = _pose_base_position
+		return
+	# About the card's centre: the local centre `c` lands where the placed card's centre is, moved by the offset.
+	var c := card.size * 0.5
+	card.pivot_offset = c
+	card.rotation = pose_turn
+	card.scale = _pose_base_scale * pose_scale
+	card.position = _pose_base_position + c * _pose_base_scale - c + pose_offset * _pose_base_scale
 
 
 ## With the virtual keyboard up, a `SCALE` window that would shrink below `fit_min_scale` of its resting size to fit
@@ -2284,8 +2332,11 @@ func fit_overhang() -> Vector4:
 func _unscale() -> void:
 	if not _scaled: return
 	_scaled = false
+	_pose_placed = false
 	fit_scale = 1.0
 	card.scale = Vector2.ONE
+	card.rotation = 0.0
+	card.pivot_offset = Vector2.ZERO
 	if is_instance_valid(fit_flex): fit_flex.custom_minimum_size.y = 0.0
 
 
