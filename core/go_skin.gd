@@ -1630,15 +1630,16 @@ func countdown_ink() -> Color:
 
 
 ## 🏷️ A `GoNameplate`'s box in [param fill] (a character's colour, or `nameplate_own_fill()`). The default is a
-## rounded tag with a thin dark rim, a little see-through.
+## rounded tag with a thin dark rim, a little see-through, the name 4 px clear of the rim on each side.
 func nameplate_box(fill: Color) -> StyleBox:
 	var box := StyleBoxFlat.new()
 	box.bg_color = Color(fill, 0.92)
 	box.set_corner_radius_all(8)
 	box.set_border_width_all(2)
 	box.border_color = GoUi.color(GoTheme.BACKGROUND)
-	box.content_margin_left = 2.0
-	box.content_margin_right = 2.0
+	# 🛑 A content margin is measured from the box's outer edge, the rim included: 2 would put the letters on the rim.
+	box.content_margin_left = 6.0
+	box.content_margin_right = 6.0
 	box.anti_aliasing = true
 	return box
 

@@ -708,7 +708,10 @@ func _nameplate(look: StringName) -> void:
 		var flat := box as StyleBoxFlat
 		check(flat != null and flat.bg_color == Color(red, 0.92) and flat.corner_radius_top_left == 8
 			and flat.border_width_left == 2 and flat.border_color == INK, "nameplate: arcade_light's plate")
-		check(flat.content_margin_left == 2 and flat.content_margin_top == 0, "nameplate: the plate's margins are the game's")
+		check(flat.content_margin_left == 6 and flat.content_margin_right == 6 and flat.content_margin_top == 0,
+			"nameplate: the plate's margins are the game's")
+		check(label.position.x >= flat.border_width_left + 4 and bot.size.x - label.position.x - label.size.x >= flat.border_width_right + 4,
+			"nameplate: the name stands 4 px clear of the rim on each side (%s, %s of %s)" % [label.position.x, label.size.x, bot.size.x])
 		var own_box := own.get_theme_stylebox(&"panel") as StyleBoxFlat
 		check(own_box.bg_color == Color(Color("#ffc928"), 0.92), "nameplate: own plate is gold")
 		check(own_label.get_theme_color(&"font_color") == INK and own_label.get_theme_constant(&"outline_size") == 0,

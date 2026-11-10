@@ -425,15 +425,16 @@ func countdown_ink() -> Color:
 	return GOLD
 
 
-## The game's name plates (`Nameplates.add`): a 92% fill, radius 8, a 2 px INK rim, 2 px side margins.
+## The game's name plates (`Nameplates.add`): a 92% fill, radius 8, a 2 px INK rim, the name 4 px clear of it on each side
+## (6 px side margins: a content margin counts from the outer edge, the rim included).
 func nameplate_box(fill: Color) -> StyleBox:
 	var box := StyleBoxFlat.new()
 	box.bg_color = Color(fill, 0.92)
 	box.set_corner_radius_all(8)
 	box.set_border_width_all(2)
 	box.border_color = INK
-	box.content_margin_left = 2.0
-	box.content_margin_right = 2.0
+	box.content_margin_left = 6.0
+	box.content_margin_right = 6.0
 	box.content_margin_top = 0.0
 	box.content_margin_bottom = 0.0
 	box.anti_aliasing = true
