@@ -15,16 +15,21 @@
 ## nothing flashes. It moves only `modulate:a` and `scale`, about the item's centre, never its position, so a container
 ## can lay it out as usual; the item keeps its place in the layout throughout.
 ## - `pop`: fades in and grows from `POP_FROM` with a small overshoot over `POP_SECONDS`.
+## - `slam`: the emphasis entrance: fades in fast and stamps down from `SLAM_FROM` (bigger than itself) with a bounce
+##   over `SLAM_SECONDS` — an earned star, a best move.
 ## - `fade`: fades in over `FADE_SECONDS`.
 ## - `key`: a pop that ignores the mouse until its step starts, then gets its own `mouse_filter` back, so a key works
 ##   from the moment it appears and never before (`is_shown`).
 ## - `count`: writes `format.call(value)` into a label from 0 up to `to` over `seconds`. Until its step the label keeps
 ##   the text it has (the final one: the item around it is hidden), and while it counts the label keeps its final
 ##   width, so nothing around it moves.
+## - `pulse`: an item already shown punches up to `PULSE_TO` and back over `PULSE_SECONDS` — a new best time once its
+##   count lands. It never hides its item and never holds a key.
 ##
 ## `settle(item)` ends one item's steps early while the rest play on.
 ## [signal shown] says when each item starts coming in, [signal finished] when the last step is done or `finish` ran.
-## ♿ **`GoConfig.reduce_motion`:** a pop or a key only fades, on the same timing; a count shows its final text.
+## ♿ **`GoConfig.reduce_motion`:** a pop, a slam or a key only fades; a count shows its final text; a pulse does
+##    nothing.
 ## 🛑 Display only: what a step shows and when it starts is the caller's.
 class_name GoReveal
 extends RefCounted
@@ -40,12 +45,22 @@ const POP_SECONDS := 0.22
 const POP_FROM := 0.6
 ## The share of a pop over which its item fades in (it is fully opaque before it settles).
 const POP_FADE_SHARE := 0.5
+## How long a slam takes to land and settle.
+const SLAM_SECONDS := 0.32
+## The scale a slam starts from (above 1: it comes down onto its place).
+const SLAM_FROM := 2.2
+## The share of a slam over which its item fades in.
+const SLAM_FADE_SHARE := 0.25
+## How long a pulse takes, out and back.
+const PULSE_SECONDS := 0.36
+## The scale a pulse reaches at its peak.
+const PULSE_TO := 1.25
 ## How long a fade takes.
 const FADE_SECONDS := 0.18
 ## A count's default length.
 const COUNT_SECONDS := 0.4
 
-enum Kind { POP, FADE, KEY, COUNT }
+enum Kind { POP, FADE, KEY, COUNT, SLAM, PULSE }
 
 var _host: Node
 ## One entry per step: item, kind, at, seconds, alpha (the item's own), mouse, pivot, to, format, width, started, done.
@@ -64,6 +79,16 @@ func _init(host: Node) -> void:
 ## `item` pops in at `at` seconds.
 func pop(item: Control, at: float) -> GoReveal:
 	return _add(item, Kind.POP, at, POP_SECONDS)
+
+
+## `item` slams in at `at` seconds: it lands from big onto its place (the emphasis entrance).
+func slam(item: Control, at: float) -> GoReveal:
+	return _add(item, Kind.SLAM, at, SLAM_SECONDS)
+
+
+## `item`, already shown, punches up and back at `at` seconds (it is not hidden before).
+func pulse(item: Control, at: float) -> GoReveal:
+	return _add(item, Kind.PULSE, at, PULSE_SECONDS)
 
 
 ## `item` fades in at `at` seconds.
@@ -100,13 +125,16 @@ func play() -> void:
 		var s: Dictionary = _steps[i]
 		var seconds: float = s.seconds
 		if _reduced and s.kind != Kind.FADE:
-			seconds = FADE_SECONDS if s.kind != Kind.COUNT else 0.0
+			seconds = 0.0 if s.kind == Kind.COUNT or s.kind == Kind.PULSE else FADE_SECONDS
 		_tween.tween_callback(_start.bind(i)).set_delay(s.at)
 		if seconds > 0.0:
 			var tweener := _tween.tween_method(_frame.bind(i), 0.0, 1.0, seconds).set_delay(s.at)
 			if s.kind == Kind.POP or s.kind == Kind.KEY:
 				if not _reduced:
 					tweener.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			elif s.kind == Kind.SLAM:
+				if not _reduced:
+					tweener.set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 			elif s.kind == Kind.COUNT:
 				tweener.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		_tween.tween_callback(_end.bind(i)).set_delay(s.at + seconds)
@@ -129,10 +157,10 @@ func settle(item: Control) -> void:
 			_end(i)
 
 
-## Whether `item` is on screen (its step started, or it has none): a key takes presses.
+## Whether `item` is on screen (its entrance started, or it has none): a key takes presses.
 func is_shown(item: Control) -> bool:
 	for s in _steps:
-		if s.item == item and not s.started:
+		if s.item == item and s.kind != Kind.PULSE and not s.started:
 			return false
 	return true
 
@@ -158,7 +186,7 @@ func _add(item: Control, kind: Kind, at: float, seconds: float) -> GoReveal:
 			started = false, done = false}
 	_steps.append(s)
 	match kind:
-		Kind.POP, Kind.FADE:
+		Kind.POP, Kind.FADE, Kind.SLAM:
 			item.modulate.a = 0.0
 		Kind.KEY:
 			item.modulate.a = 0.0
@@ -193,6 +221,16 @@ func _frame(k: float, i: int) -> void:
 	match s.kind:
 		Kind.FADE:
 			item.modulate.a = s.alpha * clampf(k, 0.0, 1.0)
+		Kind.SLAM:
+			if _reduced:
+				item.modulate.a = s.alpha * clampf(k, 0.0, 1.0)
+				return
+			item.modulate.a = s.alpha * clampf(k / SLAM_FADE_SHARE, 0.0, 1.0)
+			item.pivot_offset = item.size * 0.5
+			item.scale = Vector2.ONE * lerpf(SLAM_FROM, 1.0, k)
+		Kind.PULSE:
+			item.pivot_offset = item.size * 0.5
+			item.scale = Vector2.ONE * (1.0 + (PULSE_TO - 1.0) * sin(PI * clampf(k, 0.0, 1.0)))
 		Kind.POP, Kind.KEY:
 			if _reduced:
 				item.modulate.a = s.alpha * clampf(k, 0.0, 1.0)
@@ -216,8 +254,11 @@ func _end(i: int) -> void:
 		return
 	var item: Control = s.item
 	match s.kind:
-		Kind.POP, Kind.FADE, Kind.KEY:
+		Kind.POP, Kind.FADE, Kind.KEY, Kind.SLAM:
 			item.modulate.a = s.alpha
+			item.scale = Vector2.ONE
+			item.pivot_offset = s.pivot
+		Kind.PULSE: # its alpha belongs to its entrance (or to itself)
 			item.scale = Vector2.ONE
 			item.pivot_offset = s.pivot
 		Kind.COUNT:

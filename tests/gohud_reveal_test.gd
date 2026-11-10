@@ -1,5 +1,5 @@
 ## 🧪 **Checks for `GoReveal`** — items hidden from the moment a step is added, each coming in at its time, a key that
-## takes no presses before its step, a count that ends on its final text and holds its width, `finish` (from before
+## takes no presses before its step, a slam that lands from big, a pulse that punches and never hides, a count that ends on its final text and holds its width, `finish` (from before
 ## `play` and from halfway), reduce motion (fades, counts jump), a freed item, and `GoStarRow.star`.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reveal_test.gd" bash addons/gohud/tools/run_tests.sh
@@ -21,6 +21,7 @@ func _initialize() -> void:
 	await _finish_early()
 	await _reduced()
 	await _freed_item()
+	await _slam_and_pulse()
 	_star_access()
 	host.free()
 	GoUi.config.reduce_motion = false
@@ -161,6 +162,34 @@ func _freed_item() -> void:
 	a.free()
 	await wait(0.4)
 	check(b.modulate.a == 1.0 and not r.is_playing(), "a freed item is skipped; the rest still plays")
+	b.free()
+
+
+func _slam_and_pulse() -> void:
+	var a := _box("STAR")
+	var b := _box("00:41.20")
+	var r := GoReveal.new(host)
+	await frames(2)
+	r.slam(a, 0.0).pulse(b, 0.1)
+	check(a.modulate.a == 0.0 and b.modulate.a == 1.0, "a slam hides its item; a pulse never does")
+	check(r.is_shown(b), "a pulse is no entrance: its item counts as shown")
+	r.play()
+	await frames(2)
+	check(a.scale.x > 1.0, "a slam lands from big (%.2f)" % a.scale.x)
+	await wait(0.2)
+	check(b.scale.x > 1.0, "a pulse punches up (%.2f)" % b.scale.x)
+	await wait(0.5)
+	check(a.scale == Vector2.ONE and a.modulate.a == 1.0 and b.scale == Vector2.ONE and not r.is_playing(),
+			"both settle on their place")
+	GoUi.config.reduce_motion = true
+	var r2 := GoReveal.new(host)
+	r2.slam(a, 0.0).pulse(b, 0.0)
+	r2.play()
+	await frames(2)
+	check(a.scale == Vector2.ONE and b.scale == Vector2.ONE, "reduce motion: no slam, no punch")
+	r2.finish()
+	GoUi.config.reduce_motion = false
+	a.free()
 	b.free()
 
 
