@@ -641,6 +641,9 @@ func _nameplate(look: StringName) -> void:
 	var label := bot.find_child("Name", true, false) as Label
 	check(label != null and label.text == "BOT RED", "nameplate: the label shows the text")
 	check(label.clip_text and label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "nameplate: centred, clipped")
+	check(label.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "nameplate: a name too long ends in an ellipsis")
+	check(bot.fitted_font_size() == 14 and label.get_theme_font_size(&"font_size") == 14,
+		"nameplate: a name that fits keeps font_size (%s)" % bot.fitted_font_size())
 	check(bot.mouse_filter == Control.MOUSE_FILTER_IGNORE and label.mouse_filter == Control.MOUSE_FILTER_IGNORE,
 		"nameplate: never catches the mouse")
 	check(bot.size.y == 24 and bot.custom_minimum_size.y == 24, "nameplate: 24 dp tall")
@@ -651,12 +654,45 @@ func _nameplate(look: StringName) -> void:
 	check(label.get_theme_color(&"font_color") == skin.nameplate_ink(false), "nameplate: other's ink is the skin's")
 	var own_label := own.find_child("Name", true, false) as Label
 	check(own_label.get_theme_color(&"font_color") == skin.nameplate_ink(true), "nameplate: own ink is the skin's")
-	bot.text = "A VERY LONG NAME INDEED FOR A PLATE"
-	await frames(1)
-	check(bot.size.x == 100, "nameplate: a long name stops at max_width (%s)" % bot.size.x)
+	# 🔤 A name a little too wide shrinks until the whole of it shows — on both plates (the own one has no outline room).
+	var font := label.get_theme_font(&"font")
+	var floor_size := GoStyle.fit_floor(14)
+	for plate: GoNameplate in [bot, own]:
+		var name_label := plate.find_child("Name", true, false) as Label
+		plate.text = "player123456789"
+		await frames(2)
+		var fitted := plate.fitted_font_size()
+		var width := font.get_string_size(plate.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x
+		check(fitted < 14 and fitted >= floor_size, "nameplate: a name too wide shrinks, never under the floor (%s)" % fitted)
+		check(name_label.get_theme_font_size(&"font_size") == fitted, "nameplate: the label draws the fitted size")
+		check(plate.size.x <= 100 and width <= name_label.size.x + 0.01,
+			"nameplate: the shrunk name shows whole (%s in %s)" % [width, name_label.size.x])
+		var first := name_label.get_character_bounds(0)
+		var last := name_label.get_character_bounds(plate.text.length() - 1)
+		check(first.position.x >= -0.01 and last.end.x <= name_label.size.x + 0.01,
+			"nameplate: the shrunk name's first and last letters are inside the plate (%s … %s of %s)"
+				% [first.position.x, last.end.x, name_label.size.x])
+		# 🛑 A name too wide even at the floor: the start shows, the end is trimmed — never both ends cut.
+		plate.text = "WWWWWWWWWWWWWWW"
+		await frames(2)
+		check(plate.size.x == 100, "nameplate: a long name stops at max_width (%s)" % plate.size.x)
+		check(plate.fitted_font_size() == floor_size, "nameplate: a very long name sits at the fit floor (%s)" % plate.fitted_font_size())
+		first = name_label.get_character_bounds(0)
+		last = name_label.get_character_bounds(plate.text.length() - 1)
+		check(first.position.x >= -0.01 and first.end.x <= name_label.size.x,
+			"nameplate: a very long name still shows its first letter (%s)" % first)
+		check(last.end.x > name_label.size.x, "nameplate: a very long name is trimmed at its end (%s)" % last)
+		check(name_label.get_minimum_size().x <= name_label.size.x, "nameplate: the long name does not widen the plate")
+	own.text = "KIM HANA"
+	bot.max_width = 80
+	await frames(2)
+	check(bot.size.x == 80 and bot.fitted_font_size() == floor_size, "nameplate: max_width refits the name (%s)" % bot.size.x)
+	bot.max_width = 100
 	bot.text = "AI"
 	await frames(1)
 	check(bot.size.x == 64, "nameplate: a short name keeps base_width (%s)" % bot.size.x)
+	check(bot.fitted_font_size() == 14, "nameplate: a short name is back at font_size (%s)" % bot.fitted_font_size())
+	check(own.fitted_font_size() == 14 and own.size.x >= 86, "nameplate: the own plate is back at font_size and base_width")
 	bot.place_at(Vector2(200, 100))
 	check(bot.position == Vector2(200, 100) - bot.size / 2.0, "nameplate: place_at centres on the point")
 	var camera := Camera3D.new()
