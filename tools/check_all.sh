@@ -95,6 +95,10 @@ GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_painted_controls_test.gd" \
 step "①-h unit tests — the match-HUD widgets (GoBar's painted frame, …)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_game_hud_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1
+step "①-md unit tests — the magnet dial (GoMotion, GoMagnetDial: every event's motion and its reduce-motion fallback)"
+GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_magnet_dial_test.gd" \
+  bash "$ADDON/tools/run_tests.sh" || FAILED=1
+
 step "①-rr unit tests — GoRewardRow (the four states, the fixed height, a row reused by a list)"
 GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_row_test.gd" \
   bash "$ADDON/tools/run_tests.sh" || FAILED=1

@@ -47,6 +47,9 @@ const HUD_SPRITES := {
 	"powerup_banana": false, "powerup_trap": false, "powerup_reflect": false, "powerup_bomb": false,
 	# ... and the flashbang's, painted in code (tools/paint_arcade_flashbang.gd).
 	"powerup_flashbang": false,
+	# The magnet dial's art, the mouse glyphs, the item box and the SUPER MAGNET icon (tools/paint_arcade_magnet_dial.gd).
+	"dial_attract": false, "dial_repulse": false, "dial_off": false, "dial_arrow": false,
+	"mouse_left": false, "mouse_right": false, "powerup_super_magnet": false, "item_box": false, "item_box_empty": false,
 }
 
 ## The touch controls' painted sprites (the game's `assets/ui/touch`): the three round action keys and the stick's
