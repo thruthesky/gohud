@@ -43,6 +43,14 @@
 ## quest.set_faces(track_box, fill_box)
 ## ```
 ##
+## ## 💥 A hit and a warning
+## `hit(strength)` flashes and shakes the bar — harder for a bigger loss; `alert = true` pulses the fill toward the
+## look's alert ink while the value is low. Neither changes the value.
+## ```gdscript
+## stability.hit(lost / maximum)        # knocked: flash + shake
+## stability.alert = ratio <= 0.25      # low: the fill pulses red
+## ```
+##
 ## ## 🛑 Values move smoothly — but it has to be switchable off
 ## When HP jumps in steps you cannot read how hard you were hit, so it interpolates over 0.18s by default.
 ## Under `GoConfig.reduce_motion` it changes instantly.
@@ -164,6 +172,29 @@ enum Readout { NONE, VALUE, FRACTION, PERCENT }
 			_lead.custom_minimum_size.y = value
 			_lead.visible = value > 0.0
 
+## 🚨 The bar warns: its fill pulses toward the look's alert ink (`GoSkin.hud_alert_ink()`) — a stability bar running
+## low. Under `GoConfig.reduce_motion` the fill is the alert ink, steady.
+@export var alert := false:
+	set(value):
+		if alert == value: return
+		alert = value
+		if value: motion.loop(&"alert", ALERT_SECONDS)
+		else: motion.stop(&"alert")
+		_paint()
+		_wake()
+
+## The lengths of a hit's flash and shake (a light hit ~ a heavy one) and of one warning pulse (seconds).
+const HIT_SECONDS_MIN := 0.18
+const HIT_SECONDS_MAX := 0.42
+const ALERT_SECONDS := 0.8
+## How far a full-strength hit swings the bar (dp) and how bright it flashes.
+const HIT_SWING := 7.0
+const HIT_FLASH := 0.9
+
+## The motion clock (`GoMotion`): `hit` and `alert`.
+var motion := GoMotion.new()
+var _hit_strength := 0.0
+
 var _column: VBoxContainer
 var _lead: Control
 var _head: HBoxContainer
@@ -190,6 +221,7 @@ var _art_fill: Panel
 
 func _init() -> void:
 	name = "Bar"
+	set_process(false)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var column := GoStyle.column(GoUi.metric(GoTheme.GAP_TINY))
 	column.name = "Column"
@@ -309,6 +341,7 @@ func _enter_tree() -> void:
 	#    would otherwise stop following the look; on a re-entry it catches up with a look changed while it was out.
 	GoUi.watch(_on_ui_changed)
 	if is_node_ready(): _on_ui_changed()
+	_wake()
 
 
 func _exit_tree() -> void:
@@ -320,6 +353,9 @@ func _exit_tree() -> void:
 ##    built ones and one screen ends up wearing two looks (measured 2026-09-16: after switching presets the HP bar
 ##    kept the old accent color and the quick-slot panel its old color — the values had changed, but nobody re-read them).
 func _on_ui_changed() -> void:
+	if GoUi.config.reduce_motion and motion.busy():
+		motion.stop_all()
+		advance(0.0)
 	_restyle()
 	_refresh_text()
 
@@ -345,6 +381,50 @@ func set_values(value: float, maximum: float, animate := true) -> void:
 		_tween.tween_property(_art_fill, "anchor_right", ratio, ease_seconds).set_ease(Tween.EASE_OUT) \
 			.set_trans(Tween.TRANS_QUAD)
 		_tween.finished.connect(_place_art_fill.bind(ratio))
+
+
+## 💥 The value was knocked down: the bar flashes and shakes, harder and longer the bigger [param strength] is (0~1 —
+## the share of the bar that was lost, say). Under `GoConfig.reduce_motion` nothing moves.
+func hit(strength := 1.0) -> void:
+	_hit_strength = clampf(strength, 0.0, 1.0)
+	if _hit_strength <= 0.0: return
+	motion.play(&"hit", lerpf(HIT_SECONDS_MIN, HIT_SECONDS_MAX, _hit_strength))
+	_wake()
+
+
+## How far the bar is swung sideways now (dp) and how bright it is flashed (0~1) — what a hit looks like this frame.
+func hit_offset() -> float:
+	if not motion.playing(&"hit"): return 0.0
+	return GoMotion.shake(motion.at(&"hit")) * HIT_SWING * lerpf(0.35, 1.0, _hit_strength)
+
+
+func hit_flash() -> float:
+	if not motion.playing(&"hit"): return 0.0
+	return (1.0 - motion.at(&"hit")) * lerpf(0.4, 1.0, _hit_strength)
+
+
+## How far the fill is mixed toward the alert ink now, 0~1.
+func alert_amount() -> float:
+	if not alert: return 0.0
+	return 0.5 - 0.5 * cos(motion.at(&"alert") * TAU) if motion.playing(&"alert") else 1.0
+
+
+## ⏱ Moves the hit and the warning on by [param delta] seconds. `_process` calls it; a test calls it by hand.
+func advance(delta: float) -> void:
+	motion.advance(delta)
+	_column.position.x = hit_offset()
+	var flash := hit_flash() * HIT_FLASH
+	_column.modulate = Color(1.0 + flash, 1.0 + flash, 1.0 + flash)
+	if alert: _paint()
+	if not motion.busy(): set_process(false)
+
+
+func _process(delta: float) -> void:
+	advance(delta)
+
+
+func _wake() -> void:
+	if is_inside_tree() and motion.busy(): set_process(true)
 
 
 ## For setting just the 0~1 ratio (when the maximum is unknown).
@@ -430,7 +510,13 @@ func _restyle() -> void:
 func _paint() -> void:
 	if not is_instance_valid(_bar): return
 	var start := ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT)
-	var colors := PackedColorArray([start, ink_end if ink_end.a > 0.0 else start])
+	var finish := ink_end if ink_end.a > 0.0 else start
+	var warn := alert_amount()
+	if warn > 0.0:
+		var warn_ink := GoUi.skin().hud_alert_ink()
+		start = start.lerp(warn_ink, warn)
+		finish = finish.lerp(warn_ink, warn)
+	var colors := PackedColorArray([start, finish])
 	if _paint_gradient == null:
 		_paint_gradient = Gradient.new()
 		_paint_gradient.offsets = PackedFloat32Array([0.0, 1.0])
@@ -443,7 +529,7 @@ func _paint() -> void:
 		_gradient.texture = paint
 	if _paint_gradient.colors != colors: _paint_gradient.colors = colors
 	if is_instance_valid(_frame_ticks): _frame_ticks.queue_redraw()
-	GoStyle.tint_progress(_bar, ink if ink.a > 0 else GoUi.color(GoTheme.ACCENT))
+	GoStyle.tint_progress(_bar, start)
 	if ink_end.a > 0.0:
 		var tube := _bar.get_theme_stylebox(&"fill") as GoStyleBoxArcade
 		if tube != null:

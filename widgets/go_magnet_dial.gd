@@ -236,7 +236,8 @@ func attracting() -> bool:
 func set_cooldown(left: float, total: float) -> void:
 	var now := maxf(0.0, left)
 	var was := _cool_left > 0.0
-	if is_equal_approx(now, _cool_left) and is_equal_approx(total, _cool_total): return
+	# Exact, not approximate: the last sliver of a wait (1e-7 s) and 0 are different states.
+	if now == _cool_left and is_equal_approx(total, _cool_total): return
 	_cool_left = now
 	_cool_total = maxf(total, 0.001)
 	if now > 0.0 and not was:
@@ -249,10 +250,11 @@ func set_cooldown(left: float, total: float) -> void:
 		motion.play(&"ready", READY_SECONDS)
 	elif GoUi.config.reduce_motion or not is_inside_tree() or absf(_cool_shown - now) > 0.25:
 		_cool_shown = now
-	var step := ceili(now * pow(10.0, cooldown_decimals) - 0.0001)
+	# A wait still running never reads 0.0: the last sliver of it shows the smallest step.
+	var step := maxi(1, ceili(now * pow(10.0, cooldown_decimals) - 0.0001)) if now > 0.0 else 0
 	if step != _cool_step:
 		_cool_step = step
-		_cool_text = ("%.*f" % [cooldown_decimals, step / pow(10.0, cooldown_decimals)]) if now > 0.0 else ""
+		_cool_text = ("%.*f" % [cooldown_decimals, step / pow(10.0, cooldown_decimals)]) if step > 0 else ""
 	_wake()
 
 

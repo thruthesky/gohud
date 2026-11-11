@@ -224,7 +224,8 @@ func badge_text() -> String:
 ## last `hurry_seconds` the edge blinks faster. [param total] 0 or less: not running.
 func set_timer(left: float, total: float) -> void:
 	var now := maxf(0.0, left) if total > 0.0 else 0.0
-	if is_equal_approx(now, _timer_left) and is_equal_approx(total, _timer_total): return
+	# Exact, not approximate: the last sliver of a run and 0 are different states.
+	if now == _timer_left and is_equal_approx(total, _timer_total): return
 	var started := _timer_left <= 0.0
 	_timer_left = now
 	_timer_total = maxf(0.0, total)
@@ -236,7 +237,7 @@ func set_timer(left: float, total: float) -> void:
 	else:
 		if started or GoUi.config.reduce_motion or not is_inside_tree() or absf(_timer_shown - now) > 0.25:
 			_timer_shown = now
-		var step := ceili(now - 0.0001)
+		var step := maxi(1, ceili(now - 0.0001))
 		if step != _timer_step:
 			_timer_step = step
 			_timer_text = str(step)
@@ -268,7 +269,7 @@ func timer_text() -> String:
 ## ticks come faster as the fuse runs out. [param total] 0 or less: no fuse.
 func set_fuse(left: float, total: float) -> void:
 	var now := maxf(0.0, left) if total > 0.0 else 0.0
-	if is_equal_approx(now, _fuse_left) and is_equal_approx(total, _fuse_total): return
+	if now == _fuse_left and is_equal_approx(total, _fuse_total): return
 	_fuse_left = now
 	_fuse_total = maxf(0.0, total)
 	if now <= 0.0:
@@ -276,7 +277,7 @@ func set_fuse(left: float, total: float) -> void:
 		_fuse_step = -1
 		motion.stop(&"tick")
 	else:
-		var step := ceili(now * 10.0 - 0.0001)
+		var step := maxi(1, ceili(now * 10.0 - 0.0001))
 		if step != _fuse_step:
 			_fuse_step = step
 			_fuse_text = "%.1f" % (step / 10.0)

@@ -32,6 +32,10 @@ func _initialize() -> void:
 		await _item_box_states(look)
 		await _item_box_motion(look)
 		await _item_box_reduced(look)
+		await _action_key(look)
+		await _bar_hit_and_alert(look)
+		await _example_plays_every_event(look)
+		await _last_sliver_still_ends(look)
 	GoUi.reset()
 	print("gohud magnet dial tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -555,3 +559,224 @@ func _item_box_reduced(look: StringName) -> void:
 	holder.queue_free()
 	await frames(1)
 	GoUi.config.reduce_motion = false
+
+
+# ── GoActionKey ───────────────────────────────────────────────────────
+
+func _action_key(look: StringName) -> void:
+	var jump := GoActionKey.make("JUMP", "Space")
+	var holder := _host(jump)
+	await frames(2)
+	jump.set_process(false)
+	check(jump.visible and jump.key_text() == "Space", "%s action key: the cap names its key" % look)
+	var with_word := jump.get_combined_minimum_size().x
+	jump.word = ""
+	check(jump.get_combined_minimum_size().x < with_word, "%s action key: the word takes room beside the cap" % look)
+	jump.word = "JUMP"
+	jump.word_room = 12.0
+	check(jump._word_size < roundi(13.0) and jump._word_size >= GoStyle.fit_floor(13), "%s action key: a word too long for its room shrinks, never under the floor" % look)
+	jump.word_room = 0.0
+	# 16 — jump used / ready: the cap presses, dims with a sweep, pops when ready.
+	check(jump.press_amount() == 0.0 and jump.cover() == 0.0 and jump.cap_scale() == 1.0, "%s action key: at rest the cap is up and clear" % look)
+	jump.set_cooldown(2.0, 2.0)
+	check(jump.cooling() and jump.motion.playing(&"press") and jump.cover() == 1.0, "%s action key: used, the cap presses and is covered" % look)
+	_run(jump, GoActionKey.PRESS_SECONDS * 0.5)
+	check(jump.press_amount() > 0.8, "%s action key: the cap dips" % look)
+	jump.set_cooldown(1.0, 2.0)
+	var before := jump.cover()
+	jump.advance(1.0 / 60.0)
+	check(jump.cover() < before and before - jump.cover() < 0.02, "%s action key: the sweep moves a frame's worth" % look)
+	check(jump.press_amount() == 0.0 or jump.motion.playing(&"press"), "%s action key: the dip is over or ending" % look)
+	jump.set_cooldown(0.0, 2.0)
+	check(not jump.cooling() and jump.cover() == 0.0 and jump.motion.playing(&"ready"), "%s action key: the wait over, the cap pops" % look)
+	_run(jump, GoActionKey.READY_SECONDS * 0.5)
+	check(jump.cap_scale() > 1.1, "%s action key: the pop is a size up" % look)
+	_run(jump, 0.4)
+	check(jump.cap_scale() == 1.0 and not jump.moving(), "%s action key: popped, it rests" % look)
+	# 17 — sprint held: the cap stays down and lit.
+	var sprint := GoActionKey.make("SPRINT", "Shift")
+	holder.add_child(sprint)
+	await frames(1)
+	sprint.set_process(false)
+	sprint.set_held(true)
+	check(sprint.held() and sprint.motion.playing(&"press"), "%s action key: a held key goes down" % look)
+	_run(sprint, 1.0)
+	check(sprint.press_amount() == 1.0 and not sprint.moving(), "%s action key: it stays down while held, without processing" % look)
+	sprint.set_held(false)
+	check(sprint.press_amount() == 0.0, "%s action key: let go, it is up" % look)
+	sprint.set_key("")
+	check(not sprint.visible, "%s action key: an action with no key shows nothing" % look)
+	sprint.enter(0.1)
+	check(sprint.cap_scale() == 0.0, "%s action key: an entering key waits its turn" % look)
+	_run(sprint, 0.6)
+	check(sprint.cap_scale() == 1.0, "%s action key: it lands at its size" % look)
+	# Reduced: state only.
+	GoUi.config.reduce_motion = true
+	jump.set_cooldown(2.0, 2.0)
+	check(jump.cover() == 1.0 and jump.press_amount() == 0.0 and not jump.motion.busy(), "%s action key (reduced): used is covered, no dip" % look)
+	jump.set_cooldown(0.5, 2.0)
+	check(is_equal_approx(jump.cover(), 0.25), "%s action key (reduced): the cover steps with its value" % look)
+	jump.set_cooldown(0.0, 2.0)
+	check(jump.cap_scale() == 1.0 and not jump.motion.busy(), "%s action key (reduced): ready, no pop" % look)
+	jump.set_held(true)
+	check(jump.press_amount() == 1.0 and not jump.motion.busy(), "%s action key (reduced): held is down at once" % look)
+	GoUi.config.reduce_motion = false
+	holder.queue_free()
+	await frames(1)
+
+
+# ── GoBar: the hit and the warning ────────────────────────────────────────
+
+func _bar_hit_and_alert(look: StringName) -> void:
+	var bar := GoBar.new()
+	bar.ink = Color("#ff7a3d")
+	bar.ink_end = Color("#ffd23f")
+	var holder := _host(bar)
+	await frames(2)
+	bar.set_process(false)
+	check(not bar.is_processing() and bar.hit_offset() == 0.0 and bar.hit_flash() == 0.0, "%s bar: at rest nothing moves" % look)
+	# 18 — stability hit: flash and shake, scaled by the loss.
+	bar.hit(0.2)
+	check(bar.motion.playing(&"hit"), "%s bar: a hit plays" % look)
+	var light := _bar_swing(bar)
+	check(bar.hit_offset() == 0.0 and bar._column.position.x == 0.0 and bar._column.modulate == Color.WHITE,
+		"%s bar: after the hit the bar is back in place, unlit" % look)
+	bar.hit(1.0)
+	var flash := bar.hit_flash()
+	var heavy := _bar_swing(bar)
+	check(light > 0.5 and heavy > light * 1.5, "%s bar: a heavier hit swings further (%.1f > %.1f)" % [look, heavy, light])
+	check(flash > 0.9, "%s bar: a full hit flashes bright" % look)
+	bar.hit(0.0)
+	check(not bar.motion.playing(&"hit"), "%s bar: no loss, no hit" % look)
+	# 19 — stability low: the fill pulses toward the alert ink.
+	bar.alert = true
+	check(bar.motion.playing(&"alert"), "%s bar: the warning pulse runs" % look)
+	var low := 1.0
+	var high := 0.0
+	for i in 60:
+		bar.advance(1.0 / 60.0)
+		low = minf(low, bar.alert_amount())
+		high = maxf(high, bar.alert_amount())
+	check(low < 0.1 and high > 0.9, "%s bar: the fill pulses between its ink and the alert ink" % look)
+	bar.advance(GoBar.ALERT_SECONDS * 0.5 - fmod(1.0, GoBar.ALERT_SECONDS))
+	check(bar._paint_gradient.colors[0].is_equal_approx(Color("#ff7a3d").lerp(GoUi.skin().hud_alert_ink(), bar.alert_amount())),
+		"%s bar: the fill's paint follows the pulse" % look)
+	bar.alert = false
+	check(bar.alert_amount() == 0.0 and not bar.motion.busy() and bar._paint_gradient.colors[0].is_equal_approx(Color("#ff7a3d")),
+		"%s bar: the warning over, the fill is its own ink again" % look)
+	# Reduced: a steady alert ink, no hit.
+	GoUi.config.reduce_motion = true
+	bar.hit(1.0)
+	check(not bar.motion.busy() and bar.hit_offset() == 0.0, "%s bar (reduced): a hit moves nothing" % look)
+	bar.alert = true
+	check(bar.alert_amount() == 1.0 and not bar.motion.busy()
+		and bar._paint_gradient.colors[0].is_equal_approx(GoUi.skin().hud_alert_ink()), "%s bar (reduced): low is the alert ink, steady" % look)
+	bar.alert = false
+	GoUi.config.reduce_motion = false
+	holder.queue_free()
+	await frames(1)
+
+
+## Runs a bar's hit to its end; answers the furthest it swung (dp).
+func _bar_swing(bar: GoBar) -> float:
+	var far := 0.0
+	for i in 60:
+		bar.advance(1.0 / 60.0)
+		far = maxf(far, absf(bar._column.position.x))
+	return far
+
+
+# ── examples/magnet_dial: every event on a key ───────────────────────────
+
+func _example_plays_every_event(look: StringName) -> void:
+	var scene := (load("res://addons/gohud/examples/magnet_dial/magnet_dial.tscn") as PackedScene).instantiate()
+	root.add_child(scene)
+	await frames(2)
+	var dial: GoMagnetDial = scene.dial
+	var box: GoItemBox = scene.box
+	check(GoUi.config.preset == look, "%s example: it keeps the look already picked" % look)
+	check(dial.motion.playing(&"enter") and box.motion.playing(&"enter") and scene.jump.motion.playing(&"enter"),
+		"%s example: it opens on the match-start entrance" % look)
+	await frames(40)
+	scene.hold_attract(true)
+	check(dial.attracting() and dial.flowing(), "%s example: A held attracts" % look)
+	scene.hold_attract(false)
+	check(not dial.attracting() and dial.motion.playing(&"settle"), "%s example: A let go settles" % look)
+	check(scene.play(KEY_R) and dial.cooling() and dial.motion.playing(&"fire"), "%s example: R fires the repulse" % look)
+	scene.play(KEY_R)
+	check(dial.motion.playing(&"deny"), "%s example: R again while cooling is denied" % look)
+	scene.play(KEY_L)
+	check(dial.low() and dial.motion.playing(&"low"), "%s example: L takes the power low" % look)
+	scene.play(KEY_L)
+	check(dial.power() == 0.0 and dial.motion.playing(&"empty"), "%s example: L again empties it" % look)
+	scene.play(KEY_L)
+	scene.play(KEY_M)
+	check(dial.is_super(), "%s example: M turns SUPER MAGNET on" % look)
+	scene.play(KEY_M)
+	scene.play(KEY_P)
+	check(box.held() and box.badge_text() == "×2" and box.motion.playing(&"gain"), "%s example: P gains a banana ×2" % look)
+	scene.play(KEY_U)
+	check(box.charges() == 1 and box.motion.playing(&"use"), "%s example: U spends a charge" % look)
+	scene.play(KEY_U)
+	check(not box.held() and box.motion.playing(&"leave"), "%s example: U on the last charge empties the box" % look)
+	scene.play(KEY_P)
+	scene.play(KEY_U)
+	check(box.timed() and box.active(), "%s example: a used REFLECT runs its timer" % look)
+	scene.play(KEY_P)
+	scene.play(KEY_U)
+	check(box.lit() and box.motion.playing(&"tick"), "%s example: a used BOMB lights its fuse" % look)
+	scene.play(KEY_J)
+	check(scene.jump.cooling() and scene.jump.motion.playing(&"press"), "%s example: J presses the JUMP cap" % look)
+	scene.hold_sprint(true)
+	check(scene.sprint.held(), "%s example: S held keeps the SPRINT cap down" % look)
+	scene.hold_sprint(false)
+	scene.play(KEY_H)
+	check(scene.stability.motion.playing(&"hit"), "%s example: H hits the stability bar" % look)
+	scene.play(KEY_H)
+	scene.play(KEY_H)
+	check(scene.stability.alert and scene.stability.motion.playing(&"alert"), "%s example: low stability pulses" % look)
+	scene.play(KEY_X)
+	check(not dial.powered() and dial.motion.playing(&"power_down"), "%s example: X powers the dial down" % look)
+	scene.play(KEY_X)
+	check(dial.powered(), "%s example: X again brings it back" % look)
+	scene.play(KEY_T)
+	check(GoUi.config.reduce_motion, "%s example: T reduces motion" % look)
+	scene.play(KEY_R)
+	scene.play(KEY_P)
+	check(not box.motion.busy() or box.motion.playing(&"blink") == false, "%s example: reduced, a gain plays nothing" % look)
+	scene.play(KEY_T)
+	check(not GoUi.config.reduce_motion and not scene.play(KEY_Z), "%s example: T again restores motion; an unbound key does nothing" % look)
+	await frames(3)
+	scene.queue_free()
+	await frames(1)
+
+
+## A wait that ends through a sliver (2.0 − 120 × 1/60 leaves 1e-7 s, not 0) still ends: the parts once took the
+## sliver and 0 for the same value and stayed cooling for ever, reading "0.0".
+func _last_sliver_still_ends(look: StringName) -> void:
+	var dial := GoMagnetDial.make()
+	var box := GoItemBox.make()
+	var key := GoActionKey.make("JUMP", "Space")
+	var holder := _host(dial)
+	holder.add_child(box)
+	holder.add_child(key)
+	await frames(1)
+	dial.set_cooldown(2.0, 2.0)
+	dial.set_cooldown(0.0000001, 2.0)
+	check(dial.cooling() and dial.cooldown_text() == "0.1", "%s dial: a sliver of a wait reads its smallest step, never 0.0" % look)
+	dial.set_cooldown(0.0, 2.0)
+	check(not dial.cooling() and dial.cooldown_text() == "" and dial.motion.playing(&"ready"), "%s dial: the sliver over, it is ready" % look)
+	box.set_item(_picture(), "BOMB")
+	box.set_fuse(0.0000001, 3.0)
+	check(box.lit() and box.fuse_text() == "0.1", "%s item box: a sliver of fuse reads 0.1" % look)
+	box.set_fuse(0.0, 3.0)
+	check(not box.lit() and box.fuse_text() == "", "%s item box: the sliver over, the fuse is out" % look)
+	box.set_timer(0.0000001, 6.0)
+	check(box.timed() and box.timer_text() == "1", "%s item box: a sliver of a run reads 1" % look)
+	box.set_timer(0.0, 6.0)
+	check(not box.timed(), "%s item box: the sliver over, the run has ended" % look)
+	key.set_cooldown(0.0000001, 2.0)
+	key.set_cooldown(0.0, 2.0)
+	check(not key.cooling() and key.cover() == 0.0, "%s action key: the sliver over, the cap is clear" % look)
+	holder.queue_free()
+	await frames(1)
