@@ -497,6 +497,18 @@ func _item_box_motion(look: StringName) -> void:
 	var fast_ticks := _ticks(box, 1.2)
 	check(fast_ticks > slow_ticks, "%s item box: the ticks come faster as the fuse runs out (%d > %d)" % [look, fast_ticks, slow_ticks])
 	check(box.fuse_text() == "0.4", "%s item box: the fuse reads its tenths" % look)
+	# A different item takes the box over: the old one's count, timer and fuse go with it.
+	box.set_charges(3)
+	box.set_timer(5.0, 6.0)
+	var other := GradientTexture2D.new()
+	other.width = 16
+	other.height = 16
+	box.set_item(other, "TRAP")
+	check(box.badge_text() == "" and box.charges() == 0 and not box.timed() and not box.lit() and box.bursts() == 2,
+		"%s item box: a new item starts without the old one's count, timer and fuse" % look)
+	check(not box.motion.playing(&"blink") and not box.motion.playing(&"tick") and not box.motion.playing(&"use"),
+		"%s item box: and without its blink, ticks or punch" % look)
+	_run(box, 1.0)
 	# 14 — expired / last charge: the picture shrinks out, the frame is empty again.
 	box.clear()
 	check(not box.held() and box.motion.playing(&"leave") and box.icon_scale() == 1.0, "%s item box: a lost item starts leaving" % look)

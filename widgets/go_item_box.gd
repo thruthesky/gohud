@@ -144,7 +144,8 @@ func _process(delta: float) -> void:
 # ── State ─────────────────────────────────────────────────────────────
 
 ## Holds [param icon] under [param item_name] (already in the player's language, or a key `tr()` knows). A box that
-## was empty — or held something else — plays the gain: the pop, the sparkles, the tab sliding up. null clears.
+## was empty — or held something else — plays the gain: the pop, the sparkles, the tab sliding up; the count, the
+## timer and the fuse of what it held before go (set them again for the new item). null clears.
 func set_item(icon: Texture2D, item_name := "") -> void:
 	if icon == null:
 		clear()
@@ -156,7 +157,8 @@ func set_item(icon: Texture2D, item_name := "") -> void:
 	_text_sizes.clear()
 	if fresh:
 		_leaving = null
-		motion.stop(&"leave")
+		_forget_counts()
+		for track: StringName in [&"leave", &"use", &"blink", &"tick"]: motion.stop(track)
 		if motion.play(&"gain", GAIN_SECONDS):
 			motion.play(&"tab", TAB_SECONDS, TAB_DELAY)
 			_burst()
@@ -170,6 +172,15 @@ func clear() -> void:
 	_leaving = _icon
 	_icon = null
 	_name = ""
+	_forget_counts()
+	_active = false
+	for track: StringName in [&"gain", &"tab", &"use", &"blink", &"tick"]: motion.stop(track)
+	if not motion.play(&"leave", LEAVE_SECONDS): _leaving = null
+	_wake()
+
+
+## The count, the timer and the fuse belong to the item that was held: a new one (or none) starts without them.
+func _forget_counts() -> void:
 	_charges = 0
 	_badge = ""
 	_timer_left = 0.0
@@ -180,10 +191,6 @@ func clear() -> void:
 	_fuse_total = 0.0
 	_fuse_text = ""
 	_fuse_step = -1
-	_active = false
-	for track: StringName in [&"gain", &"tab", &"use", &"blink", &"tick"]: motion.stop(track)
-	if not motion.play(&"leave", LEAVE_SECONDS): _leaving = null
-	_wake()
 
 
 ## Whether something is held.
