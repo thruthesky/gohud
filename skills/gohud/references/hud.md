@@ -49,6 +49,9 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 40. [GoSideButton — a picture key down a menu's side](#40-gosidebutton--a-picture-key-down-a-menus-side)
 41. [GoEditFrame — the frame of a layout editor](#41-goeditframe--the-frame-of-a-layout-editor)
 42. [GoRewardBurst — the claim of a reward, from the key to the balance](#42-gorewardburst--the-claim-of-a-reward-from-the-key-to-the-balance)
+43. [GoMagnetDial — two actions in one dial, with its power ring](#43-gomagnetdial--two-actions-in-one-dial-with-its-power-ring)
+44. [GoItemBox — the held power-up](#44-goitembox--the-held-power-up)
+45. [GoActionKey — a key cap with its word](#45-goactionkey--a-key-cap-with-its-word)
 
 ## 1. GoHudAnchor
 
@@ -1531,3 +1534,111 @@ burst.finished.connect(func() -> void: row.stamp_claimed())
   the coin from its icon set and letters "+N" as its title in that gold.
 - 🛑 Display only: it decides nothing — "+N", the count and the balance are what `resolve` is given.
 - `GoRewardRow.stamp_claimed()` stamps a just-paid row's check in (big, a squash, settled; a fade under reduce motion).
+
+## 43. GoMagnetDial — two actions in one dial, with its power ring
+
+`class_name GoMagnetDial extends Control` · input-transparent · layout LTR · a custom draw. A desktop match HUD's
+magnet in one glance: a 270° power ring round a disc whose left half is the held action (ATTRACT, blue) and whose right
+half is the fired one (REPULSE, red — grey while it cools, refilling red from the bottom with the seconds left). Each
+half wears the key that drives it at its foot: a key cap, or a painted mouse for a mouse button.
+
+```gdscript
+var dial := GoMagnetDial.make(176.0)
+dial.ring_ink = Color("#1fb5f0")          # the game's power colour, handed in
+dial.ring_ink_end = Color("#6ff0ff")
+dial.set_action(GoMagnetDial.Half.ATTRACT, &"attract", true)   # reads InputMap; true: prefer the mouse bind
+dial.set_mouse(GoMagnetDial.Half.REPULSE, MOUSE_BUTTON_RIGHT)  # or name the glyph yourself
+dial.set_key(GoMagnetDial.Half.REPULSE, "E")                   # … or a key cap
+hud.add_child(dial)
+dial.enter()                               # match start: the pop
+# every frame, or when a value changes — the dial starts its own motions from the change
+dial.set_power(power / power_cap)
+dial.set_attracting(player.attracting)
+dial.set_cooldown(player.repulse_cooldown, 2.0)
+dial.set_super(player.super_magnet)
+dial.set_powered(player.alive)
+if pressed_repulse and dial.cooling(): dial.deny()
+```
+
+| The change | What plays (track on `dial.motion`) |
+|---|---|
+| `set_attracting(true)` / `(false)` | the blue half lights, arrows flow inward, the ring glows (`light`, `flow`) / the half settles (`settle`) |
+| `set_cooldown(left, total)` 0 → more | the red half kicks, a shockwave ring leaves the dial, the half drops to grey (`fire`) |
+| … while `left` falls | the red refill rises with it and `cooldown_text()` counts down in tenths (`cooldown_decimals`) |
+| … more → 0 | a white flash and a pop, the ring pulses (`ready`) |
+| `deny()` while cooling | a side-to-side shake (`deny`); nothing when ready |
+| `set_power(ratio)` | the ring eases to it; while it drains a bright head leads it |
+| power at or under `low_ratio` (0.2) | the ring pulses in `GoSkin.hud_alert_ink()` (`low`) |
+| power 0 | one flash (`empty`), then the dial stays dim until power returns (`dimmed()`) |
+| `set_super(true)` | a second, gold rim (`super`) |
+| `enter(delay)` | the pop-in with an overshoot (`enter`) |
+| `set_powered(false)` / `(true)` | the dial goes grey and shrinks to `OFF_SCALE` (`power_down`) / comes back (`power_up`) |
+
+- Read-backs for a test: `power()`, `shown_power()`, `attracting()`, `flowing()`, `cooling()`, `refill()`, `low()`,
+  `dimmed()`, `is_super()`, `powered()`, `dial_scale()`, `half_scale(half)`, `shake_offset()`, `shock_radius()`,
+  `flash_amount()`, `key_text(half)`, `mouse_button(half)`. `advance(delta)` is the only clock, so a test steps it by hand.
+- `caption` writes a word over the dial (it fits with `GoStyle.fit_font_size`). `diameter` is in dp.
+- The dial processes only while something moves (`moving()`); at rest it costs nothing and redraws on a change.
+- Under `GoConfig.reduce_motion` every row above only changes state: no kick, no shockwave, no flash, no pulse (low
+  power is a steady alert ink).
+- arcade_light paints it (`dial_attract`, `dial_repulse`, `dial_off`, `dial_arrow`, `mouse_left`, `mouse_right` from
+  `tools/paint_arcade_magnet_dial.gd`); a look without the art draws the same parts from its tokens.
+
+## 44. GoItemBox — the held power-up
+
+`class_name GoItemBox extends Control` · input-transparent · a custom draw. One gold-framed box for the item a player
+holds: empty it is a faint dashed frame; held, it shows the picture, the name on a gold tab over it, a `×N` badge for
+charges, a draining edge with the seconds for an item that runs, the tenths of a lit fuse, and under it the key that
+uses it — or `active_text` ("ACTIVE") while it runs by itself.
+
+```gdscript
+var box := GoItemBox.make(66.0)
+box.timer_ink = Color("#8a5cff")           # the game's timer colours, handed in
+box.timer_ink_end = Color("#ff6ad5")
+box.set_action(&"use_powerup")             # the key cap, read from InputMap (or set_key("F"))
+hud.add_child(box)
+box.set_item(GoUi.skin().widget_art(&"powerup_banana"), "BANANA")   # gained: pop, sparkles, the tab slides up
+box.set_charges(2)                         # the badge reads ×2; one fewer later is a use: punch + badge bump
+box.set_active(true)                       # a timed item running
+box.set_timer(4.2, 6.0)                    # the edge drains; the last hurry_seconds (3) blink faster
+box.set_fuse(1.3, 3.0)                     # a lit bomb: "1.3", a pulse per tick, faster as it runs out
+box.clear()                                # expired or spent: the picture shrinks out, the frame is dashed again
+```
+
+- Read-backs: `held()`, `icon()`, `item_name()`, `charges()`, `badge_text()`, `timed()`, `hurrying()`, `timer_share()`,
+  `timer_text()`, `lit()`, `fuse_text()`, `tick_seconds()`, `active()`, `key_text()`, `box_scale()`, `icon_scale()`,
+  `badge_scale()`, `tab_amount()`, `blink_amount()`, `tick_amount()`, `bursts()`; `enter(delay)` and `advance(delta)` as
+  on the dial.
+- The same item set again plays nothing; charges going up is not a use.
+- Under `GoConfig.reduce_motion`: no pop, no sparkles, no punch, no blink, no pulse — the box shows each new state at
+  once and the edge steps with its value.
+- arcade_light paints `item_box`, `item_box_empty` and the `powerup_super_magnet` picture; other looks draw a gold
+  frame from their tokens.
+
+## 45. GoActionKey — a key cap with its word
+
+`class_name GoActionKey extends Control` · input-transparent · a custom draw. A desktop key hint that also shows the
+state of its action: JUMP dips when used, a cover sweeps off it over its cooldown and it pops when ready; SPRINT stays
+down and lit while held. An action with no key shows nothing.
+
+```gdscript
+var jump := GoActionKey.make("JUMP")
+jump.set_action(&"jump")                   # the cap, read from InputMap (or GoActionKey.make("JUMP", "Space"))
+var sprint := GoActionKey.make("SPRINT", "Shift")
+row.add_child(jump)
+row.add_child(sprint)
+jump.set_cooldown(player.jump_cooldown, 2.0)   # 0 → more: used; more → 0: ready
+sprint.set_held(player.sprinting)
+```
+
+- `word_room` (dp) caps the word's width; a longer translation shrinks with `GoStyle.fit_font_size`, never under
+  the fit floor. `cap_height` is the cap's height in dp.
+- Read-backs: `key_text()`, `held()`, `cooling()`, `cover()`, `press_amount()`, `cap_scale()`; `enter(delay)`,
+  `advance(delta)`.
+- Under `GoConfig.reduce_motion` the cap does not dip or pop: used is covered, held is down, at once.
+
+`GoBar` (§2) has the two motions a HUD's health bar needs beside these parts: `bar.hit(strength)` flashes and shakes
+it, scaled by the loss (0~1), and `bar.alert = true` pulses the fill toward `GoSkin.hud_alert_ink()` (a steady alert
+ink under reduce motion). All four parts run on `GoMotion` (`core/go_motion.gd`): named tracks with `play()`,
+`loop()`, `at()` and `advance()`, which never start under `GoConfig.reduce_motion`. `examples/magnet_dial` plays
+every event on a key.

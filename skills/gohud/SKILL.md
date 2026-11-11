@@ -110,6 +110,7 @@ Reply in the language the user writes in; keep code identifiers as they are.
 | Stats · a share · banners · daily rewards | `GoRadar` · `GoDonut` · `GoCarousel` · `GoRewardCalendar` | hud.md §13–§15 |
 | A quest, achievement or season task to claim | `GoRewardRow` | hud.md §39 |
 | The moment a reward is claimed: the coin bursts, "+N", COLLECT, the coins fly into the balance | `GoRewardBurst` | hud.md §42 |
+| A desktop match HUD: two actions in one dial with a power ring · the held power-up · key hints that show a cooldown | `GoMagnetDial` · `GoItemBox` · `GoActionKey` (and `GoBar.hit()` / `alert`) | hud.md §43–§45 |
 | A big picture key with a word and a count down a menu's side (daily quests, achievements, shop) | `GoSideButton` | hud.md §40 |
 | Key hints on PC · a developer console | `GoKbd.for_action(&"interact")` · `GoConsole` | platform.md §7, hud.md §10 |
 | **App screens — Flutter's widgets** | | |
