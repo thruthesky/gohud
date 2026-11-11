@@ -29,6 +29,9 @@ func _initialize() -> void:
 		await _dial_keys(look)
 		await _dial_reduced(look)
 		await _dial_idle_costs_nothing(look)
+		await _item_box_states(look)
+		await _item_box_motion(look)
+		await _item_box_reduced(look)
 	GoUi.reset()
 	print("gohud magnet dial tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -370,3 +373,185 @@ func _dial_idle_costs_nothing(look: StringName) -> void:
 	check(not dial.is_processing() and is_equal_approx(dial.shown_power(), 0.4), "%s dial: it goes back to rest by itself" % look)
 	holder.queue_free()
 	await frames(1)
+
+
+# ── GoItemBox ─────────────────────────────────────────────────────────
+
+func _picture() -> Texture2D:
+	var art := GoUi.skin().widget_art(&"powerup_banana")
+	if art != null: return art
+	var stand_in := GradientTexture2D.new()
+	stand_in.width = 16
+	stand_in.height = 16
+	return stand_in
+
+
+func _item_box_states(look: StringName) -> void:
+	GoUi.config.reduce_motion = true
+	var box := GoItemBox.make(66.0)
+	var holder := _host(box)
+	await frames(2)
+	check(box.get_combined_minimum_size().x >= 66.0 and box.get_combined_minimum_size().y > 66.0,
+		"%s item box: it asks for the box, its tab and its key" % look)
+	check(box.mouse_filter == Control.MOUSE_FILTER_IGNORE, "%s item box: it takes no mouse" % look)
+	check(not box.held() and box.icon_scale() == 0.0 and box.tab_amount() == 0.0, "%s item box: it starts empty" % look)
+	if look == GoThemePresets.ARCADE_LIGHT:
+		for art: String in ["item_box", "item_box_empty", "powerup_super_magnet"]:
+			check(GoUi.skin().widget_art(StringName(art)) == load(HUD + art + ".png"), "arcade_light ships '%s'" % art)
+	box.set_key("F")
+	check(box.key_text() == "F", "%s item box: the key cap names the key" % look)
+	InputMap.add_action(&"_box_use")
+	var key := InputEventKey.new()
+	key.keycode = KEY_G
+	InputMap.action_add_event(&"_box_use", key)
+	box.set_action(&"_box_use")
+	check(box.key_text() == "G", "%s item box: the key is read out of InputMap" % look)
+	InputMap.erase_action(&"_box_use")
+	var picture := _picture()
+	box.set_item(picture, "BANANA")
+	check(box.held() and box.icon() == picture and box.item_name() == "BANANA", "%s item box: it holds what it is given" % look)
+	box.set_charges(1)
+	check(box.badge_text() == "", "%s item box: one charge shows no count" % look)
+	box.set_charges(2)
+	check(box.badge_text() == "×2" and box.charges() == 2, "%s item box: two charges read ×2" % look)
+	box.set_timer(4.2, 6.0)
+	check(box.timed() and box.timer_text() == "5" and is_equal_approx(box.timer_share(), 0.7) and not box.hurrying(),
+		"%s item box: a running item shows its share and whole seconds" % look)
+	box.set_timer(2.5, 6.0)
+	check(box.hurrying() and box.timer_text() == "3", "%s item box: the last seconds hurry" % look)
+	box.set_timer(0.0, 6.0)
+	check(not box.timed() and box.timer_text() == "", "%s item box: a timer run out is gone" % look)
+	box.set_fuse(1.26, 3.0)
+	check(box.lit() and box.fuse_text() == "1.3", "%s item box: a lit fuse shows tenths" % look)
+	var slow := box.tick_seconds()
+	box.set_fuse(0.3, 3.0)
+	check(box.tick_seconds() < slow, "%s item box: the fuse ticks faster as it runs out" % look)
+	box.set_active(true)
+	check(box.active(), "%s item box: a running item wears its ACTIVE word" % look)
+	await frames(2)
+	box.clear()
+	check(not box.held() and box.badge_text() == "" and not box.lit() and not box.timed() and not box.active(),
+		"%s item box: cleared, everything about the item is gone" % look)
+	await frames(2)
+	check(true, "%s item box: every state draws without an error" % look)
+	holder.queue_free()
+	await frames(1)
+	GoUi.config.reduce_motion = false
+
+
+func _item_box_motion(look: StringName) -> void:
+	var box := GoItemBox.make(66.0)
+	var holder := _host(box)
+	await frames(1)
+	box.set_process(false)
+	var picture := _picture()
+	# 20 — match start: the pop, after its delay.
+	box.enter(0.08)
+	check(box.box_scale() == 0.0, "%s item box: before its turn it is not shown" % look)
+	_run(box, 0.6)
+	check(box.box_scale() == 1.0 and not box.moving(), "%s item box: it lands at its size" % look)
+	# 11 — gained: pop with an overshoot, sparkles, the tab slides up.
+	box.set_item(picture, "BANANA")
+	check(box.motion.playing(&"gain") and box.motion.playing(&"tab") and box.bursts() == 1,
+		"%s item box: a gained item pops, sparkles and raises its tab" % look)
+	check(box.box_scale() < 1.0 and box.tab_amount() == 0.0, "%s item box: the pop starts small, the tab down" % look)
+	var peak := 0.0
+	for i in 26:
+		box.advance(1.0 / 60.0)
+		peak = maxf(peak, box.box_scale())
+	check(peak > 1.02, "%s item box: the pop overshoots" % look)
+	_run(box, 0.3)
+	check(box.box_scale() == 1.0 and box.tab_amount() == 1.0 and not box.moving(), "%s item box: popped in, it rests" % look)
+	box.set_item(picture, "BANANA")
+	check(box.bursts() == 1 and not box.moving(), "%s item box: the same item again plays nothing" % look)
+	# 12 — used: the picture punches, the badge bumps.
+	box.set_charges(2)
+	check(not box.motion.playing(&"use"), "%s item box: charges going up is not a use" % look)
+	box.set_charges(1)
+	check(box.motion.playing(&"use"), "%s item box: a charge spent plays the use" % look)
+	_run(box, GoItemBox.USE_SECONDS * 0.5)
+	check(box.icon_scale() > 1.1 and box.badge_scale() > 1.2, "%s item box: the picture punches and the badge bumps" % look)
+	_run(box, 0.3)
+	check(box.icon_scale() == 1.0 and not box.moving(), "%s item box: the punch ends" % look)
+	# 13 — timed: the edge drains smoothly; the last 3 s blink faster.
+	box.set_timer(6.0, 6.0)
+	check(box.motion.playing(&"blink") and box.timer_share() == 1.0, "%s item box: a running item lights its whole edge" % look)
+	var before := box.timer_share()
+	box.advance(1.0 / 60.0)
+	check(box.timer_share() < before and before - box.timer_share() < 0.01, "%s item box: the edge drains a frame's worth" % look)
+	var slow_swing := _blink_swings(box, 1.0)
+	box.set_timer(2.0, 6.0)
+	var fast_swing := _blink_swings(box, 1.0)
+	check(box.hurrying() and fast_swing > slow_swing, "%s item box: in the last seconds the edge blinks faster (%d > %d)" % [look, fast_swing, slow_swing])
+	box.set_timer(0.0, 6.0)
+	check(not box.motion.playing(&"blink"), "%s item box: the blink stops with the timer" % look)
+	# 15 — bomb lit: a pulse per tick, faster as it runs out.
+	box.set_fuse(3.0, 3.0)
+	check(box.motion.playing(&"tick") and box.tick_amount() > 0.9, "%s item box: a lit fuse starts on a tick" % look)
+	var slow_ticks := _ticks(box, 1.2)
+	box.set_fuse(0.4, 3.0)
+	var fast_ticks := _ticks(box, 1.2)
+	check(fast_ticks > slow_ticks, "%s item box: the ticks come faster as the fuse runs out (%d > %d)" % [look, fast_ticks, slow_ticks])
+	check(box.fuse_text() == "0.4", "%s item box: the fuse reads its tenths" % look)
+	# 14 — expired / last charge: the picture shrinks out, the frame is empty again.
+	box.clear()
+	check(not box.held() and box.motion.playing(&"leave") and box.icon_scale() == 1.0, "%s item box: a lost item starts leaving" % look)
+	_run(box, GoItemBox.LEAVE_SECONDS * 0.5)
+	check(box.icon_scale() > 0.0 and box.icon_scale() < 1.0, "%s item box: the picture shrinks" % look)
+	_run(box, 0.3)
+	check(box.icon_scale() == 0.0 and box._leaving == null and not box.moving(), "%s item box: gone, the box is empty and still" % look)
+	holder.queue_free()
+	await frames(1)
+
+
+## How many times the edge's light turns from falling to rising in [param seconds].
+func _blink_swings(box: GoItemBox, seconds: float) -> int:
+	var turns := 0
+	var last := box.blink_amount()
+	var falling := false
+	for i in ceili(seconds * 120.0):
+		box.advance(1.0 / 120.0)
+		var now := box.blink_amount()
+		if now > last and falling: turns += 1
+		if not is_equal_approx(now, last): falling = now < last
+		last = now
+	return turns
+
+
+## How many fuse ticks start in [param seconds].
+func _ticks(box: GoItemBox, seconds: float) -> int:
+	var count := 0
+	var last := box.tick_amount()
+	for i in ceili(seconds * 120.0):
+		box.advance(1.0 / 120.0)
+		var now := box.tick_amount()
+		if now > last + 0.5: count += 1
+		last = now
+	return count
+
+
+func _item_box_reduced(look: StringName) -> void:
+	GoUi.config.reduce_motion = true
+	var box := GoItemBox.make(66.0)
+	var holder := _host(box)
+	await frames(1)
+	box.enter(0.2)
+	check(box.box_scale() == 1.0, "%s item box (reduced): it enters in place" % look)
+	box.set_item(_picture(), "BANANA")
+	check(box.held() and box.box_scale() == 1.0 and box.tab_amount() == 1.0 and box.bursts() == 0,
+		"%s item box (reduced): a gained item is simply there — no pop, no sparkles" % look)
+	box.set_charges(2)
+	box.set_charges(1)
+	check(box.icon_scale() == 1.0 and box.badge_scale() == 1.0, "%s item box (reduced): a use moves nothing" % look)
+	box.set_timer(2.0, 6.0)
+	check(box.blink_amount() == 1.0 and is_equal_approx(box.timer_share(), 2.0 / 6.0), "%s item box (reduced): the edge is steady and steps with its value" % look)
+	box.set_fuse(1.0, 3.0)
+	check(box.lit() and box.tick_amount() == 0.0 and box.fuse_text() == "1.0", "%s item box (reduced): the fuse reads, nothing pulses" % look)
+	check(not box.motion.busy(), "%s item box (reduced): no motion runs" % look)
+	box.clear()
+	check(not box.held() and box.icon_scale() == 0.0 and box._leaving == null, "%s item box (reduced): a lost item is gone at once" % look)
+	await frames(2)
+	check(not box.is_processing(), "%s item box (reduced): it never processes" % look)
+	holder.queue_free()
+	await frames(1)
+	GoUi.config.reduce_motion = false
