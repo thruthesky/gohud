@@ -2616,6 +2616,30 @@ func _anchor() -> void:
 	key_layer.queue_free()
 	await frames(2)
 
+	# ── …and leaves the key alone when nothing inside can take focus ───────────────
+	# 🛑 A window whose controls never take focus (arcade_light's keys; the host reads the arrows itself) used up every
+	#    arrow: nothing got focus, so each next press was "the first focus key" again and the host never saw one.
+	var deaf_layer := CanvasLayer.new()
+	root.add_child(deaf_layer)
+	var deaf_win := GoSurface.new()
+	deaf_win.visible = false
+	deaf_layer.add_child(deaf_win)
+	deaf_win.body.add_child(GoStyle.label("nothing to focus"))
+	await frames(2)
+	for control: Control in deaf_win.find_children("*", "Control", true, false):
+		control.focus_mode = Control.FOCUS_NONE
+	root.push_input(_key(KEY_W))
+	root.gui_release_focus()
+	deaf_win.visible = true
+	await frames(3)
+	root.push_input(_key(KEY_RIGHT))
+	check(root.gui_get_focus_owner() == null, "a window with nothing focusable takes no focus on an arrow")
+	check(not root.is_input_handled(), "…and leaves that arrow to its host")
+	root.push_input(_key(KEY_RIGHT))
+	check(not root.is_input_handled(), "…the next one too")
+	deaf_layer.queue_free()
+	await frames(2)
+
 	# ── Tooltip ─────────────────────────────────────────────────────────
 	# 🛑 **For an icon button the tooltip is the only description there is.** The engine's default tooltip leaves wrapping on
 	#    and computes a maximum width of 1dp, which split `settings` **one character per line** (measured 2026-09-13: width 1 · height 186).

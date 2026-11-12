@@ -2486,10 +2486,14 @@ func _input(event: InputEvent) -> void:
 	#    among its own top-level Controls only (gdref 4.7.2 viewport.cpp "Control *from = gui.key_focus"), never inside
 	#    a CanvasLayer — so Tab and the arrows did nothing in a window on a layer until the mouse clicked into it.
 	#    Only when nothing has focus: a focused control elsewhere (an anchor a tap went through) is the engine's start.
+	# 🛑 The key is used up only when focus really landed. A window with nothing focusable inside (arcade_light's keys
+	#    never take focus — `GoSkin.control_focus_mode` — so a host reads the arrows itself) must let the key through:
+	#    eaten here, every arrow was lost, since the focus owner stays null and each next press was "the first" again.
 	if _is_focus_key(event) and get_viewport().gui_get_focus_owner() == null:
 		_focus_default()
-		get_viewport().set_input_as_handled()
-		return
+		if get_viewport().gui_get_focus_owner() != null:
+			get_viewport().set_input_as_handled()
+			return
 	if not _dragging: return
 	var dy := 0.0
 	if event is InputEventScreenDrag and event.index == _touch_index: dy = event.relative.y
