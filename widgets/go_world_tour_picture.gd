@@ -53,12 +53,16 @@ func _has_point(point: Vector2) -> bool:
 	var origin := (size - region.size * scale_factor) * 0.5
 	var local_point := (point - origin) / scale_factor
 	if not Geometry2D.is_point_in_polygon(local_point, _outline(stage, region, data.masked)): return false
-	var source: Texture2D = data.source
-	var key := source.get_instance_id()
-	if not _atlas_images.has(key): _atlas_images[key] = source.get_image()
-	var img: Image = _atlas_images[key]
+	var img := atlas_image(data.source)
 	var pixel := Vector2i(region.position + local_point)
 	return img != null and pixel.x >= 0 and pixel.y >= 0 and pixel.x < img.get_width() and pixel.y < img.get_height() and img.get_pixelv(pixel).a > 0.1
+
+
+## The CPU copy of a picture's source, read back once and shared by hit tests and the selection halo.
+static func atlas_image(source: Texture2D) -> Image:
+	var key := source.get_instance_id()
+	if not _atlas_images.has(key): _atlas_images[key] = source.get_image()
+	return _atlas_images[key]
 
 
 func _gui_input(event: InputEvent) -> void:

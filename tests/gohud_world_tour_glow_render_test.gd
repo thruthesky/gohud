@@ -23,7 +23,8 @@ func _initialize() -> void:
 		await process_frame
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
-	var positive := image.get_pixel(224, 192)
+	# Island pixels 18..24 of region 16..48 draw at x 80..128 (8 screen pixels per atlas pixel); 8 to its right is in the rim.
+	var positive := image.get_pixel(136, 192)
 	var unwanted := image.get_pixel(304, 192)
 	var glow_visible := positive.r > 0.5 and positive.g > 0.4
 	var neighbour_clear := unwanted.r < 0.1 and unwanted.g < 0.1

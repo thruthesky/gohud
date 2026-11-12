@@ -255,6 +255,11 @@ static func project_has_font() -> bool:
 ## Theme metadata naming a body-font fallback per language: `{"ko": Font, "ja": Font, "zh_CN": Font, "zh_TW": Font}`
 ## (`arcade_light` writes Magnet Mayhem's four Noto Sans CJK fonts). A look without it has no lead to change.
 const LOCALE_FONTS_META := &"go_locale_fonts"
+## Theme metadata naming the look's other fonts that carry the language fonts as fallbacks of their own: an
+## `Array[Font]` of `FontVariation`s (`arcade_light`'s heavy faces — the world-tour, scoreboard and row fonts). Their
+## fallbacks may wrap a language font (a `FontVariation` whose `base_font` is it, at the face's own weight); the
+## lead is reordered in each as in the body font.
+const LOCALE_CHAINS_META := &"go_locale_chains"
 
 
 ## 🔤 Switch the UI language: the look's **font order first**, then `TranslationServer.set_locale(code)` (only when it
@@ -274,7 +279,8 @@ static func set_locale(code: String) -> void:
 ## shape that language's readers expect. The language's font comes from the theme's `go_locale_fonts` metadata: the
 ## code itself (`zh_TW`), else its language (`ko_KR` → `ko`); Chinese by script or region (Hans → `zh_CN`; Hant, TW,
 ## HK, MO → `zh_TW`; any other → `zh_CN`). A code with no font of its own (`en`) restores the written order.
-## Returns whether the order changed. `use_preset()` runs it for the current locale.
+## Every font in the theme's `go_locale_chains` metadata is reordered the same way (`_lead_fallbacks`).
+## Returns whether any order changed. `use_preset()` runs it for the current locale.
 ## 🛑 It assigns `fallbacks` **only when the order really changes**: every assignment re-shapes all the text on
 ##    screen, and a settings screen may call this on every change. Not in the editor (the theme there is the file).
 static func set_font_locale(code: String) -> bool:
@@ -286,15 +292,31 @@ static func set_font_locale(code: String) -> bool:
 		if chosen == null or chosen.theme == null: return false
 	var look := theme()
 	if look == null or not look.has_meta(LOCALE_FONTS_META): return false
-	var font := look.get_meta(&"go_body_font_baked", look.default_font) as FontVariation
 	var fonts: Variant = look.get_meta(LOCALE_FONTS_META)
-	if font == null or not (fonts is Dictionary): return false
-	if not font.has_meta(&"go_fallbacks_written"): font.set_meta(&"go_fallbacks_written", font.fallbacks.duplicate())
+	if not (fonts is Dictionary): return false
 	var lead: Font = (fonts as Dictionary).get(_locale_font_key(code, fonts), null)
+	var chains: Array = [look.get_meta(&"go_body_font_baked", look.default_font)]
+	chains.append_array(look.get_meta(LOCALE_CHAINS_META, []))
+	var changed := false
+	for chain: Variant in chains:
+		if chain is FontVariation and _lead_fallbacks(chain, lead, (fonts as Dictionary).values()): changed = true
+	return changed
+
+
+## Reorder [param font]'s fallbacks for [param lead]: the slots its language fonts hold (a font of [param languages],
+## or a `FontVariation` over one) are refilled with the lead's first, then the others in the written order; every
+## other fallback (a Cyrillic face before them, say) keeps its slot. Assigns only on a change.
+static func _lead_fallbacks(font: FontVariation, lead: Font, languages: Array) -> bool:
+	if not font.has_meta(&"go_fallbacks_written"): font.set_meta(&"go_fallbacks_written", font.fallbacks.duplicate())
+	var written: Array = font.get_meta(&"go_fallbacks_written")
+	var queue: Array[Font] = []
+	for f: Font in written:
+		if _language_font(f, languages) == null: continue
+		if lead != null and _language_font(f, languages) == lead: queue.push_front(f)
+		else: queue.append(f)
 	var order: Array[Font] = []
-	if lead != null: order.append(lead)
-	for written: Font in font.get_meta(&"go_fallbacks_written"):
-		if written != lead: order.append(written)
+	for f: Font in written:
+		order.append(queue.pop_front() if _language_font(f, languages) != null else f)
 	var now := font.fallbacks
 	var same := now.size() == order.size()
 	for i in order.size():
@@ -303,6 +325,13 @@ static func set_font_locale(code: String) -> bool:
 	if same: return false
 	font.fallbacks = order
 	return true
+
+
+## The language font of [param languages] that [param f] draws: itself, or the base of a `FontVariation` over it.
+static func _language_font(f: Font, languages: Array) -> Font:
+	if languages.has(f): return f
+	if f is FontVariation and languages.has((f as FontVariation).base_font): return (f as FontVariation).base_font
+	return null
 
 
 ## The key of [param fonts] that [param code] reads in, or `""` — see `set_font_locale`.

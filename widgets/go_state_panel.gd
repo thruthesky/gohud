@@ -67,8 +67,14 @@ const BUTTON_FONT_SHARE := 0.42
 ## How far the body tucks up under the heading, as a share of the heading's font size (the display face has a
 ## deep descent; the painted cards set the body right under the heading's letters).
 const HEADING_TUCK_SHARE := 0.44
+## The letters `HEADING_TUCK_SHARE` was tuned under: the display face's Latin capitals, standing on the baseline. A
+## heading whose ink reaches lower (a Japanese or Korean fallback, a descender) tucks less by the difference.
+const HEADING_TUCK_REFERENCE := "H"
 ## How far the heading rises into the space over its letters (the display face's tall line), as a share of its size.
 const HEADING_LIFT_SHARE := 0.4
+## The clear space kept on each side of the heading, as a share of its base size: a long heading (German, Russian)
+## shrinks before it runs to the card's rim.
+const HEADING_SIDE_SHARE := 0.5
 ## How much of the header title's line box is trimmed above and below its letters, as a share of its size.
 const HEADER_TITLE_TRIM_SHARE := 0.25
 
@@ -394,10 +400,21 @@ func fit_now() -> void:
 	var inner := size.x - (face.get_minimum_size().x if face != null else 0.0)
 	var base := float(_base_size(heading_label)) * (LOADING_HEADING_SHARE if loading else 1.0) * heading_scale
 	if heading_variation == VAR_TITLE: base *= BOARD_HEADING_SHARE
-	_fit_to(heading_label, int(base), inner - padding * 2.0)
+	_fit_to(heading_label, int(base), inner - padding * 2.0 - base * HEADING_SIDE_SHARE * 2.0)
 	var heading_size := heading_label.get_theme_font_size(&"font_size")
-	_heading_box.add_theme_constant_override(&"margin_top", -roundi(heading_size * HEADING_LIFT_SHARE))
-	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(heading_size * HEADING_TUCK_SHARE))
+	# Rise into the gap over the letters, never past it: a fallback face (Japanese, Korean) has a far smaller gap
+	# than the display face's, and a fixed lift pushed its letters into the picture.
+	var gap := GoStyle.ink_top_gap(atr(heading_label.text), heading_label.get_theme_font(&"font"), heading_size)
+	_heading_box.add_theme_constant_override(&"margin_top", -roundi(minf(heading_size * HEADING_LIFT_SHARE, gap)))
+	# 🔑 Tuck under the letters by the gap under their ink, as the lift rises by the gap over it: the share is the
+	#    display face's under Latin capitals, and a heading whose ink sits lower (Japanese, Korean: the fallback's
+	#    letters reach far deeper than the capitals' baseline) tucks that much less, so its body line keeps the same
+	#    clear space under the heading's letters — a fixed tuck set ショップには接続が必要です onto the body line.
+	var font := heading_label.get_theme_font(&"font")
+	var deeper := GoStyle.ink_bottom_gap(HEADING_TUCK_REFERENCE, font, heading_size) \
+			- GoStyle.ink_bottom_gap(atr(heading_label.text), font, heading_size)
+	var tuck := maxf(0.0, heading_size * HEADING_TUCK_SHARE - maxf(0.0, deeper))
+	_heading_box.add_theme_constant_override(&"margin_bottom", -roundi(tuck))
 	if not header.visible: return
 	var title_base := int(_base_size(header_title) * HEADER_TITLE_SHARE)
 	var strip := header.get_theme_stylebox(&"panel")

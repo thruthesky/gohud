@@ -9,8 +9,8 @@
   "base": "arcade_painted",
   "dials": {
    "alert_tint": 0.14,
-   "badge_pad_x": 7,
-   "badge_pad_y": 2,
+   "badge_pad_x": 5,
+   "badge_pad_y": 0,
    "joystick_base_alpha": 0.5,
    "joystick_ring_alpha": 0.6,
    "joystick_ring_width": 3.0,

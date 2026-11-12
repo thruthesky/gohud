@@ -15,6 +15,7 @@ constants. Parts with no painted art (rows, tabs, bars …) keep the arcade's co
 """
 import json
 import os
+import re
 
 RES = "res://addons/gohud"
 SPRITE_SCRIPT = RES + "/widgets/go_stylebox_sprite.gd"
@@ -29,14 +30,34 @@ STAGE = RES + "/assets/arcade_light/stage/"
 FONTS = RES + "/assets/fonts/"
 FONT_BASE = ("font_nunito", FONTS + "nunito/Nunito-Bold.ttf")
 FONT_TOUR = ("font_baloo2", FONTS + "baloo2/Baloo2.ttf")
+# 🔤 Baloo 2 has no Cyrillic: the world-tour font falls back to Nunito Black (the game's build, Cyrillic only) before
+#    the body font, so a Russian headline is as heavy as a Latin one rather than Nunito Bold's lighter strokes.
+FONT_TOUR_CYRILLIC = ("font_nunito_black", FONTS + "nunito/Nunito-Black.ttf")
 FONT_FALLBACKS = [("font_noto_%s" % code.lower(), FONTS + "noto_sans_cjk/NotoSans%s-Bold.ttf" % code)
                   for code in ("KR", "JP", "SC", "TC")]
 # 🔤 The language each fallback leads for (`UiTheme.CJK_FONTS`): `GoUi.set_locale(code)` moves that language's font to
 #    the front, so a Han character shared by Chinese, Japanese and Korean takes the shape the reader expects.
 LOCALE_FONTS = {"ko": "font_noto_kr", "ja": "font_noto_jp", "zh_CN": "font_noto_sc", "zh_TW": "font_noto_tc"}
+# 🔤 **The heavy chains' CJK weight.** An outer FontVariation's `variation_embolden` thickens only its own face: each
+#    fallback is shaped from its own RID, and a variation with no fallbacks of its own uses its base font's fallbacks
+#    raw (Godot 4.7 `FontVariation::_update_rids`, `Font::_update_rids_fb`). So every heavy chain carries its own four
+#    CJK fallbacks — one FontVariation per Noto file (`cjk_chain()`) at the chain's weight — or its Korean, Japanese
+#    and Chinese draw in plain Noto Sans CJK Bold, visibly thinner than its Latin. Noto's bold stems are already
+#    thicker than Nunito's, and a dense Han glyph fills its counters well before the Latin value.
+#    🛑 Tuned at the **smallest size the chain sets**, not at a title's size: rendered 2026-11-06 with the dense
+#    需 鐵 接 続 磁 購 買 賺 at 24/28/30/40/60 px beside the Latin heavy face, under both arcade outlines (navy on a
+#    white 6 px outline, white on a dark one). The old 0.6 (tuned at 48 px) closes 買's 目 and 需's 雨 dots at 28 px
+#    — a shop key or a score at that size read as ink blots; 0.45 starts closing them under the dark outline; 0.4 is
+#    the highest value whose counters stay open at 28 px in both looks.
+SCORE_EMBOLDEN = 1.2           # `painted_score_font`: the scoreboard's heavy Nunito
+SCORE_CJK_EMBOLDEN = 0.4       # … its Korean, Japanese and Chinese (0.45 starts closing 買 and 需 at 28 px)
+TOUR_EMBOLDEN = 0.6            # `world_tour_font`: Baloo 2 at wght 800, the reference's extra-heavy lettering
+TOUR_CJK_EMBOLDEN = 0.4        # … its Korean, Japanese and Chinese (0.45 starts closing 買 and 需 at 28 px)
 MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arcade_painted_map.json")
 
 SHAPE = dict(kind="arcade_painted")
+# 🔤 The heavy fonts with CJK fallbacks of their own (`cjk_chain`), named in the theme's `go_locale_chains` metadata.
+LOCALE_CHAINS = ("world_tour_font", "painted_score_font", "painted_row_font")
 
 # ── The game's constants (`UiTheme`) ──
 WHITE = (1.0, 1.0, 1.0, 1.0)
@@ -119,6 +140,13 @@ SLIDER_FILLS = {"HSlider": "slider_blue.png", "GoSliderGreen": "slider_green.png
 REWARD_PLATE_EDGE = (96, 56, 96, 56)
 REWARD_PLATE_PPU = 2.0
 REWARD_PLATE_PAD = (12.0, 4.0, 4.0)
+# 💬 The quest row's description: its size (the title is 22) and its ink, a navy softer than the board's #010339 that
+#    still reads well over the cyan, gold and grey plates.
+REWARD_NOTE_SIZE = 17
+REWARD_NOTE_INK = (0.133, 0.2, 0.431, 1.0)                # #22336e
+# 🪙 The reward burst's "+N": its size and its ink edge (the preview the owner approved: 62 and 11).
+REWARD_AMOUNT_SIZE = 62
+REWARD_AMOUNT_EDGE = 11
 REWARD_BAR_EDGE = (28, 0, 28, 0)
 REWARD_BAR_PPU = 1.7
 ROW_CYAN_FACE = (0.709804, 0.890196, 0.984314, 1.0)     # #b5e3fb (the art's centre pixel, as below)
@@ -222,7 +250,9 @@ BASES = {
     "GoPodiumName": "Label", "GoPodiumValue": "Label",
     # 🎁 The quest rows (GoRewardRow): their plates, and the bar's track and fills under ProgressBar's own part names.
     "GoRewardRow": "PanelContainer", "GoRewardRowGold": "PanelContainer", "GoRewardRowDone": "PanelContainer",
-    "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar",
+    "GoRewardBar": "ProgressBar", "GoRewardBarGreen": "ProgressBar", "GoRewardRowNote": "Label",
+    # 🪙 The reward burst's "+N" (GoRewardBurst): gold on the ink edge.
+    "GoRewardAmount": "Label",
 }
 # 🏆 The leaderboard controls (GoCategoryButton, GoPageStepper, GoStatePanel, GoBoardTitle): `leaderboard_controls()`.
 LEADERBOARD_CONTROL_BASES = {
@@ -240,7 +270,20 @@ STRIPE_MARGINS = (10, 0, 16, 0)
 STRIPE_GOLD_MIX = 0.28
 # The rows' medium weight: lighter than the scoreboard's heavy 1.2 (`painted_score_font`), heavier than the body's 0.
 ROW_EMBOLDEN = 0.5
+ROW_CJK_EMBOLDEN = 0.3         # … its Korean, Japanese and Chinese (a step under the scoreboard's 0.4, the 28 px ceiling)
 FONT_STATES = ("font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color")
+
+
+def cjk_chain(boxes, chain, embolden):
+    """`chain`'s own CJK fallbacks: a FontVariation per Noto Sans CJK file at `embolden`, in `FONT_FALLBACKS`' order
+    (KR JP SC TC) — the outer chain's embolden never reaches a fallback. Each wraps its Noto file as `base_font`, which
+    is how `GoUi.set_font_locale()` maps it back to its language (`go_locale_fonts`). Returns their `SubResource`s."""
+    refs = []
+    for rid, _ in FONT_FALLBACKS:
+        bid = "%s_%s" % (chain, rid[len("font_"):])
+        boxes[bid] = ("FontVariation", ['base_font = ExtResource("%s")' % rid, "variation_embolden = %g" % embolden])
+        refs.append('SubResource("%s")' % bid)
+    return refs
 
 
 def _times(a, b):
@@ -327,12 +370,16 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     boxes["painted_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_BASE[0],
                                                "fallbacks = Array[Font]([%s])" % ", ".join(
                                                    'ExtResource("%s")' % rid for rid, _ in FONT_FALLBACKS)])
-    # A rounded, heavy display face for the world-tour art. The body font remains the fallback so
-    # GoUi.set_font_locale() continues to select the appropriate CJK glyphs.
+    # A rounded, heavy display face for the world-tour art: Nunito Black for Cyrillic, Nunito Bold for any other mark
+    # Baloo lacks (the body font's base, which used to answer here as the body font's first face), then its own heavy
+    # CJK (`cjk_chain`; `GoUi.set_font_locale()` reorders them) — so only the CJK weight changed.
     boxes["world_tour_font"] = ("FontVariation", ['base_font = ExtResource("%s")' % FONT_TOUR[0],
                                                  'variation_opentype = {2003265652: 800.0}', # TextServer.name_to_tag("wght")
-                                                 'variation_embolden = 0.6', # the reference's extra-heavy lettering
-                                                 'fallbacks = Array[Font]([SubResource("painted_font")])'])
+                                                 "variation_embolden = %g" % TOUR_EMBOLDEN,
+                                                 "fallbacks = Array[Font]([%s])" % ", ".join(
+                                                     ['ExtResource("%s")' % FONT_TOUR_CYRILLIC[0],
+                                                      'ExtResource("%s")' % FONT_BASE[0]]
+                                                     + cjk_chain(boxes, "world_tour_font", TOUR_CJK_EMBOLDEN))])
     setT("default_font", 'SubResource("painted_font")')
     # 🔑 Baked in — a theme loaded straight from disk sets every label as the game does — and named, so `GoUi.theme()`
     #    lifts it when the project chose a font of its own (gohud never replaces a project's font).
@@ -455,10 +502,12 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     setT("GoGoldButton/constants/outline_size", 4)
     setT("GoGoldButton/constants/h_separation", 10)
     setT("GoGoldButton/font_sizes/font_size", GLOSS_FONT_SIZE)
-    # Heavy scoreboard typography is opt-in, leaving the rest of the game's menus and dialogs unchanged.
-    # Wrap the multilingual body font itself: its language-specific fallback ordering stays shared with GoUi.
+    # Heavy scoreboard typography is opt-in, leaving the rest of the game's menus and dialogs unchanged. The body font
+    # emboldened, with heavy CJK fallbacks of its own (`cjk_chain`): the body's own fallbacks would stay thin.
     boxes["painted_score_font"] = ("FontVariation", ['base_font = SubResource("painted_font")',
-                                                   "variation_embolden = 1.2"])
+                                                   "variation_embolden = %g" % SCORE_EMBOLDEN,
+                                                   "fallbacks = Array[Font]([%s])" % ", ".join(
+                                                       cjk_chain(boxes, "painted_score_font", SCORE_CJK_EMBOLDEN))])
     score_ink = (0.025, 0.035, 0.22, 1.0)
     for type_name, size, ink, outline in (
             ("GoScoreLabel", 26, score_ink, 0), ("GoScoreHeadLabel", 22, score_ink, 0),
@@ -502,7 +551,13 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
     # 🔤 The rows' lettering: the body font at a medium weight, the scoreboard's navy ink (the muted ink for ranks and
     #    helper text), no outline. No font size: the caller sizes its rows.
     boxes["painted_row_font"] = ("FontVariation", ['base_font = SubResource("painted_font")',
-                                                 "variation_embolden = %g" % ROW_EMBOLDEN])
+                                                 "variation_embolden = %g" % ROW_EMBOLDEN,
+                                                 "fallbacks = Array[Font]([%s])" % ", ".join(
+                                                     cjk_chain(boxes, "painted_row_font", ROW_CJK_EMBOLDEN))])
+    # 🔤 The chains `GoUi.set_font_locale()` reorders besides the body font, so a Han character keeps the language's
+    #    shape in every face.
+    setT("metadata/go_locale_chains", "Array[Font]([%s])" % ", ".join(
+        'SubResource("%s")' % name for name in LOCALE_CHAINS))
     for type_name, ink in (("GoScoreRowLabel", score_ink), ("GoScoreRowMutedLabel", token("muted"))):
         put(type_name + "/fonts/font", "painted_row_font")
         setT(type_name + "/colors/font_color", C(ink))
@@ -555,6 +610,18 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                                           REWARD_BAR_PPU, 0.0, 0.0, 0.0))
     put("GoRewardBarGreen/styles/fill", sprite("painted_GoRewardBarGreen_fill", "rewards/bar_green.png",
                                                REWARD_BAR_EDGE, REWARD_BAR_PPU, 0.0, 0.0, 0.0))
+    # 💬 A quest row's description (`GoRewardRow.description`): how to earn it, under the title — the rows' lighter face
+    #    in a softer navy, a size under the title's 22, so the two read as a title and its note on every plate.
+    put("GoRewardRowNote/fonts/font", "painted_row_font")
+    setT("GoRewardRowNote/font_sizes/font_size", REWARD_NOTE_SIZE)
+    setT("GoRewardRowNote/colors/font_color", C(REWARD_NOTE_INK))
+    setT("GoRewardRowNote/constants/outline_size", 0)
+    # 🪙 The reward burst's "+N" (`GoRewardBurst`): the look's gold on a thick ink edge, as big as a title and bigger, so
+    #    it reads over the burst's light and the navy dim.
+    setT("GoRewardAmount/font_sizes/font_size", REWARD_AMOUNT_SIZE)
+    setT("GoRewardAmount/colors/font_color", C(GOLD))
+    setT("GoRewardAmount/colors/font_outline_color", C(INK))
+    setT("GoRewardAmount/constants/outline_size", REWARD_AMOUNT_EDGE)
     # 🧱 The loading screen's floor blocks (`LoadTile`: `chunky_box(LOAD_TILE, 9, 0, 0, 3, 8, LOAD_TILE_RIM)`; lit,
     #    `LoadTileLit`: GOLD in LOAD_TILE_LIT_RIM) — navy until lit, then gold. Plain Panels: the padding is the rim.
     put("GoTile/styles/panel", box("painted_GoTile", LOAD_TILE, 9, 3, LOAD_TILE_RIM, margin_h=0.0,
@@ -814,15 +881,13 @@ def restyle(pal, consts, boxes, T, flat, C, contrast):
                 put(type_name + "/icons/" + action + suffix, art)
 
     # 🧹 The arcade faces nothing points at any more go, so the file holds only what it draws.
+    #    Every reference counts — a fallback list names several on one line.
     used = set()
     for entry in T:
-        value = entry.partition(" = ")[2]
-        if value.startswith('SubResource("'):
-            used.add(value[len('SubResource("'):-2])
+        used.update(re.findall(r'SubResource\("([^"]+)"\)', entry.partition(" = ")[2]))
     for bid, (_, body) in boxes.items():
         for line in body:
-            if 'SubResource("' in line:
-                used.add(line.split('SubResource("')[1].split('"')[0])
+            used.update(re.findall(r'SubResource\("([^"]+)"\)', line))
     for bid in [bid for bid in boxes if bid not in used]:
         del boxes[bid]
     write_map()
@@ -950,7 +1015,7 @@ def ext_resources(boxes):
     if 'script = ExtResource("sprite_icon")' in heads:
         lines.append('[ext_resource type="Script" path="%s" id="sprite_icon"]' % ICON_SCRIPT)
     if any(body[:1] == ['base_font = ExtResource("%s")' % FONT_BASE[0]] for _, body in boxes.values()):
-        for rid, path in [FONT_BASE, FONT_TOUR] + FONT_FALLBACKS:
+        for rid, path in [FONT_BASE, FONT_TOUR, FONT_TOUR_CYRILLIC] + FONT_FALLBACKS:
             lines.append('[ext_resource type="FontFile" path="%s" id="%s"]' % (path, rid))
     if not lines:
         return []
@@ -978,7 +1043,12 @@ def write_map():
                                "font + fallbacks. GoUi.set_locale(code) (or set_font_locale) puts the language's "
                                "own CJK font first, as UiTheme.set_locale_font() does (locale_fonts).",
                       "base_font": FONT_BASE[1], "fallbacks": [path for _, path in FONT_FALLBACKS],
-                      "locale_fonts": {code: dict(FONT_FALLBACKS)[rid] for code, rid in LOCALE_FONTS.items()}},
+                      "locale_fonts": {code: dict(FONT_FALLBACKS)[rid] for code, rid in LOCALE_FONTS.items()},
+                      "locale_chains": {"_help": "The heavy fonts (theme metadata go_locale_chains) with CJK "
+                                                 "fallbacks of their own at this weight; set_font_locale reorders "
+                                                 "them as the body's.",
+                                        "world_tour_font": TOUR_CJK_EMBOLDEN, "painted_score_font": SCORE_CJK_EMBOLDEN,
+                                        "painted_row_font": ROW_CJK_EMBOLDEN}},
             "_font_sizes": {"_help": "Only the default font is written; no variation has a font of its own. The font sizes written are the game's literal ones or a Cfg "
                                      "size's desktop value (named in _cfg_sizes).",
                             "written": sizes, "left_to_game": []},

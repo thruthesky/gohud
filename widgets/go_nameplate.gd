@@ -8,7 +8,9 @@
 ## plate.follow(camera, character.name_anchor.global_position)   # hidden while the point is behind the camera
 ## ```
 ##
-## The plate is `base_width` wide, widening to the whole name up to `max_width` (a longer name is clipped). Its box is
+## The plate is `base_width` wide, widening to the whole name up to `max_width`. A longer name first shrinks to fit
+## (`GoStyle.fit_font_size`, never under `GoConfig.fit_min_scale`); one still too wide there ends in "…", so its first
+## letters always show. Its box is
 ## `GoSkin.nameplate_box(fill)` — `fill` is `tint`, or `GoSkin.nameplate_own_fill()` on the own plate — and its name
 ## `GoSkin.nameplate_ink(own)` with a `GoSkin.nameplate_outline(own)` edge in `GoSkin.nameplate_outline_ink()`.
 ## 🛑 Display only: the plate shows the name and place it is given.
@@ -41,7 +43,7 @@ extends PanelContainer
 		base_width = value
 		_fit()
 
-## The widest the plate gets (dp): a longer name is clipped.
+## The widest the plate gets (dp): a longer name shrinks to fit, then ends in "…".
 @export_range(8, 512) var max_width := 100:
 	set(value):
 		max_width = value
@@ -53,7 +55,8 @@ extends PanelContainer
 		plate_height = value
 		_fit()
 
-## The name's font size (dp).
+## The name's font size (dp) — the biggest it is drawn at: a name wider than `max_width` is drawn smaller
+## (`fitted_font_size()`).
 @export_range(6, 64) var font_size := 14:
 	set(value):
 		font_size = value
@@ -81,6 +84,8 @@ func _init() -> void:
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_label.clip_text = true
+	# 🛑 A centred, clipped line loses BOTH ends — the trim keeps the start of the name and ends it in "…".
+	_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_label.text = text
 	add_child(_label)
 
@@ -121,21 +126,33 @@ func _restyle() -> void:
 	var skin := GoUi.skin()
 	var fill := skin.nameplate_own_fill() if own else (tint if tint.a > 0.0 else GoUi.color(GoTheme.ACCENT))
 	add_theme_stylebox_override(&"panel", skin.nameplate_box(fill))
-	_label.add_theme_font_size_override(&"font_size", font_size)
 	_label.add_theme_color_override(&"font_color", skin.nameplate_ink(own))
 	_label.add_theme_color_override(&"font_outline_color", skin.nameplate_outline_ink())
 	_label.add_theme_constant_override(&"outline_size", skin.nameplate_outline(own))
 	_fit()
 
 
+## The size the name is drawn at: `font_size`, or smaller when the name is wider than `max_width` allows.
+func fitted_font_size() -> int:
+	if not is_instance_valid(_label): return font_size
+	return _label.get_theme_font_size(&"font_size") if _label.has_theme_font_size_override(&"font_size") else font_size
+
+
+# 🔑 The one place that sizes the name and the plate: the name at `font_size` when it fits `max_width`, else shrunk
+#    down to the fit floor; the plate as wide as the name it draws, between `base_width` and `max_width`.
 func _fit() -> void:
 	if not is_instance_valid(_label) or not is_inside_tree(): return
 	var font := _label.get_theme_font(&"font")
-	var need := 0.0
-	if font != null:
-		need = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	need += _label.get_theme_constant(&"outline_size")
+	var chrome := float(_label.get_theme_constant(&"outline_size"))
 	var box := get_theme_stylebox(&"panel")
-	if box != null: need += box.get_minimum_size().x
-	custom_minimum_size = Vector2(clampf(need, base_width, max_width), plate_height)
+	if box != null: chrome += box.get_minimum_size().x
+	var fitted := font_size
+	var need := chrome
+	if font != null:
+		fitted = GoStyle.fit_font_size(PackedStringArray([text]), font_size, max_width - chrome, font)
+		need += font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x
+	if fitted_font_size() != fitted or not _label.has_theme_font_size_override(&"font_size"):
+		_label.add_theme_font_size_override(&"font_size", fitted)
+	# 🛑 Whole pixels, rounded up: a plate a fraction narrower than its name would trim a name that fits.
+	custom_minimum_size = Vector2(clampf(ceilf(need), base_width, max_width), plate_height)
 	size = custom_minimum_size

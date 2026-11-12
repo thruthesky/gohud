@@ -109,6 +109,8 @@ Reply in the language the user writes in; keep code identifiers as they are.
 | A long-press or right-click menu | `GoContextMenu.attach(node, items)` + a visible `⋯` (`open_at`) | hud.md §9 |
 | Stats · a share · banners · daily rewards | `GoRadar` · `GoDonut` · `GoCarousel` · `GoRewardCalendar` | hud.md §13–§15 |
 | A quest, achievement or season task to claim | `GoRewardRow` | hud.md §39 |
+| The moment a reward is claimed: the coin bursts, "+N", COLLECT, the coins fly into the balance | `GoRewardBurst` | hud.md §42 |
+| A big picture key with a word and a count down a menu's side (daily quests, achievements, shop) | `GoSideButton` | hud.md §40 |
 | Key hints on PC · a developer console | `GoKbd.for_action(&"interact")` · `GoConsole` | platform.md §7, hud.md §10 |
 | **App screens — Flutter's widgets** | | |
 | A whole screen: app bar, page, bottom bar, FAB, drawer | `GoScaffold` (template `app_screen.gd`) | flutter.md §2 |

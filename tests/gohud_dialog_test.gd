@@ -39,6 +39,18 @@ func _initialize() -> void:
 		await _fit_box(look)
 		await _fit_surface(look)
 		await _fit_share(look)
+		await _fit_min_height(look)
+		await _scale_title(look)
+		await _title_ink_centre(look)
+		await _title_before_widen(look)
+		await _title_hold_steady(look)
+		await _key_row_fit(look)
+		await _key_gloss(look)
+		await _title_gloss(look)
+		await _key_row_full(look)
+		await _key_row_own_drop(look)
+		await _small_key_fit(look)
+		await _balanced_lines(look)
 		await _popover_card(look)
 		await _os_back(look)
 	GoUi.reset()
@@ -1132,6 +1144,237 @@ func _fit_share(look: StringName) -> void:
 		await frames(1)
 
 
+## `fit_min_height`: windows of different heights given their tallest's height show at one scale (one width on screen)
+## where the tallest has to shrink, each keeping its own height; where the tallest fits, none shrinks; 0 measures each
+## at its own height.
+func _fit_min_height(look: StringName) -> void:
+	for view_size: Vector2i in [Vector2i(1280, 420), Vector2i(1600, 900)]:
+		var view := SubViewport.new()
+		view.size = view_size
+		root.add_child(view)
+		var windows: Array[GoSurface] = []
+		for tall: float in [360.0, 120.0]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.max_width = 476.0
+			surface.set_title("SHOP")
+			var block := Control.new()
+			block.custom_minimum_size = Vector2(10, tall)
+			surface.body.add_child(block)
+			view.add_child(surface)
+			windows.append(surface)
+		await frames(4)
+		var tag := "%s min height %dx%d" % [look, view_size.x, view_size.y]
+		var big := windows[0]
+		var small := windows[1]
+		for w: GoSurface in windows: w.fit_min_height = big.card.size.y
+		await frames(3)
+		check(view_size.y > 600 or big.fit_scale < 0.95, "%s: the tallest shrinks (%.3f)" % [tag, big.fit_scale])
+		check(is_equal_approx(big.fit_scale, small.fit_scale) and small.card.size.y < big.card.size.y - 100.0,
+				"%s: one scale (%.3f, %.3f), each its own height" % [tag, big.fit_scale, small.fit_scale])
+		check(view_size.y < 600 or is_equal_approx(small.fit_scale, 1.0), "%s: where the tallest fits, none shrinks" % tag)
+		small.fit_min_height = 0.0
+		await frames(3)
+		check(view_size.y > 600 or small.fit_scale > big.fit_scale + 0.05,
+				"%s: 0 measures it at its own height (%.3f against %.3f)" % [tag, small.fit_scale, big.fit_scale])
+		view.queue_free()
+		await frames(1)
+
+
+## The ribbon title centres its **ink**, not its advance box: the Simplified Chinese face draws a full-width ？ well
+## inside its advance, and centring the advance left 装备这套造型？ about 4 dp left of the ribbon's middle (14 px on a
+## 1920 x 1080 phone shot). Its ink now sits on the middle within 1 dp, with and without a title glyph, and a Latin
+## title — whose bearings are near even — stays where it was, within 1 dp.
+func _title_ink_centre(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	for glyph: bool in [false, true]:
+		for words: String in ["离开商店？", "装备这套造型？", "EQUIP THIS LOOK?", "ROOM"]:
+			var surface := _dialog()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			if glyph: surface.title_glyph = ImageTexture.create_from_image(Image.create(16, 16, false, Image.FORMAT_RGBA8))
+			surface.set_title(words)
+			await frames(4)
+			var title := surface.title_label
+			var font := title.get_theme_font(&"font")
+			var size := title.get_theme_font_size(&"font_size")
+			var advance := font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+			var ink := _outline_span(words, font, size)
+			var pen := title.get_character_bounds(0).position.x
+			var plate := title.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+			# The ribbon as drawn: the label grown by its bleed on each side.
+			var middle := (title.size.x + plate.bleed_right - plate.bleed_left) * 0.5
+			var row_left := pen
+			if glyph:
+				var rect := title.get_node(^"TitleGlyph") as TextureRect
+				row_left = rect.position.x
+			var ink_middle := (row_left + pen + ink.y) * 0.5 if glyph else pen + (ink.x + ink.y) * 0.5
+			var cjk := words.unicode_at(0) > 127
+			if cjk:
+				check(advance - ink.y > 2.0, "%s title ink: %s ends in a glyph with a trailing bearing (advance %.1f ink to %.1f)"
+					% [look, words, advance, ink.y])
+			check(absf(ink_middle - middle) <= 1.0, "%s title ink: %s%s is centred on its ink (ink middle %.1f ribbon %.1f)"
+				% [look, words, " with a glyph" if glyph else "", ink_middle, middle])
+			if not cjk:
+				# Where the advance box centred them before: a Latin title moves no more than a pixel.
+				var was := (row_left + pen + advance) * 0.5 if glyph else pen + advance * 0.5
+				check(absf(was - middle) <= 1.0, "%s title ink: Latin %s%s stays put (advance middle %.1f ribbon %.1f)"
+					% [look, words, " with a glyph" if glyph else "", was, middle])
+			surface.queue_free()
+			await frames(1)
+
+
+## The left and right edge of [param text]'s outlines from the pen's start — measured here from the glyphs' contours,
+## apart from `GoStyle.ink_span`.
+func _outline_span(text: String, font: Font, size: int) -> Vector2:
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var span := Vector2(INF, -INF)
+	for g: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var points: PackedVector3Array = ts.font_get_glyph_contours(g.font_rid, size, int(g.index)).get("points", PackedVector3Array())
+		for p in points:
+			span.x = minf(span.x, pen + (g.offset as Vector2).x + p.x)
+			span.y = maxf(span.y, pen + (g.offset as Vector2).x + p.x)
+		pen += float(g.advance) * int(g.repeat)
+	ts.free_rid(shaped)
+	return span
+
+
+## Under a `SCALE` fit a ribbon title never folds (the game's painted dialogs): too long for the card, the card grows
+## to it and the fit shrinks the whole window — Russian КУПИТЬ ПРЕДМЕТ and German DIESEN LOOK ANLEGEN? once folded
+## onto two lines inside the ribbon.
+func _scale_title(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return # a plain title (no plate) wraps by design
+	for glyph: Texture2D in [null, GoUi.icons().texture(GoIconSet.PLAY)]:
+		for title: String in ["КУПИТЬ ПРЕДМЕТ", "DIESEN LOOK ANLEGEN?", "MÜNZEN VERDIENEN UND NOCH MEHR", "ROOM"]:
+			var view := SubViewport.new()
+			view.size = Vector2i(1280, 720)
+			root.add_child(view)
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.max_width = 300.0
+			surface.title_glyph = glyph
+			surface.set_title(title)
+			var block := Control.new()
+			block.custom_minimum_size = Vector2(10, 120)
+			surface.body.add_child(block)
+			view.add_child(surface)
+			await frames(4)
+			var tl := surface.title_label
+			var tag := "%s SCALE title %s%s" % [look, title, " + glyph" if glyph != null else ""]
+			check(tl.get_line_count() == 1, "%s: one line (got %d)" % [tag, tl.get_line_count()])
+			var words := tl.get_theme_font(&"font").get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1,
+					tl.get_theme_font_size(&"font_size")).x
+			check(tl.size.x >= words, "%s: the label holds its words (%.1f < %.1f)" % [tag, tl.size.x, words])
+			# 🛑 A settled title fits to the same size and margins again, without resizing its label: a room read from
+			#    the margins the glyph row sets fitted, resized and fitted again until the stack ran out.
+			var resizes := [0]
+			tl.resized.connect(func() -> void: resizes[0] += 1)
+			var plate := tl.get_theme_stylebox(&"normal")
+			var before := [tl.get_theme_font_size(&"font_size"), plate.get_margin(SIDE_LEFT), plate.get_margin(SIDE_RIGHT)]
+			surface._fit_title()
+			surface._fit_title()
+			var after := [tl.get_theme_font_size(&"font_size"), plate.get_margin(SIDE_LEFT), plate.get_margin(SIDE_RIGHT)]
+			check(after == before, "%s: a second fit changes nothing (%s -> %s)" % [tag, before, after])
+			check(resizes[0] == 0, "%s: a second fit resizes nothing (%d resizes)" % [tag, resizes[0]])
+			view.queue_free()
+			await frames(1)
+
+
+## Under a `SCALE` fit a ribbon title shrinks, down to the floor, before the card grows, and keeps the look's clear pad
+## from the ribbon's ends — whatever came before: a title that once widened the card (or a first, narrow layout) gives
+## the width back. Italian EQUIPAGGIARE QUESTO LOOK? held a widened card at 26 dp where 24 dp fitted the look's width.
+func _title_before_widen(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	var pad := GoUi.skin().title_plate_pad()
+	check(pad > 0.0, "%s the ribbon keeps a clear pad (%.0f)" % [look, pad])
+	var sizes := {}
+	for path: Array in [["DIESEN LOOK ANLEGEN?"], ["MÜNZEN VERDIENEN UND NOCH VIEL MEHR DAZU", "DIESEN LOOK ANLEGEN?"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 440.0
+		var block := Control.new()
+		block.custom_minimum_size = Vector2(10, 120)
+		surface.body.add_child(block)
+		view.add_child(surface)
+		for title: String in path:
+			surface.set_title(title)
+			await frames(4)
+		var tl := surface.title_label
+		var at := tl.get_theme_font_size(&"font_size")
+		var font := tl.get_theme_font(&"font")
+		var words := font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+		var room := surface._title_wrap_room(tl.size.x) - 2.0 * pad
+		var tag := "%s SCALE title %s" % [look, " -> ".join(path)]
+		check(is_equal_approx(surface.card.size.x, 440.0), "%s: shrinks before the card grows (card %.0f)" % [tag, surface.card.size.x])
+		check(at < GoUi.skin().title_plate_font_size() and at >= GoUi.skin().title_plate_min_size(),
+			"%s: shrunk within the floor (%d)" % [tag, at])
+		check(words <= room + 0.5, "%s: the words keep the pad (%.0f of %.0f)" % [tag, words, room])
+		check(font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at + 1).x > room,
+			"%s: as big as it fits (%d)" % [tag, at])
+		sizes[path.size()] = at
+		# Too long at the floor: the card grows to the words with the pad, never past it.
+		surface.set_title("MÜNZEN VERDIENEN UND NOCH VIEL MEHR DAZU")
+		await frames(4)
+		at = tl.get_theme_font_size(&"font_size")
+		words = font.get_string_size(tl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+		room = surface._title_wrap_room(tl.size.x) - 2.0 * pad
+		check(at == GoUi.skin().title_plate_min_size() and surface.card.size.x > 440.0 and words <= room + 0.5
+				and words > room - 2.0,
+			"%s: too long at the floor, the card grows just to the padded words (at %d, words %.0f room %.0f card %.0f)"
+			% [tag, at, words, room, surface.card.size.x])
+		view.queue_free()
+		await frames(1)
+	check(sizes.get(1) == sizes.get(2), "%s the same title fits the same, fresh or after a wider one (%s)" % [look, sizes])
+
+
+## A `SCALE` ribbon title's free width (the room it fits in) hangs on the card, never on how far the label's own hold
+## sits under its width: a fit that lowered the hold, the label still wide until the card lays out again, read a wider
+## room, grew the words back and raised the hold — each step resizing the label inside the last until the stack ran
+## out (Spanish ¡JUEGO COMPLETADO! on the result card flipped between 25 and 26 dp). A refit settles at once.
+func _title_hold_steady(look: StringName) -> void:
+	if look != GoThemePresets.ARCADE_LIGHT: return
+	var view := SubViewport.new()
+	view.size = Vector2i(1280, 720)
+	root.add_child(view)
+	var surface := GoSurface.new()
+	surface.fit_mode = GoSurface.FitMode.SCALE
+	surface.max_width = 400.0
+	surface.title_glyph = GoUi.icons().texture(GoIconSet.SKULL)
+	var block := Control.new()
+	block.custom_minimum_size = Vector2(10, 120)
+	surface.body.add_child(block)
+	view.add_child(surface)
+	surface.set_title("¡JUEGO COMPLETADO Y MUCHO MÁS!")
+	await frames(5)
+	var tl := surface.title_label
+	var tag := "%s SCALE title hold" % look
+	check(surface.card.size.x > 400.5, "%s: the long title widened the card (%.0f)" % [tag, surface.card.size.x])
+	var free := surface._title_free_width()
+	var at := tl.get_theme_font_size(&"font_size")
+	var hold := tl.custom_minimum_size.x
+	# The hold lowered, the label not laid out again yet: the free width stays.
+	tl.custom_minimum_size.x = hold - 11.0
+	check(absf(surface._title_free_width() - free) <= 0.5,
+		"%s: the free width never follows the hold (%.1f, was %.1f)" % [tag, surface._title_free_width(), free])
+	tl.custom_minimum_size.x = hold
+	var resizes := [0]
+	var count := func() -> void: resizes[0] += 1
+	tl.resized.connect(count)
+	surface._fit_title()
+	await frames(4)
+	tl.resized.disconnect(count)
+	check(resizes[0] <= 4, "%s: a refit settles (%d resizes)" % [tag, resizes[0]])
+	check(tl.get_theme_font_size(&"font_size") == at, "%s: and keeps its size (%d, was %d)" % [tag,
+		tl.get_theme_font_size(&"font_size"), at])
+	view.queue_free()
+	await frames(1)
+
+
 func _fit_surface(look: StringName) -> void:
 	var painted := look == GoThemePresets.ARCADE_LIGHT
 	for view_size: Vector2i in FIT_VIEWS:
@@ -1464,4 +1707,441 @@ func _click(at: Vector2) -> void:
 		event.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
 		Input.parse_input_event(event.xformed_by(root.get_final_transform()))
 		Input.flush_buffered_events()
+		await frames(1)
+
+
+## A window key's label keeps its ink — accents and outline included — under the painted pill's top gloss: French
+## ÉQUIPER and Polish ODRZUĆ / ZAŁÓŻ reached up into the white glare. They move down, their size kept, and never run
+## past the face's bottom padding; an unaccented key (DISCARD) keeps its size and place. The gloss line is measured
+## from the art here (the last glare row down the pill's stretched middle) and must match the skin's.
+func _key_gloss(look: StringName) -> void:
+	for variation: StringName in [GoTheme.VAR_PRIMARY_BUTTON, &"GoInfoButton"]:
+		var sizes := {}
+		for words: String in ["DISCARD", "ÉQUIPER", "ODRZUĆ", "ZAŁÓŻ"]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.set_title("KEYS")
+			root.add_child(surface)
+			var row := surface.add_row()
+			var key := surface.add_gloss(variation, &"", words, row)
+			key.fit_label = true
+			var peer := surface.add_gloss(variation, &"", "OK", row)
+			peer.fit_label = true
+			await frames(5)
+			var tag := "%s key gloss %s %s" % [look, variation, words]
+			var theme_face := GoUi.theme().get_stylebox(&"normal", variation) if GoUi.theme().has_stylebox(&"normal", variation) else null
+			var gloss := GoUi.skin().button_gloss_bottom(theme_face, key.size.y)
+			var sprite := theme_face as GoStyleBoxSprite
+			if look != GoThemePresets.ARCADE_LIGHT or sprite == null:
+				check(gloss == 0.0, "%s: a look without painted pills has no gloss (%.1f)" % [tag, gloss])
+				check(not (key.get_theme_stylebox(&"normal") is GoGlyphButton.ShiftedBox),
+					"%s: and the label is never moved" % tag)
+				surface.queue_free()
+				await frames(1)
+				continue
+			# The glare, read from the art: the last row over the top edge slice clearly lighter than the face below it.
+			var art := sprite.texture.get_image()
+			if art.is_compressed(): art.decompress()
+			var x := art.get_width() / 2
+			var face_light := art.get_pixel(x, int(sprite.edge.y)).get_luminance()
+			var last := -1
+			for y in int(sprite.edge.y):
+				if art.get_pixel(x, y).get_luminance() > face_light + 0.15: last = y
+			var measured := float(last + 1) / sprite.pixels_per_unit
+			check(last > 0 and gloss >= measured - 0.01 and gloss - measured <= 1.0 / sprite.pixels_per_unit + 0.01,
+				"%s: the skin's gloss line (%.2f dp) is the art's (glare to row %d, %.2f dp)" % [tag, gloss, last, measured])
+			# Where the label is drawn now (Button: centred in the face's content height), and its ink.
+			var font := key.get_theme_font(&"font")
+			var size := key.get_theme_font_size(&"font_size")
+			var face := key.get_theme_stylebox(&"normal")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			var baseline := top + (key.size.y - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+			var ink := _outline_box(words, font, size)
+			var reach := key.get_theme_constant(&"outline_size") * 0.25
+			var ink_top := baseline + ink.position.y - reach
+			var ink_bottom := baseline + ink.end.y + reach
+			sizes[words] = size
+			check(ink_top >= gloss - 0.01, "%s: the ink's top %.2f is under the gloss %.2f" % [tag, ink_top, gloss])
+			check(ink_bottom <= key.size.y - theme_face.get_margin(SIDE_BOTTOM) + 0.01,
+				"%s: and its bottom %.2f inside the face's bottom padding (%.2f)"
+				% [tag, ink_bottom, key.size.y - theme_face.get_margin(SIDE_BOTTOM)])
+			if words == "DISCARD":
+				check(is_equal_approx(top, theme_face.get_margin(SIDE_TOP)) and is_equal_approx(bottom, theme_face.get_margin(SIDE_BOTTOM)),
+					"%s: an unaccented label keeps its place (margins %.1f / %.1f)" % [tag, top, bottom])
+			else:
+				check(top > theme_face.get_margin(SIDE_TOP), "%s: the accented label moved down (top margin %.1f)" % [tag, top])
+			check(size == sizes["DISCARD"], "%s: at the unaccented key's size (%d, DISCARD %d)" % [tag, size, sizes["DISCARD"]])
+			surface.queue_free()
+			await frames(1)
+
+
+## A window's title on a painted ribbon keeps its ink, accents included, under the ribbon's light top band: Russian
+## ТЕПЕРЬ ТВОЁ!'s Ё crossed it. The words move down, their size kept, as far as the room under their lowest ink allows
+## (ÉQUIPER ?'s Q holds it 1 dp short); an unaccented title keeps its place.
+func _title_gloss(look: StringName) -> void:
+	for variation: StringName in [&"", &"GoRibbonRed"]:
+		var sizes := {}
+		for words: String in ["NOW YOURS!", "ТЕПЕРЬ ТВОЁ!", "ÉQUIPER ?", "ZAŁÓŻ"]:
+			var surface := GoSurface.new()
+			surface.fit_mode = GoSurface.FitMode.SCALE
+			surface.title_variation = variation
+			surface.set_title(words)
+			root.add_child(surface)
+			surface.add_line("Body")
+			await frames(5)
+			var tag := "%s title gloss %s %s" % [look, variation, words]
+			var label := surface.title_label
+			var plate := label.get_theme_stylebox(&"normal") as GoSurface.OverhangPlate
+			var base: StyleBox = plate.base if plate != null else null
+			var gloss := GoUi.skin().title_plate_gloss_bottom(base, label.size.y + (plate.sink if plate != null else 0.0))
+			var sprite := base as GoStyleBoxSprite
+			if look != GoThemePresets.ARCADE_LIGHT or sprite == null:
+				check(gloss == 0.0, "%s: a look without a painted ribbon has no gloss (%.1f)" % [tag, gloss])
+				check(plate == null or plate.drop == 0.0, "%s: and the title is never moved" % tag)
+				surface.queue_free()
+				await frames(1)
+				continue
+			# The band, read from the art: the last row of the top edge slice where the light falls sharply to the face.
+			var art := sprite.texture.get_image()
+			if art.is_compressed(): art.decompress()
+			var x := art.get_width() / 2
+			var last := -1
+			for y in int(sprite.edge.y) - 1:
+				if art.get_pixel(x, y).get_luminance() - art.get_pixel(x, y + 1).get_luminance() > 0.05: last = y
+			var measured := float(last + 1) / sprite.pixels_per_unit
+			check(last > 0 and absf(gloss - measured) <= 0.01,
+				"%s: the skin's band line (%.2f dp) is the art's (to row %d, %.2f dp)" % [tag, gloss, last, measured])
+			var font := label.get_theme_font(&"font")
+			var size := label.get_theme_font_size(&"font_size")
+			var top := plate.get_margin(SIDE_TOP)
+			var bottom := plate.get_margin(SIDE_BOTTOM)
+			var baseline := top + (label.size.y - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+			var ink := _outline_box(label.atr(words), font, size)
+			var reach := label.get_theme_constant(&"outline_size") * 0.25
+			var ink_top := baseline + ink.position.y - reach
+			var ink_bottom := baseline + ink.end.y + reach
+			sizes[words] = size
+			# The room's end: the plate's own bottom padding (less its sink), where the drop takes its room from.
+			var room_end := label.size.y - (base.get_margin(SIDE_BOTTOM) - plate.sink)
+			var at_room := ink_bottom > room_end - 1.0
+			check(ink_top >= gloss - 0.01 or at_room,
+				"%s: the ink's top %.2f is under the band %.2f, or its bottom %.2f at the room's end" % [tag, ink_top, gloss, ink_bottom])
+			if words == "ТЕПЕРЬ ТВОЁ!": check(ink_top >= gloss - 0.01, "%s: the Ё is under the band (%.2f, %.2f)" % [tag, ink_top, gloss])
+			check(ink_bottom <= room_end + 0.01 or plate.drop == 0.0,
+				"%s: and its bottom %.2f inside the plate's bottom padding (%.2f)" % [tag, ink_bottom, room_end])
+			if words == "NOW YOURS!":
+				check(plate.drop == 0.0, "%s: an unaccented title keeps its place (drop %.1f)" % [tag, plate.drop])
+			check(size == sizes["NOW YOURS!"], "%s: at the unaccented title's size (%d, NOW YOURS! %d)" % [tag, size, sizes["NOW YOURS!"]])
+			check(plate.drop <= maxf(0.0, ceilf(gloss - (baseline - plate.drop + ink.position.y - reach))) + 0.01,
+				"%s: moved no further than the band needs (drop %.1f)" % [tag, plate.drop])
+			surface.queue_free()
+			await frames(1)
+
+
+## The box round [param text]'s outlines from the pen's start on the baseline (y down) — measured here from the
+## glyphs' contours, apart from `GoStyle.ink_box`.
+func _outline_box(text: String, font: Font, size: int) -> Rect2:
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var lo := Vector2(INF, INF)
+	var hi := -lo
+	for g: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var points: PackedVector3Array = ts.font_get_glyph_contours(g.font_rid, size, int(g.index)).get("points", PackedVector3Array())
+		for p in points:
+			var at := Vector2(pen + (g.offset as Vector2).x + p.x, (g.offset as Vector2).y + p.y)
+			lo = lo.min(at)
+			hi = hi.max(at)
+		pen += float(g.advance) * int(g.repeat)
+	ts.free_rid(shaped)
+	return Rect2(lo, hi - lo)
+
+
+## A window's row of fit keys (`add_gloss` in an `add_row`) shares one label size, the smallest any fits at, and one
+## width; every label keeps the look's clear pad from its key's ends (Spanish CANCELAR stood at 22 beside COMPRAR at
+## 15, German ABBRECHEN filled its key).
+func _key_row_fit(look: StringName) -> void:
+	var pad := GoUi.skin().button_fit_pad()
+	if look == GoThemePresets.ARCADE_LIGHT: check(pad > 0.0, "%s a fit key keeps a clear pad (%.0f)" % [look, pad])
+	for texts: Array in [["CANCELAR", "GANAR MONEDAS DE ORO"], ["ABBRECHEN", "KAUFEN"], ["OK", "NO"], ["CANCELAR", "+COMPRAR"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			# "+": only this key has a glyph (a shop's BUY beside a bare CANCEL).
+			var glyph: StringName = GoIconSet.PLAY if texts.any(func(t: String) -> bool: return t.begins_with("+")) == text.begins_with("+") else &""
+			var key := surface.add_gloss(GoTheme.VAR_PRIMARY_BUTTON, glyph, text.trim_prefix("+"), row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(5)
+		var tag := "%s key row %s" % [look, " | ".join(texts)]
+		var at := keys[0].get_theme_font_size(&"font_size")
+		var smallest := 1000
+		for key in keys:
+			check(key.fit_with_row, "%s: add_gloss in a row fits with the row (%s)" % [tag, key.text])
+			smallest = mini(smallest, key.own_fit_size())
+		check(keys.all(func(key: GoGlyphButton) -> bool: return key.get_theme_font_size(&"font_size") == at),
+			"%s: one label size (%s)" % [tag, ", ".join(keys.map(func(key: GoGlyphButton) -> String:
+				return "%d" % key.get_theme_font_size(&"font_size")))])
+		check(at == smallest, "%s: the smallest any key fits at (%d, want %d)" % [tag, at, smallest])
+		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		# Never narrower than its label at the floor: a window's row is held to its share of the window's width.
+		check(keys.all(func(key: GoGlyphButton) -> bool: return key.size.x >= key.floor_width() - 0.5),
+			"%s: each key as wide as its label needs (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		for key in keys:
+			var face := key.get_theme_stylebox(&"normal").get_minimum_size().x
+			var words := key.get_theme_font(&"font").get_string_size(key.atr(key.text), HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+			check(words + face + 2.0 * pad + key.glyph_allowance() <= key.size.x + 0.5,
+				"%s: %s keeps the pad from its key's ends (%.1f + %.1f in %.1f)" % [tag, key.text, words, face + 2.0 * pad
+					+ key.glyph_allowance(), key.size.x])
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		view.queue_free()
+		await frames(1)
+
+
+## A window's row of fit keys widens the window rather than shrinking its labels: a short label beside a long one
+## (German KAUFEN beside ABBRECHEN, Turkish İPTAL, Japanese 閉じる beside コインを集める) is as big as an English one,
+## and only a key whose accents need the room drops under the gloss (`_key_row_own_drop`). 🛑 Held at the floor's width, the window widened just enough for the longest
+## label at the floor and the whole row came out at 70 %.
+func _key_row_full(look: StringName) -> void:
+	for texts: Array in [["CANCEL", "+BUY"], ["ABBRECHEN", "+KAUFEN"], ["İPTAL", "+SATIN AL"], ["SPÄTER", "+ANLEGEN"],
+			["SCHLIESSEN", "+MÜNZEN VERDIENEN"], ["PLUS TARD", "+ÉQUIPER"], ["PÓŹNIEJ", "+ZAŁÓŻ"],
+			["閉じる", "+コインを集める"], ["СБРОСИТЬ", "+НАДЕТЬ"], ["CERRAR", "+GANAR MONEDAS"],
+			["FERMER", "+GAGNER DES PIÈCES"], ["CANCELAR", "+COMPRAR"], ["FERMER", "+OK"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			var glyph: StringName = GoIconSet.CHECK if text.begins_with("+") else &""
+			var variation: StringName = GoTheme.VAR_PRIMARY_BUTTON if text.begins_with("+") else &"GoInfoButton"
+			var key := surface.add_gloss(variation, glyph, text.trim_prefix("+"), row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(6)
+		var tag := "%s full key row %s" % [look, " | ".join(texts)]
+		var lines: Array[float] = []
+		# A row whose full-size labels fit the window's standard width keeps them at full size; one that does not
+		# (German MÜNZEN VERDIENEN beside a coin) shares one smaller size, never under the floor.
+		# Full when every key's full-size label fits its share of the window's standard width (two short labels).
+		var share := keys[0]._row_share()
+		var full := keys.all(func(key: GoGlyphButton) -> bool: return key.base_width() <= share + 0.5)
+		check(share > 0.0, "%s: a window's row has a share (%.0f)" % [tag, share])
+		var sizes := keys.map(func(key: GoGlyphButton) -> int: return key.get_theme_font_size(&"font_size"))
+		check(sizes.min() == sizes.max(), "%s: a row shares one size (%s)" % [tag, sizes])
+		# 🛑 Never condensed: no fit key draws its label narrower or closes up its letters (GANARMONEDAS).
+		for key in keys:
+			var drawn := key.get_theme_font(&"font") as FontVariation
+			var scale_x := drawn.variation_transform.x.x if drawn != null else 1.0
+			var spacing := drawn.spacing_glyph if drawn != null else 0
+			check(scale_x >= 1.0 and spacing >= 0, "%s: %s is never condensed (x%.2f, spacing %d)" % [tag, key.text, scale_x, spacing])
+		for key in keys:
+			var base := GoUi.theme().get_font_size(&"font_size", key.theme_type_variation)
+			var at := key.get_theme_font_size(&"font_size")
+			if full:
+				check(at == base, "%s: %s at the look's size (%d, want %d)" % [tag, key.text, at, base])
+			else:
+				check(at >= GoStyle.fit_floor(base) and at < base, "%s: %s shrinks, never under the floor (%d of %d)" % [
+					tag, key.text, at, base])
+				var ink := key.get_theme_font(&"font").get_string_size(key.text, HORIZONTAL_ALIGNMENT_LEFT, -1, at).x
+				check(ink <= key._fit_room() + 1.0, "%s: %s fits its face (%.0f in %.0f)" % [
+					tag, key.text, ink, key._fit_room()])
+			# Where Button draws the baseline: centred in the live face's content height.
+			var face := key.get_theme_stylebox(&"normal")
+			var font := key.get_theme_font(&"font")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			lines.append(top + (key.size.y - top - bottom - font.get_height(at)) * 0.5 + font.get_ascent(at))
+			# The glyph moves down with its label (French ÉQUIPER's check stood over its word).
+			if key.glyph_texture() != null:
+				var rect := key.glyph_rect()
+				check(absf(rect.position.y - ((key.size.y - rect.size.y) * 0.5 - 1.0 + key._drop)) <= 0.01,
+					"%s: %s's glyph moves with its label (%.2f, drop %.1f)" % [tag, key.text, rect.position.y, key._drop])
+		check(absf(keys[0].size.x - keys[1].size.x) <= 1.0, "%s: one width (%.1f, %.1f)" % [tag, keys[0].size.x, keys[1].size.x])
+		# 🔑 One capital baseline: a key that drops its accents under the gloss moves alone, its partner stays put.
+		for i in keys.size():
+			var own := maxf(0.0, keys[i]._gloss_drop(keys[i].get_theme_font_size(&"font_size")))
+			check(is_equal_approx(keys[i]._drop, own), "%s: %s drops only for its own accents (%.1f, own %.1f)" % [
+				tag, keys[i].text, keys[i]._drop, own])
+		if keys.all(func(key: GoGlyphButton) -> bool: return key._drop == 0.0):
+			check(absf(lines[0] - lines[1]) <= 0.01, "%s: one baseline (%.2f, %.2f)" % [tag, lines[0], lines[1]])
+		if look != GoThemePresets.ARCADE_LIGHT or texts[0] in ["CANCEL", "ABBRECHEN"]:
+			check(keys.all(func(key: GoGlyphButton) -> bool: return key._drop == 0.0),
+				"%s: no accent, no gloss: nothing moves" % tag)
+		check(surface.card.size.x >= 400.0 - 0.5, "%s: the window keeps at least the look's width (%.0f)" % [tag, surface.card.size.x])
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		var least := keys.reduce(func(most: float, key: GoGlyphButton) -> float: return maxf(most, key.floor_width()), 0.0)
+		check(surface.card.size.x <= 400.0 + 0.5 or absf(keys[0].size.x - least) <= 1.0,
+			"%s: the keys never widen the window past its width, the floor permitting (%.0f; keys %.0f, least %.0f)" % [
+				tag, surface.card.size.x, keys[0].size.x, least])
+		view.queue_free()
+		await frames(1)
+
+
+## In a window's row of fit keys only the key whose İ dot or accent reaches the pill's top gloss moves down; its partner
+## stays on the normal capital baseline, the one the English row (CANCEL / BUY) stands on. 🛑 The row followed its
+## lowest key: Turkish İPTAL / SATIN AL sat 3 px low, French ABANDONNER / ÉQUIPER 7 px, Polish ODRZUĆ / ZAŁÓŻ 4 px.
+func _key_row_own_drop(look: StringName) -> void:
+	var english := []
+	for texts: Array in [["CANCEL", "+BUY"], ["İPTAL", "+SATIN AL"], ["ABANDONNER", "+ÉQUIPER"], ["ODRZUĆ", "+ZAŁÓŻ"],
+			["PLUS TARD", "+ÉQUIPER"], ["ABBRECHEN", "+KAUFEN"]]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.fit_mode = GoSurface.FitMode.SCALE
+		surface.max_width = 400.0
+		surface.set_title("ROW")
+		view.add_child(surface)
+		var row := surface.add_row()
+		var keys: Array[GoGlyphButton] = []
+		for text: String in texts:
+			var glyph: StringName = GoIconSet.CHECK if text.begins_with("+") else &""
+			var variation: StringName = GoTheme.VAR_PRIMARY_BUTTON if text.begins_with("+") else &"GoInfoButton"
+			var key := surface.add_gloss(variation, glyph, text.trim_prefix("+"), row)
+			key.fit_label = true
+			keys.append(key)
+		await frames(6)
+		var tag := "%s own drop %s" % [look, " | ".join(texts)]
+		var unmarked: Array[float] = []
+		for key in keys:
+			var at := key.get_theme_font_size(&"font_size")
+			var theme_face := GoUi.theme().get_stylebox(&"normal", key.theme_type_variation)
+			var gloss := GoUi.skin().button_gloss_bottom(theme_face, key.size.y)
+			var face := key.get_theme_stylebox(&"normal")
+			var font := key.get_theme_font(&"font")
+			var top := face.get_margin(SIDE_TOP)
+			var bottom := face.get_margin(SIDE_BOTTOM)
+			var line := top + (key.size.y - top - bottom - font.get_height(at)) * 0.5 + font.get_ascent(at)
+			var normal := key._label_baseline(at)
+			var ink := _outline_box(key.text, font, at)
+			var reach := key.get_theme_constant(&"outline_size") * 0.25
+			# Does this key's own ink reach the gloss on the normal line?
+			var marked := gloss > 0.0 and normal + ink.position.y - reach < gloss - 0.01
+			if marked:
+				check(line > normal + 0.5, "%s: %s moves down for its own mark (%.2f from %.2f)" % [tag, key.text, line, normal])
+				check(line + ink.position.y - reach >= gloss - 0.01, "%s: %s clears the gloss (ink top %.2f, gloss %.2f)" % [
+					tag, key.text, line + ink.position.y - reach, gloss])
+				check(line + ink.end.y + reach <= key.size.y - theme_face.get_margin(SIDE_BOTTOM) + 0.01,
+					"%s: %s is not clipped below (ink bottom %.2f)" % [tag, key.text, line + ink.end.y + reach])
+			else:
+				check(key._drop == 0.0 and absf(line - normal) <= 0.01,
+					"%s: %s stays on the normal line (%.2f, normal %.2f, drop %.1f)" % [tag, key.text, line, normal, key._drop])
+				# At the English row's size it stands on the English row's line (a row that shares a smaller size
+				# centres its own, smaller line the same way).
+				if english.is_empty(): english = [at, line]
+				if at == english[0]:
+					check(absf(line - english[1]) <= 0.01, "%s: %s shares the English line (%.2f, CANCEL %.2f)" % [
+						tag, key.text, line, english[1]])
+				if not unmarked.is_empty():
+					check(absf(line - unmarked[0]) <= 0.01, "%s: the row's unmarked keys share one line (%.2f, %.2f)" % [
+						tag, line, unmarked[0]])
+				unmarked.append(line)
+		await frames(3)
+		check(keys.all(func(key: GoGlyphButton) -> bool: return not key._fit_queued), "%s: settled, no fit ping-pong" % tag)
+		view.queue_free()
+		await frames(1)
+
+
+## A small fixed key (a lobby room row's 90 x 28 EASY / NORMAL / HARD chip, beside its count in a row) keeps its base
+## size and its width: the clear pad is the look's at its window key height and shrinks with a shorter key's ends — the
+## 46 dp key's 6 dp shrank NORMAL to 10 dp and held the chip 100 dp wide.
+func _small_key_fit(look: StringName) -> void:
+	var pad := GoUi.skin().button_fit_pad()
+	for text: String in ["EASY", "NORMAL", "HARD"]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var row := HBoxContainer.new()
+		row.theme = GoUi.theme()
+		view.add_child(row)
+		var chip := GoGlyphButton.make(text, &"", GoTheme.VAR_PRIMARY_BUTTON)
+		chip.custom_minimum_size = Vector2(90, 28)
+		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		chip.fit_label = true
+		chip.fit_base_size = 14
+		row.add_child(chip)
+		var count := Label.new()
+		count.text = "2 / 6"
+		row.add_child(count)
+		await frames(3)
+		chip.fit_now()
+		var tag := "%s small key %s" % [look, text]
+		check(not chip.fit_with_row, "%s: a row of its own, not a window's keys" % tag)
+		check(chip.fit_clear_pad() < pad or pad <= 0.0, "%s: a shorter key keeps a smaller pad (%.1f of %.1f)" % [tag,
+			chip.fit_clear_pad(), pad])
+		check(chip.fitted_font_size() == 14, "%s: at its base size (%d)" % [tag, chip.fitted_font_size()])
+		check(chip.custom_minimum_size == Vector2(90, 28), "%s: keeps its size (%s)" % [tag, chip.custom_minimum_size])
+		var key := GoGlyphButton.make(text, &"", GoTheme.VAR_PRIMARY_BUTTON)
+		key.custom_minimum_size.y = GoUi.skin().window_button_height()
+		key.fit_label = true
+		row.add_child(key)
+		await frames(1)
+		check(is_equal_approx(key.fit_clear_pad(), pad), "%s: a window-height key keeps the look's pad (%.1f)" % [tag,
+			key.fit_clear_pad()])
+		view.queue_free()
+		await frames(1)
+
+
+## A wrapped `add_line` sentence wraps at the narrowest width that keeps its line count: the lines come out about even
+## and the last never holds a lone short word, while the label keeps its width and its minimum size.
+func _balanced_lines(look: StringName) -> void:
+	for text: String in ["Vuoi scartare questo look e tornare alle tue partite?",
+			"Bu görünümü bırakıp maçlarına geri dönmek istiyor musun? Değişiklikler kaydedilmeyecek misin?",
+			"この見た目を外して、いつもの試合に戻りますか?変更は保存されません。よう。", "ONE LINE"]:
+		var view := SubViewport.new()
+		view.size = Vector2i(1280, 720)
+		root.add_child(view)
+		var surface := GoSurface.new()
+		surface.max_width = 440.0
+		view.add_child(surface)
+		var line := surface.add_line(text, 22)
+		line.custom_minimum_size.x = 400.0
+		await frames(4)
+		var tag := "%s balanced %s" % [look, text.left(16)]
+		var face := line.get_theme_stylebox(&"normal")
+		var box := face as GoStyle.BalancedBox
+		var base := box.base if box != null else face
+		var full := line.size.x - (base.get_minimum_size().x if base != null else 0.0)
+		var room := line.size.x - face.get_minimum_size().x
+		var paragraph := TextParagraph.new()
+		paragraph.break_flags = GoStyle.BalancedLines.BREAKS
+		paragraph.add_string(text, line.get_theme_font(&"font"), 22)
+		paragraph.width = full
+		var plain := paragraph.get_line_count()
+		paragraph.width = room
+		var widths: Array[float] = []
+		for i in paragraph.get_line_count(): widths.append(paragraph.get_line_size(i).x)
+		check(paragraph.get_line_count() == plain and line.get_line_count() == plain,
+			"%s: as many lines as unbalanced (%d, %d, %d)" % [tag, plain, paragraph.get_line_count(), line.get_line_count()])
+		check(line.size.x >= 400.0 and is_equal_approx(line.get_combined_minimum_size().x, 400.0),
+			"%s: the label keeps its width and its minimum (%.0f, %.0f)" % [tag, line.size.x, line.get_combined_minimum_size().x])
+		if plain < 2:
+			check(box == null, "%s: one line, no inset" % tag)
+		else:
+			check(box != null and box.inset > 0.0, "%s: an inset (%.0f)" % [tag, box.inset if box != null else 0.0])
+			check(widths[widths.size() - 1] >= 0.5 * widths.max(), "%s: no lone last line (%s)" % [tag, widths])
+			paragraph.width = room - 4.0
+			check(paragraph.get_line_count() > plain, "%s: as narrow as it keeps the lines (%.0f)" % [tag, room])
+			GoStyle.balance_lines(line, false)
+			await frames(2)
+			check(not (line.get_theme_stylebox(&"normal") is GoStyle.BalancedBox), "%s: off, the label's own face" % tag)
+		view.queue_free()
 		await frames(1)

@@ -493,6 +493,18 @@ func _badge() -> void:
 	await frames(1)
 	# 🛑 Without folding, "1284" grows wider than the icon and pushes the HUD row over.
 	check(_first_label(badge) == "99+", "badge: it folds large numbers (%s)" % _first_label(badge))
+	badge.set_count(4)
+	await frames(1)
+	check(badge.size.x >= badge.size.y - 0.5, "badge: one digit is never narrower than it is tall (%s)" % badge.size)
+	check(badge.scale == Vector2.ONE, "badge: no pop under reduce_motion")
+	GoUi.config.reduce_motion = false
+	badge.set_count(6)
+	check(badge.scale.x > 1.0, "badge: a new count pops (%s)" % badge.scale)
+	badge.set_count(6)
+	check(badge.scale.x > 1.0, "badge: the same count does not restart it")
+	await create_timer(badge.pop_seconds + 0.1).timeout
+	check(badge.scale.is_equal_approx(Vector2.ONE), "badge: it settles back (%s)" % badge.scale)
+	GoUi.config.reduce_motion = true
 	badge.dot = true
 	await frames(1)
 	check(badge.custom_minimum_size.x > 0 and _first_label(badge) == "", "badge: dot mode")
@@ -515,6 +527,11 @@ func _badge() -> void:
 		"badge: it straddles the parent's corner (badge %s · parent %s)" % [str(badge_rect), str(host_rect)])
 	check(badge_rect.get_center().x > host_rect.get_center().x and badge_rect.get_center().y < host_rect.get_center().y,
 		"badge: it is the top-right corner")
+	var on_corner := badge_rect.get_center()
+	one.corner_inset = Vector2(6, 4)
+	await frames(1)
+	var pulled := Rect2(one.global_position, one.size).get_center()
+	check(pulled.is_equal_approx(on_corner + Vector2(-6, 4)), "badge: corner_inset pulls it in (%s → %s)" % [on_corner, pulled])
 	GoBadge.detach(host)
 	await frames(1)
 	check(not host.has_meta(&"gohud_badge"), "badge: it detaches")

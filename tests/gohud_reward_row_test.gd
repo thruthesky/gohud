@@ -1,12 +1,19 @@
 ## 🧪 **Checks for `GoRewardRow`** — the four states, the height no words can change (in every look), the one line of a
 ## table and the fallback under it, the painted plates and art, text that fits without going under the fit floor, the
 ## touch target, `GoBar.set_faces`, and a row reused by a `GoListView`: a press begun on one quest must never claim the
-## next.
+## next. The description: none is the row as it was, one grows the row by its lines only (`extent_for`), in its own
+## smaller type, under the title in both layouts, shrunk and wrapped to two lines at most, in a list too.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_row_test.gd" bash addons/gohud/tools/run_tests.sh
 extends SceneTree
 
 const LONG := "Win five online matches without falling off the arena even once in a row today"
+## How-to lines as a game writes them: a short one, a German one, one too long for two lines, and one in Japanese
+## (no spaces: it wraps between characters).
+const HOW := "Hit a rival from 12 m or more"
+const HOW_GERMAN := "Triff einen Gegner mit einem Gegenstand aus 12 m oder mehr · Online oder Stages 2–9"
+const HOW_ENDLESS := "Hit a rival with a thrown object from twelve metres or more away while standing on one leg and singing, online or in any campaign stage from the second to the ninth"
+const HOW_JAPANESE := "12m以上離れた場所から投げた物をライバルに当てる・オンラインまたはステージ2〜9"
 ## Long German quest names, as real translations run.
 const GERMAN: Array[String] = ["Beende 5 Online-Spiele unter den ersten drei Plätzen",
 	"Erledige 10 Gegner mit der Magnetabstoßung in Online-Matches",
@@ -14,6 +21,8 @@ const GERMAN: Array[String] = ["Beende 5 Online-Spiele unter den ersten drei Pl�
 ## A table's row at 1280x720, and a phone held upright.
 const WIDE := 880.0
 const NARROW := 336.0
+## A phone held sideways: still under WIDE_WIDTH, with room for a description in a line or two.
+const LANDSCAPE := 600.0
 const LOOKS: Array[StringName] = [GoThemePresets.DEFAULT_DARK, GoThemePresets.DEFAULT_LIGHT, GoThemePresets.SCIFI_DARK,
 	GoThemePresets.SCIFI_LIGHT, GoThemePresets.MEDIEVAL_DARK, GoThemePresets.MEDIEVAL_LIGHT,
 	GoThemePresets.MATERIAL_LIGHT, GoThemePresets.MATERIAL_DARK, GoThemePresets.ARCADE_DARK,
@@ -42,6 +51,7 @@ func _initialize() -> void:
 		await _states(look)
 		await _right_to_left(look)
 		await _one_line(look)
+		await _described_in(look)
 		host.free()
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	await frames(1)
@@ -59,9 +69,13 @@ func _initialize() -> void:
 	await _no_rebuild()
 	await _follows_the_look()
 	await _inside_a_form()
+	await _description_look()
+	await _description_fits()
+	await _description_grows_as_needed()
 	host.free()
 	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
 	await _in_a_list()
+	await _described_list()
 	await frames(2)
 	print("gohud reward row tests: %d/%d passed" % [passed, passed + failed.size()])
 	for line in failed: print("FAIL %s" % line)
@@ -583,6 +597,160 @@ func _in_a_list() -> void:
 			break
 	await _press(list.row(ready_index))
 	check(claims == [quests[ready_index].id], "a reused row claims its new quest, not its old one (%s)" % [claims])
+	list.free()
+
+
+## Every look: no description is the row it always was; one stands under the title (between the title and the bar on a
+## narrow row, under both on a wide one), inside the row, and the row is exactly `extent_for` tall.
+func _described_in(look: StringName) -> void:
+	for width: float in [NARROW, WIDE]:
+		var plain := _row("Win 3 matches", GoRewardRow.State.IN_PROGRESS, width)
+		plain.description = "x"
+		plain.description = ""
+		await frames(2)
+		check(not plain.description_label.visible, "%s: no description shows none" % look)
+		check(is_equal_approx(plain.custom_minimum_size.y, GoRewardRow.extent()), "%s: and the row keeps extent() (%s)" % [
+			look, plain.custom_minimum_size.y])
+		check(GoRewardRow.extent_for("Win 3 matches", "", width) == GoRewardRow.extent(), "%s: extent_for without one is extent()" % look)
+		plain.free()
+		for state: int in GoRewardRow.State.values():
+			for how: String in [HOW, HOW_GERMAN, HOW_ENDLESS]:
+				var row := _row(GERMAN[1], state, width)
+				row.description = how
+				await frames(2)
+				var tall := GoRewardRow.extent_for(GERMAN[1], how, width, state)
+				check(GoRewardRow.extent_for(GERMAN[1], how, width) >= tall, "%s: measured with its end column, never shorter" % look)
+				check(tall > GoRewardRow.extent() or width == WIDE, "%s: a description makes a narrow row taller (%s)" % [look, tall])
+				check(is_equal_approx(row.custom_minimum_size.y, tall), "%s: the row is extent_for tall (%s, %s)" % [look,
+					row.custom_minimum_size.y, tall])
+				check(row.get_combined_minimum_size().y <= tall + 0.5, "%s: state %d at %d stays within extent_for (%s > %s)" % [
+					look, state, width, row.get_combined_minimum_size().y, tall])
+				check(row.get_combined_minimum_size().x <= width, "%s: a described row fits %d" % [look, width])
+				row.size = Vector2(width, tall)
+				await frames(2)
+				var note := row.description_label
+				check(note.visible and note.text == how, "%s: the description shows" % look)
+				check(note.get_global_rect().position.y >= row.title_label.get_global_rect().end.y - 0.5,
+					"%s: state %d at %d: the description stands under the title" % [look, state, width])
+				check(row.get_global_rect().encloses(note.get_global_rect().grow(-0.5)), "%s: and inside the row" % look)
+				check(note.get_visible_line_count() <= GoRewardRow.NOTE_LINES, "%s: in two lines at most" % look)
+				if width == WIDE:
+					check(note.get_global_rect().position.y >= row.bar.get_global_rect().end.y - 0.5, "%s: under the bar too" % look)
+					check(note.size.x > row.title_label.size.x + row.bar.size.x * 0.5, "%s: across the title and the bar" % look)
+				elif row.bar.visible:
+					check(row.bar.get_global_rect().position.y >= note.get_global_rect().end.y - 0.5, "%s: over the bar" % look)
+				check(row.accessibility_name.contains(how), "%s: the description is spoken" % look)
+				row.free()
+
+
+## arcade_light: the description's own lettering — `GoRewardRowNote`, smaller than the title, its own navy.
+func _description_look() -> void:
+	var row := _row("Win 3 matches", GoRewardRow.State.READY, WIDE)
+	row.description = HOW
+	await frames(2)
+	var note := row.description_label
+	check(note.theme_type_variation == GoRewardRow.VAR_NOTE, "the description wears GoRewardRowNote")
+	check(GoUi.theme().get_type_variation_base(GoRewardRow.VAR_NOTE) == &"Label", "a Label variation in the theme")
+	check(note.get_theme_font_size(&"font_size") == GoUi.theme().get_font_size(&"font_size", GoRewardRow.VAR_NOTE),
+		"a short one keeps the note's full size")
+	check(note.get_theme_font_size(&"font_size") < row.title_label.get_theme_font_size(&"font_size"),
+		"smaller than the title")
+	check(note.get_theme_color(&"font_color") == GoUi.theme().get_color(&"font_color", GoRewardRow.VAR_NOTE),
+		"in the note's ink")
+	check(note.get_theme_color(&"font_color") != row.title_label.get_theme_color(&"font_color"), "softer than the title's")
+	check(note.get_line_count() == 1, "a short one is one line on a wide row")
+	row.set_state(GoRewardRow.State.CLAIMED)
+	row.refresh()
+	check(note.modulate.a == 1.0, "a painted claimed row keeps its description at full strength")
+	row.free()
+	GoUi.use_preset(GoThemePresets.DEFAULT_DARK)
+	await frames(1)
+	var plain := _row("Win 3 matches", GoRewardRow.State.CLAIMED, WIDE)
+	plain.description = HOW
+	await frames(2)
+	check(plain.description_label.theme_type_variation == GoTheme.VAR_CAPTION_LABEL, "another look: the caption size")
+	check(plain.description_label.get_theme_color(&"font_color").is_equal_approx(GoUi.color(GoTheme.MUTED)), "in the muted ink")
+	check(plain.description_label.modulate.a < 1.0, "and a claimed row dims it with its words")
+	plain.free()
+	GoUi.use_preset(GoThemePresets.ARCADE_LIGHT)
+	await frames(1)
+
+
+## Shrinks to fit two lines, never under the floor, then ends in an ellipsis; no word broken; Japanese wraps at full
+## size between characters.
+func _description_fits() -> void:
+	var base := GoRewardRow._note_size()
+	var bottom := GoStyle.fit_floor(base)
+	var rows: Array[GoRewardRow] = []
+	for how: String in [HOW, HOW_GERMAN, HOW_ENDLESS, HOW_JAPANESE]:
+		var row := _row("Win 3 matches", GoRewardRow.State.READY, LANDSCAPE)
+		row.description = how
+		rows.append(row)
+	await frames(3)
+	for row in rows:
+		var note := row.description_label
+		var px := note.get_theme_font_size(&"font_size")
+		check(px >= bottom and px <= base, "%s: between the floor and the full size (%d)" % [row.description, px])
+		check(note.get_visible_line_count() <= GoRewardRow.NOTE_LINES, "%s: two lines at most" % row.description)
+		for word in GoRewardRow._unbreakable_words(row.description):
+			check(note.get_theme_font(&"font").get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x <= note.size.x,
+				"%s is not broken" % word)
+	check(rows[0].description_label.get_theme_font_size(&"font_size") == base, "a short one keeps the full size")
+	check(rows[2].description_label.get_theme_font_size(&"font_size") == bottom, "an endless one stops at the floor")
+	check(rows[2].description_label.get_visible_line_count() < rows[2].description_label.get_line_count(),
+		"and is cut to two lines")
+	check(rows[2].description_label.text_overrun_behavior == TextServer.OVERRUN_TRIM_ELLIPSIS, "with an ellipsis")
+	check(rows[3].description_label.get_theme_font_size(&"font_size") == base,
+		"Japanese wraps between characters at the full size (%d)" % rows[3].description_label.get_theme_font_size(&"font_size"))
+	check(rows[3].description_label.get_line_count() == 2, "in two lines")
+	for row in rows: row.free()
+
+
+## The row grows by the lines its description takes and no more.
+func _description_grows_as_needed() -> void:
+	var one := GoRewardRow.extent_for("Win 3 matches", HOW, LANDSCAPE)
+	var two := GoRewardRow.extent_for("Win 3 matches", HOW_GERMAN, LANDSCAPE)
+	var line := GoRewardRow._note_font().get_height(GoRewardRow._note_size())
+	check(one > GoRewardRow.extent(), "a one-line description makes a narrow row taller (%s)" % one)
+	check(two > one, "two lines make it taller still (%s > %s)" % [two, one])
+	check(two - one <= line + 1.0, "by one line (%s)" % (two - one))
+	check(one - GoRewardRow.extent() <= line + 1.0, "a one-line description adds one line (%s)" % (one - GoRewardRow.extent()))
+	var wide := GoRewardRow.extent_for("Win 3 matches", HOW, WIDE)
+	check(wide - GoRewardRow.extent() <= line + 1.0, "a wide row grows by one line at most (%s)" % (wide - GoRewardRow.extent()))
+	check(GoRewardRow.extent_for("Win 3 matches", HOW_ENDLESS, LANDSCAPE) == two, "an endless one stays at two lines")
+	check(GoRewardRow.extent_for("Win 3 matches", HOW_ENDLESS, NARROW) == GoRewardRow.extent_for("Win 3 matches", HOW_GERMAN,
+		NARROW), "shrunk to the floor, it is no shorter than two lines at full size")
+
+
+## A list of described rows takes the tallest extent_for at its width, and every row stays inside it.
+func _described_list() -> void:
+	var hows := [HOW, HOW_GERMAN, "", HOW_JAPANESE, HOW_ENDLESS]
+	var tallest := GoRewardRow.extent()
+	for index in 20: tallest = maxf(tallest, GoRewardRow.extent_for("Quest %d" % index, hows[index % hows.size()], 336.0))
+	var list := GoListView.recycle(20, tallest, func() -> Control: return GoRewardRow.make(""),
+		func(node: Control, index: int) -> void:
+			var row := node as GoRewardRow
+			row.key = index
+			row.title = "Quest %d" % index
+			row.description = hows[index % hows.size()]
+			row.set_progress(index % 5, 5)
+			row.set_reward(index + 1)
+			row.set_claim_text("CLAIM")
+			row.set_state(index % 4))
+	list.theme = GoUi.theme()
+	list.size = Vector2(336, 400)
+	root.add_child(list)
+	await frames(3)
+	for index in list.built_indexes():
+		var row := list.row(index) as GoRewardRow
+		check(is_equal_approx(row.size.y, tallest), "described row %d is one extent tall (%s)" % [index, row.size.y])
+		check(row.get_combined_minimum_size().y <= tallest + 0.5, "described row %d stays within it" % index)
+	list.scroll_vertical = int(tallest * 6.0)
+	await frames(3)
+	for index in list.built_indexes():
+		var row := list.row(index) as GoRewardRow
+		check(row.description == hows[index % hows.size()], "a reused row shows its new description")
+		check(row.description_label.visible == not row.description.is_empty(), "and hides an empty one")
 	list.free()
 
 

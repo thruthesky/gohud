@@ -126,6 +126,59 @@ func _state_panel(host: Control) -> void:
 	panel.fit_now()
 	await process_frame
 	check(panel.get_combined_minimum_size().x <= 1100.5, "a long heading wraps instead of widening the card")
+	# The heading rises into the gap over its letters, never past it: a Japanese line (a fallback face with a far
+	# smaller gap) never reaches up into the picture.
+	var face: Font = panel.heading_label.get_theme_font(&"font")
+	for words: String in ["NO TIMES YET", "ショップには接続が必要です"]:
+		panel.heading = words
+		panel.fit_now()
+		var size := panel.heading_label.get_theme_font_size(&"font_size")
+		var lift := -panel._heading_box.get_theme_constant(&"margin_top")
+		check(lift <= ceili(GoStyle.ink_top_gap(words, face, size)),
+				"%s: the heading's lift stays inside the gap over its letters" % words)
+	var latin := GoStyle.ink_top_gap("NO TIMES YET", face, 60)
+	var cjk := GoStyle.ink_top_gap("ショップには接続が必要です", face, 60)
+	check(cjk < latin, "a Japanese line has less room over its letters than a Latin one (%.0f < %.0f)" % [cjk, latin])
+	# The body tucks up under the heading by the gap under its ink, as the lift rises by the gap over it: a Japanese or
+	# Korean heading (its letters set deeper than Latin capitals) keeps the same clear space to the body line.
+	var clear := {}
+	for words: String in ["NO TIMES YET", "ショップには接続が必要です", "상점은 연결이 필요해요"]:
+		panel.heading = words
+		panel.fit_now()
+		await process_frame
+		await process_frame
+		var size := panel.heading_label.get_theme_font_size(&"font_size")
+		var label := panel.heading_label
+		var top_pad := label.get_theme_stylebox(&"normal").get_margin(SIDE_TOP) if label.has_theme_stylebox(&"normal") else 0.0
+		var ts := TextServerManager.get_primary_interface()
+		var shaped := ts.create_shaped_text()
+		ts.shaped_text_add_string(shaped, words, face.get_rids(), size)
+		var line := ts.shaped_text_get_ascent(shaped) + ts.shaped_text_get_descent(shaped)
+		ts.free_rid(shaped)
+		var ink_bottom := label.global_position.y + top_pad + line - GoStyle.ink_bottom_gap(words, face, size)
+		var body := panel.body_label
+		var body_pad := body.get_theme_stylebox(&"normal").get_margin(SIDE_TOP) if body.has_theme_stylebox(&"normal") else 0.0
+		var body_ink := body.global_position.y + body_pad \
+				+ GoStyle.ink_top_gap(panel.body, body.get_theme_font(&"font"), body.get_theme_font_size(&"font_size"))
+		clear[words] = (body_ink - ink_bottom) / float(size)
+		check(label.get_line_count() == 1, "%s: the heading is one line (the gap is read on one)" % words)
+	for words: String in clear:
+		check(absf(clear[words] - clear["NO TIMES YET"]) <= 1.5 / 60.0 + 0.01,
+				"%s: the clear space under the heading's letters is the Latin one's (%.3f, %.3f of the size)"
+				% [words, clear[words], clear["NO TIMES YET"]])
+	check(clear["NO TIMES YET"] > 0.0, "the body line sits clear under the heading's letters (%.3f)" % clear["NO TIMES YET"])
+	# A long heading keeps clear space from the card's rim on both sides.
+	panel.heading = "DER SHOP BRAUCHT EINE VERBINDUNG"
+	panel.fit_now()
+	var used := face.get_string_size(panel.heading, HORIZONTAL_ALIGNMENT_LEFT, -1,
+			panel.heading_label.get_theme_font_size(&"font_size")).x
+	var base := float(panel._base_size(panel.heading_label))
+	panel.fit_now()
+	var face_box := panel.get_theme_stylebox(&"panel")
+	var inner := panel.size.x - (face_box.get_minimum_size().x if face_box != null else 0.0)
+	check(used <= inner - panel.padding * 2.0 - base * GoStatePanel.HEADING_SIDE_SHARE * 2.0 + 1.0
+			or panel.heading_label.get_theme_font_size(&"font_size") <= GoStyle.fit_floor(int(base)),
+			"a long heading shrinks before it reaches the card's rim")
 	panel.heading = "NO TIMES YET"
 	check(panel.picture.visible and not panel.ring.visible, "the illustration shows when not loading")
 	check(panel.button.visible, "a button with words shows")

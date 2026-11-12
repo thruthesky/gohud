@@ -837,7 +837,7 @@ page.<wbr>add_child(<wbr>GoStyle.<wbr>label(<wbr>"Next level in 340 XP",<wbr> Go
 </section>
 
 <section id="hud" class="catalog">
-  <h2>HUD และรูปแบบในเกม <small>(30)</small></h2>
+  <h2>HUD และรูปแบบในเกม <small>(32)</small></h2>
   <div class="grid">
     <div class="card">
       <h3 id="gobar"><code>GoBar</code></h3>
@@ -1029,6 +1029,29 @@ quest.<wbr>set_reward(<wbr>50,<wbr> GoIconSet.<wbr>COIN)
 quest.<wbr>set_claim_text(<wbr>"CLAIM")
 quest.<wbr>set_state(<wbr>GoRewardRow.<wbr>State.<wbr>READY)
 quest.<wbr>claim_pressed.<wbr>connect(<wbr>func(<wbr>id: Variant) -&gt; void: server.<wbr>claim(<wbr>id))</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gorewardburst"><code>GoRewardBurst</code></h3>
+      <p>ช่วงเวลารับรางวัล: หน้าจอมืดลง เหรียญลอยขึ้นจากปุ่มและระเบิดในแสงที่หมุน +N ปรากฏขึ้น แล้ว COLLECT ส่งเหรียญเข้ายอดคงเหลือที่เพิ่มขึ้น</p>
+      <p class="catalog-base">สืบทอดจาก <code>Control</code></p>
+      <pre><code>var burst := GoRewardBurst.<wbr>new(<wbr>)
+screen.<wbr>add_child(<wbr>burst)
+burst.<wbr>collect_text = "COLLECT"
+burst.<wbr>target = coin_pill
+burst.<wbr>target_label = coin_label
+burst.<wbr>push(<wbr>claim_button.<wbr>get_global_rect(<wbr>),<wbr> "win_3",<wbr> 20)
+burst.<wbr>resolve(<wbr>"win_3",<wbr> 20,<wbr> 140)</code></pre>
+    </div>
+    <div class="card">
+      <h3 id="gosidebutton"><code>GoSideButton</code></h3>
+      <p>ปุ่มข้างเมนู: ภาพวาดขนาดใหญ่ คำสั้น ๆ ที่มีเส้นขอบอยู่ด้านล่าง และตัวเลขที่มุมภาพ เช่นภารกิจรายวันหรือความสำเร็จของเมนูหลัก</p>
+      <p class="catalog-base">สืบทอดจาก <code>BaseButton</code></p>
+      <pre><code>var daily := GoSideButton.<wbr>make(<wbr>"DAILY",<wbr> GoUi.<wbr>skin(<wbr>).<wbr>widget_art(<wbr>&amp;"menu_daily"))
+daily.<wbr>picture_size = 76
+daily.<wbr>label_width = 120
+daily.<wbr>pressed.<wbr>connect(<wbr>func(<wbr>) -&gt; void: open_quests(<wbr>"daily"))
+menu.<wbr>add_child(<wbr>daily)
+daily.<wbr>set_badge(<wbr>3)</code></pre>
     </div>
     <div class="card">
       <h3 id="gofoldtab"><code>GoFoldTab</code></h3>

@@ -97,6 +97,11 @@ func earned() -> int:
 	return clampi(stars, 0, max_stars)
 
 
+## The star at [param index] (0 = the left one), null outside the row: what `GoReveal` pops in one by one.
+func star(index: int) -> Control:
+	return star_nodes[index] if index >= 0 and index < star_nodes.size() else null
+
+
 ## Is the star at [param index] (0 = the left one) lit.
 func is_earned(index: int) -> bool:
 	return index >= 0 and index < earned()

@@ -454,8 +454,41 @@ var fit_screen_share := 0.0:
 		if is_equal_approx(fit_screen_share, value): return
 		fit_screen_share = value
 		_layout_dirty = true
+## 📏 `SCALE`, centred: the least card height (dp) the fit measures. A taller card shrinks as it always does; a shorter
+## one keeps its own height but takes the scale a card this tall gets, so a family of windows given the same value
+## (their tallest's height) shows at one scale — one width on screen — on any screen that has to shrink the tallest.
+## 0: each card is measured at its own height.
+## ```gdscript
+## for w in [confirm, bought, notice]: w.fit_min_height = 420.0   # the tallest of them
+## ```
+var fit_min_height := 0.0:
+	set(value):
+		value = maxf(0.0, value)
+		if is_equal_approx(fit_min_height, value): return
+		fit_min_height = value
+		_layout_dirty = true
 ## The scale the card got from a `SCALE` fit (1: its own size).
 var fit_scale := 1.0
+## 🎬 **The card's entrance pose under a `SCALE` fit** — a reveal's spring-in or a jolt (`GoReveal.enter`,
+## `GoRevealFx.shake`) moves the placed card by this, about its centre, on top of the fit: `pose_scale` times the fit's
+## scale, `pose_turn` radians, `pose_offset` dp (at scale 1). A relayout while it plays keeps it (the new place with
+## the same pose); all three at rest (1, 0, zero) leave the card exactly where the fit put it. A caller that places the card
+## itself (`GoFitBox.place(card, …)`) calls `repose()` after.
+var pose_scale := 1.0:
+	set(value):
+		pose_scale = value
+		_apply_pose()
+var pose_turn := 0.0:
+	set(value):
+		pose_turn = value
+		_apply_pose()
+var pose_offset := Vector2.ZERO:
+	set(value):
+		pose_offset = value
+		_apply_pose()
+var _pose_base_position := Vector2.ZERO
+var _pose_base_scale := Vector2.ONE
+var _pose_placed := false
 ## 📏 Canvas units kept clear at the bottom of the safe area — a host's docked strip the window must not cover (an
 ## anchored ad banner, a bar it draws itself). A centred or anchored window lays out above it; under `SCALE` its list
 ## gives up height first, so read `fit_scale` after a `relayout()` to know whether the card still reads well. 0: the
@@ -530,6 +563,8 @@ var _holds_back := false
 var _warned_height_cap := false
 ## Said once: the content was wider than the card could be (`_warn_too_wide`).
 var _warned_width := false
+## `free_width` per control (instance id), as last read at the normal padding.
+var _free_widths := {}
 ## 🔑 Something the layout reads has changed since the last `relayout()` — a section's minimum size or visibility, or a
 ##    layout field above. A `fit_content` surface re-measures on the next frame **only then**.
 ## 🛑 It used to re-measure **every frame** while open: 50–220 µs a frame on a desktop CPU for the 23-row Laryen Guide
@@ -694,6 +729,11 @@ func _ready() -> void:
 		_column.move_child(scroll, slot)
 		body.reparent(scroll)
 		scroll.use_panel_edge(GoUi.metric(GoTheme.PADDING))
+		# 🔑 The scroll's edge is the section the column now holds: its scrollbar coming and going changes the card's
+		#    width without the body's minimum changing (a row of fit keys narrowing under it left the card 18 dp wide).
+		var edge := _column.get_child(slot) as Control
+		if edge != null and edge != body and not edge.minimum_size_changed.is_connected(_mark_layout_dirty):
+			edge.minimum_size_changed.connect(_mark_layout_dirty)
 		# 🔑 The body clips only while it scrolls. A body that fits has nothing to clip, and the clip would cut a
 		#    part's antialiased rim on a half pixel (the painted inset's top edge at 1.5x) the game's column never cuts.
 		scroll.sort_children.connect(_sync_body_clip)
@@ -808,6 +848,7 @@ func _fit_title() -> void:
 	if title_label == null or _sizing_title: return
 	_fit_title_size()
 	_place_title_glyph()
+	_centre_title_ink()
 	_place_corner()
 
 
@@ -845,12 +886,22 @@ func _fit_title_size() -> void:
 		_sizing_title = false
 		_widen_title(0.0)
 		return
-	var room := title_label.size.x - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
+	# 🔑 Under SCALE, the width the label has without its own widening: a title that widened the card while the label
+	#    was still narrow (its first layout) otherwise measured the room it made itself, grew back into it and held the
+	#    card wide (Italian EQUIPAGGIARE QUESTO LOOK? kept a 492 dp card at 26 dp when 24 dp fit the 476 dp one).
+	var label_width := _title_free_width()
+	var room := label_width - plate.get_margin(SIDE_LEFT) - plate.get_margin(SIDE_RIGHT) - 2.0
 	var over := plate as OverhangPlate
 	if over != null and over.base != null:
 		# Its left margin follows the words (see `_place_title_glyph`); the room is the plate's as drawn — past the
 		# card's sides by its bleed — less its ends and the glyph's room, the game's ribbon row.
-		room = title_label.size.x - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
+		room = label_width - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - over.glyph_room
+	if fit_mode == FitMode.SCALE:
+		# 🔑 The label wraps inside its own margins (the plate's base margins), which can be narrower than the drawn
+		#    ribbon's room: measured against the narrower, the words never fold (Russian КУПИТЬ ПРЕДМЕТ).
+		room = minf(room, _title_wrap_room(label_width) - 1.0)
+	# The look's clear pad on each side: the words never meet the plate's rounded ends.
+	room -= 2.0 * GoUi.skin().title_plate_pad()
 	var font := title_label.get_theme_font(&"font")
 	var natural := _title_natural_size()
 	var words := title_label.atr(title_label.text)
@@ -866,11 +917,84 @@ func _fit_title_size() -> void:
 	elif not title_label.has_meta(&"go_title_fit") or title_label.get_theme_font_size(&"font_size") != fitted:
 		title_label.set_meta(&"go_title_fit", true)
 		title_label.add_theme_font_size_override(&"font_size", fitted)
-	if over != null: _sink_plate(over, font, fitted)
+	if over != null:
+		_sink_plate(over, font, fitted)
+		_drop_plate_title(over, _title_gloss_drop(over, font, fitted))
 	var wide := title_width
 	if fit_mode == FitMode.SCALE:
-		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + title_label.size.x - room))
+		wide = maxf(wide, ceilf(font.get_string_size(words, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted).x + label_width - room))
 	_widen_title(wide)
+
+
+## The plate title's width before its own widening (`_widen_title`): its width now, unless a `SCALE` fit has the label
+## held at a least width the title set — then the width the card's other content and the look's width give it.
+## 🛑 Never "only while the label sits at its held width": a fit that shrank the words lowers the hold, the label keeps
+##    its old width until the card lays out again, and the room read from it grew the words back — which raised the
+##    hold, which shrank them again, each step resizing the label inside the last (a stack overflow: Spanish
+##    ¡JUEGO COMPLETADO! flipped between 25 and 26 dp). The free width depends on the card, never on the hold's size.
+func _title_free_width() -> float:
+	var width := title_label.size.x
+	var held := title_label.custom_minimum_size.x
+	if fit_mode != FitMode.SCALE or card == null or held <= title_width + 0.5: return width
+	if title_width > 0.0: return title_width
+	var base := standard_width()
+	var others := 0.0
+	for section in _column.get_children():
+		if section != header and section is Control and (section as Control).visible:
+			others = maxf(others, (section as Control).get_combined_minimum_size().x)
+	base = maxf(base, others + card.size.x - _column.size.x)
+	return clampf(width - maxf(0.0, card.size.x - base), 0.0, width)
+
+
+## The card's standard width (dp): [member max_width], else the look's window width (`GoSkin.window_width()`), else
+## `GoConfig.surface_max_width` — never under the card's own least width. What its content widens it past is excess.
+func standard_width() -> float:
+	var look_width := GoUi.skin().window_width()
+	var base := max_width if max_width > 0.0 else (look_width if look_width > 0.0 else GoUi.config.surface_max_width)
+	return maxf(base, card.custom_minimum_size.x if card != null else 0.0)
+
+
+## The width [param control] (inside the card) has with the card no wider than its [method standard_width] or its other
+## content needs: its width now, less what the card is wider than that. A row of fit keys holds no more
+## (`GoGlyphButton.fit_with_row`), so a long translation shrinks its labels instead of widening the window — and a card
+## its content widened still gives its keys that width. 0 or less: the card is not laid out yet.
+func free_width(control: Control) -> float:
+	if card == null or card.size.x <= 0.0 or control == null or not card.is_ancestor_of(control): return 0.0
+	var base := standard_width()
+	# What the content beside it needs: each stacked sibling on the way up to the card, with the frame around it.
+	var node: Control = control
+	while node != card and node.get_parent() is Control:
+		var parent := node.get_parent() as Control
+		var stacked := not (parent is BoxContainer and not (parent as BoxContainer).vertical) and not parent is GridContainer
+		if stacked:
+			for sibling in parent.get_children():
+				var other := sibling as Control
+				if other == null or other == node or not other.visible or other.top_level: continue
+				base = maxf(base, other.get_combined_minimum_size().x + card.size.x - parent.size.x)
+		node = parent
+	var free := control.size.x - maxf(0.0, card.size.x - base)
+	# 🔑 Read at the normal padding. The dense step (`_update_density`) narrows the padding when the content is too
+	#    wide, which widened the row, which raised the keys' hold, which made the content too wide again: default_dark's
+	#    Japanese key row climbed 178 → 189 dp and fell back every frame. While the card is dense only for its width,
+	#    the width last read at the normal padding stands. A window always dense (compact, a short screen) never toggles.
+	var id := control.get_instance_id()
+	if _dense and not _always_dense() and _free_widths.has(id): return _free_widths[id]
+	if not _dense: _free_widths[id] = free
+	return free
+
+
+## The widest line the title label wraps at, [param width] wide, with no centring slack in its margins.
+## 🛑 Never read from the live plate's margins: `_place_title_glyph` sets them from the words' width, so a room taken
+##    from them changed with every fit, and the margins it set resized the label, which fitted it again — forever
+##    (a stack overflow in every SCALE window with a title glyph).
+func _title_wrap_room(width: float) -> float:
+	var plate := title_label.get_theme_stylebox(&"normal")
+	var over := plate as OverhangPlate
+	if over == null or over.base == null: return width - (plate.get_minimum_size().x if plate != null else 0.0)
+	if is_instance_valid(_title_glyph_rect) and title_label.has_meta(&"go_plate_align"):
+		# The glyph row (`_place_title_glyph`): the words start after the plate's end, the glyph and its gap.
+		return width - _plate_end(over, SIDE_LEFT) - _plate_end(over, SIDE_RIGHT) - title_glyph_side() - TITLE_GLYPH_GAP
+	return width - over.base.get_margin(SIDE_LEFT) - over.base.get_margin(SIDE_RIGHT) - over.glyph_room
 
 
 ## The title's least width under a `SCALE` fit: its words at the size they shrank to, plus the plate's ends — the card
@@ -917,9 +1041,45 @@ func _sink_plate(plate: OverhangPlate, font: Font, size: int) -> void:
 		sink = maxf(0.0, plate.base.get_margin(SIDE_TOP) + plate.base.get_margin(SIDE_BOTTOM) + font.get_height(size) - tall)
 	if not is_equal_approx(plate.sink, sink):
 		plate.sink = sink
-		plate.content_margin_bottom = (plate.base.get_margin(SIDE_BOTTOM) if plate.base != null else 0.0) - sink
+		plate.place_words()
 		title_label.update_minimum_size()
 		title_label.queue_redraw()
+
+
+## 🔤 How far the title at [param size] moves down so its ink — accents and outline included — stays under the plate's
+## painted top gloss (`GoSkin.title_plate_gloss_bottom`): 0 for a title already under it (an unaccented one keeps its
+## place), and never further than its lowest ink has room above the plate's bottom padding. Russian ТЕПЕРЬ ТВОЁ!'s Ё
+## crossed the gold ribbon's light top edge (1 dp). 🔑 The title keeps its size: a key steps its label down when the
+## drop has no room, but a title with an accent and a descender (French ÉQUIPER ?) would fall from 34 to 28 dp for
+## 2 dp of band — it goes as far as its room allows instead.
+## 🛑 Read at the plate's own margins, never the dropped ones — a drop read from itself would undo itself.
+func _title_gloss_drop(plate: OverhangPlate, font: Font, size: int) -> float:
+	var tall := title_label.size.y
+	if plate.base == null or font == null or tall <= 0.0 or title_label.text.is_empty(): return 0.0
+	var gloss := GoUi.skin().title_plate_gloss_bottom(plate.base, tall + plate.sink)
+	if gloss <= 0.0: return 0.0
+	var top := plate.base.get_margin(SIDE_TOP)
+	var bottom := plate.base.get_margin(SIDE_BOTTOM) - plate.sink
+	var baseline := top + (tall - top - bottom - font.get_height(size)) * 0.5 + font.get_ascent(size)
+	var ink := GoStyle.ink_box(title_label.atr(title_label.text), font, size)
+	var reach := float(title_label.get_theme_constant(&"outline_size")) * GoGlyphButton.OUTLINE_REACH
+	var need := ceilf(gloss - (baseline + ink.position.y - reach))
+	if need <= 0.0: return 0.0
+	var room := floorf((tall - bottom) - (baseline + ink.end.y + reach))
+	return clampf(need, 0.0, maxf(room, 0.0))
+
+
+## Moves the plate title's words [param drop] dp down: that much of its bottom padding goes to the top.
+func _drop_plate_title(plate: OverhangPlate, drop: float) -> void:
+	if is_equal_approx(plate.drop, drop): return
+	plate.drop = drop
+	# 🛑 Each margin set resizes the label, and `resized` fits the title again — between the two sets, at a height the
+	#    drop does not hold: guarded as `_fit_title_size` guards its own size steps.
+	_sizing_title = true
+	plate.place_words()
+	_sizing_title = false
+	title_label.queue_redraw()
+	_place_title_glyph()
 
 
 ## Config or theme changed. 🛑 **Forget** the remembered "original panel" and take it again — swapping the look
@@ -959,7 +1119,8 @@ func add_inset(parent: Control = null) -> VBoxContainer:
 
 
 ## A centred line of [param text] at [param font_size] (0: the theme's). [param wrap] is for sentences (SMART, so
-## ja/zh wrap in an export too); a short one-line stat must not wrap — a wrapping label keeps the tall minimum of its
+## ja/zh wrap in an export too), their lines balanced (`GoStyle.balance_lines`: no lone last word); a short one-line
+## stat must not wrap — a wrapping label keeps the tall minimum of its
 ## first, narrow layout.
 func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) -> Label:
 	var line := Label.new()
@@ -968,6 +1129,7 @@ func add_line(text := "", font_size := 0, parent: Control = null, wrap := true) 
 	if wrap: line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if font_size > 0: line.add_theme_font_size_override(&"font_size", font_size)
 	(parent if parent != null else body).add_child(line)
+	if wrap: GoStyle.balance_lines(line)
 	return line
 
 
@@ -981,14 +1143,17 @@ func add_row(parent: Control = null) -> HBoxContainer:
 
 
 ## A glyph button — [param variation], the icon set's [param icon], [param text] — at the look's window button height
-## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width.
+## (`GoSkin.window_button_height()`: 46 in `arcade_light`). In a row it shares the row's width, and with `fit_label` the
+## row's keys share one label size and one width (`GoGlyphButton.fit_with_row`).
 func add_gloss(variation: StringName, icon: StringName, text := "", parent: Control = null,
 		texture: Texture2D = null) -> GoGlyphButton:
 	var button := GoGlyphButton.make(text, icon, variation, texture)
 	var high := GoUi.skin().window_button_height()
 	if high > 0.0: button.custom_minimum_size.y = high
 	var to := parent if parent != null else body
-	if to is HBoxContainer: button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if to is HBoxContainer:
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.fit_with_row = true
 	to.add_child(button)
 	return button
 
@@ -1008,6 +1173,8 @@ class OverhangPlate:
 	var glyph_room := 0.0
 	## How far the plate is drawn below the label (dp) — a title taller than a fixed-height plate.
 	var sink := 0.0
+	## How far the words sit lower than the plate's own padding puts them (dp): accents kept under its gloss.
+	var drop := 0.0
 
 	func _init(from: StyleBox = null, side := 0.0, extra_left := 0.0) -> void:
 		base = from
@@ -1023,6 +1190,12 @@ class OverhangPlate:
 
 	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
 		if base != null: base.draw(to_canvas_item, rect.grow_individual(bleed_left, 0.0, bleed_right, sink))
+
+	## The top and bottom padding from the base's, the sink and the drop (their sum unchanged by the drop).
+	func place_words() -> void:
+		if base == null: return
+		content_margin_top = base.get_margin(SIDE_TOP) + drop
+		content_margin_bottom = base.get_margin(SIDE_BOTTOM) - sink - drop
 
 
 ## The side of the title glyph (dp): `title_glyph_size`, or the game's 26 dp beside a 34 dp title scaled to the title's
@@ -1146,6 +1319,46 @@ func _title_words_width() -> float:
 			title_label.get_theme_font_size(&"font_size")).x
 
 
+## Where the title's ink starts and ends from its pen's start at its size now (`GoStyle.ink_span`).
+func _title_ink() -> Vector2:
+	var font := title_label.get_theme_font(&"font")
+	if font == null: return Vector2.ZERO
+	return GoStyle.ink_span(title_label.atr(title_label.text), font, title_label.get_theme_font_size(&"font_size"))
+
+
+## 🔤 A title on a plate, with no glyph, centres its **ink** on the label, not its advance box. The Simplified Chinese
+## face draws a full-width ？ narrower than its advance, which left 装备这套造型？ several dp left of the ribbon's centre;
+## a Latin title's bearings are near even and it moves under a pixel. 🛑 A centred Label centres its words over its
+## whole width and ignores the face's side margins, so (as the glyph row in `_place_title_glyph` does) the words are
+## laid from the start side with the start margin set where centred ink begins. A title that does not fit one line,
+## or an empty one, goes back to the plate's own margins, centred.
+func _centre_title_ink() -> void:
+	if title_label == null or is_instance_valid(_title_glyph_rect) or not title_label.has_meta(&"go_plate_align"): return
+	var plate := title_label.get_theme_stylebox(&"normal") as OverhangPlate
+	if plate == null or plate.base == null: return
+	var left := plate.base.get_margin(SIDE_LEFT) + plate.glyph_room
+	var right := plate.base.get_margin(SIDE_RIGHT)
+	var width := title_label.size.x
+	var words := _title_words_width() if not title_label.text.is_empty() else 0.0
+	var align := HORIZONTAL_ALIGNMENT_CENTER
+	if words > 0.0 and words < width - left - right:
+		var rtl := title_label.is_inside_tree() and title_label.is_layout_rtl()
+		var ink := _title_ink()
+		# How far right the ink's middle must move to sit where the advance box's middle sits now.
+		var shift := (words - ink.x - ink.y) * 0.5
+		var start := roundf((width - words) * 0.5 + (-shift if rtl else shift))
+		if rtl: right = start
+		else: left = start
+		align = HORIZONTAL_ALIGNMENT_LEFT
+	var changed := not is_equal_approx(plate.content_margin_left, left) \
+			or not is_equal_approx(plate.content_margin_right, right) or title_label.horizontal_alignment != align
+	if not changed: return
+	plate.content_margin_left = left
+	plate.content_margin_right = right
+	title_label.horizontal_alignment = align
+	title_label.queue_redraw()
+
+
 ## Puts the glyph just before the title's words, on the start side (the right in a right-to-left layout) — centred
 ## with them on a plate, at the start otherwise. 🔑 A Label's LEFT alignment lays the words from the right edge in RTL,
 ## and a stylebox's margins do not mirror, so the room for the glyph is moved to the start side here.
@@ -1173,9 +1386,15 @@ func _place_title_glyph() -> void:
 		# The plate's ends as drawn — past the card's sides by the bleed — so the row centres on the plate one sees.
 		var base_left := _plate_end(plate, SIDE_LEFT)
 		var base_right := _plate_end(plate, SIDE_RIGHT)
-		var group := side + TITLE_GLYPH_GAP + _title_words_width()
+		var words := _title_words_width()
+		var group := side + TITLE_GLYPH_GAP + words
+		# 🔑 Centred on the ink: the glyph keeps its gap to the words' pen, and the empty bearing after the last
+		#    letter (a Simplified Chinese ？) is left out of the group, so the row reads centred on the ribbon.
+		var ink := _title_ink()
+		var trail := (words - ink.y) if not rtl else ink.x
 		var start := floorf((base_right if rtl else base_left) \
-				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP)
+				+ maxf(0.0, (width - base_left - base_right - group) * 0.5) + side + TITLE_GLYPH_GAP \
+				+ (trail * 0.5 if group - trail < width - base_left - base_right else 0.0))
 		var want_left := base_left if rtl else start
 		var want_right := start if rtl else base_right
 		if not is_equal_approx(plate.content_margin_left, want_left): plate.content_margin_left = want_left
@@ -1794,13 +2013,18 @@ func _warn_too_wide(width: float) -> void:
 ##    function of (width, room, content). The old slack rule (return to normal density only below 0.85·room) could not stop this: dense
 ##    content ≤ 0.85·room while roomy content > room alternates forever.
 func _update_density(room := 0.0, width := 0.0) -> void:
-	var small := compact or get_viewport_rect().size.y < 420
+	var small := _always_dense()
 	if not small and (room > 0.0 or width > 0.0):
 		_apply_density(false, width)
 		small = (room > 0.0 and _desired_height() > room) or _too_wide(width)
 	_apply_density(small, width)
 	# Still wider at the dense step: the segmented rows take their small cells (`GoStyle.tighten_segmented`), then measure again.
 	if _too_wide(width) and _tighten_segments(): _apply_density(small, width)
+
+
+## Dense whatever its content: [member compact], or a screen under 420 dp tall.
+func _always_dense() -> bool:
+	return compact or get_viewport_rect().size.y < 420
 
 
 ## 📏 Is the content wider than the card's [param width] (0: not asked)? A wrapping label's minimum is its longest word,
@@ -2010,12 +2234,40 @@ func _relayout_scale(area: Rect2) -> void:
 	var least := card.get_combined_minimum_size()
 	# 🔑 Not rounded: the game's card takes its list's fractional height as it is, and a fit is measured on it.
 	var need := Vector2(maxf(width, least.x), maxf(height, least.y))
-	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+	fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share, fit_min_height)
 	if _keyboard_px > 0: _keep_focus_above_keyboard(area, need, reach, margin)
 	# 🛑 On whole dp, as every card here: at a fractional place the padding's column came out a unit short and the
 	#    body scrolled by one (see `relayout`).
 	card.position = card.position.round()
 	_scaled = true
+	repose()
+
+
+## The card was just placed (by this window's fit, or by a caller's `GoFitBox.place(card, …)`): that place becomes the
+## rest the entrance pose (`pose_scale`, `pose_turn`, `pose_offset`) moves the card from.
+func repose() -> void:
+	if card == null: return
+	_pose_base_position = card.position
+	_pose_base_scale = card.scale
+	_pose_placed = true
+	_apply_pose()
+
+
+func _apply_pose() -> void:
+	if card == null or not _pose_placed: return
+	var at_rest := is_equal_approx(pose_scale, 1.0) and is_zero_approx(pose_turn) and pose_offset.is_zero_approx()
+	if at_rest:
+		card.pivot_offset = Vector2.ZERO
+		card.rotation = 0.0
+		card.scale = _pose_base_scale
+		card.position = _pose_base_position
+		return
+	# About the card's centre: the local centre `c` lands where the placed card's centre is, moved by the offset.
+	var c := card.size * 0.5
+	card.pivot_offset = c
+	card.rotation = pose_turn
+	card.scale = _pose_base_scale * pose_scale
+	card.position = _pose_base_position + c * _pose_base_scale - c + pose_offset * _pose_base_scale
 
 
 ## With the virtual keyboard up, a `SCALE` window that would shrink below `fit_min_scale` of its resting size to fit
@@ -2027,10 +2279,10 @@ func _keep_focus_above_keyboard(area: Rect2, need: Vector2, reach: Vector4, marg
 	var focus := get_viewport().gui_get_focus_owner()
 	if focus == null or not card.is_ancestor_of(focus): return
 	var squeezed := fit_scale
-	var resting := GoFitBox.place(card, GoSafeArea.usable_rect(get_viewport()), need, reach, margin, fit_screen_share)
+	var resting := GoFitBox.place(card, GoSafeArea.usable_rect(get_viewport()), need, reach, margin, fit_screen_share, fit_min_height)
 	var factor := maxf(squeezed, resting * GoUi.config.fit_min_scale)
 	if factor <= squeezed + 0.001:
-		fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share)
+		fit_scale = GoFitBox.place(card, area, need, reach, margin, fit_screen_share, fit_min_height)
 		return
 	# Where the field's bottom edge is on the card, at scale 1.
 	var field_bottom := (card.get_global_transform().affine_inverse() * focus.get_global_rect().end).y
@@ -2080,8 +2332,11 @@ func fit_overhang() -> Vector4:
 func _unscale() -> void:
 	if not _scaled: return
 	_scaled = false
+	_pose_placed = false
 	fit_scale = 1.0
 	card.scale = Vector2.ONE
+	card.rotation = 0.0
+	card.pivot_offset = Vector2.ZERO
 	if is_instance_valid(fit_flex): fit_flex.custom_minimum_size.y = 0.0
 
 

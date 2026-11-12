@@ -469,6 +469,164 @@ static func locale_paragraph(node: Label) -> void:
 	direction.apply()
 
 
+## ⚖️ **Balanced lines** for a wrapped, centred label: it wraps at the narrowest width that keeps its line count, so
+## the lines come out about even and the last one never holds a lone short word (Italian "partite?", Japanese "よう。").
+## The label keeps its width and its minimum size; the narrower wrap is an inset on its `normal` face, measured with the
+## label's own break rules on the same text server (an export without ICU break data measures as it draws). Safe to
+## call more than once; [code]false[/code] takes it off.
+static func balance_lines(node: Label, on := true) -> void:
+	for child in node.get_children(true):
+		if child is BalancedLines:
+			if not on: (child as BalancedLines).release()
+			else: (child as BalancedLines).refresh()
+			return
+	if not on: return
+	node.add_child(BalancedLines.new(), false, Node.INTERNAL_MODE_BACK)
+
+
+## The face a balanced label draws: [member base] as it is, with [member inset] more padding on each side.
+class BalancedBox:
+	extends StyleBox
+
+	var base: StyleBox
+	var inset := 0.0
+	## The face it wraps was the label's own override (put back when the wrapper comes off).
+	var was_override := false
+
+	func _init(from: StyleBox = null, side := 0.0) -> void:
+		base = from
+		inset = side
+		for edge in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			var margin := from.get_margin(edge) if from != null else 0.0
+			set_content_margin(edge, margin + (side if edge == SIDE_LEFT or edge == SIDE_RIGHT else 0.0))
+
+	func _draw(to_canvas_item: RID, rect: Rect2) -> void:
+		if base != null: base.draw(to_canvas_item, rect)
+
+	func _get_draw_rect(rect: Rect2) -> Rect2:
+		return base.get_draw_rect(rect) if base != null else rect
+
+
+## Keeps its parent label's lines balanced ([method GoStyle.balance_lines]): measured again when the label's width,
+## text, font or size changes — a draw with nothing changed costs one string compare.
+class BalancedLines:
+	extends Node
+
+	const BREAKS := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE \
+			| TextServer.BREAK_TRIM_START_EDGE_SPACES | TextServer.BREAK_TRIM_END_EDGE_SPACES
+	## The wider widths tried for a break on punctuation, and what counts as one.
+	const PUNCTUATION_STEPS := 8
+	const CLEAN_BREAKS := ["。", "、", "，", "！", "？", "：", "；", ".", ",", "!", "?", ":", ";", "」", "）", ")"]
+	var _measured := ""
+	var _lines := TextParagraph.new()
+
+	func _notification(what: int) -> void:
+		var label := get_parent() as Label
+		if label == null: return
+		if what == NOTIFICATION_ENTER_TREE:
+			if not label.draw.is_connected(_check): label.draw.connect(_check)
+			if not label.resized.is_connected(_check): label.resized.connect(_check)
+			_check()
+		elif what == NOTIFICATION_EXIT_TREE:
+			if label.draw.is_connected(_check): label.draw.disconnect(_check)
+			if label.resized.is_connected(_check): label.resized.disconnect(_check)
+
+	func refresh() -> void:
+		_measured = ""
+		_check()
+
+	## Takes the balancing off: the label's own face back, this node gone.
+	func release() -> void:
+		var label := get_parent() as Label
+		if label != null:
+			if label.draw.is_connected(_check): label.draw.disconnect(_check)
+			if label.resized.is_connected(_check): label.resized.disconnect(_check)
+			_set_inset(label, 0.0)
+			label.remove_child(self)
+		queue_free()
+
+	func _check() -> void:
+		var label := get_parent() as Label
+		if label == null or not is_inside_tree(): return
+		var face := label.get_theme_stylebox(&"normal")
+		var wrapper := face as BalancedBox
+		var base := wrapper.base if wrapper != null else face
+		var full := label.size.x - (base.get_minimum_size().x if base != null else 0.0)
+		var font := label.get_theme_font(&"font")
+		var font_size := label.get_theme_font_size(&"font_size")
+		var words := label.atr(label.text)
+		if label.uppercase: words = words.to_upper()
+		var wraps := label.autowrap_mode != TextServer.AUTOWRAP_OFF and label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER
+		var key := "%s|%d|%d|%.1f|%s|%s" % [words, font_size, font.get_rid().get_id() if font != null else 0, full,
+				wraps, label.language]
+		if key == _measured: return
+		_measured = key
+		_set_inset(label, _inset_for(words, font, font_size, full, label.language) if wraps and font != null else 0.0)
+
+	## Half the width the lines can give up and still be as many: found by halving, one line layout per step. Then a
+	## few wider steps up to the full width: one whose lines end on more punctuation wins (Japanese breaks between any
+	## two characters — 試着中で|す。 — so the narrowest width can split a word; 試着中です。| reads right).
+	func _inset_for(words: String, font: Font, font_size: int, full: float, language: String) -> float:
+		if full <= 1.0 or words.strip_edges().is_empty(): return 0.0
+		_lines.clear()
+		_lines.break_flags = BREAKS
+		_lines.add_string(words, font, font_size, language)
+		_lines.width = full
+		var count := _lines.get_line_count()
+		if count < 2: return 0.0
+		var fits := floorf(full)
+		var short := maxf(0.0, floorf(full / count) - 1.0)
+		while fits - short > 1.0:
+			var middle := floorf((fits + short) * 0.5)
+			_lines.width = middle
+			if _lines.get_line_count() <= count: fits = middle
+			else: short = middle
+		var best := fits
+		_lines.width = fits
+		var best_ends := _clean_ends(words)
+		for step in range(1, PUNCTUATION_STEPS + 1):
+			var width := floorf(lerpf(fits, full, float(step) / PUNCTUATION_STEPS))
+			_lines.width = width
+			if _lines.get_line_count() != count: continue
+			var last := _lines.get_line_size(count - 1).x
+			var widest := 0.0
+			for line in count: widest = maxf(widest, _lines.get_line_size(line).x)
+			if last < 0.5 * widest: continue # a lone last line again
+			var ends := _clean_ends(words)
+			if ends > best_ends:
+				best = width
+				best_ends = ends
+		# A pixel kept spare: the label lays its lines out on its own and may round a hair the other way.
+		return maxf(0.0, floorf((full - best - 2.0) * 0.5))
+
+	## How many of the lines as laid out now (all but the last) end on punctuation or a space.
+	func _clean_ends(words: String) -> int:
+		var ends := 0
+		for line in _lines.get_line_count() - 1:
+			var end := _lines.get_line_range(line).y
+			var tail := words.substr(end - 1, 1) if end > 0 else ""
+			var next := words.substr(end, 1)
+			if tail in CLEAN_BREAKS or next == " " or tail == " ": ends += 1
+		return ends
+
+	func _set_inset(label: Label, inset: float) -> void:
+		var face := label.get_theme_stylebox(&"normal")
+		var wrapper := face as BalancedBox
+		if wrapper != null and is_equal_approx(wrapper.inset, inset): return
+		if wrapper == null and inset <= 0.0: return
+		var base := wrapper.base if wrapper != null else face
+		var own := wrapper.was_override if wrapper != null else label.has_theme_stylebox_override(&"normal")
+		label.begin_bulk_theme_override()
+		label.remove_theme_stylebox_override(&"normal")
+		if inset > 0.0:
+			var box := BalancedBox.new(base, inset)
+			box.was_override = own
+			label.add_theme_stylebox_override(&"normal", box)
+		elif own and base != null:
+			label.add_theme_stylebox_override(&"normal", base)
+		label.end_bulk_theme_override()
+
+
 ## One section title line (a small, dim, uppercase-feeling heading).
 ## 🛑 A face knows nothing about text direction (the `edge_card` rule): a skin that marks the heading on one side (the
 ##    sci-fi accent bar down the left) must stand it where the text starts — in RTL (Arabic, Urdu) on the **right**. The
@@ -3872,6 +4030,87 @@ static func _reach_out(rect: Rect2, clipper: Control) -> float:
 static func fit_floor(base: int, min_scale := -1.0) -> int:
 	var share := min_scale if min_scale > 0.0 else GoUi.config.fit_min_scale
 	return maxi(1, ceili(float(base) * share))
+
+
+## 🔤 The empty space between the top of [param text]'s line box and the top of its tallest letter, in pixels at
+## [param size] in [param font] (its fallbacks included). The display face leaves a tall gap over Latin capitals; a
+## fallback face (Japanese, Korean…) leaves far less, so a layout that pulls a line up into that gap measures it here
+## instead of assuming the display face's. Empty text or no letters: the font's whole ascent.
+static func ink_top_gap(text: String, font: Font, size: int) -> float:
+	var ts := TextServerManager.get_primary_interface()
+	var ascent := font.get_ascent(size)
+	if text.strip_edges().is_empty(): return ascent
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var top := 0.0
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		if int(glyph.index) == 0 or not (glyph.font_rid as RID).is_valid(): continue
+		top = minf(top, ts.font_get_glyph_offset(glyph.font_rid, Vector2i(size, 0), int(glyph.index)).y)
+	ascent = ts.shaped_text_get_ascent(shaped)
+	ts.free_rid(shaped)
+	return maxf(0.0, ascent + top) if top < 0.0 else ascent
+
+
+## 🔤 The empty space between the bottom of [param text]'s tallest-reaching ink below the baseline and the bottom of its
+## line box, in pixels at [param size] in [param font] (its fallbacks included) — [method ink_top_gap]'s other end. The
+## display face's deep descent leaves a wide gap under Latin capitals; a Japanese or Korean fallback sets its letters
+## lower, into it, so a layout that tucks the next line up under a heading measures it here. Empty text or no letters:
+## the line's whole descent.
+static func ink_bottom_gap(text: String, font: Font, size: int) -> float:
+	var ts := TextServerManager.get_primary_interface()
+	var descent := font.get_descent(size)
+	if text.strip_edges().is_empty(): return descent
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var bottom := -INF
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var rid := glyph.font_rid as RID
+		if int(glyph.index) == 0 or not rid.is_valid(): continue
+		var at := Vector2i(size, 0)
+		var glyph_size := ts.font_get_glyph_size(rid, at, int(glyph.index))
+		if glyph_size.y <= 0.0: continue
+		bottom = maxf(bottom, ts.font_get_glyph_offset(rid, at, int(glyph.index)).y + glyph_size.y + (glyph.offset as Vector2).y)
+	descent = ts.shaped_text_get_descent(shaped)
+	ts.free_rid(shaped)
+	return maxf(0.0, descent - bottom) if bottom > -INF else descent
+
+
+## 🔤 Where [param text]'s ink starts and ends along its one line, in pixels from the pen's start at [param size] in
+## [param font] (its fallbacks included): x is the left edge of the leftmost outline, y the right edge of the
+## rightmost. The advance box can hold far more than the ink — the Simplified Chinese face draws a full-width ？
+## narrower than its advance, so a title centred on its advance sits left of centre. Read from the glyphs' outlines,
+## so it is exact. Empty text, or a face with no outlines: the advance box, `Vector2(0, width)`.
+static func ink_span(text: String, font: Font, size: int) -> Vector2:
+	var box := ink_box(text, font, size)
+	return Vector2(box.position.x, box.end.x)
+
+
+## 🔤 The box round [param text]'s ink on its one line at [param size] in [param font] (its fallbacks included), from
+## the pen's start on the baseline, y down: `position.y` is how far the tallest mark rises over the baseline (negative —
+## an accent, É Ć Ż, rises past the font's ascent, which `ink_top_gap` cannot see), `end.y` how far the lowest drops
+## under it (Ę's ogonek, Q's tail). Read from the glyphs' outlines, so it is exact; a text outline (`outline_size`) is
+## drawn outside it. Empty text, or a face with no outlines: the advance box from the ascent to the descent.
+static func ink_box(text: String, font: Font, size: int) -> Rect2:
+	if font == null: return Rect2()
+	var ts := TextServerManager.get_primary_interface()
+	var shaped := ts.create_shaped_text()
+	ts.shaped_text_add_string(shaped, text, font.get_rids(), size)
+	var pen := 0.0
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for glyph: Dictionary in ts.shaped_text_get_glyphs(shaped):
+		var rid := glyph.font_rid as RID
+		var at := Vector2(pen, 0.0) + (glyph.offset as Vector2)
+		pen += float(glyph.advance) * int(glyph.repeat)
+		if int(glyph.index) == 0 or not rid.is_valid(): continue
+		var contours: Dictionary = ts.font_get_glyph_contours(rid, size, int(glyph.index))
+		for point: Vector3 in contours.get("points", PackedVector3Array()):
+			lo = lo.min(at + Vector2(point.x, point.y))
+			hi = hi.max(at + Vector2(point.x, point.y))
+	var width := ts.shaped_text_get_width(shaped)
+	ts.free_rid(shaped)
+	if lo.x > hi.x: return Rect2(0.0, -font.get_ascent(size), width, font.get_height(size))
+	return Rect2(lo, hi - lo)
 
 
 ## 🔤 **Shrink-to-fit for text on fixed art** — the biggest size from [param base] down to [method fit_floor]

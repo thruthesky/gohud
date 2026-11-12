@@ -2,7 +2,7 @@
 
 GoHudAnchor, GoBar, GoSlot, GoSlotGrid, GoJoystick, GoIconButton, GoNotice, GoPromptCard, GoCoachMark, GoContextMenu,
 GoConsole, GoSpinner, GoBadge, GoRewardCalendar, GoRadar, GoDonut, GoCarousel, the app-screen parts (GoNavBar,
-GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint and GoRewardRow.
+GoAppBar, GoFab, GoSearchBar, GoSplitButton, GoProgress, GoLoadingIndicator, GoDatePicker) GoChoiceColumn, GoLevelCard, GoStarRow, GoKeyCluster, GoCoverImage, GoGlyphButton, GoSlider, GoSwitch, GoMapPreview, GoHudCard, GoCountdown, GoHudButton, GoNameplate, GoNoticeFeed, GoTouchButton, GoSpotlight, GoTaskCard, GoPerfReadout, GoSignalBars, GoFoldTab, GoGestureHint, GoRewardRow, GoSideButton, GoEditFrame and GoRewardBurst.
 Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 
 ## Contents
@@ -46,6 +46,9 @@ Source: `widgets/`. Web: https://thruthesky.github.io/gohud/widgets-hud.html#hud
 37. [GoFoldTab — fold a HUD panel into a pill](#37-gofoldtab--fold-a-hud-panel-into-a-pill)
 38. [GoGestureHint — ghost fingers that play a gesture](#38-gogesturehint--ghost-fingers-that-play-a-gesture)
 39. [GoRewardRow — a quest or achievement in a list](#39-gorewardrow--a-quest-or-achievement-in-a-list)
+40. [GoSideButton — a picture key down a menu's side](#40-gosidebutton--a-picture-key-down-a-menus-side)
+41. [GoEditFrame — the frame of a layout editor](#41-goeditframe--the-frame-of-a-layout-editor)
+42. [GoRewardBurst — the claim of a reward, from the key to the balance](#42-gorewardburst--the-claim-of-a-reward-from-the-key-to-the-balance)
 
 ## 1. GoHudAnchor
 
@@ -405,18 +408,27 @@ GoBadge.stick(stage_card, "PLAY!", GoUi.color(GoTheme.SUCCESS_FILL), -8.0)   # a
 GoBadge.stick(stage_card, "", Color.TRANSPARENT, 0.0, &"check")               # a round sticker with an icon
 ```
 
-`cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger) · `hide_when_zero` ·
+`cap` 99 (`99+` beyond it) · `label_text` · `dot` · `ink` (empty = danger: arcade_light's red disc) · `hide_when_zero` ·
 `set_count(value)` / `count()` (change a badge you hold — `attach()` again does the same for an attached one) ·
 `GoBadge.make(count, words, as_dot, color)` · `solid` (a sticker — `GoSkin.sticker_box()`, a glossy key under the
 arcade looks) · `icon` (a `GoIconSet` name drawn instead of the words; the badge turns round) · `tilt` (−45–45°,
 round its centre — layout keeps the upright size) · `text_role` (`ROLE_MICRO`) ·
-`GoBadge.stick(host, words, color, degrees, icon)` (attach + solid + `ROLE_BODY`; colour defaults to `SUCCESS_FILL`).
+`GoBadge.stick(host, words, color, degrees, icon)` (attach + solid + `ROLE_BODY`; colour defaults to `SUCCESS_FILL`) ·
+`corner_inset` (dp the attached badge's centre moves in from the corner, left and down) · `pop()` · `pop_seconds`
+(0.25) · `pop_scale` (1.3).
 
 - `attach()` pins it to the **top-right corner of the host**, half outside, with anchors — so it follows a
-  host whose size is decided later. Attaching twice returns the same badge.
+  host whose size is decided later. Attaching twice returns the same badge. A host whose picture stops short of its
+  box's corner pulls it onto the art with `corner_inset` (`GoSideButton` does).
+- 🎈 A count that appears or changes **pops**: it lands at `pop_scale` and settles back over `pop_seconds`, as a
+  `GoCountdown` step does. Drawing only (the box never moves); nothing under `GoConfig.reduce_motion`.
+- One digit is a disc: the badge is never narrower than it is tall, padding included; a longer count is a pill.
 - 🔑 A number when the count changes what the player does; a dot when only "there is something" matters.
-- ♿ The badge carries an `accessibility_name`, and its text colour is its own colour pushed until it reads on the
-  face the skin **actually paints** — never assumed white, never measured against a colour that is not drawn.
+- ♿ The badge carries an `accessibility_name`, and its words are dressed by the skin (`GoSkin.dress_badge`): by
+  default its own colour pushed until it reads on the face the skin **actually paints** — never assumed white, never
+  measured against a colour that is not drawn. arcade_light paints a glossy disc (`badge_red.png` for a red or the
+  default danger ink, `badge_green.png` for a green, `badge_blue.png` otherwise) tight round the count, and writes a
+  count white with an ink edge where white reads on it (red, blue).
 - It stays one line and re-centres on the corner when its size changes (`3` → `128`). A dot badge is a solid dot.
 
 ## 13. GoRewardCalendar — daily attendance
@@ -1333,12 +1345,28 @@ From `WIDE_WIDTH` (780 dp) up, every part stands on one line and the columns of 
 payment and state, also in a row that pays nothing). Narrower, the bar, its fraction and the payment move under the
 title and the end column shows only when it has something to show. The height stays `extent()` at any width.
 
+**A short how-to line** — `description` — stands under the title in smaller lettering (`GoRewardRowNote` in
+arcade_light: the row's font at 17 dp in a soft navy; the caption role in muted ink elsewhere): across the title and
+the bar on a wide row, between the title and the bar on a narrow one. It shrinks to the fit floor, then wraps to at most
+two lines (Japanese and Chinese wrap between characters at full size) and ends in an ellipsis. Empty, the row is exactly
+the row above. A described row grows by the lines its words take: `extent_for(title, description, width, state)` is
+that height, so a list takes the tallest of its rows:
+
+```gdscript
+var tallest := GoRewardRow.extent()
+for quest in quests:
+	tallest = maxf(tallest, GoRewardRow.extent_for(quest.title, quest.how, list_width, quest.state))
+list.item_extent = tallest
+```
+
 | Member | Default | Notes |
 |---|---|---|
 | `enum State { IN_PROGRESS, READY, CLAIMED, LOCKED }` · `state` · `set_state(value)` | `IN_PROGRESS` | See the table above. `set_state` with the same state re-arms the pill after a refused claim |
 | `make(text, picture = &"", row_state = State.IN_PROGRESS)` | | Static |
 | `extent()` | | Static. Every row's height under the current look and `GoConfig`, at any width: give it to `GoListView`. 70 dp in arcade_light. Grows with the touch floor and the base font |
+| `extent_for(title_text, note, width, row_state = State.READY)` | | Static. A row's height `width` wide showing those words (already translated): `extent()` without a description, else grown by the lines they take. Below `WIDE_WIDTH` a row in progress has no end column, so its words have more room; `READY` measures the narrower case |
 | `title` | `""` | Wraps to at most two lines and shrinks to the fit floor, no word broken; then an ellipsis |
+| `description` · `description_label` | `""` | The how-to line under the title: shrinks to the fit floor, then at most two lines and an ellipsis. Spoken after the title. Empty = no line, `extent()` tall |
 | `icon` · `icon_texture` | `&""` · null | A name (the skin's `widget_art`, else the icon set) or the picture itself |
 | `set_progress(value, target, animate = false)` | | A `target` of 0 or less hides the bar and the fraction. No slide by default: a row bound to other data must not glide there |
 | `set_reward(amount, picture = GoIconSet.COIN, texture = null)` | | An `amount` of 0 or less shows no payment. Written by `GoBar.format_amount` |
@@ -1361,7 +1389,54 @@ title and the end column shows only when it has something to show. The height st
 - Its boxes keep their spacing inside a `GoForm` (`go_own_spacing`). Right to left the row mirrors; numbers stay left to
   right. It follows a look change (`GoUi.watch`).
 
-## 40. GoEditFrame — the frame of a layout editor
+## 40. GoSideButton — a picture key down a menu's side
+
+`class_name GoSideButton extends BaseButton` · a big painted picture, a short word under it and a count on the
+picture's corner: the DAILY QUESTS and ACHIEVEMENTS keys standing down the side of a main menu, a shop or event key.
+`GoGlyphButton` puts a small glyph beside its words on a plate and `GoIconButton` has no word, so neither reads as a
+picture key with a caption over a busy backdrop.
+
+```gdscript
+var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
+daily.picture_size = 76                   # the picture's square (dp)
+daily.label_width = 120                   # the word shrinks into this, never under the fit floor
+daily.pressed.connect(open_quests.bind("daily"))
+menu.add_child(daily)
+daily.set_badge(3)                        # 0 hides it; a new count pops
+```
+
+There is no plate: the picture is the key. While held it darkens to `GoSkin.picture_press_tint()` and pops with the
+look's press feel (`GoStyle.press_feel`); disabled, the picture and the word fade (`DISABLED_ALPHA`). The word is the
+look's outlined HUD text (`GoOutlineLabel` in arcade_light), so it reads on a painted backdrop; a look without it takes
+the name plate's ink and edge (`GoSkin.nameplate_ink`, `nameplate_outline_ink`). arcade_light's menu pictures are
+`menu_daily` (a calendar with a green check) and `menu_achievements` (a trophy with a rosette), both 192 px on the long
+side, in `assets/arcade_light/rewards/`: die-cut stickers whose white band and thin navy line are baked into the art, so
+they read on a pale sky; the count's badge sits on the sticker's top-right corner.
+
+| Member | Default | Notes |
+|---|---|---|
+| `make(words, picture_art = null)` | | Static |
+| `text` | `""` | The word, shown as it is (translate it first) and spoken. Empty: no word and no room kept for one |
+| `art` | `null` | The picture, kept in aspect inside its square |
+| `picture_size` | `72` | The square's side (dp) |
+| `label_width` | `0.0` | The room the word shrinks into (dp); 0 = one and a half pictures (`label_room()`) |
+| `font_size` | `0` | The word's size before it shrinks; 0 = the look's `button` role. `fitted_font_size()` is the size drawn |
+| `set_badge(count, words = "", as_dot = false)` · `badge()` | | `GoBadge.attach` on the picture, on the art's top-right corner (`BADGE_INSET` = 0.12 of `picture_size` in from the square's corner each way, so it sits on the art and hangs past it), hidden at 0 |
+| `badge_role` | `GoTheme.ROLE_SUBTITLE` | The count's text role: a bold count as big as the key's word, as a mobile game's event key wears it |
+| `feedback` | `GoFeedback.TAPPED` | What a press says through `GoFeedback` |
+| `face_tint()` | | The tint the picture and the word take now (white, the press tint, or faded) |
+| `refresh()` | | Applies pending changes now; the setters batch to the end of the frame |
+| `picture` · `label` | | The parts (`TextureRect`, `Label`) |
+
+- The whole node takes the press, the word as well as the picture, and its minimum size is never under
+  `GoUi.touch_size()` either way. It is as wide as `label_width`, the picture or the drawn word, whichever is widest.
+- 🛑 The word never wraps: past the fit floor (`GoConfig.fit_min_scale`) it overflows its room, centred. Give
+  `label_width` what the longest language needs at the floor.
+- Under arcade_light it stays out of the focus order like the look's other keys (`GoStyle.skin_focus`); a look that
+  keeps focus draws its `Button` focus ring round the whole key. It follows a look change (`GoUi.watch`).
+- 🛑 Display only: the key reports `pressed`, and the count is the caller's.
+
+## 41. GoEditFrame — the frame of a layout editor
 
 `class_name GoEditFrame extends Control` · a "customize controls" screen (PUBG Mobile, COD Mobile, Brawl Stars) shows
 every thumb button and HUD box in its place, each in a frame that says it can be moved; a tap selects one, a drag
@@ -1391,3 +1466,68 @@ frame.state = GoEditFrame.State.GHOST             # hidden by the player
 - Skin hooks: `edit_frame_ink(state)` and `draw_edit_frame(canvas, rect, state, circle, handles)`; arcade_light draws
   the selected frame in the training spotlight's gold. It follows a look change (`GoUi.watch`).
 - 🛑 Display only: `MOUSE_FILTER_IGNORE` — the editor decides what a press selects or drags.
+
+## 42. GoRewardBurst — the claim of a reward, from the key to the balance
+
+`class_name GoRewardBurst extends Control` · the moment a mobile game pays a quest (Clash Royale, Brawl Stars, Royal
+Match): the screen dims, the coin rises from the CLAIM key the player pressed, bursts in a ring of light with rays
+turning behind it, "+N" stamps in, COLLECT appears, and on COLLECT the coins curve into the balance pill, which bumps
+and counts up as each lands. A full-screen layer over the screen it plays on; the caller owns what is paid.
+
+```gdscript
+var burst := GoRewardBurst.new()
+screen.add_child(burst)
+burst.collect_text = tr("COLLECT")
+burst.target = coin_pill                       # the coins fly here; it bumps on each landing
+burst.target_label = coin_label                # counted up, whole numbers
+burst.balance = 120                            # what the label shows now
+row.claim_pressed.connect(func(key: Variant) -> void:
+	burst.push(row.claim_button.get_global_rect(), key, row_coins)   # the build covers the server's wait
+	server.claim(key))
+# the server answered:
+burst.resolve(key, reply.coins, reply.balance)  # "+20" stamps in, COLLECT follows
+burst.refuse(key)                               # refused or paid before: it fades, nothing is shown
+burst.finished.connect(func() -> void: row.stamp_claimed())
+```
+
+| t (s) | Beat |
+|---|---|
+| 0–0.25 | the look's scrim and a navy dim (`dim`) fade in |
+| 0–0.6 | the coin rises from `push`'s rect on a curve, 0.2 → 0.9×, spinning on its edge, a gold trail |
+| 0.6–0.75 | anticipation: it draws in to 0.72×, the glow gathers, short faint rays |
+| 0.75 | burst to 1.25× (→ 1 by 1.2): a flash, the shockwave ring 0.4 → 2.3×, 28 sparkles, a jolt; `GoFeedback.fanfare()` |
+| 0.75–1.9 | two ray layers turn opposite ways, grow to 1.22× and brighten; twinkles, six orbiting coins, a shine sweep |
+| 1.2 | "+N" stamps in (2.6× → 1, a squash, a jolt, a sparkle pop), reading the whole amount from its first frame |
+| 1.5 | a glint on the rim |
+| 1.6–1.9 | COLLECT fades and grows in; presses from 1.9 s; it breathes |
+| COLLECT | the coin gives out its coins; they curve into `target`, each landing bumps it and counts `target_label` on |
+
+| Member | Default | Notes |
+|---|---|---|
+| `push(from, id, hint)` | | A claim tapped: `from` the pressed key's global rect, `id` the caller's name, `hint` the expected amount (picks the coin or the heap only). Plays now or after the ones before |
+| `resolve(id, amount, new_balance)` | | What was paid and the balance after (-1: old + amount). "+N" stamps when the build reaches 1.2 s; a build already there idles in its light until this comes |
+| `refuse(id)` | | Refused, failed or paid before: it fades with no reward (a queued one is dropped). `entry_finished(id, false)` |
+| `stop()` | | Ends everything at once (the screen closed): `entry_finished(id, false)` for each (true for one already collected), then `finished`; nothing fades |
+| `tap()` · `skip()` · `collect()` | | `tap()` is what a press on the layer does: `"ignored"` inside `tap_lock`, `"skipped"` (to the reveal, never collecting) until COLLECT is up, then `"none"` |
+| `target` · `target_label` · `balance` | | The pill the coins fly to, the label it counts on, the number it shows now |
+| `collect_text` | `""` | The COLLECT key's word (the caller translates it) |
+| `amount_format` | `"+%d"` | How the amount reads (`%d` the whole number); a caller may write it its own way |
+| `unit` | `1.0` | Every base size (`COIN_SIZE` 150, `AMOUNT_FONT` 62, `COLLECT_SIZE` 230×70 …) times this |
+| `bottom_reserve` · `fits()` · `fit_scale()` · `collect_rect()` | `0` | A band kept clear at the bottom (an ad banner and its gap): the coin and COLLECT move up above it; only a screen too short even then scales the group down, `fits()` turns false and `fit_scale()` says by how much |
+| `dim` | `0.55` | The navy dim's depth over the look's scrim (the arcade scrim frosts but barely darkens) |
+| `heap_from` | `50` | From this amount a heap of coins instead of one (`coin_heap`) |
+| `tap_lock` | `0.3` | Seconds after each push before a tap counts |
+| `is_active()` · `current_id()` · `phase()` | | `Phase { IDLE, BUILD, WAITING, REVEAL, SHOWN, COLLECTING, ENDING }` |
+| signals | | `revealed(id)` COLLECT up · `collected(id)` · `counted(value)` each landing · `entry_finished(id, was_collected)` · `finished` the queue is empty and the layer gone |
+| `static bump(node)` | | The landing's punch on any control (nothing under reduce motion) |
+
+- 🔁 Pushes while one plays wait their turn; each later one plays `QUICK_BEATS` (no anticipation, stamp at 0.6 s,
+  COLLECT pressable at 1.1 s) and the dim stays up between them. One `finished` for the whole run.
+- ♿ `GoConfig.reduce_motion`: fades only (0.15 s) — no rise, rays, spin, orbit, jolt or flying coins; COLLECT presses
+  from `tap_lock`; the balance changes once.
+- 🎨 arcade_light paints it: `coin`, `coin_heap`, `fx_rays`, `fx_rays_thin`, `fx_glow`, `fx_ring`, `fx_sparkle`,
+  `fx_glint` (`assets/arcade_light/rewards/`, `tools/paint_arcade_reward_fx.gd`), all drawn additively over the dim, and
+  "+N" in `GoRewardAmount` (the look's gold on an 11 px ink edge). Another look lights it from its `warning_fill`, draws
+  the coin from its icon set and letters "+N" as its title in that gold.
+- 🛑 Display only: it decides nothing — "+N", the count and the balance are what `resolve` is given.
+- `GoRewardRow.stamp_claimed()` stamps a just-paid row's check in (big, a squash, settled; a fade under reduce motion).

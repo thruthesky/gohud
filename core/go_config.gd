@@ -521,6 +521,10 @@ func follow_look_touch_size() -> void:
 ## 🛑 A label on fixed art that still does not fit at this floor runs over — raise the art, not this floor.
 @export_range(0.3, 1.0, 0.01) var fit_min_scale := 0.7
 
+## The narrowest a fit key's label is condensed to when it is still too long at the fit floor and its width cannot
+## grow (a key placed by hand, not in a container): 0.8 draws it at 80% of its width (`GoGlyphButton.fit_label`).
+@export_range(0.5, 1.0, 0.01) var fit_condense_min := 0.8
+
 
 func _init() -> void:
 	# Catch every path that calls `emit_changed()` (the theme·icon setters and so on) in one place.

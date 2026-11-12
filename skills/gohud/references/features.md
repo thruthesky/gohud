@@ -94,6 +94,8 @@ Shapes that web UI kits have, reshaped for what games actually need.
 |---|---|---|
 | **`GoRewardCalendar`** daily attendance rewards — what matters is **which day you are on**, not which date; today's cell is the only one you can press | `GoRewardCalendar.make(days, claimed_until)` | hud.md §13 |
 | **`GoRewardRow`** a quest, achievement or season task: progress, payment and state (in progress, ready with a glowing claim pill, claimed, locked), fixed height for `GoListView`, one claim per press, carrying the row's `key` | `GoRewardRow.make(title, icon)` · `row.set_state(GoRewardRow.State.READY)` | hud.md §39 |
+| **`GoRewardBurst`** the claim of a reward: the screen dims, the coin rises from the key and bursts in light, "+N" stamps in, COLLECT, the coins fly into the balance pill, which counts up; covers the server's wait, shows only what it is told was paid, accidental-tap safe, queued, reduce motion | `burst.push(rect, id)` · `burst.resolve(id, 20, 140)` | hud.md §42 |
+| **`GoSideButton`** a side menu key: a big painted picture, a short outlined word under it and a count on the picture's corner (daily quests, achievements, a shop); the whole key takes the press | `GoSideButton.make(words, art)` · `key.set_badge(3)` | hud.md §40 |
 | **`GoRadar`** the character stat pentagon, with a **dashed** overlay to compare gear (dashed, not just a second colour, so it survives colour blindness) | `GoRadar.make({"STR": 0.8, "AGI": 0.5})` | hud.md §14 |
 | **`GoDonut`** damage share, currency split; collapses past five slices and carries a legend **with words**, not only colour | `GoDonut.make(slices).legend()` | hud.md §14 |
 | **`GoCarousel`** store banners and character select; does **not** advance on its own by default, and never when `reduce_motion` is on | `carousel.set_pages([a, b, c])` | hud.md §15 |
@@ -104,7 +106,7 @@ Shapes that web UI kits have, reshaped for what games actually need.
 | **`GoSignalBars`** a phone-style signal meter for a HUD's ping: bars rising left to right, lit in GOOD / FAIR / POOR, a readout beside them; display only | `ping.set_reading(3, GoSignalBars.Tone.GOOD, "48 ms")` | hud.md §36 |
 | **`GoPerfReadout`** always-on fps / frame time / triangles / draws / memory band that turns red as fps drops | `overlay.add_child(GoPerfReadout.new())` | hud.md §35 |
 | **`GoTaskCard`** a lesson's card: step, title, what to do, ticking part chips, hint; folds to one row | `card.set_parts(["W", "A", "S", "D"])` | hud.md §34 |
-| **`GoEditFrame`** the outline a layout editor draws round each movable thing — idle, selected with handles, warning, ghost; never takes input | `frame.state = GoEditFrame.State.SELECTED` | hud.md §40 |
+| **`GoEditFrame`** the outline a layout editor draws round each movable thing — idle, selected with handles, warning, ghost; never takes input | `frame.state = GoEditFrame.State.SELECTED` | hud.md §41 |
 | **`GoGestureHint`** ghost fingertips that play a touch gesture in a loop — `PINCH` spreads and pinches two of them to teach pinch-to-zoom; never takes input | `hint.play()` | hud.md §38 |
 | **`GoSpotlight`** dims round one thing and rings it; the dim fades, the ring stays | `spot.follow(jump_button, true)` | hud.md §33 |
 | **`GoTouchButton`** a round thumb button: art, a fitted name, a cooldown ring, a ready pulse, drag-to-aim; `GoJoystick` draws painted art | `GoTouchButton.make(&"btn_jump", "JUMP", 86)` | hud.md §32 |

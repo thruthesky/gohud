@@ -91,10 +91,13 @@ static func look_pad() -> float:
 ## in [param area] (the parent's coordinates), shrunk until it and [param reach] (its overhang: left, top, right,
 ## bottom) fit the area less [param margin] all round, never above 1 — unless it covers less than [param share] of the
 ## area across and down, when it grows until it reaches the share one way, as far as the room allows — then nudged so
-## the overhang stays inside. Sets the card's scale, size and position and returns the scale.
-static func place(card: Control, area: Rect2, need: Vector2, reach: Vector4, margin: float, share := 0.0) -> float:
+## the overhang stays inside. [param tall]: the least height the scale is measured at (`GoSurface.fit_min_height`: a
+## shorter card takes a card that tall's scale, keeping its own height). Sets the card's scale, size and position and
+## returns the scale.
+static func place(card: Control, area: Rect2, need: Vector2, reach: Vector4, margin: float, share := 0.0,
+		tall := 0.0) -> float:
 	var room := area.size - Vector2(margin, margin) * 2.0
-	var drawn := need + Vector2(reach.x + reach.z, reach.y + reach.w)
+	var drawn := Vector2(need.x, maxf(need.y, tall)) + Vector2(reach.x + reach.z, reach.y + reach.w)
 	var most := minf(room.x / maxf(1.0, drawn.x), room.y / maxf(1.0, drawn.y))
 	var want := maxf(1.0, share * minf(area.size.x / maxf(1.0, drawn.x), area.size.y / maxf(1.0, drawn.y)))
 	var factor := minf(want, most)

@@ -2251,6 +2251,53 @@ quest.claim_pressed.connect(func(id: Variant) -> void: server.claim(id))""", T(
 		"Рядок для того, що гравець здобуває прогресом: завдання чи досягнення зі смугою, нагородою та кнопкою отримання, галочкою або замком за станом. Стала висота для GoListView.",
 		"แถวสำหรับสิ่งที่ผู้เล่นได้รับจากความคืบหน้า: ภารกิจหรือความสำเร็จพร้อมแถบ รางวัล และปุ่มรับ เครื่องหมายถูก หรือแม่กุญแจตามสถานะ ความสูงคงที่สำหรับ GoListView",
 		"صف لما يكسبه اللاعب بالتقدم: مهمة أو إنجاز مع شريط وجائزة وزر استلام أو علامة صح أو قفل حسب الحالة. ارتفاع ثابت يناسب GoListView.")),
+	("hud", "GoRewardBurst", "Control", """var burst := GoRewardBurst.new()
+screen.add_child(burst)
+burst.collect_text = "COLLECT"
+burst.target = coin_pill
+burst.target_label = coin_label
+burst.push(claim_button.get_global_rect(), "win_3", 20)
+burst.resolve("win_3", 20, 140)""", T(
+		"The moment a reward is claimed: the screen dims, the coin rises from the key and bursts in turning light, +N stamps in, then COLLECT sends the coins into the balance, which counts up.",
+		"보상을 받는 순간 — 화면이 어두워지고 코인이 키에서 솟아 도는 빛 속에 터지며 +N 이 찍히고, COLLECT 를 누르면 코인이 잔액으로 날아가 숫자가 오른다.",
+		"報酬を受け取る瞬間。画面が暗くなり、コインがキーから昇って回る光の中で弾け、+N が押され、COLLECT でコインが残高へ飛んで数字が増える。",
+		"领取奖励的瞬间：画面变暗，金币从按键升起，在旋转的光中迸发，+N 盖印出现，按 COLLECT 后金币飞入余额，数字随之增加。",
+		"領取獎勵的瞬間：畫面變暗，金幣從按鍵升起，在旋轉的光中迸發，+N 蓋印出現，按 COLLECT 後金幣飛入餘額，數字隨之增加。",
+		"El momento de reclamar una recompensa: la pantalla se oscurece, la moneda sube desde la tecla y estalla en una luz giratoria, aparece +N y COLLECT manda las monedas al saldo, que sube.",
+		"O momento de resgatar uma recompensa: a tela escurece, a moeda sobe da tecla e explode numa luz girando, +N aparece e COLLECT manda as moedas para o saldo, que sobe.",
+		"Момент получения награды: экран темнеет, монета поднимается от кнопки и вспыхивает во вращающемся свете, появляется +N, а COLLECT отправляет монеты в баланс, который растёт.",
+		"Le moment où l'on réclame une récompense : l'écran s'assombrit, la pièce monte de la touche et éclate dans une lumière tournante, +N s'imprime, puis COLLECT envoie les pièces au solde, qui monte.",
+		"Bir ödülün alındığı an: ekran kararır, para tuştan yükselip dönen ışıkta patlar, +N basılır, sonra COLLECT paraları bakiyeye gönderir ve sayı artar.",
+		"Chwila odbioru nagrody: ekran ciemnieje, moneta wznosi się z klawisza i wybucha w wirującym świetle, pojawia się +N, a COLLECT wysyła monety do salda, które rośnie.",
+		"Il momento in cui si riscatta una ricompensa: lo schermo si scurisce, la moneta sale dal tasto ed esplode in una luce rotante, appare +N e COLLECT manda le monete al saldo, che sale.",
+		"Khoảnh khắc nhận thưởng: màn hình tối lại, đồng xu bay lên từ phím và bùng sáng trong vầng sáng xoay, +N hiện ra, rồi COLLECT đưa xu vào số dư đang tăng.",
+		"Saat hadiah diklaim: layar meredup, koin naik dari tombol dan meledak dalam cahaya berputar, +N muncul, lalu COLLECT mengirim koin ke saldo yang bertambah.",
+		"Мить отримання нагороди: екран темнішає, монета здіймається від клавіші й спалахує в обертовому світлі, з'являється +N, а COLLECT відправляє монети в баланс, що зростає.",
+		"ช่วงเวลารับรางวัล: หน้าจอมืดลง เหรียญลอยขึ้นจากปุ่มและระเบิดในแสงที่หมุน +N ปรากฏขึ้น แล้ว COLLECT ส่งเหรียญเข้ายอดคงเหลือที่เพิ่มขึ้น",
+		"لحظة استلام مكافأة: تُعتم الشاشة وتصعد العملة من المفتاح وتنفجر في ضوء دوّار ويظهر ‎+N، ثم يرسل COLLECT العملات إلى الرصيد فيرتفع.")),
+	("hud", "GoSideButton", "BaseButton", """var daily := GoSideButton.make("DAILY", GoUi.skin().widget_art(&"menu_daily"))
+daily.picture_size = 76
+daily.label_width = 120
+daily.pressed.connect(func() -> void: open_quests("daily"))
+menu.add_child(daily)
+daily.set_badge(3)""", T(
+		"A side menu key: a big painted picture, a short outlined word under it and a count on the picture's corner, such as a main menu's daily quests or achievements.",
+		"메뉴 옆에 서는 키 — 크게 칠한 그림, 그 아래 외곽선 있는 짧은 단어, 그림 모서리의 숫자. 메인 메뉴의 일일 퀘스트나 업적 키 같은 것.",
+		"メニューの横に立つキー。大きく描いた絵、その下に縁取りのある短い言葉、絵の角に数字。メインメニューのデイリークエストや実績のキーなど。",
+		"菜单侧边的按键：一幅大幅手绘图片，下方一个带描边的短词，图片角上一个数字，例如主菜单的每日任务或成就按键。",
+		"選單側邊的按鍵：一幅大幅手繪圖片，下方一個帶描邊的短詞，圖片角上一個數字，例如主選單的每日任務或成就按鍵。",
+		"Una tecla al costado del menú: una imagen pintada grande, una palabra corta con contorno debajo y un número en la esquina de la imagen, como las misiones diarias o los logros del menú principal.",
+		"Uma tecla ao lado do menu: uma imagem pintada grande, uma palavra curta com contorno embaixo e um número no canto da imagem, como as missões diárias ou as conquistas do menu principal.",
+		"Кнопка сбоку меню: большая нарисованная картинка, короткое слово с обводкой под ней и число в углу картинки, например ежедневные задания или достижения главного меню.",
+		"Une touche sur le côté du menu : une grande image peinte, un mot court cerné en dessous et un nombre dans le coin de l'image, comme les quêtes du jour ou les succès du menu principal.",
+		"Menünün yanında duran bir tuş: büyük boyalı bir resim, altında dış çizgili kısa bir sözcük ve resmin köşesinde bir sayı; ana menünün günlük görevleri ya da başarımları gibi.",
+		"Klawisz z boku menu: duży malowany obrazek, pod nim krótkie słowo z obrysem i liczba w rogu obrazka, na przykład dzienne zadania lub osiągnięcia w menu głównym.",
+		"Un tasto a lato del menu: una grande immagine dipinta, una parola breve con contorno sotto e un numero nell'angolo dell'immagine, come le missioni giornaliere o gli obiettivi del menu principale.",
+		"Một phím bên cạnh menu: một hình vẽ lớn, một chữ ngắn có viền bên dưới và một con số ở góc hình, như nhiệm vụ hằng ngày hay thành tích của menu chính.",
+		"Tombol di sisi menu: gambar lukis besar, satu kata pendek bergaris tepi di bawahnya, dan angka di sudut gambar, seperti misi harian atau pencapaian di menu utama.",
+		"Клавіша збоку меню: велика намальована картинка, коротке слово з обведенням під нею та число в куті картинки, як-от щоденні завдання чи досягнення головного меню.",
+		"ปุ่มข้างเมนู: ภาพวาดขนาดใหญ่ คำสั้น ๆ ที่มีเส้นขอบอยู่ด้านล่าง และตัวเลขที่มุมภาพ เช่นภารกิจรายวันหรือความสำเร็จของเมนูหลัก",
+		"مفتاح على جانب القائمة: صورة مرسومة كبيرة، وكلمة قصيرة بحدّ تحتها، ورقم في زاوية الصورة، مثل المهام اليومية أو الإنجازات في القائمة الرئيسية.")),
 	("hud", "GoFoldTab", "Button", """var tab := GoFoldTab.new()
 tab.side = SIDE_LEFT
 tab.icon_name = GoIconSet.USERS

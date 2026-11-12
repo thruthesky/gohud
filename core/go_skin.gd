@@ -1061,6 +1061,19 @@ func badge_box(ink: Color) -> StyleBox:
 	return style
 
 
+## Dresses a badge's count or words (`GoBadge`, not a sticker) on the [param face] `badge_box(ink)` painted: the badge's
+## colour pushed until it reads **on the face the skin actually paints**, no outline. A look whose badge is painted
+## solid may outline the words instead (`GoSkinArcadePainted`: white with an ink edge).
+## 🛑 Measure against the painted face, not the badge colour. The text used to be picked against red while the skin
+##    paints the face in the surface colour: `on_accent` on `surface_high` is 1.69:1 in the default dark theme — the
+##    count could not be read (measured 2026-09-23). The slot's quantity badge already reads its face this way.
+func dress_badge(label: Label, ink: Color, face: StyleBox) -> void:
+	var back := blend(box_background(face), GoUi.color(GoTheme.SURFACE))
+	label.add_theme_color_override(&"font_color", readable_on(ink, back))
+	label.remove_theme_color_override(&"font_outline_color")
+	label.remove_theme_constant_override(&"outline_size")
+
+
 ## Caption plate on a world-tour map node. Skins may provide a smaller pill suited to the map artwork.
 func world_tour_caption_box() -> StyleBox:
 	return surface_box(GoTheme.BOX_CARD)
@@ -1230,6 +1243,31 @@ void fragment() {
 ## The smallest a title on a plate shrinks to before it may fold to a second line (dp).
 func title_plate_min_size() -> int:
 	return 15
+
+
+## The clear room a `GoGlyphButton` label fitted to its key (`fit_label`) keeps inside the face's padding on each side
+## (dp): it shrinks before its letters reach the key's rounded ends.
+func button_fit_pad() -> float:
+	return 0.0
+
+
+## How far down from a key's top edge the painted gloss across its top reaches (dp), on [param face] drawn
+## [param height] tall — a `GoGlyphButton` label fitted to its key (`fit_label`) keeps its ink, accents included, under
+## it (ÉQUIPER, ODRZUĆ, ZAŁÓŻ). 0: the face has no gloss to keep clear of.
+func button_gloss_bottom(_face: StyleBox, _height: float) -> float:
+	return 0.0
+
+
+## How far down from a title plate's top edge its painted gloss reaches (dp), on [param face] drawn [param height]
+## tall — a window's title on it keeps its ink, accents included, under it (Russian ТЕПЕРЬ ТВОЁ!). 0: no gloss.
+func title_plate_gloss_bottom(_face: StyleBox, _height: float) -> float:
+	return 0.0
+
+
+## The clear room a title on a plate keeps from each of the plate's ends (dp): it shrinks (or the `SCALE` card widens)
+## before its words reach the plate's rounded ends.
+func title_plate_pad() -> float:
+	return 0.0
 
 
 ## The size of a window's title on its plate before it shrinks to fit (dp). 0: the title's role size.
@@ -1592,15 +1630,16 @@ func countdown_ink() -> Color:
 
 
 ## 🏷️ A `GoNameplate`'s box in [param fill] (a character's colour, or `nameplate_own_fill()`). The default is a
-## rounded tag with a thin dark rim, a little see-through.
+## rounded tag with a thin dark rim, a little see-through, the name 4 px clear of the rim on each side.
 func nameplate_box(fill: Color) -> StyleBox:
 	var box := StyleBoxFlat.new()
 	box.bg_color = Color(fill, 0.92)
 	box.set_corner_radius_all(8)
 	box.set_border_width_all(2)
 	box.border_color = GoUi.color(GoTheme.BACKGROUND)
-	box.content_margin_left = 2.0
-	box.content_margin_right = 2.0
+	# 🛑 A content margin is measured from the box's outer edge, the rim included: 2 would put the letters on the rim.
+	box.content_margin_left = 6.0
+	box.content_margin_right = 6.0
 	box.anti_aliasing = true
 	return box
 
