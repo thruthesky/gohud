@@ -27,12 +27,12 @@ func _init() -> void:
 	var x_outer := _rect(2, 26, 92, 44, 17) + _rect(26, 2, 44, 92, 17)
 	var x_inner := _rect(9, 33, 78, 30, 10) + _rect(33, 9, 30, 78, 10)
 	_save(out + "/close.png", 96, 96, x_outer, x_inner, "rotate(45 48 48)")
-	# The house: a roof (a square on its corner) over the walls; the doorway is the outline's navy, open to the ground.
-	var roof := "rotate(45 48 40)"
-	var house_outer := _turned(_rect(20, 12, 56, 56, 8), roof) + _rect(16, 40, 64, 56, 12)
-	var house_inner := _turned(_rect(27, 19, 42, 42, 4), roof) + _rect(23, 47, 50, 23, 6) \
-			+ _rect(23, 47, 15, 42, 6) + _rect(58, 47, 15, 42, 6)
-	_save(out + "/home.png", 96, 96, house_outer, house_inner, "")
+	# The house: a roof (a triangle, its corners rounded by a stroke of its own colour) over the walls; the doorway
+	# is the outline's navy, open to the ground. Wider than tall, like the set's other glyphs.
+	var house_outer := _roof("48,6 89,47 7,47", 10) + _rect(16, 40, 64, 48, 12)
+	var house_inner := _roof("48,13 79,44 17,44", 6) + _rect(23, 44, 50, 22, 6) \
+			+ _rect(23, 44, 15, 37, 6) + _rect(58, 44, 15, 37, 6)
+	_save(out + "/home.png", 96, 88, house_outer, house_inner, "")
 	quit()
 
 
@@ -40,8 +40,9 @@ func _rect(x: float, y: float, w: float, h: float, r: float) -> String:
 	return '<rect x="%s" y="%s" width="%s" height="%s" rx="%s"/>' % [x, y, w, h, r]
 
 
-func _turned(shape: String, turn: String) -> String:
-	return '<g transform="%s">%s</g>' % [turn, shape]
+## A triangle with round corners; "{c}" is the colour _render paints with.
+func _roof(points: String, stroke: float) -> String:
+	return '<polygon points="%s" stroke="{c}" stroke-width="%s" stroke-linejoin="round"/>' % [points, stroke]
 
 
 func _save(path: String, w: int, h: int, outer: String, inner: String, turn: String) -> void:
@@ -70,7 +71,7 @@ func _save(path: String, w: int, h: int, outer: String, inner: String, turn: Str
 func _render(w: int, h: int, shapes: String, turn: String, fill: String) -> Image:
 	var t := ' transform="%s"' % turn if turn != "" else ""
 	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d"><g fill="%s"%s>%s</g></svg>' \
-		% [w, h, w, h, fill, t, shapes]
+		% [w, h, w, h, fill, t, shapes.replace("{c}", fill)]
 	var img := Image.new()
 	var err := img.load_svg_from_string(svg, 1.0)
 	if err != OK:
