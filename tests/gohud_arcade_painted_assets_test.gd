@@ -62,8 +62,8 @@ const GLYPH_FILES := {
 	"back": true, "check": true, "exit": true, "gear": true, "globe": true, "help": true, "magnet": true, "pause": true,
 	"person": true, "play": true, "retry": false, "skip": false, "skull": false, "sound_low": true, "sound_off": true, "sound_on": true,
 	"trophy": false,
-	# Painted for gohud in the same style (tools/paint_arcade_glyphs.gd): the - and + steppers and the close key.
-	"plus": true, "minus": true, "close": true,
+	# Painted for gohud in the same style (tools/paint_arcade_glyphs.gd): the - and + steppers, the close key, the house.
+	"plus": true, "minus": true, "close": true, "home": true,
 	# The kill feed's glyphs, painted for gohud in the same style (tools/paint_arcade_killfeed.gd).
 	"magnet_arrow": true, "fall": true,
 	# A menu's multiplayer button: three people (tools/paint_arcade_multiplayer.gd).
@@ -178,7 +178,7 @@ func _light_icons() -> void:
 	if preset == null or preset.icons == null: return
 	var icons := preset.icons
 	var expect := {
-		&"home": "exit", &"refresh": "retry", &"settings": "gear", &"back": "back", &"forward": "skip",
+		&"home": "home", &"refresh": "retry", &"settings": "gear", &"back": "back", &"forward": "skip",
 		&"crown": "trophy", &"check": "check", &"play": "play", &"pause": "pause", &"help": "help", &"globe": "globe",
 		&"volume_high": "sound_on", &"volume_low": "sound_low", &"volume_off": "sound_off",
 		&"exit": "exit", &"retry": "retry", &"gear": "gear", &"skip": "skip", &"trophy": "trophy",
@@ -209,7 +209,7 @@ func _light_icons() -> void:
 	check(icons.fallback == GoUi.DEFAULT_ICONS, "the arcade_light set falls back to gohud's default set")
 	# What a widget actually asks for once the preset is chosen.
 	GoUi.use_preset(preset)
-	check(GoUi.icons().texture(&"home") == _glyph("exit"), "with arcade_light chosen, GoUi.icons() draws home with the exit glyph")
+	check(GoUi.icons().texture(&"home") == _glyph("home"), "with arcade_light chosen, GoUi.icons() draws home with the painted house")
 	check(GoUi.icons().texture(&"close") == _glyph("close"), "with arcade_light chosen, close is the painted one")
 	check(GoUi.icons().texture(GoIconSet.MAGNET_ARROW) == _glyph("magnet_arrow") and GoUi.icons().texture(GoIconSet.FALL) == _glyph("fall"),
 		"with arcade_light chosen, GoUi.icons() draws magnet_arrow and fall with the painted kill-feed glyphs")

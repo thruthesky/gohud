@@ -1,4 +1,4 @@
-## 🎨 **Paints arcade_light's plus, minus and close glyphs** (`icons/arcade_light/`), which Magnet Mayhem's glyph set
+## 🎨 **Paints arcade_light's plus, minus, close and home glyphs** (`icons/arcade_light/`), which Magnet Mayhem's glyph set
 ## never had, in that set's style: a white face, a navy (#010a36) outline about 7 px on a 96 px glyph, and a pale lip
 ## (#e1e2ed) under every lower edge — measured from `pause.png` and `check.png`.
 ##
@@ -27,11 +27,21 @@ func _init() -> void:
 	var x_outer := _rect(2, 26, 92, 44, 17) + _rect(26, 2, 44, 92, 17)
 	var x_inner := _rect(9, 33, 78, 30, 10) + _rect(33, 9, 30, 78, 10)
 	_save(out + "/close.png", 96, 96, x_outer, x_inner, "rotate(45 48 48)")
+	# The house: a roof (a square on its corner) over the walls; the doorway is the outline's navy, open to the ground.
+	var roof := "rotate(45 48 40)"
+	var house_outer := _turned(_rect(20, 12, 56, 56, 8), roof) + _rect(16, 40, 64, 56, 12)
+	var house_inner := _turned(_rect(27, 19, 42, 42, 4), roof) + _rect(23, 47, 50, 23, 6) \
+			+ _rect(23, 47, 15, 42, 6) + _rect(58, 47, 15, 42, 6)
+	_save(out + "/home.png", 96, 96, house_outer, house_inner, "")
 	quit()
 
 
 func _rect(x: float, y: float, w: float, h: float, r: float) -> String:
 	return '<rect x="%s" y="%s" width="%s" height="%s" rx="%s"/>' % [x, y, w, h, r]
+
+
+func _turned(shape: String, turn: String) -> String:
+	return '<g transform="%s">%s</g>' % [turn, shape]
 
 
 func _save(path: String, w: int, h: int, outer: String, inner: String, turn: String) -> void:
