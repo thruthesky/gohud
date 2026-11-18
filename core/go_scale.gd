@@ -301,13 +301,16 @@ static func breakpoint_name(bp: Bp) -> String:
 ## `PER_INCH`: the `content_scale_factor` for a [param window_px] window at [param dpi] over a project base size of
 ## [param base] (`canvas_items` stretch, `expand` aspect). The canvas is about [param units_per_inch] units per inch
 ## (160 ≈ one iOS point), clamped to [[param min_height], the canvas height at factor 1]; never below 1. Off a
-## [param handheld] it is 1.
+## [param handheld] it is 1. Both then × [param user].
+## [param user] (`GoConfig.user_scale`, the player's or the project's UI size) multiplies the result on every device: below 1
+## a desktop shows more of its base canvas (smaller UI), above 1 a handheld grows past its per-inch size.
 static func per_inch_factor(window_px: Vector2, dpi: float, base: Vector2, units_per_inch := 160.0,
-		min_height := 440.0, handheld := true) -> float:
-	if not handheld or window_px.x <= 0.0 or window_px.y <= 0.0 or dpi <= 0.0: return 1.0
+		min_height := 440.0, handheld := true, user := 1.0) -> float:
+	var u := maxf(0.01, user)
+	if not handheld or window_px.x <= 0.0 or window_px.y <= 0.0 or dpi <= 0.0: return u
 	var tall := base.y * maxf(1.0, (base.x / base.y) / (window_px.x / window_px.y))
 	# A base shorter than min_height would make the clamp's bounds cross and return min_height: cap the floor at tall.
-	return tall / clampf(window_px.y / dpi * units_per_inch, minf(min_height, tall), tall)
+	return tall / clampf(window_px.y / dpi * units_per_inch, minf(min_height, tall), tall) * u
 
 
 ## `PER_INCH`: the canvas size (units) a [param window_px] window shows at [param factor] over [param base].
