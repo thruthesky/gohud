@@ -80,6 +80,9 @@ const FLY_STAGGER := 0.045
 const ORBITERS := 6
 ## A small gap kept between the group and the top of the room (times unit).
 const TOP_MARGIN := 12.0
+## The gap kept under COLLECT above the bottom of the room (times unit), so a screen's rounded corners or a cutout
+## never clip it; a larger [member bottom_reserve] keeps its own band instead.
+const BOTTOM_MARGIN := 24.0
 
 ## The beats of one entry (seconds from its tap): the first one, and each later one in a row.
 const BEATS := {
@@ -842,7 +845,7 @@ func _place() -> void:
 	var amount_h := maxf(AMOUNT_COIN * unit, _amount_label.size.y if _amount_label.size.y > 0.0 else AMOUNT_FONT * unit)
 	# The key as tall as it really is: its look's face (or a long word's fit) can make it taller than COLLECT_SIZE.
 	var bottom := _below + amount_h + COLLECT_GAP * unit + maxf(COLLECT_SIZE.y * unit, collect_button.size.y)
-	var floor_y := room.end.y - bottom_reserve
+	var floor_y := room.end.y - maxf(bottom_reserve, BOTTOM_MARGIN * unit)
 	var ceiling := room.position.y + TOP_MARGIN * unit
 	var y := room.get_center().y - room.size.y * 0.06
 	y = minf(y, floor_y - bottom)

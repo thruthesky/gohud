@@ -23,6 +23,9 @@ var _remaining := 0.0
 var _key := ""
 var _arguments := {}
 var _content: Control
+## The tone `set_message` last styled the text surface with; null = the surface must be rebuilt on the next message
+## (no text styled yet, composite content shown, or the look/alpha changed since).
+var _styled_tone: Variant = null
 
 
 ## 🪟 **Panel background opacity** (0.0~1.0) — for this one panel only. Negative means whatever the theme/config decided.
@@ -32,6 +35,7 @@ var _content: Control
 var alpha := -1.0:
 	set(value):
 		alpha = value
+		_styled_tone = null
 		if is_inside_tree(): add_theme_stylebox_override(&"panel", _surface())
 
 
@@ -72,20 +76,28 @@ func _exit_tree() -> void:
 ## 🛑 Without it **the widgets already on screen are the only ones left on the old theme** (measured 2026-09-16).
 func _on_ui_changed() -> void:
 	theme = GoUi.theme()
+	_styled_tone = null
 	# 🔑 The panel of composite content (`set_content`) carries that content's accent color — rebuild it only for text notices.
 	if not is_instance_valid(_content): add_theme_stylebox_override(&"panel", _surface())
 
 
 ## Text shown as-is. `tone` is a color token name (`GoTheme.SUCCESS`, …).
 func set_message(message: String, tone := GoTheme.TEXT) -> void:
-	_drop_content()
 	_key = ""
 	_arguments.clear()
+	# 🔑 The same text in the same tone on a text notice that is already styled changes nothing on screen — return before
+	#    the typography and a NEW panel StyleBox are applied again. Each theme override re-runs the theme-changed →
+	#    minimum-size → container re-layout cascade up the HUD, and a HUD that re-asserts its message on every event (a
+	#    combat notice on each critical hit) paid it several times a second for an identical card.
+	if _styled_tone == tone and not is_instance_valid(_content) and label.visible and label.text == message:
+		return
+	_drop_content()
 	label.text = message
 	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	label.show()
 	GoStyle.typography(label, GoTheme.ROLE_BODY, GoUi.color(tone))
 	add_theme_stylebox_override(&"panel", _surface(GoUi.color(tone)))
+	_styled_tone = tone
 
 
 ## Shows text and hides it after `seconds`. Negative means the `notice_duration_ms` token.
@@ -106,6 +118,7 @@ func show_key(key: String, arguments := {}, tone := GoTheme.TEXT, seconds := -1.
 
 ## Holds composite content (an icon plus several rows) instead of text. Its lifetime is managed by the owning screen.
 func set_content(content: Control, accent := Color.TRANSPARENT, compact := false) -> void:
+	_styled_tone = null
 	_key = ""
 	_arguments.clear()
 	_remaining = 0.0
@@ -123,6 +136,7 @@ func set_content(content: Control, accent := Color.TRANSPARENT, compact := false
 
 ## Changes only the accent color of composite content — no new surface is built (a copy is edited so it does not bleed into other notices).
 func set_accent(accent: Color) -> void:
+	_styled_tone = null
 	GoUi.skin().tint_notice(get_theme_stylebox(&"panel"), accent)
 
 

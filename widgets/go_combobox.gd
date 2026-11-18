@@ -169,7 +169,7 @@ func _open() -> void:
 	_surface.visible = true
 	_surface.relayout()
 	GoFeedback.opened()
-	if _search != null: _search.grab_focus.call_deferred()
+	if _search != null: GoUi.focus_later(_search)
 	# 🛑 Hold the layer through a **weak reference** — if `_close()` frees it first and this lambda runs afterwards, the
 	#    engine prints `Lambda capture … was freed`.
 	var held := weakref(_layer)

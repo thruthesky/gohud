@@ -253,6 +253,17 @@ func _heap() -> void:
 
 ## A band kept clear at the bottom: COLLECT stays above it; too big a band shrinks the group, and says so.
 func _bottom_reserve() -> void:
+	var bare := _burst()
+	bare.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	bare.size = Vector2(host.size.x, 420.0) # short: the centred group would reach the bottom
+	bare.push(_from(), "m", 20)
+	bare.resolve("m", 20, 120)
+	await frames(2)
+	check(bare.collect_rect().end.y <= bare.size.y - GoRewardBurst.BOTTOM_MARGIN * bare.unit + 0.5,
+			"no band: COLLECT keeps BOTTOM_MARGIN off the bottom (%s, room %.0f)" % [bare.collect_rect(), bare.size.y])
+	bare.refuse("m")
+	await wait(0.4)
+	bare.free()
 	var burst := _burst()
 	burst.bottom_reserve = 160.0
 	burst.push(_from(), "b", 20)
