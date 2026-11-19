@@ -1325,6 +1325,20 @@ func _scale_curve() -> void:
 	var serial := GoScale.simulation_serial()
 	GoScale.simulate({})
 	check(GoScale.simulation_serial() == serial + 1, "curve: every simulate() bumps simulation_serial")
+	# A whole surface drawn at 2/3 of a 1080×2340 420-dpi phone (shown at 720×1560 and scaled up by the display): the UI is
+	# the same physical size — the same canvas in units, the factor ×2/3 — and every simulate() / surface change re-applies.
+	GoScale.simulate({"size": Vector2i(2340, 1080), "dpi": 420.0, "handheld": true})
+	var full := GoScale.curve(GoScale.device_inputs(Vector2i(2340, 1080)))
+	var serial_k := GoScale.simulation_serial()
+	GoScale.set_surface_scale(720.0 / 1080.0)
+	GoScale.simulate({"size": Vector2i(1560, 720), "dpi": 420.0, "handheld": true})
+	var reduced := GoScale.curve(GoScale.device_inputs(Vector2i(1560, 720)))
+	check(GoScale.simulation_serial() > serial_k and near(float(reduced["factor"]), float(full["factor"]) * 720.0 / 1080.0, 0.01)
+		and near((reduced["logical"] as Vector2).x, (full["logical"] as Vector2).x, 1.0) and reduced["bp"] == full["bp"],
+		"curve: a reduced surface (set_surface_scale) keeps the UI's physical size · factor %.3f → %.3f · canvas %s → %s" % [
+			float(full["factor"]), float(reduced["factor"]), str(full["logical"]), str(reduced["logical"])])
+	GoScale.set_surface_scale(1.0)
+	GoScale.simulate({})
 	settings.reference_short_side = saved[0]
 	settings.max_window_scale = saved[1]
 	settings.min_canvas_short = saved[2]

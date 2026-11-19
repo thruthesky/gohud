@@ -56,6 +56,11 @@ const SCALE_REPORTING_SERVERS: Array[String] = ["macOS", "Wayland", "web"]
 static var _device: Dictionary = {}
 ## How many times `simulate()` has run — a scale owner compares one int per frame to notice a new simulated device.
 static var _serial := 0
+## The render surface's pixels per screen pixel: 1 = the window draws at the screen's own pixels. An app that draws its
+## whole surface smaller and lets the display scale it up (Android `SurfaceHolder.setFixedSize`, a console's dynamic
+## resolution) sets it with `set_surface_scale`, so the UI keeps its physical size: the screen's dpi and size are read
+## in surface pixels (`screen_dpi`, `device_inputs` — the one place they are read). The physical diagonal is unchanged.
+static var surface_scale := 1.0
 
 
 # ── The device — real, or simulated for tests and screenshots ──
@@ -74,6 +79,13 @@ static var _serial := 0
 ## 🛑 This only stores it — `GoRuntime.simulate()` also resizes the window and re-applies the scale.
 static func simulate(device: Dictionary) -> void:
 	_device = device.duplicate()
+	_serial += 1
+
+
+## Draw the UI for a surface of [param k] surface pixels per screen pixel (`surface_scale`; 0 < k ≤ 1). A scale owner
+## re-applies on the next window resize (the surface's) or simulation serial.
+static func set_surface_scale(k: float) -> void:
+	surface_scale = clampf(k, 0.05, 1.0)
 	_serial += 1
 
 
@@ -105,8 +117,8 @@ static func handheld_from(has_feature: Callable, browsers := false) -> bool:
 ## The screen's physical dpi for `PER_INCH`: a simulated device's `dpi`, else the screen's (a browser's rescaled by
 ## `web_dpi()`), and `GoConfig.fallback_dpi` when the screen reports none.
 static func screen_dpi() -> float:
-	if _device.has("dpi"): return float(_device["dpi"])
-	return dpi_from(float(DisplayServer.screen_get_dpi()), OS.has_feature("web"), GoUi.config.fallback_dpi)
+	if _device.has("dpi"): return float(_device["dpi"]) * surface_scale
+	return dpi_from(float(DisplayServer.screen_get_dpi()), OS.has_feature("web"), GoUi.config.fallback_dpi) * surface_scale
 
 
 ## The rule of `screen_dpi()` over a [param reported] dpi: [param fallback] when it is 0 or less, else on the
@@ -196,8 +208,8 @@ static func device_inputs(window_px: Vector2i) -> Dictionary:
 	var window: Vector2i = d.get("size", window_px)
 	var inputs := {
 		"window": window,
-		"screen": window if d.has("size") else DisplayServer.screen_get_size(),
-		"dpi": float(d.get("dpi", DisplayServer.screen_get_dpi())),
+		"screen": window if d.has("size") else Vector2i((Vector2(DisplayServer.screen_get_size()) * surface_scale).round()),
+		"dpi": float(d.get("dpi", DisplayServer.screen_get_dpi())) * surface_scale,
 		"raw_scale": reported_scale(DisplayServer.get_name(), DisplayServer.screen_get_scale()),
 		"server": DisplayServer.get_name(),
 		"native": GoUi.is_handheld_platform(),
