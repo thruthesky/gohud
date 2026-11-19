@@ -1507,7 +1507,8 @@ burst.finished.connect(func() -> void: row.stamp_claimed())
 | `push(from, id, hint)` | | A claim tapped: `from` the pressed key's global rect, `id` the caller's name, `hint` the expected amount (picks the coin or the heap only). Plays now or after the ones before |
 | `resolve(id, amount, new_balance)` | | What was paid and the balance after (-1: old + amount). "+N" stamps when the build reaches 1.2 s; a build already there idles in its light until this comes |
 | `refuse(id)` | | Refused, failed or paid before: it fades with no reward (a queued one is dropped). `entry_finished(id, false)` |
-| `stop()` | | Ends everything at once (the screen closed): `entry_finished(id, false)` for each (true for one already collected), then `finished`; nothing fades |
+| `fly(from, id, amount, new_balance)` | | The light claim, after the server paid: "+N" floats up over `from` and the coins fly straight into `target`, counting on to the balance after (-1: old + amount). No scrim, no COLLECT, the screen keeps its taps; several fly at once and a `push` can play over them. `entry_finished(id, true)` when its last coin lands. Reduce motion: the balance changes once |
+| `stop()` | | Light flights count to their end (`entry_finished(id, true)`), then it ends everything else at once (the screen closed): `entry_finished(id, false)` for each (true for one already collected), then `finished`; nothing fades |
 | `tap()` · `skip()` · `collect()` | | `tap()` is what a press on the layer does: `"ignored"` inside `tap_lock`, `"skipped"` (to the reveal, never collecting) until COLLECT is up, then `"none"` |
 | `target` · `target_label` · `balance` | | The pill the coins fly to, the label it counts on, the number it shows now |
 | `collect_text` | `""` | The COLLECT key's word (the caller translates it) |

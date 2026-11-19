@@ -2,7 +2,8 @@
 ## the skip that never collects, only COLLECT collects), "+N" reading its whole amount from its first frame with its coin
 ## clear of it, a refused claim and a queued one dropped, two claims in a row (the later one quicker, one dim), reduce
 ## motion (fades, COLLECT at the tap lock, one count), the heap for a big amount, the band kept clear at the bottom, the
-## painted pieces and `GoRewardAmount`; and `GoRewardRow.stamp_claimed`.
+## painted pieces and `GoRewardAmount`; the light claim (`fly`: no scrim, several at once, under a push, reduce motion,
+## stop); and `GoRewardRow.stamp_claimed`.
 ##
 ##   GOHUD_TEST_SCRIPT="res://addons/gohud/tests/gohud_reward_burst_test.gd" bash addons/gohud/tools/run_tests.sh
 extends SceneTree
@@ -48,6 +49,10 @@ func _initialize() -> void:
 	await _reduced()
 	await _row_stamp()
 	await _stop()
+	await _fly()
+	await _fly_many_and_push()
+	await _fly_reduced()
+	await _fly_stop()
 	host.free()
 	GoUi.config.reduce_motion = false
 	await frames(2)
@@ -375,6 +380,86 @@ func _stop() -> void:
 	check(not burst.visible and not burst.is_active() and burst.get_node_or_null("Fx") == null, "…and leaves nothing")
 	burst.stop()
 	check(done[0] == 1, "a second stop does nothing")
+	burst.free()
+
+
+## A light claim: "+N" over the key, coins into the pill counting to the server's balance, no scrim, no COLLECT.
+func _fly() -> void:
+	var burst := _burst()
+	var counts: Array[int] = []
+	var ends: Array = []
+	burst.counted.connect(func(v: int) -> void: counts.append(v))
+	burst.entry_finished.connect(func(id: Variant, got: bool) -> void: ends.append([id, got]))
+	burst.fly(_from(), "f", 20, 120)
+	await frames(1)
+	check(burst.visible and not burst.is_active(), "fly: the layer shows, no claim plays")
+	check(burst.mouse_filter == Control.MOUSE_FILTER_IGNORE, "…the screen keeps its taps")
+	check(burst.get_node_or_null("Fx") == null and burst.collect_button == null,
+		"…no scrim, no COLLECT")
+	var amount := burst.get_node_or_null("LightAmount") as Label
+	check(amount != null and amount.text == "+20", "…\"+20\" pops over the key")
+	await wait(1.6)
+	check(not counts.is_empty() and counts[-1] == 120 and counts[0] > 100, "…counts up to the balance (%s)" % [counts])
+	check(pill_label.text == "120" and burst.balance == 120, "…the pill reads it")
+	check(ends == [["f", true]] and not burst.visible, "…ends once, the layer gone (%s)" % [ends])
+	check(burst.get_node_or_null("LightAmount") == null, "…and \"+N\" is gone")
+	burst.free()
+
+
+## Two light claims at once and a full claim over them: each ends once, the count never goes back.
+func _fly_many_and_push() -> void:
+	var burst := _burst()
+	var counts: Array[int] = []
+	var ends: Array = []
+	burst.counted.connect(func(v: int) -> void: counts.append(v))
+	burst.entry_finished.connect(func(id: Variant, got: bool) -> void: ends.append([id, got]))
+	burst.fly(_from(), "f1", 20, 120)
+	burst.fly(Rect2(Vector2(900, 600), Vector2(120, 48)), "f2", 30, 150)
+	burst.push(_from(), "p", 50)
+	burst.resolve("p", 50, 200)
+	await wait(0.4)
+	burst.tap()
+	await frames(1)
+	burst.collect()
+	await wait(1.8)
+	var rising := true
+	for i in range(1, counts.size()): rising = rising and counts[i] >= counts[i - 1]
+	check(rising and counts[-1] == 200, "fly + push: the count only rises, to the last balance (%s)" % [counts])
+	check(ends.size() == 3 and ends.has(["f1", true]) and ends.has(["f2", true]) and ends.has(["p", true]),
+		"…each ends once (%s)" % [ends])
+	check(not burst.visible and not burst.is_active() and pill_label.text == "200", "…then the layer goes")
+	burst.free()
+
+
+func _fly_reduced() -> void:
+	GoUi.config.reduce_motion = true
+	var burst := _burst()
+	var counts: Array[int] = []
+	var ends: Array = []
+	burst.counted.connect(func(v: int) -> void: counts.append(v))
+	burst.entry_finished.connect(func(id: Variant, got: bool) -> void: ends.append([id, got]))
+	burst.fly(_from(), "r", 20, 120)
+	await frames(2)
+	check(counts == [120] and ends == [["r", true]], "fly, reduce motion: one count, ended (%s %s)" % [counts, ends])
+	check(not burst.visible and burst.get_child_count() == burst.get_children().filter(
+		func(c: Node) -> bool: return not c.name.begins_with("Light")).size(), "…nothing flies")
+	burst.free()
+	GoUi.config.reduce_motion = false
+
+
+## The screen closed mid-flight: the light claim was paid, so it counts to its end and ends collected.
+func _fly_stop() -> void:
+	var burst := _burst()
+	var counts: Array[int] = []
+	var ends: Array = []
+	burst.counted.connect(func(v: int) -> void: counts.append(v))
+	burst.entry_finished.connect(func(id: Variant, got: bool) -> void: ends.append([id, got]))
+	burst.fly(_from(), "s", 20, 120)
+	await wait(0.1)
+	burst.stop()
+	check(ends == [["s", true]] and counts[-1] == 120 and not burst.visible, "fly, stop: counted to its end (%s)" % [ends])
+	await wait(1.2)
+	check(ends.size() == 1 and counts[-1] == 120, "…and no late coin lands (%s)" % [counts])
 	burst.free()
 
 

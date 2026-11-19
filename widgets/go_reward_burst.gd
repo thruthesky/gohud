@@ -35,6 +35,8 @@
 ##    its revealed state and never collects; once up, only COLLECT collects (a tap elsewhere does nothing).
 ## ♿ **`GoConfig.reduce_motion`:** fades only (0.15 s) — no rise, spin, rays, orbit, jolt or flight — COLLECT takes
 ##    presses from [member tap_lock] and the balance changes once.
+## 🪶 **Light claim** ([method fly]): no scrim, no build, no COLLECT — "+N" floats up from the key and the coins fly
+##    straight into [member target]. For a claim among many (a list of quests); [method push] stays for the big moment.
 ## 🔁 **In a row:** a [method push] while one plays waits its turn; each later one plays faster (no anticipation, a
 ##    shorter build) and the dim stays between them. [signal finished] once the last has gone.
 ## 🎨 arcade_light paints it (`assets/arcade_light/rewards/`: `coin`, `coin_heap`, `fx_rays`, `fx_rays_thin`, `fx_glow`,
@@ -77,6 +79,10 @@ const FLY_MIN := 6
 const FLY_MAX := 10
 const FLY_TIME := 0.55
 const FLY_STAGGER := 0.045
+## A light claim's "+N" (fly): its size against the burst's, how far it floats up and how long it shows.
+const LIGHT_AMOUNT_SHARE := 0.6
+const LIGHT_RISE := 70.0
+const LIGHT_AMOUNT_TIME := 0.9
 const ORBITERS := 6
 ## A small gap kept between the group and the top of the room (times unit).
 const TOP_MARGIN := 12.0
@@ -159,6 +165,8 @@ var _shake := 0.0
 var _centre := Vector2.ZERO
 var _box := COIN_SIZE
 var _below := 0.0
+## Light flights in the air (fly): id → {balance: what they count to, left: coins still flying}.
+var _flights := {}
 
 
 func _init() -> void:
@@ -192,6 +200,32 @@ func resolve(id: Variant, amount: int, new_balance := -1) -> void:
 	if is_same(entry, _entry) and _phase == Phase.WAITING: _stamp()
 
 
+## 🪶 A light claim, with what was paid: "+N" pops over [param from] (the pressed key's global rect) and floats up, and
+## coins fly from it into [member target], which bumps and counts on to [param new_balance] (-1: [member balance] plus
+## the amount) as they land. No scrim and no COLLECT: the screen under it keeps taking taps, several fly at once (one
+## per id), and a [method push] can play over them. [signal entry_finished] (id, true) once its last coin landed.
+## Reduce motion: no flight, the balance changes once.
+func fly(from: Rect2, id: Variant, amount: int, new_balance := -1) -> void:
+	amount = maxi(0, amount)
+	var start_value := balance
+	var final_balance := new_balance if new_balance >= 0 else balance + amount
+	theme = GoUi.theme()
+	visible = true
+	GoFeedback.confirmed()
+	if _reduced():
+		_flights[id] = {"balance": final_balance, "left": 1}
+		_land_light.call_deferred(id, final_balance)
+		return
+	var start := _local(from.get_center())
+	_float_amount(start, amount)
+	var count := clampi(amount / 2, FLY_MIN, FLY_MAX)
+	_flights[id] = {"balance": final_balance, "left": count}
+	for i in count:
+		var value := final_balance if i == count - 1 \
+				else start_value + roundi(float(final_balance - start_value) * (i + 1) / count)
+		_fly_coin(i, count, i * FLY_STAGGER, start, _land_light.bind(id, value), "LightCoin")
+
+
 ## [param id] paid nothing (refused, failed, or paid before): its effect fades with no reward; a queued one is dropped.
 func refuse(id: Variant) -> void:
 	var entry := _find(id)
@@ -210,6 +244,7 @@ func refuse(id: Variant) -> void:
 ## Ends everything at once (the screen it plays on closed): each entry says `entry_finished(id, false)` unless it was
 ## already collected (then `true`, its balance counted to the end), then [signal finished]. Nothing fades.
 func stop() -> void:
+	_end_flights()
 	if _phase == Phase.IDLE: return
 	var ended: Array = []
 	if not _entry.is_empty():
@@ -311,7 +346,8 @@ func collect() -> void:
 	var land_last := 0.0
 	for i in count:
 		var value := final_balance if i == count - 1 else from + roundi(float(final_balance - from) * (i + 1) / count)
-		land_last = _fly_coin(i, count, 0.06 + i * FLY_STAGGER, value)
+		land_last = _fly_coin(i, count, 0.06 + i * FLY_STAGGER, _fx.position + _hero.position * _fx.scale.x,
+				_land.bind(value))
 	t.tween_callback(_end_entry.bind(true)).set_delay(land_last + 0.3)
 
 
@@ -530,7 +566,7 @@ func _fade_out(was_collected: bool) -> void:
 func _end_entry(was_collected: bool) -> void:
 	var id: Variant = _entry.get("id")
 	if was_collected:
-		balance = _shown_balance
+		balance = maxi(balance, _shown_balance) # a light flight may have counted past it meanwhile
 	_kill_tweens()
 	_clear_parts()
 	_phase = Phase.ENDING
@@ -539,7 +575,7 @@ func _end_entry(was_collected: bool) -> void:
 		_phase = Phase.IDLE
 		_entry = {}
 		_played = 0
-		visible = false
+		visible = not _flights.is_empty() # light coins still in the air
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		finished.emit()
 	else:
@@ -571,13 +607,12 @@ func _reduced() -> bool:
 
 # ── Flight ───────────────────────────────────────────────────────────────
 
-## One coin: out from the hero, then a curve into the target. Returns when it lands.
-func _fly_coin(i: int, count: int, delay: float, value: int) -> float:
+## One coin: out from [param start], then a curve into the target; [param on_land] when it lands. Returns when that is.
+func _fly_coin(i: int, count: int, delay: float, start: Vector2, on_land: Callable, coin_name := "Flying") -> float:
 	var coin := _art_rect(_art(&"coin"), FLY_COIN * unit)
-	coin.name = "Flying"
+	coin.name = coin_name
 	coin.modulate.a = 0.0
 	add_child(coin)
-	var start := _fx.position + _hero.position * _fx.scale.x
 	var out := start + Vector2.from_angle(TAU * float(i) / float(count) + 0.3) * randf_range(70.0, 120.0) * unit
 	var to := _target_point()
 	var t := coin.create_tween()
@@ -595,7 +630,7 @@ func _fly_coin(i: int, count: int, delay: float, value: int) -> float:
 	var land := _target_size() / coin.size.x
 	t.parallel().tween_property(coin, "scale", Vector2.ONE * land, fly).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	t.tween_callback(func() -> void:
-		_land(value)
+		on_land.call()
 		coin.queue_free())
 	return delay + 0.18 + fly
 
@@ -605,6 +640,56 @@ func _land(value: int) -> void:
 	_hit.position = _target_point()
 	_hit.restart()
 	bump(target)
+
+
+## A light flight's coin landed: the balance counts on to [param value]; its last coin ends the flight.
+func _land_light(id: Variant, value: int) -> void:
+	var flight: Dictionary = _flights.get(id, {})
+	if flight.is_empty(): return
+	balance = maxi(balance, value)
+	var shown := balance
+	if _phase != Phase.IDLE:
+		_shown_balance = maxi(_shown_balance, value)
+		shown = _shown_balance
+	if is_instance_valid(target_label): target_label.text = str(shown)
+	counted.emit(shown)
+	bump(target)
+	flight.left -= 1
+	if flight.left > 0: return
+	_flights.erase(id)
+	if _flights.is_empty() and _phase == Phase.IDLE: visible = false
+	entry_finished.emit(id, true)
+
+
+## Light flights end at once, each counted to its end (stop).
+func _end_flights() -> void:
+	for child in get_children():
+		if child.name.begins_with("Light"): child.queue_free()
+	for id: Variant in _flights.keys():
+		_flights[id].left = 1
+		_land_light(id, _flights[id].balance)
+
+
+## "+N" over a light claim's key: it pops in, floats up and fades.
+func _float_amount(at: Vector2, amount: int) -> void:
+	var label := Label.new()
+	label.name = "LightAmount"
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	label.text_direction = Control.TEXT_DIRECTION_LTR
+	label.text = amount_format % amount
+	_dress_label(label, roundi(AMOUNT_FONT * LIGHT_AMOUNT_SHARE * unit))
+	add_child(label)
+	label.size = label.get_combined_minimum_size()
+	label.pivot_offset = label.size * 0.5
+	label.position = at - label.size * 0.5
+	var t := label.create_tween().set_parallel(true)
+	t.tween_property(label, "scale", Vector2.ONE, 0.25).from(Vector2.ONE * 0.4) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	t.tween_property(label, "position:y", label.position.y - LIGHT_RISE * unit, LIGHT_AMOUNT_TIME) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(LIGHT_AMOUNT_TIME - 0.3)
+	t.chain().tween_callback(label.queue_free)
 
 
 func _count(value: int) -> void:
@@ -623,7 +708,8 @@ static func bump(node: Control) -> void:
 
 
 func _target_point() -> Vector2:
-	if not is_instance_valid(target) or not target.is_inside_tree(): return _fx.position + Vector2(0.0, -size.y)
+	if not is_instance_valid(target) or not target.is_inside_tree():
+		return (_fx.position if _fx != null else size * 0.5) + Vector2(0.0, -size.y)
 	return _local(target.get_global_rect().get_center())
 
 
@@ -798,16 +884,20 @@ func _clear_parts() -> void:
 
 
 func _dress_amount() -> void:
-	var font_px := roundi(AMOUNT_FONT * unit)
+	_dress_label(_amount_label, roundi(AMOUNT_FONT * unit))
+
+
+## "+N"'s letters: the look's GoRewardAmount, else its title label in the warning gold with an ink edge.
+func _dress_label(label: Label, font_px: int) -> void:
 	var look := GoUi.theme()
 	if look != null and look.get_type_variation_base(VAR_AMOUNT) != &"":
-		_amount_label.theme_type_variation = VAR_AMOUNT
+		label.theme_type_variation = VAR_AMOUNT
 	else:
-		_amount_label.theme_type_variation = GoTheme.VAR_TITLE_LABEL
-		_amount_label.add_theme_color_override(&"font_color", GoUi.color(GoTheme.WARNING_FILL))
-		_amount_label.add_theme_color_override(&"font_outline_color", GoUi.color(GoTheme.TEXT))
-		_amount_label.add_theme_constant_override(&"outline_size", roundi(font_px * 0.16))
-	_amount_label.add_theme_font_size_override(&"font_size", font_px)
+		label.theme_type_variation = GoTheme.VAR_TITLE_LABEL
+		label.add_theme_color_override(&"font_color", GoUi.color(GoTheme.WARNING_FILL))
+		label.add_theme_color_override(&"font_outline_color", GoUi.color(GoTheme.TEXT))
+		label.add_theme_constant_override(&"outline_size", roundi(font_px * 0.16))
+	label.add_theme_font_size_override(&"font_size", font_px)
 
 
 ## "+N" with the coin on its left as one centred group, scaled as one (the coin never runs into the "+").
