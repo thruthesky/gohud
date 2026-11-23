@@ -1880,6 +1880,10 @@ func _per_inch_scale() -> void:
 		"scale: a 4:3-ish tablet's base height grows with its aspect")
 	check(GoScale.per_inch_canvas(Vector2(1920, 1080), base, 1.25).is_equal_approx(Vector2(1024, 576)), "scale: the canvas size")
 	check(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base, 160.0, 440.0, false) == 1.0, "scale: off a handheld, 1")
+	check(is_equal_approx(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base, 160.0, 440.0, false, 0.8), 0.8),
+		"scale: off a handheld, user_scale is the factor (a smaller desktop UI)")
+	check(is_equal_approx(GoScale.per_inch_factor(Vector2(1920, 1080), 300.0, base, 160.0, 440.0, true, 1.2), 1.25 * 1.2),
+		"scale: on a handheld, user_scale multiplies the per-inch factor")
 	check(GoScale.web_dpi(192.0) == 320.0, "scale: a phone browser's dpi from devicePixelRatio")
 	check(GoScale.cap_sides(Vector4(48, 20, 30, 10), 12.0) == Vector4(12, 20, 12, 10), "scale: cap_sides caps left and right")
 	check(GoUi.config.scale_profile == GoScale.Profile.DP, "scale: the dp profile is the default")

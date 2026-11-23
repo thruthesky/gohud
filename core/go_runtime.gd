@@ -236,7 +236,7 @@ func _apply(force: bool) -> void:
 		# The dpi and the handheld test are the simulated device's when there is one; a browser and a missing dpi
 		# follow `GoConfig.handheld_browsers` and `fallback_dpi`.
 		var per_inch := GoScale.per_inch_factor(Vector2(px), GoScale.screen_dpi(), base, GoUi.config.per_inch_units,
-			GoUi.config.per_inch_min_height, GoScale.is_handheld_screen())
+			GoUi.config.per_inch_min_height, GoScale.is_handheld_screen(), GoUi.config.user_scale)
 		if force or not is_equal_approx(window.content_scale_factor, per_inch) or window.content_scale_size != Vector2i(base):
 			_applying = true
 			window.content_scale_size = Vector2i(base)
