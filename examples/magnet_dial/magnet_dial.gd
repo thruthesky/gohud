@@ -96,8 +96,8 @@ func _ready() -> void:
 	corner.add_child(box)
 	dial = GoMagnetDial.make()
 	dial.name = "Dial"
-	dial.set_mouse(GoMagnetDial.Half.ATTRACT, MOUSE_BUTTON_LEFT)
-	dial.set_mouse(GoMagnetDial.Half.REPULSE, MOUSE_BUTTON_RIGHT)
+	dial.set_mouse(GoMagnetDial.Half.ATTRACT, MOUSE_BUTTON_LEFT, "A")
+	dial.set_mouse(GoMagnetDial.Half.REPULSE, MOUSE_BUTTON_RIGHT, "R")
 	corner.add_child(dial)
 
 	# Bottom centre: the two key hints.

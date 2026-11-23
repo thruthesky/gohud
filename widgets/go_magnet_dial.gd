@@ -1,12 +1,13 @@
 ## 🧲 **Magnet dial** — a round gauge with two actions on it: a ring that shows how much power is left, a left half for
 ## the held action (ATTRACT) and a right half for the fired one (REPULSE) that greys out and refills while it cools
-## down. Each half names its key at its foot — a key cap, or a painted mouse when the bind is a mouse button.
+## down. Each half names its key at its foot — a key cap, or a painted mouse when the bind is a mouse button (with the
+## key that does the same in a cap under it, when it is given one).
 ##
 ## ```gdscript
 ## var dial := GoMagnetDial.make(176.0)
 ## dial.ring_ink = Color("#1fb5f0")                 # the game's gauge colour (a value with gameplay meaning)
 ## dial.ring_ink_end = Color("#6ff0ff")
-## dial.set_mouse(GoMagnetDial.Half.ATTRACT, MOUSE_BUTTON_LEFT)
+## dial.set_mouse(GoMagnetDial.Half.ATTRACT, MOUSE_BUTTON_LEFT)      # … , "J"): the key that also does it, under the mouse
 ## dial.set_key(GoMagnetDial.Half.REPULSE, "E")     # or set_action(side, &"repulse") — reads InputMap
 ## hud.add_child(dial)
 ##
@@ -106,6 +107,10 @@ const RING_STEPS := 48
 const POWER_FOLLOW := 12.0
 const HEAD_SECONDS := 0.4
 const HALF_STEPS := 20
+## A mouse's key cap: how far under the mouse's centre it sits, and the room the dial keeps under itself for it (in
+## 176ths of the diameter, as every size here).
+const MOUSE_KEY_DROP := 33.0
+const MOUSE_KEY_FOOT := 35.0
 
 ## The motion clock (`GoMotion`): `flow`, `light`, `settle`, `fire`, `ready`, `deny`, `low`, `empty`, `super`, `enter`,
 ## `power_down`, `power_up`. A test reads `motion.playing(&"fire")`.
@@ -330,15 +335,16 @@ func set_key(side: Half, text: String) -> void:
 	if _keys[side] == text and _mouse[side] == MOUSE_BUTTON_NONE: return
 	_keys[side] = text
 	_mouse[side] = MOUSE_BUTTON_NONE
-	queue_redraw()
+	_fit()
 
 
 ## A painted mouse at [param side]'s foot with [param button] marked (`MOUSE_BUTTON_LEFT` or `MOUSE_BUTTON_RIGHT`).
-func set_mouse(side: Half, button: MouseButton) -> void:
-	if _mouse[side] == button: return
+## [param key] names a key that does the same ("J"): its cap sits under the mouse, and the dial is taller by that room.
+func set_mouse(side: Half, button: MouseButton, key := "") -> void:
+	if _mouse[side] == button and _keys[side] == key: return
 	_mouse[side] = button
-	_keys[side] = ""
-	queue_redraw()
+	_keys[side] = key
+	_fit()
 
 
 ## Reads what is **actually bound** to [param action] in `InputMap`: a left or right mouse button becomes the painted
@@ -463,12 +469,14 @@ func _unit() -> float:
 	return diameter / 176.0
 
 
-## Room over the dial for the caption, and under it for the key glyphs' overhang.
+## Room over the dial for the caption, and under it for the key glyphs' overhang (more for a cap under a mouse).
 func _head_room() -> float:
 	return 0.0 if caption.is_empty() else 22.0 * _unit()
 
 
 func _foot_room() -> float:
+	for side: int in _mouse.size():
+		if _mouse[side] != MOUSE_BUTTON_NONE and not _keys[side].is_empty(): return MOUSE_KEY_FOOT * _unit()
 	return 12.0 * _unit()
 
 
@@ -672,18 +680,18 @@ func _arrow(skin: GoSkin, at: Vector2, side_len: float, flip: bool, tint: Color,
 	draw_polyline(shape, tint, side_len * 0.14, true)
 
 
-## The key at a half's foot: the painted mouse, else a key cap (`GoSkin.kbd_box()`) with the key's name.
+## The key at a half's foot: the painted mouse (its key, when it has one, in a cap under it), else a key cap
+## (`GoSkin.kbd_box()`) with the key's name.
 func _draw_key(skin: GoSkin, side: Half, at: Vector2, u: float) -> void:
 	var button := _mouse[side]
-	if button != MOUSE_BUTTON_NONE:
-		var art := skin.widget_art(&"mouse_left" if button == MOUSE_BUTTON_LEFT else &"mouse_right")
-		var tall := 46.0 * u
-		if art != null:
-			draw_texture_rect(art, Rect2(at - Vector2(tall, tall) * 0.5, Vector2(tall, tall)), false)
-			return
-		_draw_cap(skin, at, "L" if button == MOUSE_BUTTON_LEFT else "R", u)
+	if button == MOUSE_BUTTON_NONE:
+		if not _keys[side].is_empty(): _draw_cap(skin, at, _keys[side], u)
 		return
-	if not _keys[side].is_empty(): _draw_cap(skin, at, _keys[side], u)
+	var art := skin.widget_art(&"mouse_left" if button == MOUSE_BUTTON_LEFT else &"mouse_right")
+	var tall := 46.0 * u
+	if art != null: draw_texture_rect(art, Rect2(at - Vector2(tall, tall) * 0.5, Vector2(tall, tall)), false)
+	else: _draw_cap(skin, at, "L" if button == MOUSE_BUTTON_LEFT else "R", u)
+	if not _keys[side].is_empty(): _draw_cap(skin, at + Vector2(0.0, MOUSE_KEY_DROP * u), _keys[side], u)
 
 
 func _draw_cap(skin: GoSkin, at: Vector2, word: String, u: float) -> void:

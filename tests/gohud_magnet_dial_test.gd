@@ -299,6 +299,17 @@ func _dial_keys(look: StringName) -> void:
 	check(dial.key_text(a) == "Q" and dial.mouse_button(a) == MOUSE_BUTTON_NONE, "%s dial: a key cap names the key" % look)
 	dial.set_mouse(a, MOUSE_BUTTON_LEFT)
 	check(dial.mouse_button(a) == MOUSE_BUTTON_LEFT and dial.key_text(a) == "", "%s dial: a mouse glyph replaces the cap" % look)
+	var mouse_only := dial.get_combined_minimum_size().y
+	dial.set_mouse(a, MOUSE_BUTTON_LEFT, "J")
+	check(dial.mouse_button(a) == MOUSE_BUTTON_LEFT and dial.key_text(a) == "J", "%s dial: a mouse names the key that does the same" % look)
+	check(dial.get_combined_minimum_size().y > mouse_only, "%s dial: the cap under a mouse takes room at the foot" % look)
+	dial.set_key(a, "Q")
+	check(dial.mouse_button(a) == MOUSE_BUTTON_NONE and is_equal_approx(dial.get_combined_minimum_size().y, mouse_only),
+		"%s dial: a key cap alone gives that room back" % look)
+	dial.set_mouse(a, MOUSE_BUTTON_LEFT, "J")
+	dial.set_mouse(a, MOUSE_BUTTON_LEFT)
+	check(dial.key_text(a) == "" and is_equal_approx(dial.get_combined_minimum_size().y, mouse_only),
+		"%s dial: a mouse without a key drops the cap" % look)
 	InputMap.add_action(&"_dial_click")
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_RIGHT

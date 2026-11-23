@@ -1541,7 +1541,9 @@ burst.finished.connect(func() -> void: row.stamp_claimed())
 `class_name GoMagnetDial extends Control` · input-transparent · layout LTR · a custom draw. A desktop match HUD's
 magnet in one glance: a 270° power ring round a disc whose left half is the held action (ATTRACT, blue) and whose right
 half is the fired one (REPULSE, red — grey while it cools, refilling red from the bottom with the seconds left). Each
-half wears the key that drives it at its foot: a key cap, or a painted mouse for a mouse button.
+half wears the key that drives it at its foot: a key cap, or a painted mouse for a mouse button — with the key that
+does the same in a cap under the mouse when `set_mouse` is given one (the dial is then taller by that cap: lay it out
+again on `minimum_size_changed` if it sits in a plain `Control`).
 
 ```gdscript
 var dial := GoMagnetDial.make(176.0)
@@ -1549,6 +1551,7 @@ dial.ring_ink = Color("#1fb5f0")          # the game's power colour, handed in
 dial.ring_ink_end = Color("#6ff0ff")
 dial.set_action(GoMagnetDial.Half.ATTRACT, &"attract", true)   # reads InputMap; true: prefer the mouse bind
 dial.set_mouse(GoMagnetDial.Half.REPULSE, MOUSE_BUTTON_RIGHT)  # or name the glyph yourself
+dial.set_mouse(GoMagnetDial.Half.REPULSE, MOUSE_BUTTON_RIGHT, "K")   # … with the key that also fires it, under the mouse
 dial.set_key(GoMagnetDial.Half.REPULSE, "E")                   # … or a key cap
 hud.add_child(dial)
 dial.enter()                               # match start: the pop
